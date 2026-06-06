@@ -95,6 +95,7 @@ bottom:0;
 background:#111;
 padding:15px;
 border-top:2px solid #ff4f8b;
+z-index: 1000;
 }
 
 .total{
@@ -113,8 +114,20 @@ margin-top:8px;
 font-weight:bold;
 text-decoration:none;
 color:#fff;
+transition: .2s;
 }
 
+.btn:hover {
+opacity: 0.9;
+transform: translateY(-1px);
+}
+
+/* Style du bouton Calendly assorti au thème sombre */
+.calendly{
+background:#ffffff;
+color:#111;
+border:1px solid #fff;
+}
 .paypal{background:#ff4f8b;}
 .whatsapp{background:#25D366;}
 .copy{background:#222;border:1px solid #444;}
@@ -215,6 +228,14 @@ margin-top:8px;
 Total : <span id="total">0</span> €
 </div>
 
+<!-- 📅 BOUTON CALENDLY INTÉGRÉ EN PREMIER -->
+<a id="calendly" 
+class="btn calendly" 
+href="https://calendly.com/sngufulu-cohelisens/recuperer-commande" 
+target="_blank">
+📅 Réserver mon créneau de retrait (17h - 20h)
+</a>
+
 <a id="paypal"
 class="btn paypal"
 href="https://paypal.me/ngufulusoni"
@@ -284,7 +305,7 @@ document.getElementById("paypal").innerText =
 "💳 Payer " + total.toFixed(2) + " € avec PayPal";
 
 /* WHATSAPP dynamique */
-let phone = "33698213380"; // 👉 CHANGE ICI SI BESOIN
+let phone = "33698213380"; // 👉 Ton numéro de contact
 let msg = encodeURIComponent(getOrderText());
 
 document.getElementById("whatsapp").href =
@@ -302,7 +323,6 @@ if (qty === 0) {
 qty = 1;
 card.classList.add("selected");
 } else if (qty === 3) { 
-// Limite max optionnelle (ici 3 pour l'exemple, tu peux l'enlever ou l'augmenter)
 // Si on clique une 4ème fois, ça réinitialise à 0
 qty = 0;
 card.classList.remove("selected");
