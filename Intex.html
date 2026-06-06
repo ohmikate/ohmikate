@@ -1,1 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oh Mikaté - Commande</title>
 
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#000;
+color:#fff;
+}
+
+/* FLYER */
+.hero img{
+width:100%;
+display:block;
+}
+
+/* SECTION */
+.section{
+padding:20px;
+max-width:900px;
+margin:auto;
+}
+
+h2{
+text-align:center;
+color:#ff4f8b;
+margin:25px 0;
+}
+
+/* GRILLE */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+gap:12px;
+}
+
+/* CARTES */
+.card{
+background:#111;
+border:2px solid #222;
+border-radius:12px;
+overflow:hidden;
+cursor:pointer;
+text-align:center;
+transition:.2s;
+}
+
+.card:hover{
+transform:scale(1.03);
+}
+
+.card img{
+width:100%;
+height:110px;
+object-fit:cover;
+}
+
+.card p{
+margin:10px;
+font-size:14px;
+}
+
+.card.selected{
+border:3px solid #ff4f8b;
+}
+
+/* RÉSUMÉ FIXE */
+.summary{
+position:sticky;
+bottom:0;
+background:#111;
+padding:15px;
+border-top:2px solid #ff4f8b;
+}
+
+.total{
+font-size:22px;
+font-weight:bold;
+margin:10px 0;
+}
+
+/* BOUTONS */
+.btn{
+display:block;
+text-align:center;
+padding:14px;
+border-radius:40px;
+margin-top:8px;
+font-weight:bold;
+text-decoration:none;
+color:#fff;
+}
+
+.paypal{background:#ff4f8b;}
+.whatsapp{background:#25D366;}
+.copy{background:#222;border:1px solid #444;}
+
+.small{
+font-size:12px;
+opacity:0.7;
+text-align:center;
+margin-top:8px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🔥 FLYER -->
+<div class="hero">
+<img src="images/flyer.jpg" alt="Oh Mikaté">
+</div>
+
+<!-- 🍩 COMMANDE -->
+<div class="section">
+
+<h2>🍩 Compose ton Mikaté</h2>
+
+<h3>Quantité</h3>
+<div class="grid">
+
+<div class="card quantity" data-name="6 beignets" data-price="5">
+<img src="images/beignet6.jpg">
+<p>6 beignets - 5€</p>
+</div>
+
+<div class="card quantity" data-name="9 beignets" data-price="7">
+<img src="images/beignet9.jpg">
+<p>9 beignets - 7€</p>
+</div>
+
+</div>
+
+<h3>Nappage (+0,50€)</h3>
+<div class="grid">
+
+<div class="card topping" data-name="Chocolat" data-price="0.5">
+<img src="images/chocolat.jpg">
+<p>Chocolat</p>
+</div>
+
+<div class="card topping" data-name="Caramel" data-price="0.5">
+<img src="images/caramel.jpg">
+<p>Caramel</p>
+</div>
+
+<div class="card topping" data-name="Spéculoos" data-price="0.5">
+<img src="images/speculoos.jpg">
+<p>Spéculoos</p>
+</div>
+
+</div>
+
+<h3>Garniture (+0,50€)</h3>
+<div class="grid">
+
+<div class="card garnish" data-name="M&M's" data-price="0.5">
+<img src="images/mms.jpg">
+<p>M&M's</p>
+</div>
+
+<div class="card garnish" data-name="Nutella" data-price="0.5">
+<img src="images/nutella.jpg">
+<p>Nutella</p>
+</div>
+
+<div class="card garnish" data-name="Cacahuètes" data-price="0.5">
+<img src="images/cacahuetes.jpg">
+<p>Cacahuètes</p>
+</div>
+
+</div>
+
+</div>
+
+<!-- 💰 RÉCAP -->
+<div class="summary">
+
+<div id="recap">Aucune sélection</div>
+
+<div class="total">
+Total : <span id="total">0</span> €
+</div>
+
+<a id="paypal"
+class="btn paypal"
+href="https://paypal.me/ngufulusoni"
+target="_blank">
+💳 Payer avec PayPal
+</a>
+
+<a id="whatsapp"
+class="btn whatsapp"
+target="_blank">
+📲 Commander sur WhatsApp
+</a>
+
+<a onclick="copyOrder()"
+class="btn copy">
+📋 Copier la commande
+</a>
+
+<div class="small">
+Commande rapide • réponse immédiate
+</div>
+
+</div>
+
+<script>
+
+let total = 0;
+
+/* TEXTE WHATSAPP */
+function getOrderText(){
+let items = document.querySelectorAll(".card.selected");
+let text = "🍩 Commande Oh Mikaté :\n\n";
+total = 0;
+
+items.forEach(el=>{
+text += "- " + el.dataset.name + "\n";
+total += parseFloat(el.dataset.price);
+});
+
+text += "\n💰 Total : " + total.toFixed(2) + " €";
+return text;
+}
+
+/* MISE À JOUR UI */
+function update(){
+
+let items = document.querySelectorAll(".card.selected");
+let list = [];
+total = 0;
+
+items.forEach(el=>{
+list.push(el.dataset.name);
+total += parseFloat(el.dataset.price);
+});
+
+document.getElementById("recap").innerHTML =
+list.length ? list.join("<br>") : "Aucune sélection";
+
+document.getElementById("total").innerText = total.toFixed(2);
+
+/* PAYPAL dynamique */
+document.getElementById("paypal").innerText =
+"💳 Payer " + total.toFixed(2) + " € avec PayPal";
+
+/* WHATSAPP dynamique */
+let phone = "33698213380"; // 👉 CHANGE ICI
+let msg = encodeURIComponent(getOrderText());
+
+document.getElementById("whatsapp").href =
+"https://wa.me/" + phone + "?text=" + msg;
+
+}
+
+/* CLICK PRODUITS */
+document.querySelectorAll(".card").forEach(card=>{
+card.addEventListener("click",()=>{
+
+if(card.classList.contains("quantity")){
+document.querySelectorAll(".quantity").forEach(c=>c.classList.remove("selected"));
+}
+
+card.classList.toggle("selected");
+update();
+
+});
+});
+
+/* COPIER */
+function copyOrder(){
+navigator.clipboard.writeText(getOrderText());
+alert("Commande copiée !");
+}
+
+update();
+
+</script>
+
+</body>
+</html>
