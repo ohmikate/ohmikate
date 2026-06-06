@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oh Mikaté - Commande</title>
+<title>Oh! Mikaté - Commande</title>
 
 <style>
 body{
@@ -11,7 +11,7 @@ margin:0;
 font-family:Arial, sans-serif;
 background:#000;
 color:#fff;
-padding-bottom: 390px; /* Espace de sécurité pour le grand bandeau de validation */
+padding-bottom: 420px; /* Espace pour le bandeau fixe de validation */
 }
 
 /* BLOC HERO & FLYER */
@@ -93,7 +93,7 @@ font-size:14px;
 font-weight: bold;
 }
 
-/* STYLE COMPTEUR QUANTITÉ */
+/* COMPTEUR QUANTITÉ */
 .qty-controls {
 display: flex;
 align-items: center;
@@ -109,8 +109,8 @@ border: 1px solid #333;
 background: #333;
 color: white;
 border: none;
-width: 32px;
-height: 32px;
+width: 35px;
+height: 35px;
 font-size: 18px;
 font-weight: bold;
 cursor: pointer;
@@ -121,17 +121,103 @@ transition: .2s;
 background: #ff4f8b;
 }
 
-.qty-val {
-font-size: 14px;
+.qty-input {
+font-size: 15px;
 font-weight: bold;
-width: 30px;
+width: 40px;
+height: 35px;
+background: transparent;
+border: none;
+color: white;
+text-align: center;
+-moz-appearance: textfield;
+}
+
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .card.has-qty {
 border-color: #ff4f8b;
 }
 
-/* FORMULAIRE CLIENT DIRECT SUR LE SITE */
+/* BLOCS DE COMPOSITION DES BOITES (TABLEAU / COMPOSITEUR) */
+.box-composer {
+background: #111;
+border: 2px solid #ff4f8b;
+border-radius: 12px;
+padding: 15px;
+margin-top: 20px;
+}
+
+.box-title {
+font-size: 16px;
+font-weight: bold;
+color: #ff4f8b;
+margin-bottom: 15px;
+border-bottom: 1px solid #222;
+padding-bottom: 5px;
+}
+
+.lot-row {
+background: #1a1a1a;
+border: 1px solid #333;
+border-radius: 8px;
+padding: 12px;
+margin-bottom: 12px;
+display: flex;
+gap: 15px;
+align-items: center;
+}
+
+/* Image dynamique pour chaque lot */
+.lot-preview-img {
+width: 80px;
+height: 80px;
+object-fit: cover;
+border-radius: 6px;
+border: 1px solid #444;
+flex-shrink: 0;
+}
+
+.lot-content {
+flex-grow: 1;
+}
+
+.lot-title {
+font-size: 14px;
+font-weight: bold;
+color: #fff;
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+gap: 5px;
+}
+
+.selectors-container {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 10px;
+}
+
+.select-custom {
+width: 100%;
+padding: 10px;
+background: #000;
+border: 1px solid #444;
+border-radius: 6px;
+color: white;
+font-size: 13px;
+}
+
+.select-custom:focus {
+border-color: #ff4f8b;
+outline: none;
+}
+
+/* FORMULAIRE CLIENT */
 .form-group {
 margin-bottom: 15px;
 }
@@ -144,7 +230,11 @@ font-size: 14px;
 color: #ccc;
 }
 
-.form-group input, .form-group select {
+.form-group label .requis {
+color: #ff4f8b;
+}
+
+.form-group input, .form-group select, .form-group textarea {
 width: 100%;
 padding: 12px;
 background: #111;
@@ -153,22 +243,25 @@ border-radius: 8px;
 color: white;
 font-size: 15px;
 box-sizing: border-box;
-transition: 0.2s;
 }
 
-.form-group input:focus, .form-group select:focus {
+.form-group textarea {
+resize: vertical;
+font-family: Arial, sans-serif;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
 border-color: #ff4f8b;
 outline: none;
 }
 
-/* OPTIONS DE RÈGLEMENT & BASES */
-.payment-selector, .base-selector {
+.payment-selector {
 display: flex;
 gap: 10px;
 margin-top: 5px;
 }
 
-.pay-opt, .base-opt {
+.pay-opt {
 flex: 1;
 background: #111;
 border: 2px solid #222;
@@ -179,10 +272,9 @@ font-weight: bold;
 cursor: pointer;
 text-align: center;
 font-size: 14px;
-transition: 0.2s;
 }
 
-.pay-opt.selected, .base-opt.selected {
+.pay-opt.selected {
 border-color: #ff4f8b;
 background: #201217;
 }
@@ -228,7 +320,6 @@ margin-top:8px;
 font-weight:bold;
 text-decoration:none;
 color:#fff;
-transition: .2s;
 border: none;
 width: 100%;
 box-sizing: border-box;
@@ -236,25 +327,18 @@ font-size: 14px;
 cursor: pointer;
 }
 
-.btn:hover:not(:disabled) {
-opacity: 0.9;
-transform: translateY(-1px);
-}
-
 .btn:disabled, .btn.disabled {
 background: #222 !important;
 color: #555 !important;
 border: 1px solid #333 !important;
 cursor: not-allowed;
-transform: none !important;
-opacity: 1 !important;
 }
 
 .paypal{ background:#ff4f8b; }
 .especes{ background:#333; border: 1px solid #555; }
 .whatsapp{ background:#25D366; }
 .smsbtn { background: #007aff; }
-.copy{ background:#222; border:1px solid #444; }
+.phonebtn { background: #ff9500; }
 
 .small{
 font-size:11px;
@@ -265,11 +349,6 @@ line-height: 15px;
 color: #ddd;
 }
 
-.small b {
-color: #ff4f8b;
-}
-
-/* TOAST ANIMÉ */
 #toast {
 position: fixed;
 top: 20px;
@@ -281,7 +360,7 @@ padding: 12px 25px;
 border-radius: 30px;
 font-weight: bold;
 box-shadow: 0 4px 15px rgba(255, 79, 139, 0.4);
-transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+transition: 0.4s;
 opacity: 0;
 z-index: 9999;
 text-align: center;
@@ -296,158 +375,84 @@ opacity: 1;
 
 <body>
 
-<div id="toast">📋 Commande copiée !</div>
+<div id="toast">📋 Action effectuée !</div>
 
-<!-- 🔥 BLOC HERO AVEC LE FLYER -->
+<!-- HERO FLYER -->
 <div class="hero">
     <img src="Images/Flyer.jpg" alt="Oh! Mikaté Flyer">
 </div>
 
-<!-- 🍩 CONSTRUCTEUR DE COMMANDE -->
 <div class="section">
 
-<h2>🍩 Compose ton Mikaté</h2>
+<h2>✨ Compose tes Mikaté</h2>
 
-<h3>1. Choisis ta quantité de beignets</h3>
-<span class="info-limite" style="color: #ccc;">Sélectionne d'abord ta boîte pour activer les options.</span>
+<!-- ÉTAPE 1 : CHOIX DES BOÎTES -->
+<h3>1. Choisis ton format de boîte</h3>
+<span class="info-limite" style="color: #ccc;">Sélectionne une ou plusieurs boîtes pour personnaliser tes boules de beignets.</span>
 <div class="grid">
 
-<div class="card product-card" data-type="beignet" data-name="6 beignets" data-price="5">
+<div class="card product-card" data-name="6 beignets" data-price="5">
 <img src="Images/Beignet6.jpg">
-<p>6 beignets - 5€</p>
+<p>Boîte de 6 beignets — 5€</p>
 <div class="qty-controls">
-<button class="qty-btn minus">-</button>
-<span class="qty-val">0</span>
-<button class="qty-btn plus">+</button>
+<button class="qty-btn minus" onclick="changeBoxQty('6 beignets', -1)">-</button>
+<input type="number" id="qty-6" class="qty-input" value="0" min="0" onchange="setBoxQty('6 beignets', this.value)">
+<button class="qty-btn plus" onclick="changeBoxQty('6 beignets', 1)">+</button>
 </div>
 </div>
 
-<div class="card product-card" data-type="beignet" data-name="9 beignets" data-price="7">
+<div class="card product-card" data-name="9 beignets" data-price="7">
 <img src="Images/Beignet9.jpg">
-<p>9 beignets - 7€</p>
+<p>Boîte de 9 beignets — 7€</p>
 <div class="qty-controls">
-<button class="qty-btn minus">-</button>
-<span class="qty-val">0</span>
-<button class="qty-btn plus">+</button>
+<button class="qty-btn minus" onclick="changeBoxQty('9 beignets', -1)">-</button>
+<input type="number" id="qty-9" class="qty-input" value="0" min="0" onchange="setBoxQty('9 beignets', this.value)">
+<button class="qty-btn plus" onclick="changeBoxQty('9 beignets', 1)">+</button>
 </div>
 </div>
 
 </div>
 
-<!-- 🥥 CHOIX DE LA BASE GRATUITE -->
-<h3>2. Choisis ta base (Gratuit)</h3>
-<span class="info-limite" style="color: #ccc;">Option incluse au choix pour toute la boîte.</span>
-<div class="form-group">
-    <div class="base-selector">
-        <div id="base-nature" class="base-opt selected" onclick="selectBase('Nature')">Nature</div>
-        <div id="base-sucre" class="base-opt" onclick="selectBase('Saupoudré de Sucre')">Saupoudré de Sucre</div>
-        <div id="base-coco" class="base-opt" onclick="selectBase('Saupoudré de Noix de coco')">Noix de coco</div>
-    </div>
-</div>
+<!-- ÉTAPE 2 : ZONE GENEREE DYNAMIQUEMENT POUR COMPOSER PAR LOT DE 3 BEIGNETS -->
+<div id="composition-zone"></div>
 
-<h3>3. Ajoute tes nappages (+0,50€ / unité)</h3>
-<span class="info-limite">⚠️ Max 2 nappages pour la boîte de 6 | Max 3 nappages pour la boîte de 9</span>
-<div class="grid">
 
-<div class="card product-card" data-type="nappage" data-name="Nappage Chocolat" data-price="0.5">
-<img src="Images/Chocolat.jpg">
-<p>Chocolat</p>
-<div class="qty-controls">
-<button class="qty-btn minus">-</button>
-<span class="qty-val">0</span>
-<button class="qty-btn plus">+</button>
-</div>
-</div>
-
-<div class="card product-card" data-type="nappage" data-name="Nappage Caramel" data-price="0.5">
-<img src="Images/Caramel.jpg">
-<p>Caramel</p>
-<div class="qty-controls">
-<button class="qty-btn minus">-</button>
-<span class="qty-val">0</span>
-<button class="qty-btn plus">+</button>
-</div>
-</div>
-
-<div class="card product-card" data-type="nappage" data-name="Nappage Spéculoos" data-price="0.5">
-<img src="Images/Speculoos.jpg">
-<p>Spéculoos</p>
-<div class="qty-controls">
-<button class="qty-btn minus">-</button>
-<span class="qty-val">0</span>
-<button class="qty-btn plus">+</button>
-</div>
-</div>
-
-</div>
-
-<h3>4. Ajoute tes garnitures (+0,50€ / unité)</h3>
-<span class="info-limite">⚠️ Max 2 garnitures pour la boîte de 6 | Max 3 garnitures pour la boîte de 9</span>
-<div class="grid">
-
-<div class="card product-card" data-type="garniture" data-name="Garniture M&M's" data-price="0.5">
-<img src="Images/Mms.jpg">
-<p>M&M's</p>
-<div class="qty-controls">
-<button class="qty-btn minus">-</button>
-<span class="qty-val">0</span>
-<button class="qty-btn plus">+</button>
-</div>
-</div>
-
-<div class="card product-card" data-type="garniture" data-name="Garniture Nutella" data-price="0.5">
-<img src="Images/Nutella.jpg">
-<p>Nutella</p>
-<div class="qty-controls">
-<button class="qty-btn minus">-</button>
-<span class="qty-val">0</span>
-<button class="qty-btn plus">+</button>
-</div>
-</div>
-
-<div class="card product-card" data-type="garniture" data-name="Garniture Cacahuètes" data-price="0.5">
-<img src="Images/Cacahuetes.jpg">
-<p>Cacahuètes</p>
-<div class="qty-controls">
-<button class="qty-btn minus">-</button>
-<span class="qty-val">0</span>
-<button class="qty-btn plus">+</button>
-</div>
-</div>
-
-</div>
-
-<!-- 📅 INFORMATIONS DE RETRAIT DYNAMIQUES -->
-<h3>5. Tes informations de retrait</h3>
-<span class="info-limite" style="color: #aaa; font-style: normal;">📍 L'adresse complète vous sera transmise lors de la validation de votre créneau.</span>
+<!-- ÉTAPE 3 : INFORMATIONS DE RETRAIT -->
+<h3>3. Tes informations de retrait</h3>
+<span class="info-limite" style="color: #aaa; font-style: normal;">📍 L'adresse complète te sera transmise lors de la validation de ton créneau.</span>
 
 <div class="form-group">
-    <label for="client-name">Ton Prénom & Nom :</label>
+    <label for="client-name">Ton Prénom & Nom : <span class="requis">*</span></label>
     <input type="text" id="client-name" placeholder="Ex: Marie Dupont" oninput="updateUI()">
 </div>
 
 <div class="form-group">
-    <label for="client-phone">Ton Numéro de téléphone :</label>
+    <label for="client-phone">Ton Numéro de téléphone : <span class="requis">*</span></label>
     <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="updateUI()">
 </div>
 
 <div class="form-group">
-    <label for="client-date">Choisis le jour de retrait :</label>
+    <label for="client-date">Choisis le jour de retrait : <span class="requis">*</span></label>
     <select id="client-date" onchange="handleDateChange()">
-        <!-- Généré dynamiquement en JS -->
+        <!-- JS -->
     </select>
 </div>
 
 <div class="form-group">
-    <label for="client-time">Choisis ton créneau horaire :</label>
+    <label for="client-time">Choisis ta tranche horaire de passage : <span class="requis">*</span></label>
     <span id="time-warning" class="info-limite" style="display:none; margin-bottom:5px;">⚠️ Pour aujourd'hui, commande requise au moins 30 min à l'avance.</span>
     <select id="client-time" onchange="updateUI()">
-        <option value="">-- Sélectionne une heure de passage --</option>
+        <option value="">-- Sélectionne une tranche horaire --</option>
     </select>
 </div>
 
 <div class="form-group">
-    <label>Choisis ton mode de règlement :</label>
+    <label for="client-notes">Une précision à ajouter ? (Optionnel) :</label>
+    <textarea id="client-notes" rows="3" placeholder="Ex: S'il vous plaît, préparez-les bien chauds !" oninput="updateUI()"></textarea>
+</div>
+
+<div class="form-group">
+    <label>Choisis ton mode de règlement : <span class="requis">*</span></label>
     <div class="payment-selector">
         <div id="opt-paypal" class="pay-opt" onclick="selectPayment('PayPal')">💳 PayPal</div>
         <div id="opt-especes" class="pay-opt" onclick="selectPayment('Espèces')">💵 Espèces (Appoint requis)</div>
@@ -456,18 +461,17 @@ opacity: 1;
 
 </div>
 
-<!-- 💰 ZONE BANDEAU RÉCAPITULATIF FIXE -->
+<!-- BANDEAU DE VALIDATION FIXE -->
 <div id="summary-bar" class="summary">
 <div class="summary-content">
 
-<div id="recap">Aucune sélection</div>
+<div id="recap" style="font-size:13px; max-height: 60px; overflow-y: auto; margin-bottom: 10px; color:#ccc;">Aucune sélection</div>
 
 <div class="total">
 <span>Total :</span>
 <span><span id="total">0.00</span> €</span>
 </div>
 
-<!-- ACTIONS DE PAIEMENT -->
 <button id="paypal-btn" class="btn paypal" style="display:none;" onclick="redirectToPaypal()">
 💳 Préparer mon règlement PayPal
 </button>
@@ -476,63 +480,399 @@ opacity: 1;
 💵 Règlement en Espèces (Merci de prévoir l'appoint)
 </button>
 
-<!-- CANAUX DE TRANSMISSION -->
 <a id="whatsapp" class="btn whatsapp disabled" target="_blank" onclick="return checkForm(event)">
 📲 Envoyer ma commande sur WhatsApp
 </a>
 
 <button id="sms-btn" class="btn smsbtn disabled" onclick="triggerSMS(event)">
-💬 Valider par SMS classique (Prioritaire)
+💬 Valider ma commande par SMS
 </button>
 
-<button id="btn-copy" class="btn copy" disabled onclick="copyOrder()">
-📋 Copier le résumé texte pour l'envoyer
-</button>
+<a id="phone-btn" class="btn phonebtn disabled" onclick="triggerCall(event)">
+📞 Valider et m'appeler au téléphone
+</a>
 
 <div class="small">
-💡 <b>Comment valider ?</b> Remplissez vos infos et cliquez sur <b>"Valider par SMS"</b> ou <b>"WhatsApp"</b>. Si le SMS s'ouvre vide, utilisez le bouton gris <b>"Copier le résumé"</b> pour le coller vous-même.
+💡 Choisis tes boîtes, configure tes lots de 3 boules et remplis tes coordonnées (*) pour débloquer l'envoi.
 </div>
 
 </div>
 </div>
 
 <script>
-let orderData = {
-"6 beignets": 0,
-"9 beignets": 0,
-"Nappage Chocolat": 0,
-"Nappage Caramel": 0,
-"Nappage Spéculoos": 0,
-"Garniture M&M's": 0,
-"Garniture Nutella": 0,
-"Garniture Cacahuètes": 0
+let boxesSelected = {
+    "6 beignets": 0,
+    "9 beignets": 0
 };
 
-const prices = {
-"6 beignets": 5.0,
-"9 beignets": 7.0,
-"Nappage Chocolat": 0.5,
-"Nappage Caramel": 0.5,
-"Nappage Spéculoos": 0.5,
-"Garniture M&M's": 0.5,
-"Garniture Nutella": 0.5,
-"Garniture Cacahuètes": 0.5
+const boxPrices = {
+    "6 beignets": 5.0,
+    "9 beignets": 7.0
 };
 
+const supplementPricePerLot = 0.50;
 let selectedPaymentMode = "";
-let selectedBase = "Nature"; 
-const targetPhone = "33698213380";
+const targetPhone = "0698213380"; 
 
-const baseHours = [
-    "17h00", "17h10", "17h20", "17h30", "17h40", "17h50",
-    "18h00", "18h10", "18h20", "18h30", "18h40", "18h50",
-    "19h00", "19h10", "19h20", "19h30", "19h40", "19h50", "20h00"
-];
+const baseHours = ["17h00 - 17h30", "17h30 - 18h00", "18h00 - 18h30", "18h30 - 19h00", "19h00 - 19h30", "19h30 - 20h00"];
+
+function changeBoxQty(type, change) {
+    let input = type === "6 beignets" ? document.getElementById("qty-6") : document.getElementById("qty-9");
+    let current = parseInt(input.value) || 0;
+    let newVal = current + change;
+    if(newVal < 0) newVal = 0;
+    input.value = newVal;
+    setBoxQty(type, newVal);
+}
+
+function setBoxQty(type, value) {
+    let val = parseInt(value) || 0;
+    if(val < 0) val = 0;
+    boxesSelected[type] = val;
+    
+    let card = document.querySelector(`[data-name="${type}"]`);
+    if(val > 0) card.classList.add("has-qty"); else card.classList.remove("has-qty");
+
+    generateCompositionForm();
+    updateUI();
+}
+
+function generateCompositionForm() {
+    const container = document.getElementById("composition-zone");
+    
+    if (boxesSelected["6 beignets"] === 0 && boxesSelected["9 beignets"] === 0) {
+        container.innerHTML = "";
+        return;
+    }
+
+    let currentSelections = {};
+    container.querySelectorAll("select").forEach(sel => {
+        currentSelections[sel.id] = sel.value;
+    });
+
+    let html = "<h3>2. Personnalise tes lots de 3 beignets</h3>";
+    html += '<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 boules au sein de tes boîtes. Laisse sur "Nature" si tu ne veux aucun supplément (+0,50€ par nappage ou garniture par lot).</span>';
+
+    for (let b = 1; b <= boxesSelected["6 beignets"]; b++) {
+        html += `<div class="box-composer">`;
+        html += `<div class="box-title">📦 Boîte de 6 Beignets n°${b}</div>`;
+        for (let lot = 1; lot <= 2; lot++) {
+            let idPrefix = `box6-${b}-lot${lot}`;
+            html += generateLotRowHtml(idPrefix, `Lot de 3 beignets (${lot}/2)`, "Images/Beignet6.jpg");
+        }
+        html += `</div>`;
+    }
+
+    for (let b = 1; b <= boxesSelected["9 beignets"]; b++) {
+        html += `<div class="box-composer">`;
+        html += `<div class="box-title">📦 Boîte de 9 Beignets n°${b}</div>`;
+        for (let lot = 1; lot <= 3; lot++) {
+            let idPrefix = `box9-${b}-lot${lot}`;
+            html += generateLotRowHtml(idPrefix, `Lot de 3 beignets (${lot}/3)`, "Images/Beignet9.jpg");
+        }
+        html += `</div>`;
+    }
+
+    container.innerHTML = html;
+
+    container.querySelectorAll("select").forEach(sel => {
+        if (currentSelections[sel.id]) {
+            sel.value = currentSelections[sel.id];
+        }
+    });
+    
+    // Forcer la mise à jour des images initiales
+    for (let b = 1; b <= boxesSelected["6 beignets"]; b++) {
+        for (let lot = 1; lot <= 2; lot++) { updateLotImage(`box6-${b}-lot${lot}`, "Images/Beignet6.jpg"); }
+    }
+    for (let b = 1; b <= boxesSelected["9 beignets"]; b++) {
+        for (let lot = 1; lot <= 3; lot++) { updateLotImage(`box9-${b}-lot${lot}`, "Images/Beignet9.jpg"); }
+    }
+}
+
+function generateLotRowHtml(idPrefix, labelTitle, defaultImg) {
+    return `
+    <div class="lot-row" data-prefix="${idPrefix}">
+        <img id="${idPrefix}-img" src="${defaultImg}" class="lot-preview-img" alt="Aperçu lot">
+        <div class="lot-content">
+            <div class="lot-title">✨ ${labelTitle}</div>
+            <div class="selectors-container">
+                <div>
+                    <select id="${idPrefix}-base" class="select-custom" onchange="updateLotImage('${idPrefix}', '${defaultImg}'); updateUI();">
+                        <option value="Nature">Enrobage : Aucun (Nature)</option>
+                        <option value="Sucre">Sucre (+0€)</option>
+                        <option value="Noix de coco">Noix de coco (+0€)</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="${idPrefix}-nappage" class="select-custom" onchange="updateLotImage('${idPrefix}', '${defaultImg}'); updateUI();">
+                        <option value="Aucun">🍫 Nappage : Aucun</option>
+                        <option value="Chocolat">Chocolat (+0,50€)</option>
+                        <option value="Caramel">Caramel (+0,50€)</option>
+                        <option value="Spéculoos">Spéculoos (+0,50€)</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="${idPrefix}-garniture" class="select-custom" onchange="updateLotImage('${idPrefix}', '${defaultImg}'); updateUI();">
+                        <option value="Aucun">🥜 Garniture : Aucun</option>
+                        <option value="M&M's">M&M's (+0,50€)</option>
+                        <option value="Nutella">Nutella (+0,50€)</option>
+                        <option value="Cacahuètes">Cacahuètes (+0,50€)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function updateLotImage(idPrefix, defaultImg) {
+    const nappage = document.getElementById(`${idPrefix}-nappage`)?.value || "Aucun";
+    const garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
+    const imgElement = document.getElementById(`${idPrefix}-img`);
+    
+    if (!imgElement) return;
+
+    // Priorité 1 : Le nappage s'il est sélectionné
+    if (nappage !== "Aucun") {
+        if (nappage === "Chocolat") imgElement.src = "Images/Chocolat.jpg";
+        else if (nappage === "Caramel") imgElement.src = "Images/Caramel.jpg";
+        else if (nappage === "Spéculoos") imgElement.src = "Images/Speculoos.jpg";
+    } 
+    // Priorité 2 : La garniture s'il n'y a pas de nappage
+    else if (garniture !== "Aucun") {
+        if (garniture === "M&M's") imgElement.src = "Images/Mms.jpg";
+        else if (garniture === "Nutella") imgElement.src = "Images/Nutella.jpg";
+        else if (garniture === "Cacahuètes") imgElement.src = "Images/Cacahuetes.jpg";
+    } 
+    // Par défaut : Image de la boîte sélectionnée (6 ou 9)
+    else {
+        imgElement.src = defaultImg;
+    }
+}
+
+function calculateTotalAndExtractStructure() {
+    let total = 0;
+    let textSummaryList = [];
+    let structuredOrderText = "";
+
+    total += boxesSelected["6 beignets"] * boxPrices["6 beignets"];
+    total += boxesSelected["9 beignets"] * boxPrices["9 beignets"];
+
+    if(boxesSelected["6 beignets"] > 0) textSummaryList.push(`${boxesSelected["6 beignets"]} Boîte(s) de 6`);
+    if(boxesSelected["9 beignets"] > 0) textSummaryList.push(`${boxesSelected["9 beignets"]} Boîte(s) de 9`);
+
+    for (let b = 1; b <= boxesSelected["6 beignets"]; b++) {
+        structuredOrderText += `\n📦 *BOÎTE DE 6 BEIGNETS n°${b}* :\n`;
+        for (let lot = 1; lot <= 2; lot++) {
+            let idPrefix = `box6-${b}-lot${lot}`;
+            let base = document.getElementById(`${idPrefix}-base`)?.value || "Nature";
+            let nappage = document.getElementById(`${idPrefix}-nappage`)?.value || "Aucun";
+            let garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
+
+            let supplementsInLot = [];
+            if(base !== "Nature") supplementsInLot.push(`Saupoudré ${base}`);
+            
+            if(nappage !== "Aucun") {
+                supplementsInLot.push(`Nappage ${nappage}`);
+                total += supplementPricePerLot;
+            }
+            if(garniture !== "Aucun") {
+                supplementsInLot.push(`Garniture ${garniture}`);
+                total += supplementPricePerLot;
+            }
+
+            let compositionString = supplementsInLot.length > 0 ? supplementsInLot.join(" + ") : "100% Nature";
+            structuredOrderText += `  - Lot ${lot} (3 boules) : ${compositionString}\n`;
+        }
+    }
+
+    for (let b = 1; b <= boxesSelected["9 beignets"]; b++) {
+        structuredOrderText += `\n📦 *BOÎTE DE 9 BEIGNETS n°${b}* :\n`;
+        for (let lot = 1; lot <= 3; lot++) {
+            let idPrefix = `box9-${b}-lot${lot}`;
+            let base = document.getElementById(`${idPrefix}-base`)?.value || "Nature";
+            let nappage = document.getElementById(`${idPrefix}-nappage`)?.value || "Aucun";
+            let garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
+
+            let supplementsInLot = [];
+            if(base !== "Nature") supplementsInLot.push(`Saupoudré ${base}`);
+            
+            if(nappage !== "Aucun") {
+                supplementsInLot.push(`Nappage ${nappage}`);
+                total += supplementPricePerLot;
+            }
+            if(garniture !== "Aucun") {
+                supplementsInLot.push(`Garniture ${garniture}`);
+                total += supplementPricePerLot;
+            }
+
+            let compositionString = supplementsInLot.length > 0 ? supplementsInLot.join(" + ") : "100% Nature";
+            structuredOrderText += `  - Lot ${lot} (3 boules) : ${compositionString}\n`;
+        }
+    }
+
+    return {
+        totalPrice: total,
+        summaryShort: textSummaryList.join(" / "),
+        detailsText: structuredOrderText
+    };
+}
+
+function updateUI(){
+    let orderInfo = calculateTotalAndExtractStructure();
+    
+    document.getElementById("recap").innerHTML = orderInfo.summaryShort ? `<b>Sélection :</b> ${orderInfo.summaryShort}` : "Aucune sélection";
+    document.getElementById("total").innerText = orderInfo.totalPrice.toFixed(2);
+
+    const summaryBar = document.getElementById("summary-bar");
+    if (boxesSelected["6 beignets"] > 0 || boxesSelected["9 beignets"] > 0) {
+        summaryBar.classList.add("show");
+    } else {
+        summaryBar.classList.remove("show");
+    }
+
+    const pBtn = document.getElementById("paypal-btn");
+    const eBtn = document.getElementById("especes-btn");
+    if(selectedPaymentMode === "PayPal") {
+        pBtn.style.display = "block";
+        eBtn.style.display = "none";
+    } else if(selectedPaymentMode === "Espèces") {
+        pBtn.style.display = "none";
+        eBtn.style.display = "block";
+    } else {
+        pBtn.style.display = "none";
+        eBtn.style.display = "none";
+    }
+
+    const buttons = [
+        document.getElementById("whatsapp"),
+        document.getElementById("sms-btn"),
+        document.getElementById("phone-btn")
+    ];
+
+    let shouldEnable = isFormValid();
+    buttons.forEach(btn => {
+        if(shouldEnable) {
+            btn.removeAttribute("disabled");
+            btn.classList.remove("disabled");
+        } else {
+            btn.setAttribute("disabled", "true");
+            btn.classList.add("disabled");
+        }
+    });
+
+    let whatsappMsg = encodeURIComponent(getOrderText(false));
+    document.getElementById("whatsapp").href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + whatsappMsg;
+}
+
+function isFormValid() {
+    if (boxesSelected["6 beignets"] === 0 && boxesSelected["9 beignets"] === 0) return false;
+
+    let name = document.getElementById("client-name").value.trim();
+    let phone = document.getElementById("client-phone").value.trim();
+    let date = document.getElementById("client-date").value;
+    let time = document.getElementById("client-time").value;
+
+    if (!name || !phone || !date || !time || time === "COMPLET" || !selectedPaymentMode) {
+        return false;
+    }
+    return true;
+}
+
+function checkForm(event) {
+    if (!isFormValid()) {
+        showToast("⚠️ Formulaire incomplet ! Sélectionne une boîte, remplis tes coordonnées (*) et choisis ton mode de règlement.");
+        if(event) event.preventDefault();
+        return false;
+    }
+    return true;
+}
+
+function getOrderText(cleanForSms = false){
+    let name = document.getElementById("client-name").value.trim();
+    let phoneField = document.getElementById("client-phone").value.trim();
+    let date = document.getElementById("client-date").value;
+    let time = document.getElementById("client-time").value;
+    let noteField = document.getElementById("client-notes").value.trim();
+    let payText = selectedPaymentMode === "Espèces" ? "Espèces (Appoint à prévoir)" : "PayPal";
+
+    let orderInfo = calculateTotalAndExtractStructure();
+
+    let boldStr = cleanForSms ? "" : "*";
+
+    let text = `${boldStr}COMMANDE OH MIKATÉ${boldStr}\n`;
+    text += orderInfo.detailsText;
+    text += `\n💰 ${boldStr}TOTAL : ${orderInfo.totalPrice.toFixed(2)} €${boldStr}`;
+    
+    if(noteField) {
+        text += `\n\n📝 ${boldStr}PRÉCISION CLIENT :${boldStr}\n"${noteField}"`;
+    }
+
+    text += `\n\n--- INFOS RETRAIT ---`;
+    text += `\n👤 ${boldStr}Nom :${boldStr} ${name}`;
+    text += `\n📞 ${boldStr}Téléphone :${boldStr} ${phoneField}`;
+    text += `\n📅 ${boldStr}Date souhaitée :${boldStr} ${date}`;
+    text += `\n⏰ ${boldStr}Tranche souhaitée :${boldStr} ${time}`;
+    text += `\n💳 ${boldStr}Règlement :${boldStr} ${payText}`;
+    text += `\n\n📍 ${boldStr}Lieu :${boldStr} Communiqué à la validation`;
+
+    if(cleanForSms) {
+        text = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+    return text;
+}
+
+function triggerSMS(event) {
+    if (!checkForm(event)) return;
+    let smsBody = getOrderText(true);
+    let ua = navigator.userAgent.toLowerCase();
+    let smsPrefix = "sms:" + targetPhone;
+    let url = smsPrefix + "?body=" + encodeURIComponent(smsBody);
+    
+    if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) {
+        url = smsPrefix + "&body=" + encodeURIComponent(smsBody);
+    }
+    showToast("📱 Redirection vers tes SMS...");
+    setTimeout(() => {
+        window.location.href = url;
+    }, 500);
+}
+
+function triggerCall(event) {
+    if (!checkForm(event)) return;
+    showToast("📞 Lancement de l'appel...");
+    setTimeout(() => {
+        window.location.href = "tel:" + targetPhone;
+    }, 500);
+}
+
+function redirectToPaypal() {
+    let orderInfo = calculateTotalAndExtractStructure();
+    if(orderInfo.totalPrice === 0) return;
+    let paypalUrl = "https://paypal.me/ngufulusoni/" + orderInfo.totalPrice.toFixed(2);
+    window.open(paypalUrl, '_blank');
+}
+
+function selectPayment(mode) {
+    selectedPaymentMode = mode;
+    document.getElementById("opt-paypal").classList.remove("selected");
+    document.getElementById("opt-especes").classList.remove("selected");
+    
+    if(mode === 'PayPal') {
+        document.getElementById("opt-paypal").classList.add("selected");
+    } else {
+        document.getElementById("opt-especes").classList.add("selected");
+    }
+    updateUI();
+}
+
+function alertEspeces() {
+    showToast("💵 Merci de préparer l'appoint exact pour le retrait !");
+}
 
 function initDates() {
     const dateSelect = document.getElementById("client-date");
     dateSelect.innerHTML = '<option value="">-- Sélectionne une date --</option>';
-    
     const options = { weekday: 'long', day: 'numeric', month: 'long' };
     
     for (let i = 0; i < 3; i++) {
@@ -555,7 +895,7 @@ function handleDateChange() {
     const selectedDate = dateSelect.value;
     
     const currentSelectedTime = timeSelect.value;
-    timeSelect.innerHTML = '<option value="">-- Sélectionne une heure de passage --</option>';
+    timeSelect.innerHTML = '<option value="">-- Sélectionne une tranche horaire --</option>';
     
     if (selectedDate === "Aujourd'hui") {
         warning.style.display = "block";
@@ -564,11 +904,11 @@ function handleDateChange() {
         
         let availableSlots = 0;
         baseHours.forEach(timeStr => {
-            let parts = timeStr.split('h');
-            let slotDate = new Date();
-            slotDate.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+            let partsEnd = timeStr.split(' - ')[1].split('h');
+            let slotEndDate = new Date();
+            slotEndDate.setHours(parseInt(partsEnd[0]), parseInt(partsEnd[1]), 0, 0);
             
-            if (slotDate >= limitTime) {
+            if (slotEndDate >= limitTime) {
                 let opt = document.createElement("option");
                 opt.value = timeStr;
                 opt.textContent = timeStr;
@@ -599,363 +939,13 @@ function handleDateChange() {
     updateUI();
 }
 
-function selectBase(base) {
-    selectedBase = base;
-    document.getElementById("base-nature").classList.remove("selected");
-    document.getElementById("base-sucre").classList.remove("selected");
-    document.getElementById("base-coco").classList.remove("selected");
-    
-    if(base === 'Nature') {
-        document.getElementById("base-nature").classList.add("selected");
-    } else if(base === 'Saupoudré de Sucre') {
-        document.getElementById("base-sucre").classList.add("selected");
-    } else {
-        document.getElementById("base-coco").classList.add("selected");
-    }
-    updateUI();
-}
-
-function selectPayment(mode) {
-    selectedPaymentMode = mode;
-    document.getElementById("opt-paypal").classList.remove("selected");
-    document.getElementById("opt-especes").classList.remove("selected");
-    
-    if(mode === 'PayPal') {
-        document.getElementById("opt-paypal").classList.add("selected");
-    } else {
-        document.getElementById("opt-especes").classList.add("selected");
-    }
-    updateUI();
-}
-
-function alertEspeces() {
-    showToast("💵 Merci de préparer l'appoint exact pour le retrait !");
-}
-
-function hasBeignetsSelected() {
-return orderData["6 beignets"] > 0 || orderData["9 beignets"] > 0;
-}
-
-function getMaxNappagesAllowed() {
-return (orderData["6 beignets"] * 2) + (orderData["9 beignets"] * 3);
-}
-
-function getMaxGarnituresAllowed() {
-return (orderData["6 beignets"] * 2) + (orderData["9 beignets"] * 3);
-}
-
-function getCurrentNappagesCount() {
-return orderData["Nappage Chocolat"] + orderData["Nappage Caramel"] + orderData["Nappage Spéculoos"];
-}
-
-function getCurrentGarnituresCount() {
-return orderData["Garniture M&M's"] + orderData["Garniture Nutella"] + orderData["Garniture Cacahuètes"];
-}
-
-function checkForm(event) {
-if (!hasBeignetsSelected()) {
-showToast("⚠️ Ajoute d'abord des beignets à ta commande !");
-if(event) event.preventDefault();
-return false;
-}
-let name = document.getElementById("client-name").value.trim();
-let phone = document.getElementById("client-phone").value.trim();
-let date = document.getElementById("client-date").value;
-let time = document.getElementById("client-time").value;
-
-if (!name || !phone || !date || !time) {
-showToast("⚠️ Remplis ton Nom, Téléphone, Date et Créneau de retrait !");
-if(event) event.preventDefault();
-return false;
-}
-
-if (time === "COMPLET") {
-showToast("⚠️ Aucun créneau disponible sélectionné !");
-if(event) event.preventDefault();
-return false;
-}
-
-if (!selectedPaymentMode) {
-showToast("⚠️ Choisis un mode de règlement (PayPal ou Espèces) !");
-if(event) event.preventDefault();
-return false;
-}
-return true;
-}
-
-function getOrderText(){
-let name = document.getElementById("client-name").value.trim() || "Non renseigné";
-let phoneField = document.getElementById("client-phone").value.trim() || "Non renseigné";
-let date = document.getElementById("client-date").value || "Non sélectionnée";
-let time = document.getElementById("client-time").value || "Non sélectionné";
-let payText = selectedPaymentMode ? (selectedPaymentMode === "Espèces" ? "Espèces (Appoint à prévoir)" : "PayPal") : "Non sélectionné";
-
-let text = "🍩 *COMMANDE OH MIKATÉ* 🍩\n\n";
-let total = 0;
-
-for (let key in orderData) {
-if (orderData[key] > 0) {
-let p = prices[key] * orderData[key];
-let prefix = (key.includes("beignets")) ? "📦" : "✨";
-if(key.includes("beignets")) {
-    text += `• ${prefix} *${key}* [Base : ${selectedBase}] (x${orderData[key]}) : ${p.toFixed(2)}€\n`;
-} else {
-    text += `• ${prefix} *${key}* (x${orderData[key]}) : ${p.toFixed(2)}€\n`;
-}
-total += p;
-}
-}
-
-text += `\n💰 *TOTAL : ${total.toFixed(2)} €*`;
-text += "\n\n--- 👤 INFOS RETRAIT ---";
-text += `\n👤 *Nom :* ${name}`;
-text += `\n📞 *Téléphone :* ${phoneField}`;
-text += `\n📅 *Date souhaitée :* ${date}`;
-text += `\n⏰ *Créneau souhaité :* ${time}`;
-text += `\n💳 *Règlement :* ${payText}`;
-text += "\n\n📍 *Lieu :* Communiqué à la validation";
-return text;
-}
-
-function getSMSOrderText(){
-let name = document.getElementById("client-name").value.trim() || "Non renseigné";
-let phoneField = document.getElementById("client-phone").value.trim() || "Non renseigné";
-let date = document.getElementById("client-date").value || "Non sélectionnée";
-let time = document.getElementById("client-time").value || "Non sélectionné";
-let payText = selectedPaymentMode ? (selectedPaymentMode === "Espèces" ? "Especes (Appoint a prevoir)" : "PayPal") : "Non selectionne";
-
-let text = "🍩 COMMANDE OH MIKATÉ 🍩\n\n";
-let total = 0;
-
-for (let key in orderData) {
-if (orderData[key] > 0) {
-let p = prices[key] * orderData[key];
-let prefix = (key.includes("beignets")) ? "📦" : "✨";
-if(key.includes("beignets")) {
-    text += `• ${prefix} ${key} [Base : ${selectedBase}] (x${orderData[key]}) : ${p.toFixed(2)}€\n`;
-} else {
-    text += `• ${prefix} ${key} (x${orderData[key]}) : ${p.toFixed(2)}€\n`;
-}
-total += p;
-}
-}
-
-text += `\n💰 TOTAL : ${total.toFixed(2)} €`;
-text += "\n\n--- INFOS RETRAIT ---";
-text += `\nNom : ${name}`;
-text += `\nTéléphone : ${phoneField}`;
-text += `\nDate : ${date}`;
-text += `\nCréneau : ${time}`;
-text += `\nRèglement : ${payText}`;
-text += "\n\n📍 Lieu : Communique a la validation";
-return text;
-}
-
-// FORCE LE LIEN SMS DE MANIÈRE UNIVERSELLE AVEC PLAN B AUTOMATIQUE
-function triggerSMS(event) {
-    if (!checkForm(event)) return;
-    
-    let smsBody = getSMSOrderText();
-    
-    // Essai d'ouverture universelle (les téléphones récents gèrent mieux l'encodage standard standardisé)
-    let ua = navigator.userAgent.toLowerCase();
-    let url = "sms:" + targetPhone + "?body=" + encodeURIComponent(smsBody);
-    
-    if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) {
-        url = "sms:" + targetPhone + "&body=" + encodeURIComponent(smsBody);
-    }
-    
-    // Copie automatique de sécurité dans le presse-papier juste avant d'ouvrir
-    navigator.clipboard.writeText(getOrderText()).then(() => {
-        showToast("📋 Commande copiée + Application SMS ouverte !<br><small>Si le texte est vide, faites simplement 'Coller'.</small>");
-        setTimeout(() => {
-            window.location.href = url;
-        }, 800);
-    }).catch(() => {
-        window.location.href = url;
-    });
-}
-
-function redirectToPaypal() {
-if(!hasBeignetsSelected()) return;
-let total = calculateTotal();
-let paypalUrl = "https://paypal.me/ngufulusoni/" + total.toFixed(2);
-window.open(paypalUrl, '_blank');
-}
-
-function calculateTotal() {
-let total = 0;
-for (let key in orderData) {
-total += orderData[key] * prices[key];
-}
-return total;
-}
-
-function updateUI(){
-let total = calculateTotal();
-let list = [];
-
-for (let key in orderData) {
-if (orderData[key] > 0) {
-if(key.includes("beignets")) {
-    list.push(`${key} [Base : ${selectedBase}] <b>(x${orderData[key]})</b>`);
-} else {
-    list.push(`${key} <b>(x${orderData[key]})</b>`);
-}
-}
-}
-
-document.getElementById("recap").innerHTML = list.length ? list.join(", ") : "Aucune sélection";
-document.getElementById("total").innerText = total.toFixed(2);
-
-const summaryBar = document.getElementById("summary-bar");
-if (hasBeignetsSelected()) {
-    summaryBar.classList.add("show");
-} else {
-    summaryBar.classList.remove("show");
-}
-
-const pBtn = document.getElementById("paypal-btn");
-const eBtn = document.getElementById("especes-btn");
-if(hasBeignetsSelected() && selectedPaymentMode === "PayPal") {
-    pBtn.style.display = "block";
-    eBtn.style.display = "none";
-} else if(hasBeignetsSelected() && selectedPaymentMode === "Espèces") {
-    pBtn.style.display = "none";
-    eBtn.style.display = "block";
-} else {
-    pBtn.style.display = "none";
-    eBtn.style.display = "none";
-}
-
-const buttons = [
-document.getElementById("whatsapp"),
-document.getElementById("sms-btn"),
-document.getElementById("btn-copy")
-];
-
-let shouldEnable = hasBeignetsSelected();
-
-buttons.forEach(btn => {
-if(shouldEnable) {
-btn.removeAttribute("disabled");
-btn.classList.remove("disabled");
-} else {
-btn.setAttribute("disabled", "true");
-btn.classList.add("disabled");
-}
-});
-
-let whatsappMsg = encodeURIComponent(getOrderText());
-document.getElementById("whatsapp").href = "https://wa.me/" + targetPhone + "?text=" + whatsappMsg;
-}
-
-document.querySelectorAll(".product-card").forEach(card => {
-const name = card.dataset.name;
-const type = card.dataset.type;
-const valSpan = card.querySelector(".qty-val");
-const cardEl = card;
-
-card.querySelector(".plus").addEventListener("click", (e) => {
-e.stopPropagation();
-
-if (type === "nappage" || type === "garniture") {
-    if (!hasBeignetsSelected()) {
-        showToast("⚠️ Choisis d'abord ta boîte de beignets !");
-        return;
-    }
-    
-    if (type === "nappage" && getCurrentNappagesCount() >= getMaxNappagesAllowed()) {
-        showToast(`⚠️ Limite atteinte ! Maximum ${getMaxNappagesAllowed()} nappage(s) pour ta sélection.`);
-        return;
-    }
-    
-    if (type === "garniture" && getCurrentGarnituresCount() >= getMaxGarnituresAllowed()) {
-        showToast(`⚠️ Limite atteinte ! Maximum ${getMaxGarnituresAllowed()} garniture(s) pour ta sélection.`);
-        return;
-    }
-}
-
-orderData[name]++;
-valSpan.innerText = orderData[name];
-cardEl.classList.add("has-qty");
-updateUI();
-});
-
-card.querySelector(".minus").addEventListener("click", (e) => {
-e.stopPropagation();
-if(orderData[name] > 0) {
-orderData[name]--;
-valSpan.innerText = orderData[name];
-if(orderData[name] === 0) cardEl.classList.remove("has-qty");
-
-if (type === "beignet") {
-    while (getCurrentNappagesCount() > getMaxNappagesAllowed()) {
-        for (let key in orderData) {
-            if (key.includes("Nappage") && orderData[key] > 0) {
-                orderData[key]--;
-                document.querySelectorAll(".product-card").forEach(c => {
-                    if (c.dataset.name === key) {
-                        c.querySelector(".qty-val").innerText = orderData[key];
-                        if (orderData[key] === 0) c.classList.remove("has-qty");
-                    }
-                });
-                break;
-            }
-        }
-    }
-    while (getCurrentGarnituresCount() > getMaxGarnituresAllowed()) {
-        for (let key in orderData) {
-            if (key.includes("Garniture") && orderData[key] > 0) {
-                orderData[key]--;
-                document.querySelectorAll(".product-card").forEach(c => {
-                    if (c.dataset.name === key) {
-                        c.querySelector(".qty-val").innerText = orderData[key];
-                        if (orderData[key] === 0) c.classList.remove("has-qty");
-                    }
-                });
-                break;
-            }
-        }
-    }
-}
-
-updateUI();
-}
-});
-});
-
 function showToast(message) {
-const toast = document.getElementById("toast");
-toast.innerHTML = message;
-toast.classList.add("show");
-setTimeout(() => {
-toast.classList.remove("show");
-}, 5000); 
-}
-
-function copyOrder(){
-let name = document.getElementById("client-name").value.trim();
-let phone = document.getElementById("client-phone").value.trim();
-let date = document.getElementById("client-date").value;
-let time = document.getElementById("client-time").value;
-
-if (!name || !phone || !date || !time || time === "COMPLET") {
-    showToast("⚠️ Remplis toutes tes informations de retrait valides avant de copier !");
-    return;
-}
-
-if (!selectedPaymentMode) {
-    showToast("⚠️ Sélectionne un mode de règlement avant de copier !");
-    return;
-}
-
-navigator.clipboard.writeText(getOrderText());
-let alertMsg = "📋 Commande copiée !<br><b>Il ne reste plus qu'à la coller dans vos SMS au 06 98 21 33 80.</b>";
-if(selectedPaymentMode === "Espèces") {
-    alertMsg += "<br><small>⚠️ Pensez à prévoir l'appoint !</small>";
-}
-showToast(alertMsg);
+    const toast = document.getElementById("toast");
+    toast.innerHTML = message;
+    toast.classList.add("show");
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 5000); 
 }
 
 initDates();
