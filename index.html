@@ -769,13 +769,23 @@ function isFormValid() {
     if (boxesSelected["6 beignets"] === 0 && boxesSelected["9 beignets"] === 0) return false;
 
     let name = document.getElementById("client-name").value.trim();
-    let phone = document.getElementById("client-phone").value.trim();
+    let phoneRaw = document.getElementById("client-phone").value.trim();
     let date = document.getElementById("client-date").value;
     let time = document.getElementById("client-time").value;
 
+    // Nettoyage du numéro : on enlève les espaces et les points
+    let phone = phoneRaw.replace(/[\s\.]+/g, '');
+
+    // Vérification de base
     if (!name || !phone || !date || !time || time === "COMPLET" || !selectedPaymentMode) {
         return false;
     }
+
+    // Vérification des 10 chiffres
+    if (!/^\d{10}$/.test(phone)) {
+        return false;
+    }
+
     return true;
 }
 
