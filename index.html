@@ -502,15 +502,15 @@ border:1px solid #333;
 
 <script>
 /* (Script inchangé pour conserver la logique fonctionnelle) */
-let boxesSelected = { "6 beignets": 0, "9 beignets": 0 };
-const boxPrices = { "6 beignets": 5.0, "9 beignets": 7.0 };
+let boxesSelected = { "9 beignets": 0, "12 beignets": 0 };
+const boxPrices = { "9 beignets": 7.0, "12 beignets": 9.0 }; // Mettez le prix de 12 ici
 const supplementPricePerLot = 0.50;
 let selectedPaymentMode = "";
-const targetPhone = "0698213380"; 
+const targetPhone = "0698213380";
 const baseHours = ["17h00 - 17h30", "17h30 - 18h00", "18h00 - 18h30", "18h30 - 19h00", "19h00 - 19h30", "19h30 - 20h00"];
 
 function changeBoxQty(type, change) {
-    let input = type === "6 beignets" ? document.getElementById("qty-6") : document.getElementById("qty-9");
+    let input = type === "9 beignets" ? document.getElementById("qty-9") : document.getElementById("qty-12");
     let current = parseInt(input.value) || 0;
     let newVal = current + change;
     if(newVal < 0) newVal = 0;
