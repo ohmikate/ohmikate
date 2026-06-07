@@ -678,29 +678,38 @@ function updateUI(){
         : "Aucune sélection";
     document.getElementById("total").innerText = orderInfo.totalPrice.toFixed(2);
     
-    // CORRECTION : Vérification sur les boîtes 9 et 12
+    // Affichage conditionnel de la barre récap
     const summaryBar = document.getElementById("summary-bar");
     if (boxesSelected["9 beignets"] > 0 || boxesSelected["12 beignets"] > 0) summaryBar.classList.add("show"); else summaryBar.classList.remove("show");
     
+    // Gestion des boutons de paiement
     const pBtn = document.getElementById("paypal-btn");
     const eBtn = document.getElementById("especes-btn");
-    if(selectedPaymentMode === "PayPal") { pBtn.style.display = "block"; eBtn.style.display = "none"; } else if(selectedPaymentMode === "Espèces") { pBtn.style.display = "none"; eBtn.style.display = "block"; }
+    if(selectedPaymentMode === "PayPal") { pBtn.style.display = "block"; eBtn.style.display = "none"; } 
+    else if(selectedPaymentMode === "Espèces") { pBtn.style.display = "none"; eBtn.style.display = "block"; }
     
+    // Activation/Désactivation des boutons d'envoi
     const buttons = [document.getElementById("whatsapp"), document.getElementById("sms-btn"), document.getElementById("phone-btn")];
     let shouldEnable = isFormValid();
-    buttons.forEach(btn => { if(shouldEnable) { btn.removeAttribute("disabled"); btn.classList.remove("disabled"); } else { btn.setAttribute("disabled", "true"); btn.classList.add("disabled"); } });
+    buttons.forEach(btn => { 
+        if(shouldEnable) { btn.removeAttribute("disabled"); btn.classList.remove("disabled"); } 
+        else { btn.setAttribute("disabled", "true"); btn.classList.add("disabled"); } 
+    });
+    
     let whatsappMsg = encodeURIComponent(getOrderText(false));
     document.getElementById("whatsapp").href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + whatsappMsg;
 }
 
 function isFormValid() {
-    // CORRECTION : Vérification sur les boîtes 9 et 12
+    // Vérification stricte sur les boîtes actives
     if (boxesSelected["9 beignets"] === 0 && boxesSelected["12 beignets"] === 0) return false;
+    
     let name = document.getElementById("client-name").value.trim();
     let phoneRaw = document.getElementById("client-phone").value.trim();
     let date = document.getElementById("client-date").value;
     let time = document.getElementById("client-time").value;
     let phone = phoneRaw.replace(/[\s\.]+/g, '');
+    
     if (!name || !phone || !date || !time || time === "COMPLET" || !selectedPaymentMode) return false;
     if (!/^\d{10}$/.test(phone)) return false;
     return true;
