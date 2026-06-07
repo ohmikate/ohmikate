@@ -530,22 +530,26 @@ function setBoxQty(type, value) {
 
 function generateCompositionForm() {
     const container = document.getElementById("composition-zone");
-    if (boxesSelected["6 beignets"] === 0 && boxesSelected["9 beignets"] === 0) {
+    if (boxesSelected["9 beignets"] === 0 && boxesSelected["12 beignets"] === 0) {
         container.innerHTML = "";
         return;
     }
     let currentSelections = {};
     container.querySelectorAll("select").forEach(sel => { currentSelections[sel.id] = sel.value; });
+    
     let html = "<h3>2. Personnalise tes lots de 3 beignets</h3>";
-    html += '<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 boules. Laisse sur "Nature" si tu ne veux aucun supplément (+0,50€ par nappage ou garniture par lot).</span>';
-    for (let b = 1; b <= boxesSelected["6 beignets"]; b++) {
-        html += `<div class="box-composer"><div class="box-title">📦 Boîte de 6 Beignets n°${b}</div>`;
-        for (let lot = 1; lot <= 2; lot++) { html += generateLotRowHtml(`box6-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/2)`, "Images/Beignet6.jpg"); }
-        html += `</div>`;
-    }
+    html += '<span class="info-limite">Boîte de 9 : 3 lots. Boîte de 12 : 4 lots (4 choix max par type).</span>';
+    
+    // Boucle pour les boîtes de 9
     for (let b = 1; b <= boxesSelected["9 beignets"]; b++) {
         html += `<div class="box-composer"><div class="box-title">📦 Boîte de 9 Beignets n°${b}</div>`;
         for (let lot = 1; lot <= 3; lot++) { html += generateLotRowHtml(`box9-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/3)`, "Images/Beignet9.jpg"); }
+        html += `</div>`;
+    }
+    // Boucle pour les boîtes de 12
+    for (let b = 1; b <= boxesSelected["12 beignets"]; b++) {
+        html += `<div class="box-composer"><div class="box-title">📦 Boîte de 12 Beignets n°${b}</div>`;
+        for (let lot = 1; lot <= 4; lot++) { html += generateLotRowHtml(`box12-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/4)`, "Images/Beignet12.jpg"); }
         html += `</div>`;
     }
     container.innerHTML = html;
@@ -619,55 +623,51 @@ function calculateTotalAndExtractStructure() {
     let total = 0;
     let textSummaryList = [];
     let structuredOrderText = "";
-    
-    total += boxesSelected["6 beignets"] * boxPrices["6 beignets"];
-    if (boxesSelected["6 beignets"] > 0) textSummaryList.push(`${boxesSelected["6 beignets"]}x Boîte de 6`);
+
+    // Calcul pour les boîtes de 9
     total += boxesSelected["9 beignets"] * boxPrices["9 beignets"];
     if (boxesSelected["9 beignets"] > 0) textSummaryList.push(`${boxesSelected["9 beignets"]}x Boîte de 9`);
 
-    // Boîte de 6
-    for (let b = 1; b <= boxesSelected["6 beignets"]; b++) {
-        structuredOrderText += `\n📦 *BOÎTE DE 6 BEIGNETS n°${b}* :\n`;
-        let potCount = 0;
-        for (let lot = 1; lot <= 2; lot++) {
-            let idPrefix = `box6-${b}-lot${lot}`;
-            let nappage = document.getElementById(`${idPrefix}-nappage`)?.value || "Aucun";
-            let garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
-            let pot = document.getElementById(`${idPrefix}-pot`)?.value || "Aucun";
-            
-            if(nappage !== "Aucun") total += supplementPricePerLot;
-            if(garniture !== "Aucun") total += supplementPricePerLot;
-            if(pot !== "Aucun" && potCount < 2) { total += 0.50; potCount++; }
-            
-            structuredOrderText += `  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value || "Nature"}`;
-            if(nappage !== "Aucun") structuredOrderText += ` + ${nappage}`;
-            if(garniture !== "Aucun") structuredOrderText += ` + ${garniture}`;
-            if(pot !== "Aucun" && potCount <= 2) structuredOrderText += ` + ${pot}`;
-            structuredOrderText += `\n`;
-        }
-    }
-    
-    // Boîte de 9
     for (let b = 1; b <= boxesSelected["9 beignets"]; b++) {
         structuredOrderText += `\n📦 *BOÎTE DE 9 BEIGNETS n°${b}* :\n`;
-        let potCount = 0;
+        let nappingCount = 0, garnishCount = 0, potCount = 0;
         for (let lot = 1; lot <= 3; lot++) {
             let idPrefix = `box9-${b}-lot${lot}`;
+            let base = document.getElementById(`${idPrefix}-base`)?.value || "Nature";
             let nappage = document.getElementById(`${idPrefix}-nappage`)?.value || "Aucun";
             let garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
             let pot = document.getElementById(`${idPrefix}-pot`)?.value || "Aucun";
-            
-            if(nappage !== "Aucun") total += supplementPricePerLot;
-            if(garniture !== "Aucun") total += supplementPricePerLot;
-            if(pot !== "Aucun" && potCount < 4) { total += 0.50; potCount++; }
-            
-            structuredOrderText += `  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value || "Nature"}`;
-            if(nappage !== "Aucun") structuredOrderText += ` + ${nappage}`;
-            if(garniture !== "Aucun") structuredOrderText += ` + ${garniture}`;
-            if(pot !== "Aucun" && potCount <= 4) structuredOrderText += ` + ${pot}`;
-            structuredOrderText += `\n`;
+
+            if (nappage !== "Aucun" && nappingCount < 3) { total += supplementPricePerLot; nappingCount++; }
+            if (garniture !== "Aucun" && garnishCount < 3) { total += supplementPricePerLot; garnishCount++; }
+            if (pot !== "Aucun" && potCount < 3) { total += 0.50; potCount++; }
+
+            structuredOrderText += ` - Lot ${lot} : ${base} ${nappage !== "Aucun" ? "+ " + nappage : ""} ${garniture !== "Aucun" ? "+ " + garniture : ""} ${pot !== "Aucun" ? "+ " + pot : ""}\n`;
         }
     }
+
+    // Calcul pour les boîtes de 12
+    total += boxesSelected["12 beignets"] * boxPrices["12 beignets"];
+    if (boxesSelected["12 beignets"] > 0) textSummaryList.push(`${boxesSelected["12 beignets"]}x Boîte de 12`);
+
+    for (let b = 1; b <= boxesSelected["12 beignets"]; b++) {
+        structuredOrderText += `\n📦 *BOÎTE DE 12 BEIGNETS n°${b}* :\n`;
+        let nappingCount = 0, garnishCount = 0, potCount = 0;
+        for (let lot = 1; lot <= 4; lot++) {
+            let idPrefix = `box12-${b}-lot${lot}`;
+            let base = document.getElementById(`${idPrefix}-base`)?.value || "Nature";
+            let nappage = document.getElementById(`${idPrefix}-nappage`)?.value || "Aucun";
+            let garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
+            let pot = document.getElementById(`${idPrefix}-pot`)?.value || "Aucun";
+
+            if (nappage !== "Aucun" && nappingCount < 4) { total += supplementPricePerLot; nappingCount++; }
+            if (garniture !== "Aucun" && garnishCount < 4) { total += supplementPricePerLot; garnishCount++; }
+            if (pot !== "Aucun" && potCount < 4) { total += 0.50; potCount++; }
+
+            structuredOrderText += ` - Lot ${lot} : ${base} ${nappage !== "Aucun" ? "+ " + nappage : ""} ${garniture !== "Aucun" ? "+ " + garniture : ""} ${pot !== "Aucun" ? "+ " + pot : ""}\n`;
+        }
+    }
+
     return { totalPrice: total, summaryShort: textSummaryList.join(" / "), detailsText: structuredOrderText };
 }
 
