@@ -415,7 +415,7 @@ border:1px solid #333;
 📍 Retrait sur Reims
 </div>
 
-<div class="section"
+<div class="section">
 
 <h2>✨ Compose ta boîte de Mikatés</h2>
 
@@ -577,9 +577,16 @@ function generateLotRowHtml(idPrefix, labelTitle, defaultImg) {
                 <div>
                     <select id="${idPrefix}-garniture" class="select-custom" onchange="updateLotImage('${idPrefix}', '${defaultImg}'); updateUI();">
                         <option value="Aucun">🥜 Garniture : Aucun</option>
-                        <option value="M&M's">M&M's (+0,50€)</option>
-                        <option value="Nutella">Nutella (+0,50€)</option>
-                        <option value="Cacahuètes">Cacahuètes (+0,50€)</option>
+                        <option value="Éclats M&M's">M&M's (+0,50€)</option>
+                        <option value="Éclats Spéculoos">Spéculoos (+0,50€)</option>
+                        <option value="Éclats Cacahuète">Cacahuètes (+0,50€)</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="${idPrefix}-pot" class="select-custom" onchange="updateUI();">
+                        <option value="Aucun">Pot : Aucun</option>
+                        <option value="Pot Nutella">Pot Nutella (+0,50€)</option>
+                        <option value="Pot Pâte d'arachide">Pot Pâte d'arachide (+0,50€)</option>
                     </select>
                 </div>
             </div>
@@ -592,51 +599,73 @@ function updateLotImage(idPrefix, defaultImg) {
     const garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
     const imgElement = document.getElementById(`${idPrefix}-img`);
     if (!imgElement) return;
+
     if (nappage !== "Aucun") {
         if (nappage === "Chocolat") imgElement.src = "Images/Chocolat.jpg";
         else if (nappage === "Caramel") imgElement.src = "Images/Caramel.jpg";
         else if (nappage === "Spéculoos") imgElement.src = "Images/Speculoos.jpg";
     } else if (garniture !== "Aucun") {
-        if (garniture === "M&M's") imgElement.src = "Images/Mms.jpg";
-        else if (garniture === "Nutella") imgElement.src = "Images/Nutella.jpg";
-        else if (garniture === "Cacahuètes") imgElement.src = "Images/Cacahuetes.jpg";
-    } else { imgElement.src = defaultImg; }
+        if (garniture === "Éclats M&M's") imgElement.src = "Images/Mms.jpg";
+        else if (garniture === "Éclats Spéculoos") imgElement.src = "Images/Speculoos.jpg";
+        else if (garniture === "Éclats Cacahuète") imgElement.src = "Images/Cacahuetes.jpg";
+        else if (garniture === "Pot Nutella") imgElement.src = "Images/Nutella.jpg";
+        else if (garniture === "Pot Pâte d'arachide") imgElement.src = "Images/Arachide.jpg";
+    } else {
+        imgElement.src = defaultImg;
+    }
 }
 
 function calculateTotalAndExtractStructure() {
-    let total = 0; let textSummaryList = []; let structuredOrderText = "";
+    let total = 0;
+    let textSummaryList = [];
+    let structuredOrderText = "";
+    
     total += boxesSelected["6 beignets"] * boxPrices["6 beignets"];
+    if (boxesSelected["6 beignets"] > 0) textSummaryList.push(`${boxesSelected["6 beignets"]}x Boîte de 6`);
     total += boxesSelected["9 beignets"] * boxPrices["9 beignets"];
-    if(boxesSelected["6 beignets"] > 0) textSummaryList.push(`${boxesSelected["6 beignets"]} Boîte(s) de 6`);
-    if(boxesSelected["9 beignets"] > 0) textSummaryList.push(`${boxesSelected["9 beignets"]} Boîte(s) de 9`);
+    if (boxesSelected["9 beignets"] > 0) textSummaryList.push(`${boxesSelected["9 beignets"]}x Boîte de 9`);
+
+    // Boîte de 6
     for (let b = 1; b <= boxesSelected["6 beignets"]; b++) {
         structuredOrderText += `\n📦 *BOÎTE DE 6 BEIGNETS n°${b}* :\n`;
+        let potCount = 0;
         for (let lot = 1; lot <= 2; lot++) {
             let idPrefix = `box6-${b}-lot${lot}`;
-            let base = document.getElementById(`${idPrefix}-base`)?.value || "Nature";
             let nappage = document.getElementById(`${idPrefix}-nappage`)?.value || "Aucun";
             let garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
-            let supplementsInLot = [];
-            if(base !== "Nature") supplementsInLot.push(`Saupoudré ${base}`);
-            if(nappage !== "Aucun") { supplementsInLot.push(`Nappage ${nappage}`); total += supplementPricePerLot; }
-            if(garniture !== "Aucun") { supplementsInLot.push(`Garniture ${garniture}`); total += supplementPricePerLot; }
-            let compositionString = supplementsInLot.length > 0 ? supplementsInLot.join(" + ") : "100% Nature";
-            structuredOrderText += `  - Lot ${lot} (3 beignets) : ${compositionString}\n`;
+            let pot = document.getElementById(`${idPrefix}-pot`)?.value || "Aucun";
+            
+            if(nappage !== "Aucun") total += supplementPricePerLot;
+            if(garniture !== "Aucun") total += supplementPricePerLot;
+            if(pot !== "Aucun" && potCount < 2) { total += 0.50; potCount++; }
+            
+            structuredOrderText += `  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value || "Nature"}`;
+            if(nappage !== "Aucun") structuredOrderText += ` + ${nappage}`;
+            if(garniture !== "Aucun") structuredOrderText += ` + ${garniture}`;
+            if(pot !== "Aucun" && potCount <= 2) structuredOrderText += ` + ${pot}`;
+            structuredOrderText += `\n`;
         }
     }
+    
+    // Boîte de 9
     for (let b = 1; b <= boxesSelected["9 beignets"]; b++) {
         structuredOrderText += `\n📦 *BOÎTE DE 9 BEIGNETS n°${b}* :\n`;
+        let potCount = 0;
         for (let lot = 1; lot <= 3; lot++) {
             let idPrefix = `box9-${b}-lot${lot}`;
-            let base = document.getElementById(`${idPrefix}-base`)?.value || "Nature";
             let nappage = document.getElementById(`${idPrefix}-nappage`)?.value || "Aucun";
             let garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
-            let supplementsInLot = [];
-            if(base !== "Nature") supplementsInLot.push(`Saupoudré ${base}`);
-            if(nappage !== "Aucun") { supplementsInLot.push(`Nappage ${nappage}`); total += supplementPricePerLot; }
-            if(garniture !== "Aucun") { supplementsInLot.push(`Garniture ${garniture}`); total += supplementPricePerLot; }
-            let compositionString = supplementsInLot.length > 0 ? supplementsInLot.join(" + ") : "100% Nature";
-            structuredOrderText += `  - Lot ${lot} (3 beignets) : ${compositionString}\n`;
+            let pot = document.getElementById(`${idPrefix}-pot`)?.value || "Aucun";
+            
+            if(nappage !== "Aucun") total += supplementPricePerLot;
+            if(garniture !== "Aucun") total += supplementPricePerLot;
+            if(pot !== "Aucun" && potCount < 4) { total += 0.50; potCount++; }
+            
+            structuredOrderText += `  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value || "Nature"}`;
+            if(nappage !== "Aucun") structuredOrderText += ` + ${nappage}`;
+            if(garniture !== "Aucun") structuredOrderText += ` + ${garniture}`;
+            if(pot !== "Aucun" && potCount <= 4) structuredOrderText += ` + ${pot}`;
+            structuredOrderText += `\n`;
         }
     }
     return { totalPrice: total, summaryShort: textSummaryList.join(" / "), detailsText: structuredOrderText };
