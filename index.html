@@ -677,11 +677,15 @@ function updateUI(){
         "<b>Sélection :</b><br>" + orderInfo.summaryShort + "<br><br><b>Détail :</b><br><small>" + orderInfo.detailsText.replace(/\n/g, "<br>") + "</small>" 
         : "Aucune sélection";
     document.getElementById("total").innerText = orderInfo.totalPrice.toFixed(2);
+    
+    // CORRECTION : Vérification sur les boîtes 9 et 12
     const summaryBar = document.getElementById("summary-bar");
-    if (boxesSelected["6 beignets"] > 0 || boxesSelected["9 beignets"] > 0) summaryBar.classList.add("show"); else summaryBar.classList.remove("show");
+    if (boxesSelected["9 beignets"] > 0 || boxesSelected["12 beignets"] > 0) summaryBar.classList.add("show"); else summaryBar.classList.remove("show");
+    
     const pBtn = document.getElementById("paypal-btn");
     const eBtn = document.getElementById("especes-btn");
     if(selectedPaymentMode === "PayPal") { pBtn.style.display = "block"; eBtn.style.display = "none"; } else if(selectedPaymentMode === "Espèces") { pBtn.style.display = "none"; eBtn.style.display = "block"; }
+    
     const buttons = [document.getElementById("whatsapp"), document.getElementById("sms-btn"), document.getElementById("phone-btn")];
     let shouldEnable = isFormValid();
     buttons.forEach(btn => { if(shouldEnable) { btn.removeAttribute("disabled"); btn.classList.remove("disabled"); } else { btn.setAttribute("disabled", "true"); btn.classList.add("disabled"); } });
@@ -690,7 +694,8 @@ function updateUI(){
 }
 
 function isFormValid() {
-    if (boxesSelected["6 beignets"] === 0 && boxesSelected["9 beignets"] === 0) return false;
+    // CORRECTION : Vérification sur les boîtes 9 et 12
+    if (boxesSelected["9 beignets"] === 0 && boxesSelected["12 beignets"] === 0) return false;
     let name = document.getElementById("client-name").value.trim();
     let phoneRaw = document.getElementById("client-phone").value.trim();
     let date = document.getElementById("client-date").value;
