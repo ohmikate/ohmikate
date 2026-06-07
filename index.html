@@ -510,7 +510,10 @@ const targetPhone = "0698213380";
 const baseHours = ["17h00 - 17h30", "17h30 - 18h00", "18h00 - 18h30", "18h30 - 19h00", "19h00 - 19h30", "19h30 - 20h00"];
 
 function changeBoxQty(type, change) {
-    let input = type === "9 beignets" ? document.getElementById("qty-9") : document.getElementById("qty-12");
+    let inputId = type === "9 beignets" ? "qty-9" : "qty-12";
+    let input = document.getElementById(inputId);
+    if (!input) return; // Sécurité si l'input n'existe pas
+    
     let current = parseInt(input.value) || 0;
     let newVal = current + change;
     if(newVal < 0) newVal = 0;
