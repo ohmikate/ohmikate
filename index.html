@@ -420,7 +420,7 @@ border:1px solid #333;
 <h2>✨ Compose ta boîte de Mikatés</h2>
 
 <h3>1. Choisis ton format de boîte</h3>
-<span class="info-limite" style="color: #ccc;">Sélectionne une ou plusieurs boîtes pour personnaliser tes boules de beignets.</span>
+<span class="info-limite" style="color: #ccc;">Sélectionne une ou plusieurs boîtes pour personnaliser tes beignets.</span>
 <div class="grid">
 <div class="card product-card" data-name="6 beignets" data-price="5">
 <img src="Images/Beignet6.jpg">
@@ -537,7 +537,7 @@ function generateCompositionForm() {
     let currentSelections = {};
     container.querySelectorAll("select").forEach(sel => { currentSelections[sel.id] = sel.value; });
     let html = "<h3>2. Personnalise tes lots de 3 beignets</h3>";
-    html += '<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 boules. Laisse sur "Nature" si tu ne veux aucun supplément (+0,50€ par nappage ou garniture par lot).</span>';
+    html += '<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 beignets. Laisse sur "Nature" si tu ne veux aucun supplément (+0,50€ par nappage ou garniture par lot).</span>';
     for (let b = 1; b <= boxesSelected["6 beignets"]; b++) {
         html += `<div class="box-composer"><div class="box-title">📦 Boîte de 6 Beignets n°${b}</div>`;
         for (let lot = 1; lot <= 2; lot++) { html += generateLotRowHtml(`box6-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/2)`, "Images/Beignet6.jpg"); }
