@@ -300,7 +300,7 @@ padding:15px;
 border-top:2px solid #ff4f8b;
 z-index: 1000;
 box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-display: none;
+display: block;
 }
 
 .summary.show {
@@ -621,7 +621,7 @@ function calculateTotalAndExtractStructure() {
             if(nappage !== "Aucun") { supplementsInLot.push(`Nappage ${nappage}`); total += supplementPricePerLot; }
             if(garniture !== "Aucun") { supplementsInLot.push(`Garniture ${garniture}`); total += supplementPricePerLot; }
             let compositionString = supplementsInLot.length > 0 ? supplementsInLot.join(" + ") : "100% Nature";
-            structuredOrderText += `  - Lot ${lot} (3 boules) : ${compositionString}\n`;
+            structuredOrderText += `  - Lot ${lot} (3 beignets) : ${compositionString}\n`;
         }
     }
     for (let b = 1; b <= boxesSelected["9 beignets"]; b++) {
@@ -636,7 +636,7 @@ function calculateTotalAndExtractStructure() {
             if(nappage !== "Aucun") { supplementsInLot.push(`Nappage ${nappage}`); total += supplementPricePerLot; }
             if(garniture !== "Aucun") { supplementsInLot.push(`Garniture ${garniture}`); total += supplementPricePerLot; }
             let compositionString = supplementsInLot.length > 0 ? supplementsInLot.join(" + ") : "100% Nature";
-            structuredOrderText += `  - Lot ${lot} (3 boules) : ${compositionString}\n`;
+            structuredOrderText += `  - Lot ${lot} (3 beignets) : ${compositionString}\n`;
         }
     }
     return { totalPrice: total, summaryShort: textSummaryList.join(" / "), detailsText: structuredOrderText };
