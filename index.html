@@ -725,7 +725,7 @@ function getOrderText(cleanForSms = false){
 
 function triggerSMS(event) { if (!checkForm(event)) return; let smsBody = getOrderText(true); let ua = navigator.userAgent.toLowerCase(); let url = "sms:" + targetPhone + (ua.indexOf("iphone") > -1 ? "&body=" : "?body=") + encodeURIComponent(smsBody); showToast("📱 Redirection..."); setTimeout(() => { window.location.href = url; }, 500); }
 function triggerCall(event) { if (!checkForm(event)) return; showToast("📞 Lancement..."); setTimeout(() => { window.location.href = "tel:" + targetPhone; }, 500); }
-function redirectToPaypal() { let orderInfo = calculateTotalAndExtractStructure(); if(orderInfo.totalPrice > 0) window.open("https://paypal.me/ngufulusoni/" + orderInfo.totalPrice.toFixed(2), '_blank'); }
+function redirectToPaypal() { let orderInfo = calculateTotalAndExtractStructure(); if(orderInfo.totalPrice > 0) window.open("https://paypal.me/ohmikate/" + orderInfo.totalPrice.toFixed(2), '_blank'); }
 function selectPayment(mode) { selectedPaymentMode = mode; document.getElementById("opt-paypal").classList.toggle("selected", mode === 'PayPal'); document.getElementById("opt-especes").classList.toggle("selected", mode === 'Espèces'); updateUI(); }
 function alertEspeces() { showToast("💵 Merci de préparer l'appoint !"); }
 function initDates() {
