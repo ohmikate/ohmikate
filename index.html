@@ -425,7 +425,7 @@ border:1px solid #333;
 <span class="info-limite" style="color: #ccc;">Sélectionne une ou plusieurs boîtes pour personnaliser tes beignets.</span>
 <div class="grid">
 <div class="card product-card" data-name="6 beignets" data-price="5">
-<img src="Images/Beignet6.jpg">
+<img src="Images/Beignet9.jpg">
 <p>Boîte de 6 beignets — 5€</p>
 <div class="qty-controls">
 <button class="qty-btn minus" onclick="changeBoxQty('6 beignets', -1)">-</button>
@@ -434,7 +434,7 @@ border:1px solid #333;
 </div>
 </div>
 <div class="card product-card" data-name="9 beignets" data-price="7">
-<img src="Images/Beignet6.jpg">
+<img src="Images/Beignet9.jpg">
 <p>Boîte de 9 beignets — 7€</p>
 <div class="qty-controls">
 <button class="qty-btn minus" onclick="changeBoxQty('9 beignets', -1)">-</button>
@@ -549,12 +549,12 @@ function generateCompositionForm() {
     html += '<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 beignets. Laisse sur "Nature" si tu ne veux aucun supplément (+0,50€ par nappage ou garniture par lot).</span>';
     for (let b = 1; b <= boxesSelected["6 beignets"]; b++) {
         html += `<div class="box-composer"><div class="box-title">📦 Boîte de 6 Beignets n°${b}</div>`;
-        for (let lot = 1; lot <= 2; lot++) { html += generateLotRowHtml(`box6-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/2)`, "Images/Beignet6.jpg"); }
+        for (let lot = 1; lot <= 2; lot++) { html += generateLotRowHtml(`box6-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/2)`, "Images/Beignet9.jpg"); }
         html += `</div>`;
     }
     for (let b = 1; b <= boxesSelected["9 beignets"]; b++) {
         html += `<div class="box-composer"><div class="box-title">📦 Boîte de 9 Beignets n°${b}</div>`;
-        for (let lot = 1; lot <= 3; lot++) { html += generateLotRowHtml(`box9-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/3)`, "Images/Beignet6.jpg"); }
+        for (let lot = 1; lot <= 3; lot++) { html += generateLotRowHtml(`box9-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/3)`, "Images/Beignet9.jpg"); }
         html += `</div>`;
     }
     container.innerHTML = html;
@@ -612,10 +612,10 @@ function updateLotImage(idPrefix, defaultImg) {
         if (nappage === "Chocolat") imgElement.src = "Images/Chocolat.jpg";
         else if (nappage === "Caramel") imgElement.src = "Images/Caramel.jpg";
     } else if (garniture !== "Aucun") {
-        if (garniture === "Éclats M&M's") imgElement.src = "Images/Beignet6.jpg";
+        if (garniture === "Éclats M&M's") imgElement.src = "Images/Beignet9.jpg";
         else if (garniture === "Éclats Spéculoos") imgElement.src = "Images/Speculoos.jpg";
         else if (garniture === "Éclats Cacahuète") imgElement.src = "Images/Cacahuetes.jpg";
-        else if (garniture === "Pot Nutella") imgElement.src = "Images/Beignet6.jpg";
+        else if (garniture === "Pot Nutella") imgElement.src = "Images/Beignet9.jpg";
         else if (garniture === "Pot Pâte d'arachide") imgElement.src = "Images/Arachide.jpg";
     } else {
         imgElement.src = defaultImg;
