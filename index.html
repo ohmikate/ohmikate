@@ -738,17 +738,29 @@ function alertEspeces() { showToast("💵 Merci de préparer l'appoint !"); }
 function initDates() {
     const dateSelect = document.getElementById("client-date");
     dateSelect.innerHTML = '<option value="">-- Sélectionne une date --</option>';
-    for (let i = 0; i < 3; i++) {
-        let d = new Date(); d.setDate(d.getDate() + i);
+    let startDate = new Date(2026, 5, 29); // 29 juin 2026
+    for (let i = 0; i < 14; i++) {
+        let d = new Date(startDate);
+        d.setDate(startDate.getDate() + i);
         let label = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
         label = label.charAt(0).toUpperCase() + label.slice(1);
-        let opt = document.createElement("option"); opt.value = (i === 0) ? "Aujourd'hui" : label; opt.textContent = (i === 0) ? `Aujourd'hui (${label})` : label; dateSelect.appendChild(opt);
+        let opt = document.createElement("option");
+        opt.value = label;
+        opt.textContent = label;
+        dateSelect.appendChild(opt);
     }
 }
+
 function handleDateChange() {
-    const dateSelect = document.getElementById("client-date"); const timeSelect = document.getElementById("client-time"); const warning = document.getElementById("time-warning");
+    const timeSelect = document.getElementById("client-time");
+    const warning = document.getElementById("time-warning");
+    if (warning) warning.style.display = "none";
     timeSelect.innerHTML = '<option value="">-- Sélectionne une tranche horaire --</option>';
-    if (dateSelect.value === "Aujourd'hui") { warning.style.display = "block"; let now = new Date(); let limit = new Date(now.getTime() + 30 * 60 * 1000); baseHours.forEach(t => { if(new Date().setHours(parseInt(t.split('-')[1].split('h')[0]), parseInt(t.split('-')[1].split('h')[1])) >= limit) { let o = document.createElement("option"); o.value = o.textContent = t; timeSelect.appendChild(o); } }); } else { warning.style.display = "none"; baseHours.forEach(t => { let o = document.createElement("option"); o.value = o.textContent = t; timeSelect.appendChild(o); }); }
+    baseHours.forEach(t => {
+        let o = document.createElement("option");
+        o.value = o.textContent = t;
+        timeSelect.appendChild(o);
+    });
     updateUI();
 }
 function showToast(m) { const t = document.getElementById("toast"); t.innerHTML = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 5000); }
