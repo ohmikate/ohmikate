@@ -738,7 +738,7 @@ function alertEspeces() { showToast("💵 Merci de préparer l'appoint !"); }
 function initDates() {
     const dateSelect = document.getElementById("client-date");
     dateSelect.innerHTML = '<option value="">-- Sélectionne une date --</option>';
-    let startDate = new Date(2026, 5, 29); // 29 juin 2026
+    let startDate = new Date(2026, 6, 01); // 01 juillet 2026
     for (let i = 0; i < 14; i++) {
         let d = new Date(startDate);
         d.setDate(startDate.getDate() + i);
