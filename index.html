@@ -580,7 +580,6 @@ function generateLotRowHtml(idPrefix, labelTitle, defaultImg) {
                         <option value="Aucun">🍫 Nappage : Aucun</option>
                         <option value="Chocolat">Chocolat (+0,50€)</option>
                         <option value="Caramel">Caramel (+0,50€)</option>
-                        <option value="Spéculoos">Spéculoos (+0,50€)</option>
                     </select>
                 </div>
                 <div>
@@ -612,7 +611,6 @@ function updateLotImage(idPrefix, defaultImg) {
     if (nappage !== "Aucun") {
         if (nappage === "Chocolat") imgElement.src = "Images/Chocolat.jpg";
         else if (nappage === "Caramel") imgElement.src = "Images/Caramel.jpg";
-        else if (nappage === "Spéculoos") imgElement.src = "Images/Speculoos.jpg";
     } else if (garniture !== "Aucun") {
         if (garniture === "Éclats M&M's") imgElement.src = "Images/Mms.jpg";
         else if (garniture === "Éclats Spéculoos") imgElement.src = "Images/Speculoos.jpg";
