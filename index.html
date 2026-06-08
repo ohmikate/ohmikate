@@ -434,7 +434,7 @@ border:1px solid #333;
 </div>
 </div>
 <div class="card product-card" data-name="9 beignets" data-price="7">
-<img src="Images/Beignet9.jpg">
+<img src="Images/Beignet6.jpg">
 <p>Boîte de 9 beignets — 7€</p>
 <div class="qty-controls">
 <button class="qty-btn minus" onclick="changeBoxQty('9 beignets', -1)">-</button>
@@ -554,7 +554,7 @@ function generateCompositionForm() {
     }
     for (let b = 1; b <= boxesSelected["9 beignets"]; b++) {
         html += `<div class="box-composer"><div class="box-title">📦 Boîte de 9 Beignets n°${b}</div>`;
-        for (let lot = 1; lot <= 3; lot++) { html += generateLotRowHtml(`box9-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/3)`, "Images/Beignet9.jpg"); }
+        for (let lot = 1; lot <= 3; lot++) { html += generateLotRowHtml(`box9-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/3)`, "Images/Beignet6.jpg"); }
         html += `</div>`;
     }
     container.innerHTML = html;
