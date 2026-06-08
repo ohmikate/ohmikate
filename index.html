@@ -91,10 +91,11 @@ flex-direction: column;
 justify-content: space-between;
 }
 
-.card img{
-width:100%;
-height:200px;
-object-fit:cover;
+.card img {
+    width: 100%;
+    height: 200px; /* Votre nouvelle hauteur souhaitée */
+    object-fit: contain; /* Au lieu de 'cover' */
+    background-color: #111; /* Ajoute un fond noir si l'image est plus petite que le bloc */
 }
 
 .card p{
