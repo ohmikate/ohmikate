@@ -508,7 +508,7 @@ border:1px solid #333;
 <div class="form-group">
     <label>Choisis ton mode de règlement : <span class="requis">*</span></label>
     <div class="payment-selector">
-        <div id="opt-paypal" class="pay-opt" onclick="selectPayment('PayPal')">💳 PayPal</div>
+        <div id="opt-paypal" class="pay-opt" onclick="selectPayment('PayPal')">💳 En ligne</div>
         <div id="opt-especes" class="pay-opt" onclick="selectPayment('Espèces')">💵 Espèces (Appoint requis)</div>
     </div>
 </div>
@@ -521,7 +521,7 @@ border:1px solid #333;
 <span>Total :</span>
 <span><span id="total">0.00</span> €</span>
 </div>
-<button id="paypal-btn" class="btn paypal" style="display:none;" onclick="redirectToPaypal()">💳 Préparer mon règlement PayPal</button>
+<button id="paypal-btn" class="btn paypal" style="display:none;" onclick="redirectToPaypal()">💳 Préparer mon règlement En ligne</button>
 <button id="especes-btn" class="btn especes" style="display:none;" onclick="alertEspeces()">💵 Règlement en Espèces (Merci de prévoir l'appoint)</button>
 <a id="whatsapp" class="btn whatsapp disabled" target="_blank" onclick="return checkForm(event)">📲 Envoyer ma commande sur WhatsApp</a>
 <button id="sms-btn" class="btn smsbtn disabled" onclick="triggerSMS(event)">💬 Valider ma commande par SMS</button>
@@ -531,12 +531,21 @@ border:1px solid #333;
 </div>
 <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
     <p style="font-size: 12px; color: #777;">Un empêchement de dernière minute ?</p>
-    <a href="https://wa.me/33698213380?text=Bonjour,%20je%20souhaite%20annuler%20ma%20commande.%20Nom:%20...%20Prénom:%20...%20Téléphone:%20..." 
-       style="color: #ff4f8b; text-decoration: underline; font-weight: bold;">
-        Annuler ma commande
+    
+    <a href="https://wa.me/33698213380?text=Bonjour,%20je%20souhaite%20annuler%20ma%20commande." 
+       style="color: #ff4f8b; text-decoration: underline; font-weight: bold; display: block; margin-bottom: 10px;">
+       Annuler via WhatsApp
     </a>
-  <p style="font-size: 11px; color: #999; margin-top: 10px;">
-        Merci de préciser les informations dans le message pour faciliter le traitement.
+    
+    <a href="tel:0698213380" style="color: #007aff; text-decoration: none; font-weight: bold; font-size: 20px;">
+       📞 Annuler par appel ou SMS
+    </a>
+
+    <p style="font-size: 11px; color: #999; margin-top: 10px;">
+        Merci de préciser votre nom et votre numéro de téléphone.
+
+    <p style="font-size: 11px; color: #555; text-align: center; margin-top: 5px;">
+        Vous recevrez une confirmation de ma part dès réception de votre annulation.
     </p>
 </div>
 <script>
