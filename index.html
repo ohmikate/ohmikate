@@ -473,8 +473,7 @@ border:1px solid #333;
         <strong>gluten (blé), arachides, fruits à coque, produits laitiers (lait) et soja</strong>. 
         Merci de nous signaler toute allergie sévère dans la zone "Précisions" ci-dessous.
     </p>
-</div> <!-- C'est ici qu'il fallait fermer -->
-
+</div
 <h3>3. Tes informations de retrait</h3>
 <span class="info-limite" style="color: #aaa; font-style: normal;">📍 L'adresse complète te sera transmise lors de la validation de ton créneau.</span>
 
@@ -509,7 +508,7 @@ border:1px solid #333;
 <div class="form-group">
     <label>Choisis ton mode de règlement : <span class="requis">*</span></label>
     <div class="payment-selector">
-        <div id="opt-paypal" class="pay-opt" onclick="selectPayment('PayPal')">💳 En ligne</div>
+        <div id="opt-paypal" class="pay-opt" onclick="selectPayment('PayPal')">💳 PayPal</div>
         <div id="opt-especes" class="pay-opt" onclick="selectPayment('Espèces')">💵 Espèces (Appoint requis)</div>
     </div>
 </div>
@@ -522,23 +521,13 @@ border:1px solid #333;
 <span>Total :</span>
 <span><span id="total">0.00</span> €</span>
 </div>
-<button id="paypal-btn" class="btn paypal" style="display:none;" onclick="redirectToPaypal()">💳 Effectuer mon règlement en ligne</button>
+<button id="paypal-btn" class="btn paypal" style="display:none;" onclick="redirectToPaypal()">💳 Préparer mon règlement PayPal</button>
 <button id="especes-btn" class="btn especes" style="display:none;" onclick="alertEspeces()">💵 Règlement en Espèces (Merci de prévoir l'appoint)</button>
 <a id="whatsapp" class="btn whatsapp disabled" target="_blank" onclick="return checkForm(event)">📲 Envoyer ma commande sur WhatsApp</a>
 <button id="sms-btn" class="btn smsbtn disabled" onclick="triggerSMS(event)">💬 Valider ma commande par SMS</button>
 <a id="phone-btn" class="btn phonebtn disabled" onclick="triggerCall(event)">📞 Valider et m'appeler au téléphone</a>
-<div class="small">💡 Choisis tes boîtes, configure tes lots et remplis tes coordonnées (*) pour valider l'envoi.</div>
+<div class="small">💡 Choisis tes boîtes, configure tes lots et remplis tes coordonnées (*) pour débloquer l'envoi.</div>
 </div>
-<!-- Bloc Annulation -->
-<div style="text-align: center; margin-top: 30px; margin-bottom: 20px; padding: 15px; border-top: 1px solid #eee;">
-    <p style="font-size: 12px; color: #777; margin-bottom: 10px;">Un empêchement de dernière minute ?</p>
-    <a href="https://wa.me/33698213380?text=Bonjour,%20je%20souhaite%20annuler%20ma%20commande.%0A%0A- Nom:%20...%0A- Prénom:%20...%0A- Téléphone:%20...%0A- Commande%20initiale%20faite%20par%20(SMS/WhatsApp):%20...%0A- Motif%20(optionnel):%20..." 
-       style="color: #ff4f8b; text-decoration: underline; font-weight: bold; font-size: 14px;">
-        Annuler ma commande
-    </a>
-    <p style="font-size: 11px; color: #999; margin-top: 10px;">
-        Merci de préciser les informations ci-dessus pour faciliter le traitement.
-    </p>
 </div>
 
 <script>
