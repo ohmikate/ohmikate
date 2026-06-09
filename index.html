@@ -761,8 +761,30 @@ function isFormValid() {
 }
 
 function checkForm(event) {
-    if (!isFormValid()) { showToast("⚠️ Formulaire incomplet !"); if(event) event.preventDefault(); return false; }
+    if (!isFormValid()) { 
+        showToast("⚠️ Formulaire incomplet !"); 
+        if(event) event.preventDefault(); 
+        return false; 
+    }
+    sendOrderToSheet();
     return true;
+}
+
+function sendOrderToSheet() {
+    let orderInfo = calculateTotalAndExtractStructure();
+    let payload = {
+        name: document.getElementById("client-name").value,
+        phone: document.getElementById("client-phone").value,
+        order: orderInfo.detailsText,
+        total: orderInfo.totalPrice.toFixed(2),
+        payment: selectedPaymentMode
+    };
+    fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
 }
 
 function getOrderText(cleanForSms = false){
