@@ -777,7 +777,8 @@ function sendOrderToSheet() {
         phone: document.getElementById("client-phone").value,
         order: orderInfo.detailsText,
         total: orderInfo.totalPrice.toFixed(2),
-        payment: selectedPaymentMode
+        payment: selectedPaymentMode,
+        date: new Date().toLocaleDateString('fr-FR')
     };
     fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec", {
         method: "POST",
