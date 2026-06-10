@@ -894,17 +894,14 @@ initDates(); handleDateChange();
    <script>
 window.onload = function() {
     let commande = localStorage.getItem('maCommande');
+    let isSuccessPage = window.location.search.includes('success=true');
+    let finalDiv = document.getElementById('final-validation');
     
-    if (commande && window.location.search.includes('success')) {
-        // 1. Affiche le bloc de succès
-        let finalDiv = document.getElementById('final-validation');
+    if (commande && isSuccessPage) {
+        // Mode confirmation payée
         finalDiv.style.display = 'block';
-        
-        // 2. Cache la barre de résumé fixe du bas
         document.getElementById('summary-bar').style.display = 'none';
         
-        // 3. Injecte le récapitulatif dans le bloc de confirmation
-        // On suppose que votre commande contient déjà le montant total à la fin
         finalDiv.innerHTML = `
             <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #ff007f; margin-bottom: 20px; text-align: left;">
                 <h4 style="margin-top:0; color: #ff007f;">Récapitulatif de votre commande :</h4>
@@ -913,12 +910,15 @@ window.onload = function() {
                 </div>
             </div>
             <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer le récapitulatif :</p>
-            <a id="final-whatsapp" class="btn whatsapp" target="_blank" style="display:block; margin: 10px 0;">📲 Envoyer sur WhatsApp</a>
-            <a id="final-sms" class="btn smsbtn" style="display:block; margin: 10px 0;">💬 Envoyer par SMS</a>
-            <a href="tel:0698213380" class="btn phonebtn" style="display:block; margin: 10px 0; background:#ff9500;">📞 M'appeler pour valider</a>
+            <a id="final-whatsapp" class="btn whatsapp" target="_blank" style="display:block; margin: 10px 0; background:#25D366; color:white; padding:10px; border-radius:5px; text-decoration:none;">📲 Envoyer sur WhatsApp</a>
+            <a id="final-sms" class="btn smsbtn" style="display:block; margin: 10px 0; background:#007bff; color:white; padding:10px; border-radius:5px; text-decoration:none;">💬 Envoyer par SMS</a>
+            <a href="tel:0698213380" class="btn phonebtn" style="display:block; margin: 10px 0; background:#ff9500; color:white; padding:10px; border-radius:5px; text-decoration:none;">📞 M'appeler pour valider</a>
+            <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 15px;">
+                <p style="font-size: 13px; color: #888;">Un empêchement de dernière minute ?</p>
+                <a href="mailto:ohmikate@gmail.com" style="color: #ff007f; text-decoration: underline;">Annuler votre commande</a>
+            </div>
         `;
 
-        // 4. Re-configure les liens WhatsApp/SMS après avoir injecté le HTML
         let waBtn = document.getElementById('final-whatsapp');
         waBtn.href = "https://wa.me/33698213380?text=" + encodeURIComponent(commande);
         
@@ -927,10 +927,11 @@ window.onload = function() {
         smsBtn.href = "sms:0698213380?body=" + encodeURIComponent(cleanSms);
         
     } else {
-        document.getElementById('final-validation').style.display = 'none';
+        // Mode normal (page d'accueil)
+        finalDiv.style.display = 'none';
+        localStorage.removeItem('maCommande');
     }
     
-    // Initialisation habituelle
     initDates(); 
     handleDateChange();
 };
