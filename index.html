@@ -491,12 +491,12 @@ border:1px solid #333;
 
 <div class="form-group">
     <label for="client-name">Ton Prénom : <span class="requis">*</span></label>
-    <input type="text" id="client-name" placeholder="Ex: Marie Dupont" oninput="updateUI()">
+    <input type="text" id="client-name" placeholder="Ex: Marie Dupont" oninput="()">
 </div>
 
 <div class="form-group">
     <label for="client-phone">Ton Numéro de téléphone : <span class="requis">*</span></label>
-    <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="updateUI()">
+    <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="()">
 </div>
 
 <div class="form-group">
@@ -895,44 +895,41 @@ initDates(); handleDateChange();
 window.onload = function() {
     let commande = localStorage.getItem('maCommande');
     let isSuccessPage = window.location.search.includes('success=true');
-    let finalDiv = document.getElementById('final-validation');
-    
-    if (commande && isSuccessPage) {
-        // Mode confirmation payée
-        finalDiv.style.display = 'block';
-        document.getElementById('summary-bar').style.display = 'none';
-        
-        finalDiv.innerHTML = `
-            <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #ff007f; margin-bottom: 20px; text-align: left;">
-                <h4 style="margin-top:0; color: #ff007f;">Récapitulatif de votre commande :</h4>
-                <div style="font-size: 14px; line-height: 1.6; color: #fff;">
-                    ${commande.replace(/\n/g, "<br>")}
-                </div>
-            </div>
-            <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer le récapitulatif :</p>
-            <a id="final-whatsapp" class="btn whatsapp" target="_blank" style="display:block; margin: 10px 0; background:#25D366; color:white; padding:10px; border-radius:5px; text-decoration:none;">📲 Envoyer sur WhatsApp</a>
-            <a id="final-sms" class="btn smsbtn" style="display:block; margin: 10px 0; background:#007bff; color:white; padding:10px; border-radius:5px; text-decoration:none;">💬 Envoyer par SMS</a>
-            <a href="tel:0698213380" class="btn phonebtn" style="display:block; margin: 10px 0; background:#ff9500; color:white; padding:10px; border-radius:5px; text-decoration:none;">📞 M'appeler pour valider</a>
-            <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 15px;">
-                <p style="font-size: 13px; color: #888;">Un empêchement de dernière minute ?</p>
-                <a href="mailto:ohmikate@gmail.com" style="color: #ff007f; text-decoration: underline;">Annuler votre commande</a>
-            </div>
-        `;
 
-        let waBtn = document.getElementById('final-whatsapp');
-        waBtn.href = "https://wa.me/33698213380?text=" + encodeURIComponent(commande);
+    if (commande && isSuccessPage) {
+        // 1. Affiche le bloc de succès et cache le résumé fixe
+        let finalDiv = document.getElementById('final-validation');
+        if (finalDiv) {
+            finalDiv.style.display = 'block';
+            finalDiv.innerHTML = `
+                <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #ff4f8b; margin-bottom: 20px; text-align: left;">
+                    <h4 style="margin-top:0; color: #ff4f8b;">Récapitulatif de votre commande :</h4>
+                    <div style="font-size: 14px; line-height: 1.6; color: #fff;">
+                        ${commande.replace(/\n/g, "<br>")}
+                    </div>
+                </div>
+                <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer le récapitulatif :</p>
+                <a id="final-whatsapp" class="btn whatsapp" target="_blank" style="display:block; margin: 10px 0;">📲 Envoyer sur WhatsApp</a>
+                <a id="final-sms" class="btn smsbtn" style="display:block; margin: 10px 0;">💬 Envoyer par SMS</a>
+            `;
+
+            // 2. Configure les liens des boutons dynamiquement
+            document.getElementById('final-whatsapp').href = "https://wa.me/33698213380?text=" + encodeURIComponent(commande);
+            let cleanSms = commande.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            document.getElementById('final-sms').href = "sms:0698213380?body=" + encodeURIComponent(cleanSms);
+        }
         
-        let smsBtn = document.getElementById('final-sms');
-        let cleanSms = commande.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        smsBtn.href = "sms:0698213380?body=" + encodeURIComponent(cleanSms);
-        
+        let summaryBar = document.getElementById('summary-bar');
+        if (summaryBar) summaryBar.style.display = 'none';
+
     } else {
         // Mode normal (page d'accueil)
-        finalDiv.style.display = 'none';
+        let finalDiv = document.getElementById('final-validation');
+        if (finalDiv) finalDiv.style.display = 'none';
         localStorage.removeItem('maCommande');
     }
-    
-    initDates(); 
+
+    initDates();
     handleDateChange();
 };
 </script>
