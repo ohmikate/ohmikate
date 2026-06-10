@@ -920,9 +920,15 @@ function handleDateChange() {
 }
 function showToast(m) { const t = document.getElementById("toast"); t.innerHTML = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 5000); }
 initDates(); handleDateChange();
-</script><script>
-if (window.location.search.includes('success=true')) {
-        // Cache tout le contenu pour afficher uniquement la confirmation
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    // 1. On cache tout par défaut pour éviter le "flash" de la page d'accueil
+    document.body.style.display = 'none';
+
+    // 2. Si on est sur la page de succès
+    if (window.location.search.includes('success=true')) {
+        document.body.style.display = 'block'; // On affiche seulement la page de succès
+        
         document.body.innerHTML = `
             <div style="padding: 20px; text-align: center; color: white; font-family: sans-serif;">
                 <h1>🎉 Commande Validée !</h1>
@@ -946,9 +952,12 @@ if (window.location.search.includes('success=true')) {
             </div>
         `;
 
-        // Redirection vers l'accueil après clic sur les boutons d'envoi
+        // 3. Redirection vers l'accueil après clic sur les boutons d'envoi
         document.getElementById('btn-wa').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
         document.getElementById('btn-sms').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
+    } else {
+        // Si ce n'est pas la page de succès, on affiche le site normalement
+        document.body.style.display = 'block';
     }
 });
 </script>
