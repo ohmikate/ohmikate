@@ -921,9 +921,7 @@ function handleDateChange() {
 function showToast(m) { const t = document.getElementById("toast"); t.innerHTML = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 5000); }
 initDates(); handleDateChange();
 </script><script>
-window.addEventListener('DOMContentLoaded', (event) => {
-    // Si on est sur la page de succès
-    if (window.location.search.includes('success=true')) {
+if (window.location.search.includes('success=true')) {
         // Cache tout le contenu pour afficher uniquement la confirmation
         document.body.innerHTML = `
             <div style="padding: 20px; text-align: center; color: white; font-family: sans-serif;">
@@ -934,40 +932,23 @@ window.addEventListener('DOMContentLoaded', (event) => {
         
         let commande = localStorage.getItem('maCommande');
         document.getElementById('final-validation-page').innerHTML = `
-            <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid #ff4f8b; text-align: left;">
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid #ff4f8b; text-align: left; margin-bottom: 20px;">
                 ${commande ? commande.replace(/\n/g, "<br>") : "Erreur : aucune commande trouvée."}
             </div>
-            <a id="btn-wa" href="https://wa.me/33698213380?text=${encodeURIComponent(commande)}" class="btn whatsapp" style="display:block; margin: 20px 0; background: #25d366; color: white; padding: 10px; text-decoration: none; border-radius: 5px;">📲 Envoyer sur WhatsApp</a>
-            <a id="btn-sms" href="sms:0698213380?body=${encodeURIComponent(commande)}" class="btn smsbtn" style="display:block; margin: 10px 0; background: #007bff; color: white; padding: 10px; text-decoration: none; border-radius: 5px;">💬 Envoyer par SMS</a>
+            
+            <a id="btn-wa" href="https://wa.me/33698213380?text=${encodeURIComponent(commande)}" class="btn whatsapp" style="display:block; margin: 10px 0; background: #25d366; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold;">📲 Envoyer sur WhatsApp</a>
+            <a id="btn-sms" href="sms:0698213380?body=${encodeURIComponent(commande)}" class="btn smsbtn" style="display:block; margin: 10px 0; background: #007bff; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold;">💬 Envoyer par SMS</a>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; text-align: center;">
+                <p style="font-size: 13px; color: #888; margin-bottom: 10px;">Un empêchement ?</p>
+                <a href="https://wa.me/33698213380?text=Je%20souhaite%20annuler%20ma%20commande." style="color: #ff4f8b; text-decoration: underline; font-size: 14px; margin-right: 15px;">Annuler via WhatsApp</a>
+                <a href="sms:0698213380?body=Je%20souhaite%20annuler%20ma%20commande." style="color: #ff4f8b; text-decoration: underline; font-size: 14px;">Annuler par SMS</a>
+            </div>
         `;
 
-        // Redirection vers l'accueil après le clic sur les boutons
+        // Redirection vers l'accueil après clic sur les boutons d'envoi
         document.getElementById('btn-wa').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
         document.getElementById('btn-sms').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
-    }
-});
-</script>
-   <script>
-window.addEventListener('DOMContentLoaded', (event) => {
-    // Si on est sur la page de succès
-    if (window.location.search.includes('success=true')) {
-        // Cache tout le contenu principal
-        document.body.innerHTML = `
-            <div style="padding: 20px; text-align: center; color: white;">
-                <h1>🎉 Commande Validée !</h1>
-                <div id="final-validation-page"></div>
-            </div>
-        `;
-        
-        // Récupère la commande et affiche le bloc final
-        let commande = localStorage.getItem('maCommande');
-        document.getElementById('final-validation-page').innerHTML = `
-            <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid #ff4f8b;">
-                ${commande ? commande.replace(/\n/g, "<br>") : "Erreur : aucune commande trouvée."}
-            </div>
-            <a href="https://wa.me/33698213380?text=${encodeURIComponent(commande)}" class="btn whatsapp" style="margin-top:20px;">📲 Envoyer sur WhatsApp</a>
-            <a href="sms:0698213380?body=${encodeURIComponent(commande)}" class="btn smsbtn" style="margin-top:10px;">💬 Envoyer par SMS</a>
-        `;
     }
 });
 </script>
