@@ -921,37 +921,38 @@ function handleDateChange() {
 function showToast(m) { const t = document.getElementById("toast"); t.innerHTML = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 5000); }
 initDates(); handleDateChange();
 <script>
-window.addEventListener('DOMContentLoaded', (event) => {
-    // 1. Si on est sur la page de succès
+(function() {
+    // On n'exécute ce code que si on est sur la page de succès
     if (window.location.search.includes('success=true')) {
-        document.body.innerHTML = `
-            <div style="padding: 20px; text-align: center; color: white; font-family: sans-serif;">
-                <h1>🎉 Commande Validée !</h1>
-                <div id="final-validation-page"></div>
-            </div>
-        `;
-        
-        let commande = localStorage.getItem('maCommande');
-        document.getElementById('final-validation-page').innerHTML = `
-            <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid #ff4f8b; text-align: left; margin-bottom: 20px;">
-                ${commande ? commande.replace(/\n/g, "<br>") : "Erreur : aucune commande trouvée."}
-            </div>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            document.body.innerHTML = `
+                <div style="padding: 20px; text-align: center; color: white; font-family: sans-serif;">
+                    <h1>🎉 Commande Validée !</h1>
+                    <div id="final-validation-page"></div>
+                </div>
+            `;
             
-            <a id="btn-wa" href="https://wa.me/33698213380?text=${encodeURIComponent(commande)}" class="btn whatsapp" style="display:block; margin: 10px 0; background: #25d366; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold;">📲 Envoyer sur WhatsApp</a>
-            <a id="btn-sms" href="sms:0698213380?body=${encodeURIComponent(commande)}" class="btn smsbtn" style="display:block; margin: 10px 0; background: #007bff; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold;">💬 Envoyer par SMS</a>
-            
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; text-align: center;">
-                <p style="font-size: 13px; color: #888; margin-bottom: 10px;">Un empêchement ?</p>
-                <a href="https://wa.me/33698213380?text=Je%20souhaite%20annuler%20ma%20commande." style="color: #ff4f8b; text-decoration: underline; font-size: 14px; margin-right: 15px;">Annuler via WhatsApp</a>
-                <a href="sms:0698213380?body=Je%20souhaite%20annuler%20ma%20commande." style="color: #ff4f8b; text-decoration: underline; font-size: 14px;">Annuler par SMS</a>
-            </div>
-        `;
+            let commande = localStorage.getItem('maCommande');
+            document.getElementById('final-validation-page').innerHTML = `
+                <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid #ff4f8b; text-align: left; margin-bottom: 20px;">
+                    ${commande ? commande.replace(/\n/g, "<br>") : "Erreur : aucune commande trouvée."}
+                </div>
+                
+                <a id="btn-wa" href="https://wa.me/33698213380?text=${encodeURIComponent(commande)}" class="btn whatsapp" style="display:block; margin: 10px 0; background: #25d366; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold;">📲 Envoyer sur WhatsApp</a>
+                <a id="btn-sms" href="sms:0698213380?body=${encodeURIComponent(commande)}" class="btn smsbtn" style="display:block; margin: 10px 0; background: #007bff; color: white; padding: 12px; text-decoration: none; border-radius: 5px; font-weight: bold;">💬 Envoyer par SMS</a>
+                
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; text-align: center;">
+                    <p style="font-size: 13px; color: #888; margin-bottom: 10px;">Un empêchement ?</p>
+                    <a href="https://wa.me/33698213380?text=Je%20souhaite%20annuler%20ma%20commande." style="color: #ff4f8b; text-decoration: underline; font-size: 14px; margin-right: 15px;">Annuler via WhatsApp</a>
+                    <a href="sms:0698213380?body=Je%20souhaite%20annuler%20ma%20commande." style="color: #ff4f8b; text-decoration: underline; font-size: 14px;">Annuler par SMS</a>
+                </div>
+            `;
 
-        document.getElementById('btn-wa').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
-        document.getElementById('btn-sms').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
-    } 
-    // Sinon, on ne touche à rien, la page d'accueil s'affiche normalement.
-});
+            document.getElementById('btn-wa').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
+            document.getElementById('btn-sms').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
+        });
+    }
+})();
 </script>
 </body>
 </html>
