@@ -894,23 +894,24 @@ initDates(); handleDateChange();
    <script>
 window.onload = function() {
     let commande = localStorage.getItem('maCommande');
-    if (commande) {
+    
+    // On n'affiche le bloc que si une commande existe ET qu'on est sur la page de confirmation
+    // Ici, on vérifie si l'URL contient un paramètre de succès ou simplement si la donnée est là
+    if (commande && window.location.search.includes('success')) {
         document.getElementById('final-validation').style.display = 'block';
         
-        // Configuration du bouton WhatsApp
         let waBtn = document.getElementById('final-whatsapp');
         waBtn.href = "https://wa.me/33698213380?text=" + encodeURIComponent(commande);
         
-        // Configuration du bouton SMS
         let smsBtn = document.getElementById('final-sms');
         let cleanSms = commande.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         smsBtn.href = "sms:0698213380?body=" + encodeURIComponent(cleanSms);
-        
-        // Optionnel : Nettoyer la mémoire après envoi
-        waBtn.onclick = function() { localStorage.removeItem('maCommande'); };
-        smsBtn.onclick = function() { localStorage.removeItem('maCommande'); };
+    } else {
+        // Si aucune commande ou pas de retour de paiement, on cache le bloc
+        document.getElementById('final-validation').style.display = 'none';
+        localStorage.removeItem('maCommande'); // Nettoyage de sécurité
     }
-   // Vos initialisations existantes
+    
     initDates(); 
     handleDateChange();
 };
