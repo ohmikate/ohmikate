@@ -895,23 +895,42 @@ initDates(); handleDateChange();
 window.onload = function() {
     let commande = localStorage.getItem('maCommande');
     
-    // On n'affiche le bloc que si une commande existe ET qu'on est sur la page de confirmation
-    // Ici, on vérifie si l'URL contient un paramètre de succès ou simplement si la donnée est là
     if (commande && window.location.search.includes('success')) {
-        document.getElementById('final-validation').style.display = 'block';
+        // 1. Affiche le bloc de succès
+        let finalDiv = document.getElementById('final-validation');
+        finalDiv.style.display = 'block';
         
+        // 2. Cache la barre de résumé fixe du bas
+        document.getElementById('summary-bar').style.display = 'none';
+        
+        // 3. Injecte le récapitulatif dans le bloc de confirmation
+        // On suppose que votre commande contient déjà le montant total à la fin
+        finalDiv.innerHTML = `
+            <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #ff007f; margin-bottom: 20px; text-align: left;">
+                <h4 style="margin-top:0; color: #ff007f;">Récapitulatif de votre commande :</h4>
+                <div style="font-size: 14px; line-height: 1.6; color: #fff;">
+                    ${commande.replace(/\n/g, "<br>")}
+                </div>
+            </div>
+            <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer le récapitulatif :</p>
+            <a id="final-whatsapp" class="btn whatsapp" target="_blank" style="display:block; margin: 10px 0;">📲 Envoyer sur WhatsApp</a>
+            <a id="final-sms" class="btn smsbtn" style="display:block; margin: 10px 0;">💬 Envoyer par SMS</a>
+            <a href="tel:0698213380" class="btn phonebtn" style="display:block; margin: 10px 0; background:#ff9500;">📞 M'appeler pour valider</a>
+        `;
+
+        // 4. Re-configure les liens WhatsApp/SMS après avoir injecté le HTML
         let waBtn = document.getElementById('final-whatsapp');
         waBtn.href = "https://wa.me/33698213380?text=" + encodeURIComponent(commande);
         
         let smsBtn = document.getElementById('final-sms');
         let cleanSms = commande.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         smsBtn.href = "sms:0698213380?body=" + encodeURIComponent(cleanSms);
+        
     } else {
-        // Si aucune commande ou pas de retour de paiement, on cache le bloc
         document.getElementById('final-validation').style.display = 'none';
-        localStorage.removeItem('maCommande'); // Nettoyage de sécurité
     }
     
+    // Initialisation habituelle
     initDates(); 
     handleDateChange();
 };
