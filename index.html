@@ -543,6 +543,13 @@ border:1px solid #333;
 </div>
 <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
     <p style="font-size: 12px; color: #777;">Un empêchement de dernière minute ?</p>
+   <!-- Ajoutez ce bloc là où vous voulez afficher les boutons de fin de commande -->
+<div id="final-validation" style="display:none; text-align:center; padding: 20px;">
+    <h3>Commande payée !</h3>
+    <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer le récapitulatif :</p>
+    <a id="final-whatsapp" class="btn whatsapp" target="_blank">📲 Envoyer sur WhatsApp</a>
+    <a id="final-sms" class="btn smsbtn" style="margin-top:10px;">💬 Envoyer par SMS</a>
+</div>
     
     <a href="https://wa.me/33698213380?text=Bonjour,%20je%20souhaite%20annuler%20ma%20commande." 
        style="color: #ff4f8b; text-decoration: underline; font-weight: bold; display: block; margin-bottom: 10px;">
@@ -744,12 +751,16 @@ function updateUI(){
 
     // Gestion du lien Stripe dynamique
     let stripeLink = document.getElementById("stripe-link");
-    if (total > 0) {
-        stripeLink.style.display = "block";
-        // Remplacez 'VOTRE_URL_STRIPE' par l'URL que Stripe vous a donnée
-        stripeLink.href = "https://buy.stripe.com/test_eVq3cx79rdHN0TufXs7ss00?prefilled_amount=" + Math.round(total * 100);
-    } else {
-        stripeLink.style.display = "none";
+if (total > 0) {
+    stripeLink.style.display = "block";
+    stripeLink.href = "https://buy.stripe.com/test_eVq3cx79rdHN0TufXs7ss00?prefilled_amount=" + Math.round(total * 100);
+    
+    // Ajout de la sauvegarde automatique au clic
+    stripeLink.onclick = function() {
+        localStorage.setItem('maCommande', getOrderText(false));
+    };
+} else {
+    stripeLink.style.display = "none";
     }
 
     // Gestion des autres boutons (WhatsApp, SMS, etc.)
@@ -879,6 +890,27 @@ function handleDateChange() {
 }
 function showToast(m) { const t = document.getElementById("toast"); t.innerHTML = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 5000); }
 initDates(); handleDateChange();
+</script>
+   <script>
+window.onload = function() {
+    let commande = localStorage.getItem('maCommande');
+    if (commande) {
+        document.getElementById('final-validation').style.display = 'block';
+        
+        // Configuration du bouton WhatsApp
+        let waBtn = document.getElementById('final-whatsapp');
+        waBtn.href = "https://wa.me/33698213380?text=" + encodeURIComponent(commande);
+        
+        // Configuration du bouton SMS
+        let smsBtn = document.getElementById('final-sms');
+        let cleanSms = commande.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        smsBtn.href = "sms:0698213380?body=" + encodeURIComponent(cleanSms);
+        
+        // Optionnel : Nettoyer la mémoire après envoi
+        waBtn.onclick = function() { localStorage.removeItem('maCommande'); };
+        smsBtn.onclick = function() { localStorage.removeItem('maCommande'); };
+    }
+};
 </script>
 </body>
 </html>
