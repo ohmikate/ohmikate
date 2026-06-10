@@ -491,12 +491,12 @@ border:1px solid #333;
 
 <div class="form-group">
     <label for="client-name">Ton Prénom : <span class="requis">*</span></label>
-    <input type="text" id="client-name" placeholder="Ex: Marie Dupont" oninput="()">
+    <input type="text" id="client-name" placeholder="Ex: Marie Dupont" oninput="updateUI()">
 </div>
 
 <div class="form-group">
     <label for="client-phone">Ton Numéro de téléphone : <span class="requis">*</span></label>
-    <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="()">
+    <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="updateUI()">
 </div>
 
 <div class="form-group">
@@ -920,7 +920,6 @@ function handleDateChange() {
 }
 function showToast(m) { const t = document.getElementById("toast"); t.innerHTML = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 5000); }
 initDates(); handleDateChange();
-<script>
 (function() {
     // On n'exécute ce code que si on est sur la page de succès
     if (window.location.search.includes('success=true')) {
