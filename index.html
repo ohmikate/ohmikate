@@ -847,7 +847,19 @@ function getOrderText(cleanForSms = false){
     return cleanForSms ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : text;
 }
 
-function triggerSMS(event) { if (!checkForm(event)) return; let smsBody = getOrderText(true); let ua = navigator.userAgent.toLowerCase(); let url = "sms:" + targetPhone + (ua.indexOf("iphone") > -1 ? "&body=" : "?body=") + encodeURIComponent(smsBody); showToast("📱 Redirection..."); setTimeout(() => { window.location.href = url; }, 500); }
+function triggerSMS(event) { 
+    if (!checkForm(event)) return; 
+    let smsBody = getOrderText(true); 
+    let ua = navigator.userAgent.toLowerCase(); 
+    let url = "sms:" + targetPhone + (ua.indexOf("iphone") > -1 ? "&body=" : "?body=") + encodeURIComponent(smsBody); 
+    
+    showToast("📱 Redirection..."); 
+    setTimeout(() => { 
+        window.location.href = url;
+        // Redirection vers l'accueil après un délai de 1 seconde (1000ms)
+        setTimeout(() => { window.location.href = './'; }, 1000);
+    }, 500); 
+}
 function triggerCall(event) { if (!checkForm(event)) return; showToast("📞 Lancement..."); setTimeout(() => { window.location.href = "tel:" + targetPhone; }, 500); }
 function renderPaypalButton() {
     // Affiche le conteneur du bouton et cache le reste
@@ -908,48 +920,56 @@ function handleDateChange() {
 }
 function showToast(m) { const t = document.getElementById("toast"); t.innerHTML = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 5000); }
 initDates(); handleDateChange();
+</script><script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    // Si on est sur la page de succès
+    if (window.location.search.includes('success=true')) {
+        // Cache tout le contenu pour afficher uniquement la confirmation
+        document.body.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: white; font-family: sans-serif;">
+                <h1>🎉 Commande Validée !</h1>
+                <div id="final-validation-page"></div>
+            </div>
+        `;
+        
+        let commande = localStorage.getItem('maCommande');
+        document.getElementById('final-validation-page').innerHTML = `
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid #ff4f8b; text-align: left;">
+                ${commande ? commande.replace(/\n/g, "<br>") : "Erreur : aucune commande trouvée."}
+            </div>
+            <a id="btn-wa" href="https://wa.me/33698213380?text=${encodeURIComponent(commande)}" class="btn whatsapp" style="display:block; margin: 20px 0; background: #25d366; color: white; padding: 10px; text-decoration: none; border-radius: 5px;">📲 Envoyer sur WhatsApp</a>
+            <a id="btn-sms" href="sms:0698213380?body=${encodeURIComponent(commande)}" class="btn smsbtn" style="display:block; margin: 10px 0; background: #007bff; color: white; padding: 10px; text-decoration: none; border-radius: 5px;">💬 Envoyer par SMS</a>
+        `;
+
+        // Redirection vers l'accueil après le clic sur les boutons
+        document.getElementById('btn-wa').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
+        document.getElementById('btn-sms').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
+    }
+});
 </script>
    <script>
-window.onload = function() {
-    let commande = localStorage.getItem('maCommande');
-    let isSuccessPage = window.location.search.includes('success=true');
-
-    if (commande && isSuccessPage) {
-        // 1. Affiche le bloc de succès et cache le résumé fixe
-        let finalDiv = document.getElementById('final-validation');
-        if (finalDiv) {
-            finalDiv.style.display = 'block';
-            finalDiv.innerHTML = `
-                <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #ff4f8b; margin-bottom: 20px; text-align: left;">
-                    <h4 style="margin-top:0; color: #ff4f8b;">Récapitulatif de votre commande :</h4>
-                    <div style="font-size: 14px; line-height: 1.6; color: #fff;">
-                        ${commande.replace(/\n/g, "<br>")}
-                    </div>
-                </div>
-                <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer le récapitulatif :</p>
-                <a id="final-whatsapp" class="btn whatsapp" target="_blank" style="display:block; margin: 10px 0;">📲 Envoyer sur WhatsApp</a>
-                <a id="final-sms" class="btn smsbtn" style="display:block; margin: 10px 0;">💬 Envoyer par SMS</a>
-            `;
-
-            // 2. Configure les liens des boutons dynamiquement
-            document.getElementById('final-whatsapp').href = "https://wa.me/33698213380?text=" + encodeURIComponent(commande);
-            let cleanSms = commande.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            document.getElementById('final-sms').href = "sms:0698213380?body=" + encodeURIComponent(cleanSms);
-        }
+window.addEventListener('DOMContentLoaded', (event) => {
+    // Si on est sur la page de succès
+    if (window.location.search.includes('success=true')) {
+        // Cache tout le contenu principal
+        document.body.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: white;">
+                <h1>🎉 Commande Validée !</h1>
+                <div id="final-validation-page"></div>
+            </div>
+        `;
         
-        let summaryBar = document.getElementById('summary-bar');
-        if (summaryBar) summaryBar.style.display = 'none';
-
-    } else {
-        // Mode normal (page d'accueil)
-        let finalDiv = document.getElementById('final-validation');
-        if (finalDiv) finalDiv.style.display = 'none';
-        localStorage.removeItem('maCommande');
+        // Récupère la commande et affiche le bloc final
+        let commande = localStorage.getItem('maCommande');
+        document.getElementById('final-validation-page').innerHTML = `
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid #ff4f8b;">
+                ${commande ? commande.replace(/\n/g, "<br>") : "Erreur : aucune commande trouvée."}
+            </div>
+            <a href="https://wa.me/33698213380?text=${encodeURIComponent(commande)}" class="btn whatsapp" style="margin-top:20px;">📲 Envoyer sur WhatsApp</a>
+            <a href="sms:0698213380?body=${encodeURIComponent(commande)}" class="btn smsbtn" style="margin-top:10px;">💬 Envoyer par SMS</a>
+        `;
     }
-
-    initDates();
-    handleDateChange();
-};
+});
 </script>
 </body>
 </html>
