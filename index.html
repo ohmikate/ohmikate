@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
 body{
    
@@ -534,7 +533,7 @@ border:1px solid #333;
 <span>Total :</span>
 <span><span id="total">0.00</span> €</span>
 </div>
-<button id="paypal-btn" class="btn paypal" style="display:none;" onclick="redirectToPaypal()">💳 Préparer mon règlement En ligne</button>
+<a id="stripe-link" class="btn paypal" style="background:#635bff; display:none; margin-top: 10px;">Payer en ligne</a>
 <button id="especes-btn" class="btn especes" style="display:none;" onclick="alertEspeces()">💵 Règlement en Espèces (Merci de prévoir l'appoint)</button>
 <a id="whatsapp" class="btn whatsapp disabled" target="_blank" onclick="return checkForm(event)">📲 Envoyer ma commande sur WhatsApp</a>
 <button id="sms-btn" class="btn smsbtn disabled" onclick="triggerSMS(event)">💬 Valider ma commande par SMS</button>
@@ -732,18 +731,32 @@ function calculateTotalAndExtractStructure() {
 
 function updateUI(){
     let orderInfo = calculateTotalAndExtractStructure();
+    let total = orderInfo.totalPrice;
+    
+    // Mise à jour de l'affichage du total
     document.getElementById("recap").innerHTML = orderInfo.summaryShort ? 
         "<b>Sélection :</b><br>" + orderInfo.summaryShort + "<br><br><b>Détail :</b><br><small>" + orderInfo.detailsText.replace(/\n/g, "<br>") + "</small>" 
         : "Aucune sélection";
-    document.getElementById("total").innerText = orderInfo.totalPrice.toFixed(2);
+    document.getElementById("total").innerText = total.toFixed(2);
+    
     const summaryBar = document.getElementById("summary-bar");
     if (boxesSelected["6 beignets"] > 0 || boxesSelected["9 beignets"] > 0) summaryBar.classList.add("show"); else summaryBar.classList.remove("show");
-    const pBtn = document.getElementById("paypal-btn");
-    const eBtn = document.getElementById("especes-btn");
-    if(selectedPaymentMode === "PayPal") { pBtn.style.display = "block"; eBtn.style.display = "none"; } else if(selectedPaymentMode === "Espèces") { pBtn.style.display = "none"; eBtn.style.display = "block"; }
+
+    // Gestion du lien Stripe dynamique
+    let stripeLink = document.getElementById("stripe-link");
+    if (total > 0) {
+        stripeLink.style.display = "block";
+        // Remplacez 'VOTRE_URL_STRIPE' par l'URL que Stripe vous a donnée
+        stripeLink.href = "https://buy.stripe.com/test_eVq3cx79rdHN0TufXs7ss00?prefilled_amount=" + Math.round(total * 100);
+    } else {
+        stripeLink.style.display = "none";
+    }
+
+    // Gestion des autres boutons (WhatsApp, SMS, etc.)
     const buttons = [document.getElementById("whatsapp"), document.getElementById("sms-btn"), document.getElementById("phone-btn")];
     let shouldEnable = isFormValid();
     buttons.forEach(btn => { if(shouldEnable) { btn.removeAttribute("disabled"); btn.classList.remove("disabled"); } else { btn.setAttribute("disabled", "true"); btn.classList.add("disabled"); } });
+    
     let whatsappMsg = encodeURIComponent(getOrderText(false));
     document.getElementById("whatsapp").href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + whatsappMsg;
 }
@@ -807,7 +820,33 @@ function getOrderText(cleanForSms = false){
 
 function triggerSMS(event) { if (!checkForm(event)) return; let smsBody = getOrderText(true); let ua = navigator.userAgent.toLowerCase(); let url = "sms:" + targetPhone + (ua.indexOf("iphone") > -1 ? "&body=" : "?body=") + encodeURIComponent(smsBody); showToast("📱 Redirection..."); setTimeout(() => { window.location.href = url; }, 500); }
 function triggerCall(event) { if (!checkForm(event)) return; showToast("📞 Lancement..."); setTimeout(() => { window.location.href = "tel:" + targetPhone; }, 500); }
-function redirectToPaypal() { let orderInfo = calculateTotalAndExtractStructure(); if(orderInfo.totalPrice > 0) window.open("https://paypal.me/ohmikate/" + orderInfo.totalPrice.toFixed(2), '_blank'); }
+function renderPaypalButton() {
+    // Affiche le conteneur du bouton et cache le reste
+    document.getElementById("paypal-button-container").style.display = "block";
+    document.getElementById("paypal-button-container").innerHTML = ""; // Nettoie
+
+    paypal.Buttons({
+   createOrder: function(data, actions) {
+        let orderInfo = calculateTotalAndExtractStructure();
+        
+        return actions.order.create({
+            purchase_units: [{
+                amount: { value: orderInfo.totalPrice.toFixed(2) },
+                // On met une description simple
+                description: "Commande Oh! Mikaté Reims"
+            }]
+        });
+    },
+    onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+            // Une fois que PayPal a validé, le système envoie les données
+            // Le client n'a pas eu à remplir de formulaire PayPal complexe
+            sendOrderToSheet(); 
+            alert("Paiement validé avec succès !");
+        });
+    }
+}).render('#paypal-button-container');
+}
 function selectPayment(mode) { selectedPaymentMode = mode; document.getElementById("opt-paypal").classList.toggle("selected", mode === 'PayPal'); document.getElementById("opt-especes").classList.toggle("selected", mode === 'Espèces'); updateUI(); }
 function alertEspeces() { showToast("💵 Merci de préparer l'appoint !"); }
 function initDates() {
