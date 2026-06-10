@@ -922,13 +922,8 @@ function showToast(m) { const t = document.getElementById("toast"); t.innerHTML 
 initDates(); handleDateChange();
 <script>
 window.addEventListener('DOMContentLoaded', (event) => {
-    // 1. On cache tout par défaut pour éviter le "flash" de la page d'accueil
-    document.body.style.display = 'none';
-
-    // 2. Si on est sur la page de succès
+    // 1. Si on est sur la page de succès
     if (window.location.search.includes('success=true')) {
-        document.body.style.display = 'block'; // On affiche seulement la page de succès
-        
         document.body.innerHTML = `
             <div style="padding: 20px; text-align: center; color: white; font-family: sans-serif;">
                 <h1>🎉 Commande Validée !</h1>
@@ -952,13 +947,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
             </div>
         `;
 
-        // 3. Redirection vers l'accueil après clic sur les boutons d'envoi
         document.getElementById('btn-wa').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
         document.getElementById('btn-sms').onclick = () => { setTimeout(() => { window.location.href = './'; }, 1000); };
-    } else {
-        // Si ce n'est pas la page de succès, on affiche le site normalement
-        document.body.style.display = 'block';
-    }
+    } 
+    // Sinon, on ne touche à rien, la page d'accueil s'affiche normalement.
 });
 </script>
 </body>
