@@ -763,13 +763,31 @@ if (total > 0) {
     stripeLink.style.display = "none";
     }
 
-    // Gestion des autres boutons (WhatsApp, SMS, etc.)
+  // Gestion des autres boutons (WhatsApp, SMS, etc.)
     const buttons = [document.getElementById("whatsapp"), document.getElementById("sms-btn"), document.getElementById("phone-btn")];
     let shouldEnable = isFormValid();
-    buttons.forEach(btn => { if(shouldEnable) { btn.removeAttribute("disabled"); btn.classList.remove("disabled"); } else { btn.setAttribute("disabled", "true"); btn.classList.add("disabled"); } });
+    buttons.forEach(btn => { 
+        if(shouldEnable) { 
+            btn.removeAttribute("disabled"); 
+            btn.classList.remove("disabled"); 
+        } else { 
+            btn.setAttribute("disabled", "true"); 
+            btn.classList.add("disabled"); 
+        } 
+    });
+
+    // Gestion du bouton Espèces
+    let especesBtn = document.getElementById("especes-btn");
+    if (especesBtn) {
+        if (selectedPaymentMode === "Espèces") {
+            especesBtn.style.display = "block";
+        } else {
+            especesBtn.style.display = "none";
+        }
+    }
     
     let whatsappMsg = encodeURIComponent(getOrderText(false));
-    document.getElementById("whatsapp").href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + whatsappMsg;
+    document.getElementById("whatsapp").href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + whatsappMsg;  
 }
 
 function isFormValid() {
