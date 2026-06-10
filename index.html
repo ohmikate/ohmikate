@@ -491,12 +491,12 @@ border:1px solid #333;
 
 <div class="form-group">
     <label for="client-name">Ton Prénom : <span class="requis">*</span></label>
-    <input type="text" id="client-name" placeholder="Ex: Marie Dupont" oninput="()">
+    <input type="text" id="client-name" placeholder="Ex: Marie Dupont" oninput="updateUI()">
 </div>
 
 <div class="form-group">
     <label for="client-phone">Ton Numéro de téléphone : <span class="requis">*</span></label>
-    <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="()">
+    <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="updateUI()">
 </div>
 
 <div class="form-group">
@@ -569,6 +569,7 @@ border:1px solid #333;
 </div>
 <script>
 /* (Script inchangé pour conserver la logique fonctionnelle) */
+/* --- BLOC 1 : VARIABLES ET GESTION DES BOITES --- */
 let boxesSelected = { "6 beignets": 0, "9 beignets": 0 };
 const boxPrices = { "6 beignets": 5.0, "9 beignets": 7.0 };
 const supplementPricePerLot = 0.50;
@@ -604,7 +605,7 @@ function generateCompositionForm() {
     let currentSelections = {};
     container.querySelectorAll("select").forEach(sel => { currentSelections[sel.id] = sel.value; });
     let html = "<h3>2. Personnalise tes lots de 3 beignets</h3>";
-    html += '<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 beignets. Laisse sur "Nature" si tu ne veux aucun supplément (+0,50€ par nappage ou garniture par lot).</span>';
+    html += '<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 beignets. Laisse sur "Nature" si tu ne veux aucun supplément (+0,50€ par nappage ou garniture).</span>';
     for (let b = 1; b <= boxesSelected["6 beignets"]; b++) {
         html += `<div class="box-composer"><div class="box-title">📦 Boîte de 6 Beignets n°${b}</div>`;
         for (let lot = 1; lot <= 2; lot++) { html += generateLotRowHtml(`box6-${b}-lot${lot}`, `Lot de 3 beignets (${lot}/2)`, "Images/Beignet9.jpg"); }
@@ -626,35 +627,27 @@ function generateLotRowHtml(idPrefix, labelTitle, defaultImg) {
         <div class="lot-content">
             <div class="lot-title">✨ ${labelTitle}</div>
             <div class="selectors-container">
-                <div>
-                    <select id="${idPrefix}-base" class="select-custom" onchange="updateLotImage('${idPrefix}', '${defaultImg}'); updateUI();">
-                        <option value="Nature">Enrobage : Aucun (Nature)</option>
-                        <option value="Sucre">Sucre (+0€)</option>
-                        <option value="Noix de coco">Noix de coco (+0€)</option>
-                    </select>
-                </div>
-                <div>
-                    <select id="${idPrefix}-nappage" class="select-custom" onchange="updateLotImage('${idPrefix}', '${defaultImg}'); updateUI();">
-                        <option value="Aucun">🍫 Nappage : Aucun</option>
-                        <option value="Chocolat">Chocolat (+0,50€)</option>
-                        <option value="Caramel">Caramel (+0,50€)</option>
-                    </select>
-                </div>
-                <div>
-                    <select id="${idPrefix}-garniture" class="select-custom" onchange="updateLotImage('${idPrefix}', '${defaultImg}'); updateUI();">
-                        <option value="Aucun">🥜 Garniture : Aucun</option>
-                        <option value="Éclats M&M's">M&M's (+0,50€)</option>
-                        <option value="Éclats Spéculoos">Spéculoos (+0,50€)</option>
-                        <option value="Éclats Cacahuète">Cacahuètes (+0,50€)</option>
-                    </select>
-                </div>
-                <div>
-                    <select id="${idPrefix}-pot" class="select-custom" onchange="updateUI();">
-                        <option value="Aucun">Pot : Aucun</option>
-                        <option value="Pot Nutella">Pot Nutella (+0,50€)</option>
-                        <option value="Pot Pâte d'arachide">Pot Pâte d'arachide (+0,50€)</option>
-                    </select>
-                </div>
+                <select id="${idPrefix}-base" class="select-custom" onchange="updateLotImage('${idPrefix}', '${defaultImg}'); updateUI();">
+                    <option value="Nature">Enrobage : Aucun (Nature)</option>
+                    <option value="Sucre">Sucre (+0€)</option>
+                    <option value="Noix de coco">Noix de coco (+0€)</option>
+                </select>
+                <select id="${idPrefix}-nappage" class="select-custom" onchange="updateLotImage('${idPrefix}', '${defaultImg}'); updateUI();">
+                    <option value="Aucun">🍫 Nappage : Aucun</option>
+                    <option value="Chocolat">Chocolat (+0,50€)</option>
+                    <option value="Caramel">Caramel (+0,50€)</option>
+                </select>
+                <select id="${idPrefix}-garniture" class="select-custom" onchange="updateLotImage('${idPrefix}', '${defaultImg}'); updateUI();">
+                    <option value="Aucun">🥜 Garniture : Aucun</option>
+                    <option value="Éclats M&M's">M&M's (+0,50€)</option>
+                    <option value="Éclats Spéculoos">Spéculoos (+0,50€)</option>
+                    <option value="Éclats Cacahuète">Cacahuètes (+0,50€)</option>
+                </select>
+                <select id="${idPrefix}-pot" class="select-custom" onchange="updateUI();">
+                    <option value="Aucun">Pot : Aucun</option>
+                    <option value="Pot Nutella">Pot Nutella (+0,50€)</option>
+                    <option value="Pot Pâte d'arachide">Pot Pâte d'arachide (+0,50€)</option>
+                </select>
             </div>
         </div>
     </div>`;
@@ -665,20 +658,16 @@ function updateLotImage(idPrefix, defaultImg) {
     const garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
     const imgElement = document.getElementById(`${idPrefix}-img`);
     if (!imgElement) return;
-
     if (nappage !== "Aucun") {
-        if (nappage === "Chocolat") imgElement.src = "Images/Chocolat.jpg";
-        else if (nappage === "Caramel") imgElement.src = "Images/Caramel.jpg";
+        imgElement.src = nappage === "Chocolat" ? "Images/Chocolat.jpg" : "Images/Caramel.jpg";
     } else if (garniture !== "Aucun") {
-        if (garniture === "Éclats M&M's") imgElement.src = "Images/Beignet9.jpg";
-        else if (garniture === "Éclats Spéculoos") imgElement.src = "Images/Speculoos.jpg";
-        else if (garniture === "Éclats Cacahuète") imgElement.src = "Images/Cacahuetes.jpg";
-        else if (garniture === "Pot Nutella") imgElement.src = "Images/Beignet9.jpg";
-        else if (garniture === "Pot Pâte d'arachide") imgElement.src = "Images/Arachide.jpg";
+        imgElement.src = garniture === "Éclats Spéculoos" ? "Images/Speculoos.jpg" : (garniture === "Éclats Cacahuète" ? "Images/Cacahuetes.jpg" : defaultImg);
     } else {
         imgElement.src = defaultImg;
     }
 }
+
+/* --- BLOC 2 : CALCULS, VALIDATION ET REDIRECTIONS --- */
 
 function calculateTotalAndExtractStructure() {
     let total = 0;
@@ -690,247 +679,93 @@ function calculateTotalAndExtractStructure() {
     total += boxesSelected["9 beignets"] * boxPrices["9 beignets"];
     if (boxesSelected["9 beignets"] > 0) textSummaryList.push(`${boxesSelected["9 beignets"]}x Boîte de 9`);
 
-    // Boîte de 6
-    for (let b = 1; b <= boxesSelected["6 beignets"]; b++) {
-        structuredOrderText += `\n📦 *BOÎTE DE 6 BEIGNETS n°${b}* :\n`;
-        let potCount = 0;
-        for (let lot = 1; lot <= 2; lot++) {
-            let idPrefix = `box6-${b}-lot${lot}`;
-            let nappage = document.getElementById(`${idPrefix}-nappage`)?.value || "Aucun";
-            let garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
-            let pot = document.getElementById(`${idPrefix}-pot`)?.value || "Aucun";
-            
-            if(nappage !== "Aucun") total += supplementPricePerLot;
-            if(garniture !== "Aucun") total += supplementPricePerLot;
-            if(pot !== "Aucun" && potCount < 2) { total += 0.50; potCount++; }
-            
-            structuredOrderText += `  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value || "Nature"}`;
-            if(nappage !== "Aucun") structuredOrderText += ` + ${nappage}`;
-            if(garniture !== "Aucun") structuredOrderText += ` + ${garniture}`;
-            if(pot !== "Aucun" && potCount <= 2) structuredOrderText += ` + ${pot}`;
-            structuredOrderText += `\n`;
+    // Calculs de suppléments pour les boîtes de 6 et 9
+    [6, 9].forEach(size => {
+        for (let b = 1; b <= boxesSelected[`${size} beignets`]; b++) {
+            structuredOrderText += `\n📦 *BOÎTE DE ${size} BEIGNETS n°${b}* :\n`;
+            for (let lot = 1; lot <= (size === 6 ? 2 : 3); lot++) {
+                let prefix = `box${size}-${b}-lot${lot}`;
+                let n = document.getElementById(`${prefix}-nappage`)?.value || "Aucun";
+                let g = document.getElementById(`${prefix}-garniture`)?.value || "Aucun";
+                let p = document.getElementById(`${prefix}-pot`)?.value || "Aucun";
+                if(n !== "Aucun") total += supplementPricePerLot;
+                if(g !== "Aucun") total += supplementPricePerLot;
+                if(p !== "Aucun") total += 0.50;
+                structuredOrderText += `  - Lot ${lot} : ${document.getElementById(`${prefix}-base`)?.value || "Nature"} ${n !== "Aucun" ? "+ "+n : ""} ${g !== "Aucun" ? "+ "+g : ""} ${p !== "Aucun" ? "+ "+p : ""}\n`;
+            }
         }
-    }
-    
-    // Boîte de 9
-    for (let b = 1; b <= boxesSelected["9 beignets"]; b++) {
-        structuredOrderText += `\n📦 *BOÎTE DE 9 BEIGNETS n°${b}* :\n`;
-        let potCount = 0;
-        for (let lot = 1; lot <= 3; lot++) {
-            let idPrefix = `box9-${b}-lot${lot}`;
-            let nappage = document.getElementById(`${idPrefix}-nappage`)?.value || "Aucun";
-            let garniture = document.getElementById(`${idPrefix}-garniture`)?.value || "Aucun";
-            let pot = document.getElementById(`${idPrefix}-pot`)?.value || "Aucun";
-            
-            if(nappage !== "Aucun") total += supplementPricePerLot;
-            if(garniture !== "Aucun") total += supplementPricePerLot;
-            if(pot !== "Aucun" && potCount < 4) { total += 0.50; potCount++; }
-            
-            structuredOrderText += `  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value || "Nature"}`;
-            if(nappage !== "Aucun") structuredOrderText += ` + ${nappage}`;
-            if(garniture !== "Aucun") structuredOrderText += ` + ${garniture}`;
-            if(pot !== "Aucun" && potCount <= 4) structuredOrderText += ` + ${pot}`;
-            structuredOrderText += `\n`;
-        }
-    }
+    });
     return { totalPrice: total, summaryShort: textSummaryList.join(" / "), detailsText: structuredOrderText };
 }
 
-function updateUI(){
-    let orderInfo = calculateTotalAndExtractStructure();
-    let total = orderInfo.totalPrice;
+function updateUI() {
+    let info = calculateTotalAndExtractStructure();
+    document.getElementById("recap").innerHTML = info.summaryShort ? "<b>Résumé :</b> " + info.summaryShort : "Aucune sélection";
+    document.getElementById("total").innerText = info.totalPrice.toFixed(2);
+    document.getElementById("summary-bar").className = (info.totalPrice > 0) ? "summary show" : "summary";
     
-    // Mise à jour de l'affichage du total
-    document.getElementById("recap").innerHTML = orderInfo.summaryShort ? 
-        "<b>Sélection :</b><br>" + orderInfo.summaryShort + "<br><br><b>Détail :</b><br><small>" + orderInfo.detailsText.replace(/\n/g, "<br>") + "</small>" 
-        : "Aucune sélection";
-    document.getElementById("total").innerText = total.toFixed(2);
-    
-    const summaryBar = document.getElementById("summary-bar");
-    if (boxesSelected["6 beignets"] > 0 || boxesSelected["9 beignets"] > 0) summaryBar.classList.add("show"); else summaryBar.classList.remove("show");
-
-    // Gestion du lien Stripe dynamique
-    let stripeLink = document.getElementById("stripe-link");
-if (total > 0) {
-    stripeLink.style.display = "block";
-    stripeLink.href = "https://buy.stripe.com/test_eVq3cx79rdHN0TufXs7ss00?prefilled_amount=" + Math.round(total * 100);
-    
-    // Ajout de la sauvegarde automatique au clic
-    stripeLink.onclick = function() {
-        localStorage.setItem('maCommande', getOrderText(false));
-    };
-} else {
-    stripeLink.style.display = "none";
-    }
-
-  // Gestion des autres boutons (WhatsApp, SMS, etc.)
-    const buttons = [document.getElementById("whatsapp"), document.getElementById("sms-btn"), document.getElementById("phone-btn")];
-    let shouldEnable = isFormValid();
-    buttons.forEach(btn => { 
-        if(shouldEnable) { 
-            btn.removeAttribute("disabled"); 
-            btn.classList.remove("disabled"); 
-        } else { 
-            btn.setAttribute("disabled", "true"); 
-            btn.classList.add("disabled"); 
-        } 
-    });
-
-    // Gestion du bouton Espèces
-    let especesBtn = document.getElementById("especes-btn");
-    if (especesBtn) {
-        if (selectedPaymentMode === "Espèces") {
-            especesBtn.style.display = "block";
-        } else {
-            especesBtn.style.display = "none";
-        }
-    }
-    
-    let whatsappMsg = encodeURIComponent(getOrderText(false));
-    document.getElementById("whatsapp").href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + whatsappMsg;  
+    // Mise à jour liens
+    let msg = encodeURIComponent(getOrderText(false));
+    document.getElementById("whatsapp").href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + msg;
 }
 
 function isFormValid() {
-    if (boxesSelected["6 beignets"] === 0 && boxesSelected["9 beignets"] === 0) return false;
     let name = document.getElementById("client-name").value.trim();
-    let phoneRaw = document.getElementById("client-phone").value.trim();
+    let phone = document.getElementById("client-phone").value.replace(/[\s\.]+/g, '');
     let date = document.getElementById("client-date").value;
     let time = document.getElementById("client-time").value;
-    let phone = phoneRaw.replace(/[\s\.]+/g, '');
-    if (!name || !phone || !date || !time || time === "COMPLET" || !selectedPaymentMode) return false;
-    if (!/^\d{10}$/.test(phone)) return false;
+    return (name && phone.length === 10 && date && time && selectedPaymentMode);
+}
+
+function checkForm(e) {
+    if (!isFormValid()) { showToast("⚠️ Formulaire incomplet !"); e.preventDefault(); return false; }
+    localStorage.setItem('maCommande', getOrderText(false));
     return true;
 }
 
-function checkForm(event) {
-    if (!isFormValid()) { 
-        showToast("⚠️ Formulaire incomplet !"); 
-        if(event) event.preventDefault(); 
-        return false; 
-    }
-    sendOrderToSheet();
-    return true;
+function getOrderText(clean) {
+    let info = calculateTotalAndExtractStructure();
+    let t = `COMMANDE OH MIKATÉ\n${info.detailsText}\nTOTAL : ${info.totalPrice.toFixed(2)}€\n\nNom: ${document.getElementById("client-name").value}\nTel: ${document.getElementById("client-phone").value}\nDate: ${document.getElementById("client-date").value}\nHeure: ${document.getElementById("client-time").value}\nPaiement: ${selectedPaymentMode}`;
+    return clean ? t.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : t;
 }
 
-function sendOrderToSheet() {
-    let orderInfo = calculateTotalAndExtractStructure();
-    let payload = {
-        name: document.getElementById("client-name").value,
-        phone: document.getElementById("client-phone").value,
-        order: orderInfo.detailsText,
-        total: orderInfo.totalPrice.toFixed(2),
-        payment: selectedPaymentMode,
-        date: new Date().toLocaleDateString('fr-FR')
-    };
-    fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-    });
+function selectPayment(mode) {
+    selectedPaymentMode = mode;
+    document.querySelectorAll('.pay-opt').forEach(el => el.classList.remove('selected'));
+    document.getElementById(mode === 'PayPal' ? 'opt-paypal' : 'opt-especes').classList.add('selected');
+    updateUI();
 }
 
-function getOrderText(cleanForSms = false){
-    let name = document.getElementById("client-name").value.trim();
-    let phoneField = document.getElementById("client-phone").value.trim();
-    let date = document.getElementById("client-date").value;
-    let time = document.getElementById("client-time").value;
-    let noteField = document.getElementById("client-notes").value.trim();
-    let payText = selectedPaymentMode === "Espèces" ? "Espèces (Appoint à prévoir)" : "PayPal";
-    let orderInfo = calculateTotalAndExtractStructure();
-    let boldStr = cleanForSms ? "" : "*";
-    let text = `${boldStr}COMMANDE OH MIKATÉ${boldStr}\n`;
-    text += orderInfo.detailsText;
-    text += `\n💰 ${boldStr}TOTAL : ${orderInfo.totalPrice.toFixed(2)} €${boldStr}`;
-    if(noteField) text += `\n\n📝 ${boldStr}PRÉCISION CLIENT :${boldStr}\n"${noteField}"`;
-    text += `\n\n--- INFOS RETRAIT ---\n👤 ${boldStr}Nom :${boldStr} ${name}\n📞 ${boldStr}Téléphone :${boldStr} ${phoneField}\n📅 ${boldStr}Date souhaitée :${boldStr} ${date}\n⏰ ${boldStr}Tranche souhaitée :${boldStr} ${time}\n💳 ${boldStr}Règlement :${boldStr} ${payText}\n\n📍 ${boldStr}Lieu :${boldStr} Communiqué à la validation`;
-    return cleanForSms ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : text;
-}
-
-function triggerSMS(event) { 
-    if (!checkForm(event)) return; 
-    let smsBody = getOrderText(true); 
-    let ua = navigator.userAgent.toLowerCase(); 
-    let url = "sms:" + targetPhone + (ua.indexOf("iphone") > -1 ? "&body=" : "?body=") + encodeURIComponent(smsBody); 
-    
-    showToast("📱 Redirection..."); 
-    setTimeout(() => { 
-        window.location.href = url;
-        // Redirection vers l'accueil après un délai de 1 seconde (1000ms)
-        setTimeout(() => { window.location.href = './'; }, 1000);
-    }, 500); 
-}
-function triggerCall(event) { if (!checkForm(event)) return; showToast("📞 Lancement..."); setTimeout(() => { window.location.href = "tel:" + targetPhone; }, 500); }
-function renderPaypalButton() {
-    // Affiche le conteneur du bouton et cache le reste
-    document.getElementById("paypal-button-container").style.display = "block";
-    document.getElementById("paypal-button-container").innerHTML = ""; // Nettoie
-
-    paypal.Buttons({
-   createOrder: function(data, actions) {
-        let orderInfo = calculateTotalAndExtractStructure();
-        
-        return actions.order.create({
-            purchase_units: [{
-                amount: { value: orderInfo.totalPrice.toFixed(2) },
-                // On met une description simple
-                description: "Commande Oh! Mikaté Reims"
-            }]
-        });
-    },
-    onApprove: function(data, actions) {
-        return actions.order.capture().then(function(details) {
-            // Une fois que PayPal a validé, le système envoie les données
-            // Le client n'a pas eu à remplir de formulaire PayPal complexe
-            sendOrderToSheet(); 
-            alert("Paiement validé avec succès !");
-        });
-    }
-}).render('#paypal-button-container');
-}
-function selectPayment(mode) { selectedPaymentMode = mode; document.getElementById("opt-paypal").classList.toggle("selected", mode === 'PayPal'); document.getElementById("opt-especes").classList.toggle("selected", mode === 'Espèces'); updateUI(); }
-function alertEspeces() { showToast("💵 Merci de préparer l'appoint !"); }
 function initDates() {
-    const dateSelect = document.getElementById("client-date");
-    dateSelect.innerHTML = '<option value="">-- Sélectionne une date --</option>';
-    let startDate = new Date(2026, 6, 01); // 01 juillet 2026
+    const s = document.getElementById("client-date");
+    s.innerHTML = '<option value="">-- Sélectionne une date --</option>';
+    let d = new Date(2026, 6, 1);
     for (let i = 0; i < 14; i++) {
-        let d = new Date(startDate);
-        d.setDate(startDate.getDate() + i);
-        let label = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-        label = label.charAt(0).toUpperCase() + label.slice(1);
-        let opt = document.createElement("option");
-        opt.value = label;
-        opt.textContent = label;
-        dateSelect.appendChild(opt);
+        let date = new Date(d); date.setDate(d.getDate() + i);
+        let label = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+        s.innerHTML += `<option value="${label}">${label}</option>`;
     }
 }
 
 function handleDateChange() {
-    const timeSelect = document.getElementById("client-time");
-    const warning = document.getElementById("time-warning");
-    if (warning) warning.style.display = "none";
-    timeSelect.innerHTML = '<option value="">-- Sélectionne une tranche horaire --</option>';
-    baseHours.forEach(t => {
-        let o = document.createElement("option");
-        o.value = o.textContent = t;
-        timeSelect.appendChild(o);
-    });
+    const t = document.getElementById("client-time");
+    t.innerHTML = '<option value="">-- Tranche horaire --</option>';
+    baseHours.forEach(h => t.innerHTML += `<option value="${h}">${h}</option>`);
     updateUI();
 }
-function showToast(m) { const t = document.getElementById("toast"); t.innerHTML = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 5000); }
-initDates(); handleDateChange();
-<script>
+
+// Initialisation
+initDates();
+
+// Page succès (Auto-exécution)
 (function() {
-    // On n'exécute ce code que si on est sur la page de succès
     if (window.location.search.includes('success=true')) {
-        window.addEventListener('DOMContentLoaded', (event) => {
-            document.body.innerHTML = `
-                <div style="padding: 20px; text-align: center; color: white; font-family: sans-serif;">
-                    <h1>🎉 Commande Validée !</h1>
-                    <div id="final-validation-page"></div>
-                </div>
-            `;
+        window.addEventListener('DOMContentLoaded', () => {
+            let cmd = localStorage.getItem('maCommande');
+            document.body.innerHTML = `<h1>🎉 Commande Validée !</h1><div>${cmd.replace(/\n/g, "<br>")}</div>`;
+        });
+    }
+})();
             
             let commande = localStorage.getItem('maCommande');
             document.getElementById('final-validation-page').innerHTML = `
