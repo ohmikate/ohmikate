@@ -753,23 +753,41 @@ function updateUI(){
     let stripeLink = document.getElementById("stripe-link");
 let isFormValidForPayment = isFormValid(); // Utilise votre fonction de validation existante
 
-if (total > 0 && selectedPaymentMode === "PayPal" && isFormValidForPayment) {
-    stripeLink.style.display = "block";
-    stripeLink.href = "https://buy.stripe.com/test_eVq3cx79rdHN0TufXs7ss00?prefilled_amount=" + Math.round(total * 100);
-    stripeLink.classList.remove("disabled"); // Assure l'apparence active
-} else {
-    stripeLink.style.display = "none";
-}
+// Gestion du lien Stripe dynamique
+    let stripeLink = document.getElementById("stripe-link");
+    let whatsappBtn = document.getElementById("whatsapp");
+    let smsBtn = document.getElementById("sms-btn");
+    let phoneBtn = document.getElementById("phone-btn");
+    let isFormValidForPayment = isFormValid();
 
-    // Gestion des autres boutons (WhatsApp, SMS, etc.)
-    const buttons = [document.getElementById("whatsapp"), document.getElementById("sms-btn"), document.getElementById("phone-btn")];
-    let shouldEnable = isFormValid();
-    buttons.forEach(btn => { if(shouldEnable) { btn.removeAttribute("disabled"); btn.classList.remove("disabled"); } else { btn.setAttribute("disabled", "true"); btn.classList.add("disabled"); } });
-    
-    let whatsappMsg = encodeURIComponent(getOrderText(false));
-    document.getElementById("whatsapp").href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + whatsappMsg;
-}
-
+    if (total > 0 && selectedPaymentMode === "PayPal" && isFormValidForPayment) {
+        stripeLink.style.display = "block";
+        stripeLink.href = "https://buy.stripe.com/votre_code_live"; // REMPLACEZ PAR VOTRE LIEN
+        stripeLink.classList.remove("disabled");
+        
+        // On masque les boutons de message quand le paiement en ligne est choisi
+        whatsappBtn.style.display = "none";
+        smsBtn.style.display = "none";
+        phoneBtn.style.display = "none";
+    } else {
+        stripeLink.style.display = "none";
+        
+        // On réaffiche les boutons de message (pour Espèces ou formulaire incomplet)
+        whatsappBtn.style.display = "block";
+        smsBtn.style.display = "block";
+        phoneBtn.style.display = "block";
+        
+        // Gestion des états "disabled" pour les boutons de message
+        let shouldEnable = isFormValid();
+        let buttons = [whatsappBtn, smsBtn, phoneBtn];
+        buttons.forEach(btn => { 
+            if(shouldEnable) { btn.removeAttribute("disabled"); btn.classList.remove("disabled"); } 
+            else { btn.setAttribute("disabled", "true"); btn.classList.add("disabled"); } 
+        });
+        
+        let whatsappMsg = encodeURIComponent(getOrderText(false));
+        whatsappBtn.href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + whatsappMsg;
+    }
 function isFormValid() {
     if (boxesSelected["6 beignets"] === 0 && boxesSelected["9 beignets"] === 0) return false;
     let name = document.getElementById("client-name").value.trim();
