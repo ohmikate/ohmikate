@@ -756,7 +756,11 @@ let isFormValidForPayment = isFormValid(); // Utilise votre fonction de validati
 if (total > 0 && selectedPaymentMode === "PayPal" && isFormValidForPayment) {
     stripeLink.style.display = "block";
     stripeLink.href = "https://buy.stripe.com/test_eVq3cx79rdHN0TufXs7ss00?prefilled_amount=" + Math.round(total * 100);
-    stripeLink.classList.remove("disabled"); // Assure l'apparence active
+   stripeLink.onclick = function() {
+            let orderInfo = calculateTotalAndExtractStructure();
+            localStorage.setItem('maCommande', orderInfo.detailsText);
+        };
+   stripeLink.classList.remove("disabled"); // Assure l'apparence active
 } else {
     stripeLink.style.display = "none";
 }
