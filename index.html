@@ -545,7 +545,7 @@ border:1px solid #333;
     <h3 style="color: #ff4f8b;">🎉 Commande validée !</h3>
     <p>Merci pour votre confiance. Voici le récapitulatif :</p>
     
-    <div style="text-align: left; background: #000; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; border: 1px solid #333;">
+    <div style="text-align: left; background: #000; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; border: 1px solid #333; max-height: none;">
         </div>
 
     <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer le récapitulatif :</p>
@@ -846,23 +846,17 @@ function renderPaypalButton() {
         });
     },
   onApprove: function(data, actions) {
-        // ON GARDE CETTE LIGNE :
-        return actions.order.capture().then(function(details) {
-            
-            // --- AJOUTEZ VOS MODIFICATIONS ICI ---
-            
-            // 1. Sauvegarde du récapitulatif complet (avec infos de retrait)
-            let recapComplet = getOrderText(false);
-            localStorage.setItem('maCommande', recapComplet);
-            
-            // 2. Envoi des données à votre Google Sheet
-            sendOrderToSheet(); 
-            
-            // 3. Redirection vers la page avec le flag "success"
-            window.location.href = window.location.pathname + "?success=true";
-            
-            // ------------------------------------
-        });
+    return actions.order.capture().then(function(details) {
+        // 1. Sauvegarde du récapitulatif complet (inclut tout le texte)
+        let recapComplet = getOrderText(false);
+        localStorage.setItem('maCommande', recapComplet);
+        
+        // 2. Envoi des données à votre Google Sheet
+        sendOrderToSheet(); 
+        
+        // 3. Redirection avec le paramètre success
+        window.location.href = window.location.pathname + "?success=true";
+    });
     }
 }).render('#paypal-button-container');
 }
@@ -904,29 +898,39 @@ window.onload = function() {
     let commande = localStorage.getItem('maCommande');
     let finalDiv = document.getElementById('final-validation');
 
-    // Si on est sur la page de succès et qu'on a une commande en mémoire
+    // Vérifie si on est sur la page de succès
     if (commande && window.location.search.includes('success')) {
+        // Masquer le site
         document.querySelector('.section').style.display = 'none';
         document.querySelector('.hero').style.display = 'none';
         document.querySelector('.summary').style.display = 'none';
 
+        // Afficher et remplir le bloc de confirmation
         finalDiv.style.display = 'block';
-        
-        // Mise à jour du contenu du récapitulatif
-        finalDiv.querySelector('div').innerHTML = commande.replace(/\n/g, "<br>");
-        
-        // Configuration dynamique des boutons
-        let encodedMsg = encodeURIComponent(commande);
-        document.getElementById('final-whatsapp').href = "https://wa.me/33698213380?text=" + encodedMsg;
-        document.getElementById('final-sms').href = "sms:0698213380?body=" + encodedMsg;
-    } else {
-        finalDiv.style.display = 'none';
+        finalDiv.innerHTML = `
+            <div style="max-width: 600px; margin: auto; background: #1a1a1a; padding: 25px; border-radius: 15px; border: 2px solid #ff4f8b;">
+                <h2 style="color: #ff4f8b; margin-top: 0;">🎉 Commande validée !</h2>
+                <p>Merci pour votre confiance. Voici le récapitulatif :</p>
+                
+                <div style="text-align: left; background: #000; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; border: 1px solid #333; max-height: none; overflow-y: auto;">
+                    ${commande.replace(/\n/g, "<br>")}
+                </div>
+
+                <p>Cliquez pour envoyer le récapitulatif :</p>
+                <a id="final-whatsapp" href="https://wa.me/33698213380?text=${encodeURIComponent(commande)}" class="btn whatsapp" style="margin-bottom:10px;">📲 Envoyer sur WhatsApp</a>
+                <a id="final-sms" href="sms:0698213380?body=${encodeURIComponent(commande)}" class="btn smsbtn">💬 Envoyer par SMS</a>
+
+                <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+                
+                <h3 style="font-size: 18px; color: #fff;">Besoin d'annuler ?</h3>
+                <a href="https://wa.me/33698213380?text=Je%20souhaite%20annuler%20ma%20commande." class="btn" style="background: #ff4f8b; text-decoration:none; color:white;">Annuler via WhatsApp</a>
+            </div>
+        `;
     }
-    
-    initDates(); 
+
+    initDates();
     handleDateChange();
 };
-
 </script>
 </body>
 </html>
