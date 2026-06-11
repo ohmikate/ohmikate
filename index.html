@@ -845,17 +845,25 @@ function renderPaypalButton() {
             }]
         });
     },
-   onApprove: function(data, actions) {
-    return actions.order.capture().then(function(details) {
-        // AJOUTEZ CETTE LIGNE ICI :
-        localStorage.setItem('maCommande', getOrderText(false));
-        
-        sendOrderToSheet(); 
-        alert("Paiement validé avec succès !");
-        // Optionnel : rediriger vers la même page avec le paramètre success
-        window.location.href = window.location.pathname + "?success=true";
-    });
-},
+  onApprove: function(data, actions) {
+        // ON GARDE CETTE LIGNE :
+        return actions.order.capture().then(function(details) {
+            
+            // --- AJOUTEZ VOS MODIFICATIONS ICI ---
+            
+            // 1. Sauvegarde du récapitulatif complet (avec infos de retrait)
+            let recapComplet = getOrderText(false);
+            localStorage.setItem('maCommande', recapComplet);
+            
+            // 2. Envoi des données à votre Google Sheet
+            sendOrderToSheet(); 
+            
+            // 3. Redirection vers la page avec le flag "success"
+            window.location.href = window.location.pathname + "?success=true";
+            
+            // ------------------------------------
+        });
+    }
 }).render('#paypal-button-container');
 }
 function selectPayment(mode) { selectedPaymentMode = mode; document.getElementById("opt-paypal").classList.toggle("selected", mode === 'PayPal'); document.getElementById("opt-especes").classList.toggle("selected", mode === 'Espèces'); updateUI(); }
