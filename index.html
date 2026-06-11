@@ -541,31 +541,30 @@ border:1px solid #333;
 <div class="small">💡 Choisis tes boîtes, configure tes lots et remplis tes coordonnées (*) pour débloquer l'envoi.</div>
 </div>
 </div>
-<div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
-    <p style="font-size: 12px; color: #777;">Un empêchement de dernière minute ?</p>
-   <!-- Ajoutez ce bloc là où vous voulez afficher les boutons de fin de commande -->
-<div id="final-validation" style="display:none; text-align:center; padding: 20px;">
-    <h3>Commande payée !</h3>
-    <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer le récapitulatif :</p>
-    <a id="final-whatsapp" class="btn whatsapp" target="_blank">📲 Envoyer sur WhatsApp</a>
-    <a id="final-sms" class="btn smsbtn" style="margin-top:10px;">💬 Envoyer par SMS</a>
-</div>
+<div id="final-validation" style="display:none; text-align:center; padding: 20px; background: #1a1a1a; border: 2px solid #ff4f8b; border-radius: 15px; margin: 20px;">
+    <h3 style="color: #ff4f8b;">🎉 Commande validée !</h3>
+    <p>Merci pour votre confiance. Voici le récapitulatif :</p>
     
-    <a href="https://wa.me/33698213380?text=Bonjour,%20je%20souhaite%20annuler%20ma%20commande." 
+    <div style="text-align: left; background: #000; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; border: 1px solid #333;">
+        </div>
+
+    <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer le récapitulatif :</p>
+    <a id="final-whatsapp" class="btn whatsapp" style="margin-bottom:10px;">📲 Envoyer sur WhatsApp</a>
+    <a id="final-sms" class="btn smsbtn">💬 Envoyer par SMS</a>
+
+    <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+
+    <h3 style="font-size: 18px; color: #fff;">Besoin d'annuler ?</h3>
+    <p style="font-size: 12px; color: #aaa; margin-bottom: 20px;">Un empêchement de dernière minute ? Vous pouvez annuler votre commande ici :</p>
+    
+    <a href="https://wa.me/33698213380?text=Je%20souhaite%20annuler%20ma%20commande." 
        style="color: #ff4f8b; text-decoration: underline; font-weight: bold; display: block; margin-bottom: 10px;">
-       Annuler votre commande
+       Annuler via WhatsApp
     </a>
     
     <a href="tel:0698213380" style="color: #007aff; text-decoration: underline; font-weight: bold; font-size: 20px;">
-       📞 Annuler par appel ou SMS
+       📞 Annuler par appel
     </a>
-
-    <p style="font-size: 11px; color: #999; margin-top: 10px;">
-        Merci de préciser votre nom et votre numéro de téléphone.
-
-    <p style="font-size: 11px; color: #555; text-align: center; margin-top: 5px;">
-        Vous recevrez une confirmation de ma part dès réception de votre annulation.
-    </p>
 </div>
 <script>
 /* (Script inchangé pour conserver la logique fonctionnelle) */
@@ -846,14 +845,17 @@ function renderPaypalButton() {
             }]
         });
     },
-    onApprove: function(data, actions) {
-        return actions.order.capture().then(function(details) {
-            // Une fois que PayPal a validé, le système envoie les données
-            // Le client n'a pas eu à remplir de formulaire PayPal complexe
-            sendOrderToSheet(); 
-            alert("Paiement validé avec succès !");
-        });
-    }
+   onApprove: function(data, actions) {
+    return actions.order.capture().then(function(details) {
+        // AJOUTEZ CETTE LIGNE ICI :
+        localStorage.setItem('maCommande', getOrderText(false));
+        
+        sendOrderToSheet(); 
+        alert("Paiement validé avec succès !");
+        // Optionnel : rediriger vers la même page avec le paramètre success
+        window.location.href = window.location.pathname + "?success=true";
+    });
+},
 }).render('#paypal-button-container');
 }
 function selectPayment(mode) { selectedPaymentMode = mode; document.getElementById("opt-paypal").classList.toggle("selected", mode === 'PayPal'); document.getElementById("opt-especes").classList.toggle("selected", mode === 'Espèces'); updateUI(); }
@@ -892,43 +894,28 @@ initDates(); handleDateChange();
    <script>
 window.onload = function() {
     let commande = localStorage.getItem('maCommande');
+    let finalDiv = document.getElementById('final-validation');
 
-    // Si on est sur la page de succès
-    // Si on est sur la page de succès
+    // Si on est sur la page de succès et qu'on a une commande en mémoire
     if (commande && window.location.search.includes('success')) {
-        // 1. On masque tout le contenu principal
         document.querySelector('.section').style.display = 'none';
         document.querySelector('.hero').style.display = 'none';
         document.querySelector('.summary').style.display = 'none';
 
-        // 2. On affiche la page de confirmation dédiée
-        let finalDiv = document.getElementById('final-validation');
         finalDiv.style.display = 'block';
-        finalDiv.style.padding = '40px 20px';
         
-        finalDiv.innerHTML = `
-            <div style="max-width: 600px; margin: auto; background: #1a1a1a; padding: 25px; border-radius: 15px; border: 2px solid #ff4f8b;">
-                <h2 style="color: #ff4f8b; margin-top: 0;">🎉 Commande validée !</h2>
-                <p>Merci pour votre confiance. Voici le récapitulatif :</p>
-                <div style="text-align: left; background: #000; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; border: 1px solid #333;">
-                    ${commande.replace(/\n/g, "<br>")}
-                </div>
-                <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-                <h3 style="font-size: 18px; color: #fff;">Besoin d'annuler ?</h3>
-                <p style="font-size: 12px; color: #aaa; margin-bottom: 20px;">En cas d'empêchement, vous pouvez annuler votre commande ici :</p>
-                <a href="https://wa.me/33698213380?text=Je%20souhaite%20annuler%20ma%20commande." class="btn" style="background: #ff4f8b; margin-bottom: 15px; text-decoration:none; color:white;">Annuler via WhatsApp</a>
-                <a href="tel:0698213380" class="btn" style="background: #007aff; text-decoration:none; color:white;">Appeler pour annuler</a>
-            </div>
-        `;
-    }
+        // Mise à jour du contenu du récapitulatif
+        finalDiv.querySelector('div').innerHTML = commande.replace(/\n/g, "<br>");
+        
+        // Configuration dynamique des boutons
+        let encodedMsg = encodeURIComponent(commande);
+        document.getElementById('final-whatsapp').href = "https://wa.me/33698213380?text=" + encodedMsg;
+        document.getElementById('final-sms').href = "sms:0698213380?body=" + encodedMsg;
     } else {
-        // Mode normal : on cache le bloc succès
-        let finalDiv = document.getElementById('final-validation');
-        if (finalDiv) finalDiv.style.display = 'none';
+        finalDiv.style.display = 'none';
     }
-
-    // Initialisation habituelle
-    initDates();
+    
+    initDates(); 
     handleDateChange();
 };
 
