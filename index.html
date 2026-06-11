@@ -770,22 +770,40 @@ if (total > 0 && selectedPaymentMode === "PayPal" && isFormValidForPayment) {
     let shouldEnable = isFormValid();
     buttons.forEach(btn => { if(shouldEnable) { btn.removeAttribute("disabled"); btn.classList.remove("disabled"); } else { btn.setAttribute("disabled", "true"); btn.classList.add("disabled"); } });
     
-    let whatsappMsg = encodeURIComponent(getOrderText(false));
-    document.getElementById("whatsapp").href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + whatsappMsg;
+// Ajoutez cette fonction en bas de votre script
+function mettreAJourBoutons() {
+    let msgTexte = `✨ Commande Oh! Mikaté reçue !%0A%0A` +
+                   `Bonjour, c'est ${document.getElementById("client-name").value}. Voici ma commande :%0A` +
+                   `🗓 Date : ${document.getElementById("client-date").value}%0A` +
+                   `⏰ Heure : ${document.getElementById("client-time").value}%0A` +
+                   `📦 Détails : ${getOrderText(false)}%0A` +
+                   `💰 Total : ${document.getElementById("total").innerText}€%0A%0A` +
+                   `📍 Lieu : 36 rue du Chanoine Lallement, Reims.%0A` +
+                   `🗺 Itinéraire : https://maps.google.com/?cid=8003217633022565196%0A%0A` +
+                   `À bientôt !`;
+
+    document.getElementById("whatsapp").href = "https://wa.me/33698213380?text=" + msgTexte;
+    document.getElementById("sms-btn").href = "sms:0698213380?body=" + msgTexte;
 }
 
+
 function isFormValid() {
+    // 1. Mise à jour des boutons
+    mettreAJourBoutons(); 
+
+    // 2. Vérification des données
     if (boxesSelected["6 beignets"] === 0 && boxesSelected["9 beignets"] === 0) return false;
     let name = document.getElementById("client-name").value.trim();
     let phoneRaw = document.getElementById("client-phone").value.trim();
     let date = document.getElementById("client-date").value;
     let time = document.getElementById("client-time").value;
-    let phone = phoneRaw.replace(/[\s\.]+/g, '');
+    let phone = phoneRaw.replace(/[\s.]+/g, '');
+    
     if (!name || !phone || !date || !time || time === "COMPLET" || !selectedPaymentMode) return false;
     if (!/^\d{10}$/.test(phone)) return false;
+    
     return true;
 }
-
 function checkForm(event) {
     if (!isFormValid()) { 
         showToast("⚠️ Formulaire incomplet !"); 
