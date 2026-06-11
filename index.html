@@ -897,51 +897,32 @@ function showToast(m) { const t = document.getElementById("toast"); t.innerHTML 
 initDates(); handleDateChange();
 </script>
    <script>
+// Remplacez votre bloc actuel par celui-ci :
 window.onload = function() {
     let commande = localStorage.getItem('maCommande');
     let finalDiv = document.getElementById('final-validation');
-    let recapContent = document.getElementById('recap-content');
-    let summaryBar = document.getElementById('summary-bar');
 
-    // Vérifie si on est sur la page de succès et qu'il y a une commande
-    if (commande && window.location.search.includes('success=true')) {
-        if (finalDiv) {
-            finalDiv.style.display = 'block';
-            if (summaryBar) summaryBar.style.display = 'none';
-
-            // Injection propre dans le DOM
-            recapContent.innerHTML = `
-                <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #ff007f; margin-bottom: 20px;">
-                    <h4>Récapitulatif de votre commande</h4>
-                    <div style="text-align: left;">${commande.replace(/\n/g, "<br>")}</div>
-                </div>
-                <p>Cliquez pour envoyer :</p>
-            `;
-
-            // Configuration des liens
-            let waBtn = document.getElementById('final-whatsapp');
-            let smsBtn = document.getElementById('final-sms');
-            
-            waBtn.href = "https://wa.me/33698213380?text=" + encodeURIComponent(commande);
-            smsBtn.href = "sms:0698213380?body=" + encodeURIComponent(commande.normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
-
-            // Redirection après clic
-            [waBtn, smsBtn].forEach(btn => {
-                btn.addEventListener('click', () => {
-                    localStorage.removeItem('maCommande'); // Optionnel : vide le panier
-                    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
-                });
-            });
-        }
+    // On n'affiche le bloc de succès QUE SI :
+    // 1. L'URL contient 'success=true'
+    // 2. ET qu'il y a bien une commande en mémoire
+    if (window.location.search.includes('success=true') && commande) {
+        
+        // ... (votre code existant pour afficher le récapitulatif)
+        finalDiv.style.display = 'block';
+        // Masquer le reste du site...
+        
     } else {
-        // Mode normal
+        // Sinon, on cache le bloc de succès par défaut
         if (finalDiv) finalDiv.style.display = 'none';
+        
+        // Et on s'assure que le reste du formulaire est visible
+        // (Si vous utilisez une classe CSS 'page-success-mode', retirez-la)
+        document.body.classList.remove('page-success-mode');
     }
-
+    
     initDates();
     handleDateChange();
 };
-
 </script>
 </body>
 </html>
