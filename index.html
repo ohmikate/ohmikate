@@ -768,10 +768,17 @@ if (total > 0 && selectedPaymentMode === "PayPal" && isFormValidForPayment) {
     // Gestion des autres boutons (WhatsApp, SMS, etc.)
     const buttons = [document.getElementById("whatsapp"), document.getElementById("sms-btn"), document.getElementById("phone-btn")];
     let shouldEnable = isFormValid();
-    buttons.forEach(btn => { if(shouldEnable) { btn.removeAttribute("disabled"); btn.classList.remove("disabled"); } else { btn.setAttribute("disabled", "true"); btn.classList.add("disabled"); } });
+    buttons.forEach(btn => { 
+       if(shouldEnable) { 
+          btn.removeAttribute("disabled"); 
+          btn.classList.remove("disabled"); 
+       } else { 
+          btn.setAttribute("disabled", "true"); 
+          btn.classList.add("disabled"); 
+       } 
+    });
     
-// Ajoutez cette fonction en bas de votre script
-function mettreAJourBoutons() {
+   function mettreAJourBoutons() {
     let msgTexte = `✨ Commande Oh! Mikaté reçue !%0A%0A` +
                    `Bonjour, c'est ${document.getElementById("client-name").value}. Voici ma commande :%0A` +
                    `🗓 Date : ${document.getElementById("client-date").value}%0A` +
@@ -782,8 +789,8 @@ function mettreAJourBoutons() {
                    `🗺 Itinéraire : https://maps.google.com/?cid=8003217633022565196%0A%0A` +
                    `À bientôt !`;
 
-    document.getElementById("whatsapp").href = "https://wa.me/33698213380?text=" + msgTexte;
-    document.getElementById("sms-btn").href = "sms:0698213380?body=" + msgTexte;
+    document.getElementById("whatsapp").href = "https://wa.me/33698213380?text=" + encodeURIComponent(msgTexte);
+    document.getElementById("sms-btn").href = "sms:0698213380?body=" + encodeURIComponent(msgTexte);
 }
 
 
