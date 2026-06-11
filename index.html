@@ -485,7 +485,7 @@ border:1px solid #333;
         <strong>gluten (blé), arachides, fruits à coque, produits laitiers (lait) et soja</strong>. 
         Merci de nous signaler toute allergie sévère dans la zone "Précisions" ci-dessous.
     </p>
-</div>
+</div
 <h3>3. Tes informations de retrait</h3>
 <span class="info-limite" style="color: #aaa; font-style: normal;">📍 L'adresse complète te sera transmise lors de la validation de ton créneau.</span>
 
@@ -568,7 +568,7 @@ border:1px solid #333;
     </p>
 </div>
 <script>
-/* 1. VARIABLES GLOBALES */
+/* (Script inchangé pour conserver la logique fonctionnelle) */
 let boxesSelected = { "6 beignets": 0, "9 beignets": 0 };
 const boxPrices = { "6 beignets": 5.0, "9 beignets": 7.0 };
 const supplementPricePerLot = 0.50;
@@ -576,32 +576,25 @@ let selectedPaymentMode = "";
 const targetPhone = "0698213380"; 
 const baseHours = ["17h00 - 17h30", "17h30 - 18h00", "18h00 - 18h30", "18h30 - 19h00", "19h00 - 19h30", "19h30 - 20h00"];
 
-/* 2. FONCTIONS DE GESTION */
+function changeBoxQty(type, change) {
+    let input = type === "6 beignets" ? document.getElementById("qty-6") : document.getElementById("qty-9");
+    let current = parseInt(input.value) || 0;
+    let newVal = current + change;
+    if(newVal < 0) newVal = 0;
+    input.value = newVal;
+    setBoxQty(type, newVal);
+}
+
 function setBoxQty(type, value) {
     let val = parseInt(value) || 0;
     if(val < 0) val = 0;
     boxesSelected[type] = val;
     let card = document.querySelector(`[data-name="${type}"]`);
-    if(card) {
-        if(val > 0) card.classList.add("has-qty");
-        else card.classList.remove("has-qty");
-    }
+    if(val > 0) card.classList.add("has-qty"); else card.classList.remove("has-qty");
     generateCompositionForm();
     updateUI();
 }
 
-function changeBoxQty(type, value) {
-    let val = parseInt(value) || 0;
-    if (val < 0) val = 0;
-    boxesSelected[type] = val;
-    let card = document.querySelector(`[data-name="${type}"]`);
-    if (card) {
-        if (val > 0) card.classList.add("has-qty");
-        else card.classList.remove("has-qty");
-    }
-    generateCompositionForm();
-    updateUI();
-}
 function generateCompositionForm() {
     const container = document.getElementById("composition-zone");
     if (boxesSelected["6 beignets"] === 0 && boxesSelected["9 beignets"] === 0) {
@@ -743,7 +736,7 @@ function calculateTotalAndExtractStructure() {
     return { totalPrice: total, summaryShort: textSummaryList.join(" / "), detailsText: structuredOrderText };
 }
 
-function updateUI() {
+function updateUI(){
     let orderInfo = calculateTotalAndExtractStructure();
     let total = orderInfo.totalPrice;
     
@@ -754,40 +747,29 @@ function updateUI() {
     document.getElementById("total").innerText = total.toFixed(2);
     
     const summaryBar = document.getElementById("summary-bar");
-    if (boxesSelected["6 beignets"] > 0 || boxesSelected["9 beignets"] > 0) {
-        summaryBar.classList.add("show");
-    } else {
-        summaryBar.classList.remove("show");
-    }
+    if (boxesSelected["6 beignets"] > 0 || boxesSelected["9 beignets"] > 0) summaryBar.classList.add("show"); else summaryBar.classList.remove("show");
 
-    // Gestion des boutons d'action
+    // Gestion du lien Stripe dynamique
     let stripeLink = document.getElementById("stripe-link");
-    let whatsappBtn = document.getElementById("whatsapp");
-    let smsBtn = document.getElementById("sms-btn");
-    let phoneBtn = document.getElementById("phone-btn");
-    let shouldEnable = isFormValid();
+let isFormValidForPayment = isFormValid(); // Utilise votre fonction de validation existante
 
-    // Logique de visibilité
-    if (total > 0 && selectedPaymentMode === "PayPal" && shouldEnable) {
-        stripeLink.style.display = "block";
-        whatsappBtn.style.display = "none";
-        smsBtn.style.display = "none";
-        phoneBtn.style.display = "none";
-    } else {
-        stripeLink.style.display = "none";
-        whatsappBtn.style.display = "block";
-        smsBtn.style.display = "block";
-        phoneBtn.style.display = "block";
-        
-        // Gestion état disabled
-        [whatsappBtn, smsBtn, phoneBtn].forEach(btn => { 
-            if(shouldEnable) { btn.classList.remove("disabled"); } 
-            else { btn.classList.add("disabled"); } 
-        });
-        
-        whatsappBtn.href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + encodeURIComponent(getOrderText(false));
-    }
+if (total > 0 && selectedPaymentMode === "PayPal" && isFormValidForPayment) {
+    stripeLink.style.display = "block";
+    stripeLink.href = "https://buy.stripe.com/test_eVq3cx79rdHN0TufXs7ss00?prefilled_amount=" + Math.round(total * 100);
+    stripeLink.classList.remove("disabled"); // Assure l'apparence active
+} else {
+    stripeLink.style.display = "none";
 }
+
+    // Gestion des autres boutons (WhatsApp, SMS, etc.)
+    const buttons = [document.getElementById("whatsapp"), document.getElementById("sms-btn"), document.getElementById("phone-btn")];
+    let shouldEnable = isFormValid();
+    buttons.forEach(btn => { if(shouldEnable) { btn.removeAttribute("disabled"); btn.classList.remove("disabled"); } else { btn.setAttribute("disabled", "true"); btn.classList.add("disabled"); } });
+    
+    let whatsappMsg = encodeURIComponent(getOrderText(false));
+    document.getElementById("whatsapp").href = "https://wa.me/33" + targetPhone.substring(1) + "?text=" + whatsappMsg;
+}
+
 function isFormValid() {
     if (boxesSelected["6 beignets"] === 0 && boxesSelected["9 beignets"] === 0) return false;
     let name = document.getElementById("client-name").value.trim();
@@ -911,33 +893,45 @@ initDates(); handleDateChange();
 window.onload = function() {
     let commande = localStorage.getItem('maCommande');
 
+    // Si on est sur la page de succès
+    // Si on est sur la page de succès
     if (commande && window.location.search.includes('success')) {
+        // 1. On masque tout le contenu principal
         document.querySelector('.section').style.display = 'none';
         document.querySelector('.hero').style.display = 'none';
         document.querySelector('.summary').style.display = 'none';
 
+        // 2. On affiche la page de confirmation dédiée
         let finalDiv = document.getElementById('final-validation');
-        if (finalDiv) {
-            finalDiv.style.display = 'block';
-            finalDiv.style.padding = '40px 20px';
-            finalDiv.innerHTML = `
-                <div style="max-width: 600px; margin: auto; background: #1a1a1a; padding: 25px; border-radius: 15px; border: 2px solid #ff4f8b;">
-                    <h2 style="color: #ff4f8b; margin-top: 0;">🎉 Commande validée !</h2>
-                    <p>Merci pour votre confiance. Voici le récapitulatif :</p>
-                    <div style="text-align: left; background: #000; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; border: 1px solid #333;">
-                        ${commande.replace(/\n/g, "<br>")}
-                    </div>
+        finalDiv.style.display = 'block';
+        finalDiv.style.padding = '40px 20px';
+        
+        finalDiv.innerHTML = `
+            <div style="max-width: 600px; margin: auto; background: #1a1a1a; padding: 25px; border-radius: 15px; border: 2px solid #ff4f8b;">
+                <h2 style="color: #ff4f8b; margin-top: 0;">🎉 Commande validée !</h2>
+                <p>Merci pour votre confiance. Voici le récapitulatif :</p>
+                <div style="text-align: left; background: #000; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; border: 1px solid #333;">
+                    ${commande.replace(/\n/g, "<br>")}
                 </div>
-            `;
-        }
+                <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+                <h3 style="font-size: 18px; color: #fff;">Besoin d'annuler ?</h3>
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 20px;">En cas d'empêchement, vous pouvez annuler votre commande ici :</p>
+                <a href="https://wa.me/33698213380?text=Je%20souhaite%20annuler%20ma%20commande." class="btn" style="background: #ff4f8b; margin-bottom: 15px; text-decoration:none; color:white;">Annuler via WhatsApp</a>
+                <a href="tel:0698213380" class="btn" style="background: #007aff; text-decoration:none; color:white;">Appeler pour annuler</a>
+            </div>
+        `;
+    }
     } else {
+        // Mode normal : on cache le bloc succès
         let finalDiv = document.getElementById('final-validation');
         if (finalDiv) finalDiv.style.display = 'none';
     }
 
+    // Initialisation habituelle
     initDates();
     handleDateChange();
 };
+
 </script>
 </body>
 </html>
