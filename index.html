@@ -785,14 +785,19 @@ function isFormValid() {
 }
 
 function checkForm(event) {
-    if (!isFormValid()) { 
-        showToast("⚠️ Formulaire incomplet !"); 
-        if(event) event.preventDefault(); 
-        return false; 
+    if (!isFormValid()) {
+        showToast("⚠️ Formulaire incomplet !");
+        event.preventDefault();
+        return false;
     }
-    sendOrderToSheet();
-    return true;
+    // Sauvegarde la commande
+    localStorage.setItem('maCommande', getOrderText(false));
+    
+    // Redirection vers la page avec paramètre success
+    window.location.href = 'index.html?success=true';
+    return false; // On empêche le submit classique car on redirige manuellement
 }
+
 
 function sendOrderToSheet() {
     let orderInfo = calculateTotalAndExtractStructure();
