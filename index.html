@@ -897,11 +897,19 @@ initDates(); handleDateChange();
 window.onload = function() {
     let commande = localStorage.getItem('maCommande');
     let finalDiv = document.getElementById('final-validation');
+
+    // 1. Vérifie si on est sur la page de succès et qu'une commande existe
+    if (commande && window.location.search.includes('success')) {
+        // Masquer le contenu principal
+        document.querySelector('.section').style.display = 'none';
+        document.querySelector('.hero').style.display = 'none';
+        document.querySelector('.summary').style.display = 'none';
+
+        // Afficher le bloc de confirmation
         finalDiv.style.display = 'block';
         
-        // On récupère le texte complet via getOrderText(false) 
-        // Et on remplace les sauts de ligne par des <br> pour l'affichage HTML
-        let contenuComplet = getOrderText(false);
+        // On récupère le texte complet
+        let contenuComplet = commande; // On utilise la commande stockée
         
         finalDiv.innerHTML = `
             <div style="max-width: 600px; margin: auto; background: #1a1a1a; padding: 25px; border-radius: 15px; border: 2px solid #ff4f8b;">
@@ -913,8 +921,8 @@ window.onload = function() {
                 </div>
 
                 <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer ce récapitulatif :</p>
-                <a id="final-whatsapp" href="https://wa.me/33698213380?text=${encodeURIComponent(contenuComplet)}" class="btn whatsapp" style="margin-bottom:10px;">📲 Envoyer sur WhatsApp</a>
-                <a id="final-sms" href="sms:0698213380?body=${encodeURIComponent(contenuComplet)}" class="btn smsbtn">💬 Envoyer par SMS</a>
+                <a href="https://wa.me/33698213380?text=${encodeURIComponent(contenuComplet)}" class="btn whatsapp" style="margin-bottom:10px;">📲 Envoyer sur WhatsApp</a>
+                <a href="sms:0698213380?body=${encodeURIComponent(contenuComplet)}" class="btn smsbtn">💬 Envoyer par SMS</a>
 
                 <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
                 
@@ -922,6 +930,15 @@ window.onload = function() {
                 <a href="https://wa.me/33698213380?text=Je%20souhaite%20annuler%20ma%20commande." class="btn" style="background: #ff4f8b; text-decoration:none; color:white;">Annuler via WhatsApp</a>
             </div>
         `;
+    } else {
+        // Mode normal : on cache le bloc succès
+        if (finalDiv) finalDiv.style.display = 'none';
+    }
+
+    // Initialisation habituelle
+    initDates();
+    handleDateChange();
+};
     }
 
     initDates();
