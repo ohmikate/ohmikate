@@ -568,7 +568,7 @@ border:1px solid #333;
     </p>
 </div>
 <script>
-/* (Script inchangé pour conserver la logique fonctionnelle) */
+/* 1. VARIABLES GLOBALES */
 let boxesSelected = { "6 beignets": 0, "9 beignets": 0 };
 const boxPrices = { "6 beignets": 5.0, "9 beignets": 7.0 };
 const supplementPricePerLot = 0.50;
@@ -576,19 +576,29 @@ let selectedPaymentMode = "";
 const targetPhone = "0698213380"; 
 const baseHours = ["17h00 - 17h30", "17h30 - 18h00", "18h00 - 18h30", "18h30 - 19h00", "19h00 - 19h30", "19h30 - 20h00"];
 
+/* 2. FONCTIONS DE GESTION */
 function setBoxQty(type, value) {
     let val = parseInt(value) || 0;
     if(val < 0) val = 0;
-    
     boxesSelected[type] = val;
     let card = document.querySelector(`[data-name="${type}"]`);
-    
-    if(val > 0) {
-        card.classList.add("has-qty");
-    } else {
-        card.classList.remove("has-qty");
+    if(card) {
+        if(val > 0) card.classList.add("has-qty");
+        else card.classList.remove("has-qty");
     }
+    generateCompositionForm();
+    updateUI();
+}
 
+function changeBoxQty(type, value) {
+    let val = parseInt(value) || 0;
+    if (val < 0) val = 0;
+    boxesSelected[type] = val;
+    let card = document.querySelector(`[data-name="${type}"]`);
+    if (card) {
+        if (val > 0) card.classList.add("has-qty");
+        else card.classList.remove("has-qty");
+    }
     generateCompositionForm();
     updateUI();
 }
@@ -901,36 +911,34 @@ initDates(); handleDateChange();
 window.onload = function() {
     let commande = localStorage.getItem('maCommande');
 
-    // Si on est sur la page de succès
     if (commande && window.location.search.includes('success')) {
-        // 1. On masque tout le contenu principal
         document.querySelector('.section').style.display = 'none';
         document.querySelector('.hero').style.display = 'none';
         document.querySelector('.summary').style.display = 'none';
 
-        // 2. On affiche la page de confirmation dédiée
         let finalDiv = document.getElementById('final-validation');
-        finalDiv.style.display = 'block';
-        finalDiv.style.padding = '40px 20px';
-        
-        finalDiv.innerHTML = `
-            <div style="max-width: 600px; margin: auto; background: #1a1a1a; padding: 25px; border-radius: 15px; border: 2px solid #ff4f8b;">
-                <h2 style="color: #ff4f8b; margin-top: 0;">🎉 Commande validée !</h2>
-                <p>Merci pour votre confiance. Voici le récapitulatif :</p>
-                <div style="text-align: left; background: #000; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; border: 1px solid #333;">
-                    ${commande.replace(/\n/g, "<br>")}
+        if (finalDiv) {
+            finalDiv.style.display = 'block';
+            finalDiv.style.padding = '40px 20px';
+            finalDiv.innerHTML = `
+                <div style="max-width: 600px; margin: auto; background: #1a1a1a; padding: 25px; border-radius: 15px; border: 2px solid #ff4f8b;">
+                    <h2 style="color: #ff4f8b; margin-top: 0;">🎉 Commande validée !</h2>
+                    <p>Merci pour votre confiance. Voici le récapitulatif :</p>
+                    <div style="text-align: left; background: #000; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 14px; border: 1px solid #333;">
+                        ${commande.replace(/\n/g, "<br>")}
+                    </div>
                 </div>
-            </div>
-        `;
-    } else { // <--- L'accolade en trop a été supprimée juste ici
-        // Mode normal : on cache le bloc succès
+            `;
+        }
+    } else {
         let finalDiv = document.getElementById('final-validation');
         if (finalDiv) finalDiv.style.display = 'none';
     }
 
-
+    initDates();
+    handleDateChange();
 };
 </script>
 </body>
-</html> 
+</html>
 
