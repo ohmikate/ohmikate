@@ -894,46 +894,50 @@ initDates(); handleDateChange();
    <script>
 window.onload = function() {
     let commande = localStorage.getItem('maCommande');
-    
-    if (commande && window.location.search.includes('success')) {
-        // 1. Affiche le bloc de succès
-        let finalDiv = document.getElementById('final-validation');
-        finalDiv.style.display = 'block';
-        
-        // 2. Cache la barre de résumé fixe du bas
-        document.getElementById('summary-bar').style.display = 'none';
-        
-        // 3. Injecte le récapitulatif dans le bloc de confirmation
-        // On suppose que votre commande contient déjà le montant total à la fin
-        finalDiv.innerHTML = `
-            <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #ff007f; margin-bottom: 20px; text-align: left;">
-                <h4 style="margin-top:0; color: #ff007f;">Récapitulatif de votre commande :</h4>
-                <div style="font-size: 14px; line-height: 1.6; color: #fff;">
-                    ${commande.replace(/\n/g, "<br>")}
-                </div>
-            </div>
-            <p>Cliquez sur l'un des boutons ci-dessous pour m'envoyer le récapitulatif :</p>
-            <a id="final-whatsapp" class="btn whatsapp" target="_blank" style="display:block; margin: 10px 0;">📲 Envoyer sur WhatsApp</a>
-            <a id="final-sms" class="btn smsbtn" style="display:block; margin: 10px 0;">💬 Envoyer par SMS</a>
-            <a href="tel:0698213380" class="btn phonebtn" style="display:block; margin: 10px 0; background:#ff9500;">📞 M'appeler pour valider</a>
-        `;
 
-        // 4. Re-configure les liens WhatsApp/SMS après avoir injecté le HTML
-        let waBtn = document.getElementById('final-whatsapp');
-        waBtn.href = "https://wa.me/33698213380?text=" + encodeURIComponent(commande);
-        
-        let smsBtn = document.getElementById('final-sms');
-        let cleanSms = commande.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        smsBtn.href = "sms:0698213380?body=" + encodeURIComponent(cleanSms);
-        
+    // Si on est sur la page de succès
+    if (commande && window.location.search.includes('success')) {
+        let finalDiv = document.getElementById('final-validation');
+        if (finalDiv) {
+            finalDiv.style.display = 'block';
+            document.getElementById('summary-bar').style.display = 'none';
+
+            // Injecte le récapitulatif
+            finalDiv.innerHTML = `
+                <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #ff007f;">
+                    <h4>Récapitulatif de votre commande</h4>
+                    <div>${commande.replace(/\n/g, "<br>")}</div>
+                </div>
+                <p>Cliquez pour envoyer :</p>
+                <a id="final-whatsapp" class="btn whatsapp" target="_blank">📲 WhatsApp</a>
+                <a id="final-sms" class="btn sms" style="margin-top:10px;">📩 SMS / Appel</a>
+            `;
+
+            // Configuration des liens
+            let waBtn = document.getElementById('final-whatsapp');
+            waBtn.href = "https://wa.me/33698213380?text=" + encodeURIComponent(commande);
+            
+            let smsBtn = document.getElementById('final-sms');
+            smsBtn.href = "sms:0698213380?body=" + encodeURIComponent(commande.normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+
+            // REDIRECTION AUTOMATIQUE après clic
+            [waBtn, smsBtn].forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+                });
+            });
+        }
     } else {
-        document.getElementById('final-validation').style.display = 'none';
+        // Mode normal : on cache le bloc succès
+        let finalDiv = document.getElementById('final-validation');
+        if (finalDiv) finalDiv.style.display = 'none';
     }
-    
+
     // Initialisation habituelle
-    initDates(); 
+    initDates();
     handleDateChange();
 };
+
 </script>
 </body>
 </html>
