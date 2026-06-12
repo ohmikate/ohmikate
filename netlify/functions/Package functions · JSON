@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "description": "Fonctions Netlify pour Oh! Mikaté",
   "dependencies": {
-    "stripe": "^14.0.0"
+    "stripe": "^14.0.0",
   }
 }
