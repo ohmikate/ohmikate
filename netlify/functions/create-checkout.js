@@ -36,8 +36,8 @@ exports.handler = async function (event) {
       ],
       mode: "payment",
       // Remplacez YOUR_GITHUB_PAGES_URL par votre vraie URL
-      success_url: process.env.SITE_URL + "?success=true",
-      cancel_url: process.env.SITE_URL,
+      success_url: "https://ohmikate.netlify.app?success=true",
+cancel_url: "https://ohmikate.netlify.app",
       locale: "fr",
     });
 
