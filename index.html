@@ -321,7 +321,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       <span>Total :</span>
       <span><span id="total">0.00</span> €</span>
     </div>
-    <button id="stripe-btn" class="btn" style="background:#635bff;display:none;margin-top:10px;" onclick="lancerPaiementStripe()">Payer en ligne 💳</button>
+    <a id="stripe-link" class="btn" style="background:#635bff;display:none;margin-top:10px;">Payer en ligne 💳</a>
     <button id="especes-btn" class="btn especes" style="display:none;" onclick="alertEspeces()">💵 Règlement en Espèces (Merci de prévoir l'appoint)</button>
     <a id="whatsapp" class="btn whatsapp disabled" target="_blank" onclick="return checkForm(event)">📲 Envoyer ma commande sur WhatsApp</a>
     <button id="sms-btn" class="btn smsbtn disabled" onclick="triggerSMS(event)">💬 Valider ma commande par SMS</button>
@@ -551,24 +551,17 @@ function updateUI(){
   if(boxesSelected["6 beignets"]>0||boxesSelected["9 beignets"]>0)summaryBar.classList.add("show");else summaryBar.classList.remove("show");
 
   // Bouton Stripe
-  let stripeBtn=document.getElementById("stripe-btn");
+  let stripeLink=document.getElementById("stripe-link");
   let espBtn=document.getElementById("especes-btn");
   if(selectedPaymentMode==="PayPal"){
-    stripeBtn.style.display="block";
+    stripeLink.style.display="block";
+    stripeLink.href="https://buy.stripe.com/test_eVq3cx79rdHN0TufXs7ss00?prefilled_amount="+Math.round(total*100);
     espBtn.style.display="none";
-    // Active/désactive selon si le formulaire est valide
-    if(isFormValid()){
-      stripeBtn.disabled=false;
-      stripeBtn.classList.remove("disabled");
-    } else {
-      stripeBtn.disabled=true;
-      stripeBtn.classList.add("disabled");
-    }
   }else if(selectedPaymentMode==="Espèces"){
-    stripeBtn.style.display="none";
+    stripeLink.style.display="none";
     espBtn.style.display="block";
   }else{
-    stripeBtn.style.display="none";
+    stripeLink.style.display="none";
     espBtn.style.display="none";
   }
 
@@ -700,49 +693,20 @@ function handleDateChange(){
 }
 function showToast(m){const t=document.getElementById("toast");t.innerHTML=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),5000);}
 
-/* ===== PAIEMENT STRIPE DYNAMIQUE ===== */
-async function lancerPaiementStripe(){
-  if(!isFormValid()){showToast("⚠️ Formulaire incomplet !");return;}
-
-  let orderInfo=calculateTotalAndExtractStructure();
-  let montantCentimes=Math.round(orderInfo.totalPrice*100);
-
-  // Sauvegarde avant redirection
-  saveOrderToStorage();
-  sendOrderToSheet();
-
-  // Affichage chargement
-  let btn=document.getElementById("stripe-btn");
-  btn.disabled=true;
-  btn.textContent="⏳ Connexion au paiement...";
-
-  try {
-    let response=await fetch("/.netlify/functions/create-checkout",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        amount: montantCentimes,
-        orderSummary: orderInfo.summaryShort
-      })
+/* ===== INTERCEPTE CLIC STRIPE POUR SAUVEGARDER ===== */
+document.addEventListener("DOMContentLoaded",function(){
+  let stripeLink=document.getElementById("stripe-link");
+  if(stripeLink){
+    stripeLink.addEventListener("click",function(e){
+      if(!isFormValid()){showToast("⚠️ Formulaire incomplet !");e.preventDefault();return;}
+      saveOrderToStorage();
+      sendOrderToSheet();
+      // La redirection vers Stripe se fait normalement via href
     });
-
-    let data=await response.json();
-
-    if(data.url){
-      window.location.href=data.url; // Redirection vers Stripe
-    } else {
-      showToast("❌ Erreur : "+( data.error||"Impossible de créer le paiement"));
-      btn.disabled=false;
-      btn.textContent="Payer en ligne 💳";
-    }
-  } catch(err){
-    showToast("❌ Erreur de connexion. Réessayez.");
-    btn.disabled=false;
-    btn.textContent="Payer en ligne 💳";
   }
-}
+});
 
-/* ===== INITIALISATION ===== */
+/* ===== INITIALISATION & GESTION PAGE CONFIRMATION ===== */
 window.onload=function(){
   const isSuccess=window.location.search.includes('success');
   const savedData=localStorage.getItem('ohMikateCommande');
