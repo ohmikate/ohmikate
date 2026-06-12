@@ -900,35 +900,41 @@ window.onload = function() {
     let commande = localStorage.getItem('maCommande');
     let finalDiv = document.getElementById('final-validation');
 
-    // On vérifie si on a une commande et si l'URL contient ?success=true
+    // 1. Masquer le bloc par défaut au chargement de la page
+    if (finalDiv) finalDiv.style.display = 'none';
+
+    // 2. Si on est sur la page de succès et qu'une commande est en mémoire
     if (commande && window.location.search.includes('success')) {
         
-        // 1. On cache tout ce qui ne doit pas être vu
+        // Masquer le reste du site
         document.querySelectorAll('.section, .hero, .summary').forEach(el => {
             if(el) el.style.display = 'none';
         });
 
-        // 2. On affiche le bloc de validation
+        // Afficher le bloc de validation
         if (finalDiv) {
             finalDiv.style.display = 'block';
             finalDiv.innerHTML = `
-                <div style="background: #1a1a1a; padding: 30px; border-radius: 15px; border: 2px solid #ff4f8b; max-width: 500px; margin: 50px auto;">
+                <div style="background: #1a1a1a; padding: 30px; border-radius: 15px; border: 2px solid #ff4f8b; max-width: 500px; margin: 50px auto; color: white;">
                     <h2 style="color: #ff4f8b;">🎉 Commande validée !</h2>
-                    <p style="color: white;">Voici votre récapitulatif :</p>
-                    <div style="background: #000; padding: 15px; border-radius: 8px; color: #fff; text-align: left; border: 1px solid #333; margin: 20px 0;">
+                    <p>Merci, voici le récapitulatif complet de votre commande :</p>
+                    
+                    <div style="background: #000; padding: 15px; border-radius: 8px; color: #fff; text-align: left; border: 1px solid #333; margin: 20px 0; font-family: monospace; font-size: 14px; max-height: 400px; overflow-y: auto;">
                         ${commande.replace(/\n/g, "<br>")}
                     </div>
-                    <a href="https://wa.me/33698213380?text=${encodeURIComponent(commande)}" style="background: #25D366; color: white; padding: 15px; display: block; text-decoration: none; border-radius: 5px; margin-bottom: 10px;">📲 Envoyer sur WhatsApp</a>
-                    <a href="sms:0698213380?body=${encodeURIComponent(commande)}" style="background: #007aff; color: white; padding: 15px; display: block; text-decoration: none; border-radius: 5px;">💬 Envoyer par SMS</a>
+                    
+                    <a href="https://wa.me/33698213380?text=${encodeURIComponent(commande)}" style="background: #25D366; color: white; padding: 15px; display: block; text-decoration: none; border-radius: 5px; margin-bottom: 10px; text-align:center;">📲 Envoyer sur WhatsApp</a>
+                    <a href="sms:0698213380?body=${encodeURIComponent(commande)}" style="background: #007aff; color: white; padding: 15px; display: block; text-decoration: none; border-radius: 5px; text-align:center;">💬 Envoyer par SMS</a>
                 </div>
             `;
         }
     }
     
-    // Initialisation habituelle
+    // Initialisation
     if (typeof initDates === 'function') initDates();
     if (typeof handleDateChange === 'function') handleDateChange();
 };
+
 </script>
 </body>
 </html>
