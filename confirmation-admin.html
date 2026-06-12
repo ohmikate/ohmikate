@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oh! Mikaté — Confirmation commande</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Montserrat', sans-serif; background: #000; color: #fff; min-height: 100vh; padding: 20px 15px 60px; }
+
+.header { text-align: center; padding: 24px 20px 18px; border-bottom: 2px solid #ff4f8b; margin-bottom: 24px; }
+.header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #ff4f8b; letter-spacing: 2px; }
+.header p { font-size: 12px; color: #888; margin-top: 5px; }
+
+.card { background: #111; border: 1px solid #222; border-radius: 16px; padding: 20px; max-width: 520px; margin: 0 auto 18px; }
+.card-title { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 1px; color: #ff4f8b; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #222; }
+
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 7px; font-weight: bold; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 11px 13px; background: #1a1a1a; border: 2px solid #222;
+  border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Montserrat', sans-serif;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #ff4f8b; outline: none; }
+.form-group textarea { resize: vertical; }
+.form-group input.ok { border-color: #25D366; }
+
+.paste-zone {
+  width: 100%; padding: 13px; background: #0a0a1a; border: 2px dashed #444;
+  border-radius: 10px; color: #aaa; font-size: 13px; font-family: 'Montserrat', sans-serif;
+  resize: vertical; min-height: 130px; transition: 0.3s;
+}
+.paste-zone:focus { border-color: #ff4f8b; outline: none; color: #fff; }
+
+.extract-btn {
+  font-family: 'Bebas Neue', sans-serif; background: #ff4f8b; color: #fff;
+  border: none; border-radius: 30px; padding: 12px 20px; font-size: 16px;
+  width: 100%; cursor: pointer; letter-spacing: 1px; margin-top: 10px; transition: 0.3s;
+}
+.extract-btn:hover { filter: brightness(1.15); }
+
+.fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:400px){ .fields-grid { grid-template-columns: 1fr; } }
+
+.preview-box {
+  background: #0a1a0a; border: 1px solid #25D366; border-radius: 10px;
+  padding: 16px; font-size: 13px; line-height: 1.9; color: #ccc;
+  white-space: pre-wrap; margin-bottom: 16px; min-height: 180px;
+}
+
+.btn {
+  font-family: 'Bebas Neue', sans-serif; display: block; text-align: center;
+  padding: 13px; border-radius: 40px; font-size: 16px; font-weight: bold;
+  text-decoration: none; color: #fff; border: none; width: 100%;
+  cursor: pointer; letter-spacing: 1px; transition: 0.3s; margin-bottom: 10px;
+}
+.btn:hover { filter: brightness(1.15); transform: translateY(-2px); }
+.btn-wa { background: #25D366; }
+.btn-sms { background: #007aff; }
+.btn-reset { background: #1a1a1a; border: 1px solid #333; font-size: 13px; padding: 10px; color: #aaa; }
+
+.badge { display: inline-block; background: #ff4f8b22; color: #ff4f8b; border: 1px solid #ff4f8b44; border-radius: 20px; font-size: 11px; padding: 3px 10px; margin-bottom: 14px; font-weight: bold; }
+.hint { font-size: 11px; color: #555; margin-top: 5px; font-style: italic; }
+
+#toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #ff4f8b; color: white; padding: 11px 22px; border-radius: 30px; font-weight: bold; transition: 0.4s; opacity: 0; z-index: 9999; text-align: center; font-size: 13px; }
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+.step-label { font-size: 11px; color: #ff4f8b; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block; }
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<div class="header">
+  <h1>🧇 Oh! Mikaté</h1>
+  <p>Confirmation de commande — usage interne 🔒</p>
+</div>
+
+<!-- ÉTAPE 1 : COLLER LE MESSAGE -->
+<div class="card">
+  <div class="card-title">📥 Étape 1 — Coller le message du client</div>
+  <span class="badge">🔒 Page privée</span>
+  <span class="step-label">Copiez le message reçu par WhatsApp ou SMS et collez-le ici :</span>
+  <textarea class="paste-zone" id="paste-zone" placeholder="Collez ici le message de commande reçu du client...&#10;&#10;Les informations seront extraites automatiquement." oninput="autoExtract()"></textarea>
+  <button class="extract-btn" onclick="extraireInfos()">⚡ Extraire les informations</button>
+  <p class="hint" style="margin-top:8px;">Les champs se remplissent automatiquement en collant le message.</p>
+</div>
+
+<!-- ÉTAPE 2 : VÉRIFIER / COMPLÉTER -->
+<div class="card">
+  <div class="card-title">✏️ Étape 2 — Vérifier et compléter</div>
+  <div class="fields-grid">
+    <div class="form-group">
+      <label>Prénom *</label>
+      <input type="text" id="f-name" placeholder="Marie" oninput="genererMessage()">
+    </div>
+    <div class="form-group">
+      <label>Téléphone *</label>
+      <input type="tel" id="f-phone" placeholder="06 12 34 56 78" oninput="genererMessage()">
+    </div>
+    <div class="form-group">
+      <label>Date de retrait *</label>
+      <input type="text" id="f-date" placeholder="Mercredi 2 juillet" oninput="genererMessage()">
+    </div>
+    <div class="form-group">
+      <label>Créneau *</label>
+      <select id="f-time" onchange="genererMessage()">
+        <option value="">-- Créneau --</option>
+        <option>17h00 - 17h30</option>
+        <option>17h30 - 18h00</option>
+        <option>18h00 - 18h30</option>
+        <option>18h30 - 19h00</option>
+        <option>19h00 - 19h30</option>
+        <option>19h30 - 20h00</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Total de la commande *</label>
+    <input type="text" id="f-total" placeholder="12,00 €" oninput="genererMessage()">
+  </div>
+  <div class="form-group">
+    <label>Note personnalisée (optionnel)</label>
+    <textarea id="f-note" rows="2" placeholder="Ex: N'oublie pas tes couverts ! 😊" oninput="genererMessage()"></textarea>
+  </div>
+</div>
+
+<!-- ÉTAPE 3 : APERÇU & ENVOI -->
+<div class="card">
+  <div class="card-title">📨 Étape 3 — Aperçu & envoi au client</div>
+  <div id="preview" class="preview-box">Remplis les informations ci-dessus pour voir le message...</div>
+  <a class="btn btn-wa" href="#" onclick="return envoyerWA()">📲 Envoyer par WhatsApp</a>
+  <a class="btn btn-sms" href="#" onclick="return envoyerSMS()">💬 Envoyer par SMS</a>
+  <button class="btn btn-reset" onclick="resetForm()">🔄 Nouvelle commande</button>
+</div>
+
+<script>
+/* ===== EXTRACTION AUTOMATIQUE ===== */
+function autoExtract(){
+  // Extraction en temps réel dès que le texte collé est assez long
+  let texte=document.getElementById("paste-zone").value;
+  if(texte.length > 30) extraireInfos();
+}
+
+function extraireInfos(){
+  let texte=document.getElementById("paste-zone").value;
+  if(!texte.trim()){ showToast("⚠️ Collez d'abord un message !"); return; }
+
+  let nom="", phone="", date="", time="", total="";
+
+  // Extraction du nom
+  let nomMatch=texte.match(/Nom\s*[:\-]\s*(.+)/i) || texte.match(/Pr[eé]nom\s*[:\-]\s*(.+)/i);
+  if(nomMatch) nom=nomMatch[1].trim().replace(/\*/g,"");
+
+  // Extraction du téléphone
+  let telMatch=texte.match(/T[eé]l[eé]phone\s*[:\-]\s*([\d\s\+\.\-]{8,20})/i) ||
+               texte.match(/((?:\+33|0033|0)[1-9](?:[\s\.\-]?\d{2}){4})/);
+  if(telMatch) phone=telMatch[1].trim().replace(/\*/g,"");
+
+  // Extraction de la date
+  let dateMatch=texte.match(/Date\s+souhait[eé]e?\s*[:\-]\s*(.+)/i) ||
+                texte.match(/Date\s*[:\-]\s*(.+)/i);
+  if(dateMatch) date=dateMatch[1].trim().replace(/\*/g,"");
+
+  // Extraction du créneau
+  let timeMatch=texte.match(/Tranche\s+souhait[eé]e?\s*[:\-]\s*(.+)/i) ||
+                texte.match(/Cr[eé]neau\s*[:\-]\s*(.+)/i) ||
+                texte.match(/(\d{1,2}h\d{2}\s*[-–]\s*\d{1,2}h\d{2})/i);
+  if(timeMatch) time=timeMatch[1].trim().replace(/\*/g,"");
+
+  // Extraction du total
+  let totalMatch=texte.match(/TOTAL\s*[:\-]?\s*([\d,\.]+\s*[€EUR]+)/i) ||
+                 texte.match(/([\d,\.]+)\s*[€EUR]/i);
+  if(totalMatch) total=totalMatch[1].trim().replace(/\*/g,"")+" €";
+
+  // Remplissage des champs
+  if(nom) { document.getElementById("f-name").value=nom; document.getElementById("f-name").classList.add("ok"); }
+  if(phone) { document.getElementById("f-phone").value=phone; document.getElementById("f-phone").classList.add("ok"); }
+  if(date) { document.getElementById("f-date").value=date; document.getElementById("f-date").classList.add("ok"); }
+  if(total) { document.getElementById("f-total").value=total; document.getElementById("f-total").classList.add("ok"); }
+
+  // Créneau : cherche dans la liste
+  if(time){
+    let sel=document.getElementById("f-time");
+    for(let opt of sel.options){
+      if(opt.value.toLowerCase().includes(time.toLowerCase().substring(0,5))){
+        sel.value=opt.value; break;
+      }
+    }
+  }
+
+  genererMessage();
+
+  let nbExtraits=[nom,phone,date,time,total].filter(Boolean).length;
+  showToast(`✅ ${nbExtraits} information${nbExtraits>1?"s":""} extraite${nbExtraits>1?"s":""} !`);
+}
+
+/* ===== GÉNÉRATION DU MESSAGE ===== */
+function normalizePhone(raw){
+  let p=raw.replace(/[\s\.\-\(\)]+/g,'');
+  if(p.startsWith("+33")) p="0"+p.substring(3);
+  else if(p.startsWith("0033")) p="0"+p.substring(4);
+  return p;
+}
+
+function getMessage(pourSMS=false){
+  let nom=document.getElementById("f-name").value.trim();
+  let date=document.getElementById("f-date").value.trim();
+  let time=document.getElementById("f-time").value;
+  let total=document.getElementById("f-total").value.trim();
+  let note=document.getElementById("f-note").value.trim();
+  if(!nom||!date||!time||!total) return null;
+
+  let b=pourSMS?"":"*";
+  let msg=`Bonjour ${nom} ! 😊\n\n`;
+  msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
+  msg+=`🗓️ Date : ${date}\n`;
+  msg+=`⏰ Créneau : ${time}\n`;
+  msg+=`💰 Total : ${total}\n\n`;
+  msg+=`📍 ${b}Adresse de retrait :${b}\n`;
+  msg+=`36 rue du Chanoine Lallement, Reims\n\n`;
+  msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — je descendrai te remettre ta commande en mains propres ! 🍩\n`;
+  if(note) msg+=`\n📝 ${note}\n`;
+  msg+=`\nÀ tout à l'heure ! 🧇\n— Oh! Mikaté`;
+
+  return pourSMS ? msg.normalize("NFD").replace(/[\u0300-\u036f]/g,"") : msg;
+}
+
+function genererMessage(){
+  let msg=getMessage();
+  let preview=document.getElementById("preview");
+  if(msg){ preview.textContent=msg; preview.style.color="#fff"; }
+  else { preview.textContent="Remplis les informations ci-dessus pour voir le message..."; preview.style.color="#555"; }
+}
+
+function envoyerWA(){
+  let msg=getMessage(false);
+  let phone=document.getElementById("f-phone").value.trim();
+  if(!msg||!phone){ showToast("⚠️ Remplis tous les champs obligatoires !"); return false; }
+  let p=normalizePhone(phone);
+  let waPhone=p.startsWith("0")?"33"+p.substring(1):p;
+  window.open("https://wa.me/"+waPhone+"?text="+encodeURIComponent(msg),"_blank");
+  return false;
+}
+
+function envoyerSMS(){
+  let msg=getMessage(true);
+  let phone=document.getElementById("f-phone").value.trim();
+  if(!msg||!phone){ showToast("⚠️ Remplis tous les champs obligatoires !"); return false; }
+  let p=normalizePhone(phone);
+  let ua=navigator.userAgent.toLowerCase();
+  let url="sms:"+p+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msg);
+  window.location.href=url;
+  return false;
+}
+
+function resetForm(){
+  document.getElementById("paste-zone").value="";
+  ["f-name","f-phone","f-date","f-total","f-note"].forEach(id=>{
+    document.getElementById(id).value="";
+    document.getElementById(id).classList.remove("ok");
+  });
+  document.getElementById("f-time").value="";
+  genererMessage();
+  showToast("🔄 Prêt pour une nouvelle commande !");
+}
+
+function showToast(m){
+  let t=document.getElementById("toast");
+  t.textContent=m; t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3000);
+}
+</script>
+</body>
+</html>
