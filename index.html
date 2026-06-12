@@ -40,6 +40,11 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 .form-group input,.form-group select,.form-group textarea{width:100%;padding:12px;background:#111;border:2px solid #222;border-radius:8px;color:white;font-size:15px;box-sizing:border-box;}
 .form-group textarea{resize:vertical;font-family:'Montserrat',sans-serif;}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#ff4f8b;outline:none;}
+.input-error{border-color:#ff4444 !important;}
+.input-success{border-color:#25D366 !important;}
+.field-msg{font-size:12px;margin-top:6px;padding:8px 12px;border-radius:8px;display:none;font-weight:bold;}
+.field-msg.error{display:block;background:#2a0a0a;color:#ff6b6b;border:1px solid #ff4444;}
+.field-msg.success{display:block;background:#0a2a12;color:#25D366;border:1px solid #25D366;}
 .payment-selector{display:flex;gap:10px;margin-top:5px;}
 .pay-opt{flex:1;background:#111;border:2px solid #222;padding:12px;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer;text-align:center;font-size:14px;}
 .pay-opt.selected{border-color:#ff4f8b;background:#201217;}
@@ -288,7 +293,8 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 </div>
 <div class="form-group">
   <label for="client-phone">Ton Numéro de téléphone : <span class="requis">*</span></label>
-  <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="updateUI()">
+  <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="validatePhone(); updateUI();" onblur="validatePhone()">
+  <div id="phone-msg" class="field-msg"></div>
 </div>
 <div class="form-group">
   <label for="client-date">Choisis le jour de retrait : <span class="requis">*</span></label>
@@ -382,12 +388,22 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       </div>
     </div>
 
-    <!-- BOUTONS VALIDATION -->
+    <!-- BOUTONS VALIDATION (envoi vers Oh! Mikaté) -->
     <div class="action-section">
       <h3>📨 Envoyer en validation</h3>
       <p>Appuyez sur l'un des boutons ci-dessous pour transmettre votre commande et confirmer votre créneau de retrait.</p>
       <a id="confirm-whatsapp" class="btn whatsapp" href="#" style="margin-bottom:10px;">📲 Envoyer sur WhatsApp</a>
       <a id="confirm-sms" class="btn smsbtn" href="#">💬 Envoyer par SMS</a>
+    </div>
+
+    <!-- RÉPONSE AU CLIENT (bouton pour vous, Soni) -->
+    <div class="confirm-card" style="margin-top:20px;">
+      <div class="confirm-card-header" style="background:#1a2a1a;color:#25D366;border-bottom:1px solid #1e3a1e;">✅ Valider et informer le client</div>
+      <div class="confirm-card-body">
+        <p style="font-size:13px;color:#aaa;margin:0 0 14px;">Une fois la commande acceptée, utilisez ce bouton pour envoyer automatiquement les informations de retrait au client.</p>
+        <a id="btn-reponse-client-wa" class="btn whatsapp" href="#" style="margin-bottom:10px;">📲 Confirmer au client par WhatsApp</a>
+        <a id="btn-reponse-client-sms" class="btn smsbtn" href="#">💬 Confirmer au client par SMS</a>
+      </div>
     </div>
 
     <!-- ANNULATION -->
@@ -584,11 +600,13 @@ function updateUI(){
 function isFormValid(){
   if(boxesSelected["6 beignets"]===0&&boxesSelected["9 beignets"]===0)return false;
   let name=document.getElementById("client-name").value.trim();
-  let phone=document.getElementById("client-phone").value.trim().replace(/[\s\.]+/g,'');
+  let raw=document.getElementById("client-phone").value.trim();
+  let phone=normalizePhone(raw);
   let date=document.getElementById("client-date").value;
   let time=document.getElementById("client-time").value;
-  if(!name||!phone||!date||!time||time==="COMPLET"||!selectedPaymentMode)return false;
+  if(!name||!raw||!date||!time||time==="COMPLET"||!selectedPaymentMode)return false;
   if(!/^\d{10}$/.test(phone))return false;
+  if(!/^(06|07|01|02|03|04|05|08|09)/.test(phone))return false;
   return true;
 }
 
@@ -700,6 +718,68 @@ function handleDateChange(){
 }
 function showToast(m){const t=document.getElementById("toast");t.innerHTML=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),5000);}
 
+/* ===== NORMALISE LE NUMÉRO (gère +33, 0033, espaces, tirets) ===== */
+function normalizePhone(raw){
+  let phone=raw.replace(/[\s\.\-\(\)]+/g,'');
+  if(phone.startsWith("+33"))phone="0"+phone.substring(3);
+  else if(phone.startsWith("0033"))phone="0"+phone.substring(4);
+  return phone;
+}
+
+/* ===== VALIDATION TÉLÉPHONE EN TEMPS RÉEL ===== */
+function validatePhone(){
+  let input=document.getElementById("client-phone");
+  let msg=document.getElementById("phone-msg");
+  let raw=input.value.trim();
+
+  // Champ vide — pas de message
+  if(raw===""){
+    input.classList.remove("input-error","input-success");
+    msg.className="field-msg";msg.textContent="";
+    return false;
+  }
+
+  // Contient des lettres (sauf + autorisé pour +33)
+  if(/[a-zA-Z]/.test(raw)){
+    input.classList.add("input-error");input.classList.remove("input-success");
+    msg.className="field-msg error";
+    msg.textContent="❌ Un numéro de téléphone ne contient que des chiffres (ou +33 au début).";
+    return false;
+  }
+
+  let phone=normalizePhone(raw);
+
+  // Trop court
+  if(phone.length<10){
+    input.classList.add("input-error");input.classList.remove("input-success");
+    msg.className="field-msg error";
+    msg.textContent="❌ Numéro trop court — il faut 10 chiffres (ex: 06 12 34 56 78 ou +33 6 12 34 56 78).";
+    return false;
+  }
+
+  // Trop long
+  if(phone.length>10){
+    input.classList.add("input-error");input.classList.remove("input-success");
+    msg.className="field-msg error";
+    msg.textContent="❌ Numéro trop long — vérifiez qu'il n'y a pas de chiffres en trop.";
+    return false;
+  }
+
+  // Ne commence pas par un préfixe valide
+  if(!/^(06|07|01|02|03|04|05|08|09)/.test(phone)){
+    input.classList.add("input-error");input.classList.remove("input-success");
+    msg.className="field-msg error";
+    msg.textContent="❌ Numéro invalide — commencez par 06, 07, 01... ou +33 6, +33 7...";
+    return false;
+  }
+
+  // ✅ Valide
+  input.classList.add("input-success");input.classList.remove("input-error");
+  msg.className="field-msg success";
+  msg.textContent="✅ Numéro valide !";
+  return true;
+}
+
 /* ===== PAIEMENT STRIPE DYNAMIQUE ===== */
 async function lancerPaiementStripe(){
   if(!isFormValid()){showToast("⚠️ Formulaire incomplet !");return;}
@@ -779,6 +859,42 @@ window.onload=function(){
       let smsBody=getConfirmOrderText(data,true);
       let ua=navigator.userAgent.toLowerCase();
       let url="sms:"+targetPhone+(ua.indexOf("iphone")>-1?"&body=":"?body=")+encodeURIComponent(smsBody);
+      window.location.href=url;
+    });
+
+    // ===== MESSAGE DE CONFIRMATION À ENVOYER AU CLIENT =====
+    let clientPhone=normalizePhone(data.phone||"");
+    // Format international pour WhatsApp (enlève le 0, ajoute 33)
+    let clientPhoneWA=clientPhone.startsWith("0")?"33"+clientPhone.substring(1):clientPhone.replace("+","");
+
+    let msgConfirmation=
+`Bonjour ${data.name} ! 😊
+
+✅ Ta commande Oh! Mikaté est bien confirmée !
+
+🗓️ Date : ${data.date}
+⏰ Créneau : ${data.time}
+💰 Total : ${data.total} €
+
+📍 Adresse de retrait :
+*36 rue du Chanoine Lallement, Reims*
+
+🔔 Une fois arrivé(e) en bas de l'immeuble, merci d'appeler ou d'envoyer un message — je descends te remettre ta commande en mains propres ! 🍩
+
+À tout à l'heure !
+Oh! Mikaté 🧇`;
+
+    let msgConfirmationSMS=msgConfirmation.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\*/g,"");
+
+    // Bouton WhatsApp → ouvre WhatsApp avec le numéro du CLIENT
+    document.getElementById("btn-reponse-client-wa").href=
+      "https://wa.me/"+clientPhoneWA+"?text="+encodeURIComponent(msgConfirmation);
+
+    // Bouton SMS → ouvre SMS avec le numéro du CLIENT
+    document.getElementById("btn-reponse-client-sms").addEventListener("click",function(e){
+      e.preventDefault();
+      let ua=navigator.userAgent.toLowerCase();
+      let url="sms:"+data.phone+(ua.indexOf("iphone")>-1?"&body=":"?body=")+encodeURIComponent(msgConfirmationSMS);
       window.location.href=url;
     });
 
