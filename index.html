@@ -624,7 +624,9 @@ function sendOrderToSheet(){
     order:orderInfo.detailsText,
     total:orderInfo.totalPrice.toFixed(2),
     payment:selectedPaymentMode,
-    date:new Date().toLocaleDateString('fr-FR')
+    date:new Date().toLocaleDateString('fr-FR'),
+    dateRetrait:document.getElementById("client-date").value,
+    creneau:document.getElementById("client-time").value
   };
   fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
     method:"POST",mode:"no-cors",
@@ -650,6 +652,21 @@ function saveOrderToStorage(){
   localStorage.setItem('ohMikateCommande', JSON.stringify(data));
 }
 
+/* ===== GÉNÈRE LE MESSAGE DE CONFIRMATION À ENVOYER AU CLIENT ===== */
+function getMessageConfirmationClient(name, phone, date, time, total, pourSMS=false){
+  let b=pourSMS?"":"*";
+  let msg=`Bonjour ${name} ! 😊\n\n`;
+  msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
+  msg+=`🗓️ Date : ${date}\n`;
+  msg+=`⏰ Créneau : ${time}\n`;
+  msg+=`💰 Total : ${total} €\n\n`;
+  msg+=`📍 ${b}Adresse de retrait :${b}\n`;
+  msg+=`36 rue du Chanoine Lallement, Reims\n\n`;
+  msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — je descendrai te remettre ta commande en mains propres ! 🍩\n`;
+  msg+=`\nÀ tout à l'heure ! 🧇\n— Oh! Mikaté`;
+  return pourSMS ? msg.normalize("NFD").replace(/[\u0300-\u036f]/g,"") : msg;
+}
+
 /* ===== TEXTE COMMANDE POUR WA / SMS ===== */
 function getOrderText(cleanForSms=false){
   let name=document.getElementById("client-name").value.trim();
@@ -660,11 +677,23 @@ function getOrderText(cleanForSms=false){
   let payText=selectedPaymentMode==="Espèces"?"Espèces (Appoint à prévoir)":"Paiement en ligne effectué ✅";
   let orderInfo=calculateTotalAndExtractStructure();
   let b=cleanForSms?"":"*";
+
+  // Génère les liens de confirmation rapide pour Soni
+  let phoneNorm=normalizePhone(phoneField);
+  let phoneWA=phoneNorm.startsWith("0")?"33"+phoneNorm.substring(1):phoneNorm;
+  let msgConfirmWA=getMessageConfirmationClient(name,phoneField,date,time,orderInfo.totalPrice.toFixed(2),false);
+  let msgConfirmSMS=getMessageConfirmationClient(name,phoneField,date,time,orderInfo.totalPrice.toFixed(2),true);
+  let lienWA="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgConfirmWA);
+  let ua=navigator.userAgent.toLowerCase();
+  let lienSMS="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgConfirmSMS);
+
   let text=`${b}COMMANDE OH MIKATE${b}\n`;
   text+=orderInfo.detailsText;
   text+=`\n${b}TOTAL : ${orderInfo.totalPrice.toFixed(2)} EUR${b}`;
   if(noteField)text+=`\n\nPRECISION CLIENT :\n"${noteField}"`;
-  text+=`\n\n--- INFOS RETRAIT ---\nNom : ${name}\nTelephone : ${phoneField}\nDate souhaitee : ${date}\nTranche souhaitee : ${time}\nReglement : ${payText}\n\nLieu : Communique a la validation`;
+  text+=`\n\n--- INFOS RETRAIT ---\nNom : ${name}\nTelephone : ${phoneField}\nDate souhaitee : ${date}\nTranche souhaitee : ${time}\nReglement : ${payText}`;
+  text+=`\n\n--- CONFIRMATION RAPIDE ---\n✅ Cliquez pour confirmer au client :\nWhatsApp : ${lienWA}\nSMS : ${lienSMS}`;
+
   return cleanForSms?text.normalize("NFD").replace(/[\u0300-\u036f]/g,""):text;
 }
 
