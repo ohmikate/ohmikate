@@ -14,67 +14,83 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .login-card p{font-size:12px;color:#888;margin-bottom:24px;}
 .login-card input{width:100%;padding:13px;background:#1a1a1a;border:2px solid #333;border-radius:10px;color:#fff;font-size:16px;text-align:center;letter-spacing:3px;margin-bottom:14px;font-family:'Montserrat',sans-serif;}
 .login-card input:focus{border-color:#ff4f8b;outline:none;}
-.login-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:13px;width:100%;font-size:18px;cursor:pointer;letter-spacing:1px;transition:0.3s;}
-.login-btn:hover{filter:brightness(1.15);}
+.login-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:13px;width:100%;font-size:18px;cursor:pointer;letter-spacing:1px;}
 .login-error{color:#ff4444;font-size:13px;margin-top:10px;display:none;}
-
 #admin-screen{display:none;}
 .header{text-align:center;padding:20px 0 16px;border-bottom:2px solid #ff4f8b;margin-bottom:20px;}
-.header h1{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#ff4f8b;letter-spacing:2px;}
-.header p{font-size:12px;color:#888;margin-top:4px;}
-
-.toolbar{display:flex;gap:10px;max-width:600px;margin:0 auto 20px;align-items:center;}
-.refresh-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:10px 20px;font-size:15px;cursor:pointer;letter-spacing:1px;transition:0.3s;white-space:nowrap;}
-.refresh-btn:hover{filter:brightness(1.15);}
+.header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#ff4f8b;letter-spacing:2px;}
+.header p{font-size:11px;color:#888;margin-top:4px;}
+.toolbar{display:flex;gap:10px;max-width:600px;margin:0 auto 16px;align-items:center;}
+.refresh-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:10px 18px;font-size:14px;cursor:pointer;letter-spacing:1px;white-space:nowrap;}
 .filter-select{flex:1;padding:10px;background:#111;border:2px solid #222;border-radius:10px;color:#fff;font-size:13px;font-family:'Montserrat',sans-serif;}
 .filter-select:focus{border-color:#ff4f8b;outline:none;}
-
-.commande-card{background:#111;border:1px solid #222;border-radius:16px;padding:18px;max-width:600px;margin:0 auto 16px;position:relative;}
-.commande-card.nouvelle{border-color:#ff4f8b;box-shadow:0 0 15px rgba(255,79,139,0.2);}
-.commande-card.confirmee{border-color:#25D366;opacity:0.7;}
-
-.badge-new{display:inline-block;background:#ff4f8b;color:#fff;font-size:10px;font-weight:bold;padding:3px 10px;border-radius:20px;margin-bottom:10px;letter-spacing:1px;}
-.badge-ok{display:inline-block;background:#25D366;color:#fff;font-size:10px;font-weight:bold;padding:3px 10px;border-radius:20px;margin-bottom:10px;letter-spacing:1px;}
-
+.stats-bar{display:flex;gap:10px;max-width:600px;margin:0 auto 16px;}
+.stat-box{flex:1;background:#111;border:1px solid #222;border-radius:10px;padding:12px;text-align:center;}
+.stat-box .num{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#ff4f8b;}
+.stat-box .num.green{color:#25D366;}
+.stat-box .num.blue{color:#007aff;}
+.stat-box .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
+.commande-card{background:#111;border:1px solid #222;border-radius:16px;padding:18px;max-width:600px;margin:0 auto 14px;}
+.commande-card.nouvelle{border-color:#ff4f8b;box-shadow:0 0 12px rgba(255,79,139,0.15);}
+.commande-card.confirmee{border-color:#25D366;opacity:0.75;}
+.commande-card.supprimee{display:none;}
+.badge{display:inline-block;font-size:10px;font-weight:bold;padding:3px 10px;border-radius:20px;margin-bottom:10px;letter-spacing:1px;}
+.badge-new{background:#ff4f8b;color:#fff;}
+.badge-ok{background:#25D366;color:#fff;}
 .commande-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
-.client-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:#fff;}
-.commande-date{font-size:11px;color:#666;margin-top:2px;}
-
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.client-name{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;}
+.commande-meta{font-size:11px;color:#666;margin-top:3px;line-height:1.6;}
+.canal-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:bold;margin-left:4px;}
+.canal-wa{background:#25D36622;color:#25D366;border:1px solid #25D36644;}
+.canal-sms{background:#007aff22;color:#007aff;border:1px solid #007aff44;}
+.canal-tel{background:#ff950022;color:#ff9500;border:1px solid #ff950044;}
+.canal-carte{background:#635bff22;color:#a09af0;border:1px solid #635bff44;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
 .info-item{background:#1a1a1a;border-radius:8px;padding:9px 12px;}
 .info-item .label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
 .info-item .value{font-size:13px;font-weight:bold;color:#fff;}
 .info-item.full{grid-column:1/-1;}
-
-.detail-box{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:8px;padding:12px;font-size:12px;color:#aaa;line-height:1.7;margin-bottom:14px;white-space:pre-wrap;}
-
-.total-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#1a0d12;border-radius:8px;margin-bottom:14px;font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;}
-
-.btn-confirm-wa{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:12px;border-radius:30px;font-size:15px;color:#fff;text-decoration:none;background:#25D366;margin-bottom:8px;letter-spacing:1px;transition:0.3s;border:none;width:100%;cursor:pointer;}
-.btn-confirm-sms{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:12px;border-radius:30px;font-size:15px;color:#fff;text-decoration:none;background:#007aff;margin-bottom:8px;letter-spacing:1px;transition:0.3s;border:none;width:100%;cursor:pointer;}
-.btn-confirm-wa:hover,.btn-confirm-sms:hover{filter:brightness(1.15);}
-.btn-mark-done{background:none;border:1px solid #333;color:#666;font-size:12px;padding:7px 14px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:0.3s;}
-.btn-mark-done:hover{border-color:#25D366;color:#25D366;}
-
-.empty-state{text-align:center;padding:60px 20px;color:#555;}
-.empty-state .icon{font-size:48px;margin-bottom:16px;}
-.empty-state p{font-size:14px;}
-
+.detail-box{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:8px;padding:12px;font-size:12px;color:#aaa;line-height:1.7;white-space:pre-wrap;}
+.total-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#1a0d12;border-radius:8px;margin:12px 0;font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;}
+.btn-wa{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:12px;border-radius:30px;font-size:15px;color:#fff;text-decoration:none;background:#25D366;margin-bottom:8px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.btn-sms{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:12px;border-radius:30px;font-size:15px;color:#fff;text-decoration:none;background:#007aff;margin-bottom:8px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.btn-wa:hover,.btn-sms:hover{filter:brightness(1.15);}
+.actions-secondaires{display:flex;gap:8px;margin-top:4px;}
+.btn-annuler{flex:1;background:none;border:1px solid #333;color:#888;font-size:12px;padding:9px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:0.2s;}
+.btn-supprimer{flex:1;background:none;border:1px solid #ff444433;color:#ff6666;font-size:12px;padding:9px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:0.2s;}
+.btn-annuler:hover{border-color:#25D366;color:#25D366;}
+.btn-supprimer:hover{background:#ff444422;border-color:#ff4444;}
+.empty-state{text-align:center;padding:50px 20px;color:#555;}
+.empty-state .icon{font-size:40px;margin-bottom:12px;}
 .loading{text-align:center;padding:40px;color:#888;font-size:14px;}
-
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#ff4f8b;color:white;padding:11px 22px;border-radius:30px;font-weight:bold;transition:0.4s;opacity:0;z-index:9999;text-align:center;font-size:13px;}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-
-.stats-bar{display:flex;gap:10px;max-width:600px;margin:0 auto 20px;text-align:center;}
-.stat-box{flex:1;background:#111;border:1px solid #222;border-radius:10px;padding:12px;}
-.stat-box .num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#ff4f8b;}
-.stat-box .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
+.confirm-popup{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9998;align-items:center;justify-content:center;padding:20px;}
+.confirm-popup.show{display:flex;}
+.confirm-box{background:#1a1a1a;border:2px solid #ff4444;border-radius:16px;padding:24px;max-width:340px;width:100%;text-align:center;}
+.confirm-box h3{color:#ff6666;font-size:18px;margin-bottom:12px;}
+.confirm-box p{font-size:13px;color:#aaa;margin-bottom:20px;line-height:1.5;}
+.confirm-box-btns{display:flex;gap:10px;}
+.confirm-box-btns button{flex:1;padding:12px;border-radius:20px;font-family:'Bebas Neue',sans-serif;font-size:15px;cursor:pointer;border:none;letter-spacing:1px;}
+.btn-confirm-delete{background:#ff4444;color:#fff;}
+.btn-cancel-delete{background:#222;color:#aaa;border:1px solid #333!important;}
 </style>
 </head>
 <body>
 <div id="toast"></div>
 
-<!-- ÉCRAN LOGIN -->
+<div class="confirm-popup" id="confirm-popup">
+  <div class="confirm-box">
+    <h3>⚠️ Supprimer la commande ?</h3>
+    <p>Cette action supprimera définitivement la commande de votre tableau de bord. Elle restera visible dans Google Sheets pour l'historique.</p>
+    <div class="confirm-box-btns">
+      <button class="btn-cancel-delete" onclick="fermerConfirm()">Annuler</button>
+      <button class="btn-confirm-delete" onclick="confirmerSuppression()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
     <h1>🧇 Oh! Mikaté</h1>
@@ -85,7 +101,7 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
   </div>
 </div>
 
-<!-- ÉCRAN ADMIN -->
+<!-- ADMIN -->
 <div id="admin-screen">
   <div class="header">
     <h1>🧇 Oh! Mikaté — Commandes</h1>
@@ -94,20 +110,21 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 
   <div class="stats-bar">
     <div class="stat-box"><div class="num" id="stat-total">0</div><div class="lbl">Total</div></div>
-    <div class="stat-box"><div class="num" id="stat-new" style="color:#ff4f8b;">0</div><div class="lbl">Nouvelles</div></div>
-    <div class="stat-box"><div class="num" id="stat-done" style="color:#25D366;">0</div><div class="lbl">Confirmées</div></div>
+    <div class="stat-box"><div class="num" id="stat-new">0</div><div class="lbl">Nouvelles</div></div>
+    <div class="stat-box"><div class="num green" id="stat-done">0</div><div class="lbl">Confirmées</div></div>
+    <div class="stat-box"><div class="num blue" id="stat-ca">0€</div><div class="lbl">CA</div></div>
   </div>
 
   <div class="toolbar">
     <select class="filter-select" id="filter-select" onchange="afficherCommandes()">
-      <option value="toutes">Toutes les commandes</option>
-      <option value="nouvelles">Nouvelles uniquement</option>
-      <option value="confirmees">Confirmées</option>
+      <option value="toutes">Toutes</option>
+      <option value="nouvelles">🆕 Nouvelles</option>
+      <option value="confirmees">✅ Confirmées</option>
     </select>
     <button class="refresh-btn" onclick="chargerCommandes()">🔄 Actualiser</button>
   </div>
 
-  <div id="commandes-container"><div class="loading">⏳ Chargement des commandes...</div></div>
+  <div id="commandes-container"><div class="loading">⏳ Chargement...</div></div>
 </div>
 
 <script>
@@ -116,6 +133,8 @@ const SHEET_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=
 const MOT_DE_PASSE="Ronciat";
 let toutesCommandes=[];
 let commandesConfirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
+let commandesSupprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
+let idASupprimer=null;
 
 /* ===== LOGIN ===== */
 function login(){
@@ -124,74 +143,83 @@ function login(){
     document.getElementById("login-screen").style.display="none";
     document.getElementById("admin-screen").style.display="block";
     chargerCommandes();
-    // Actualisation automatique toutes les 60 secondes
-    setInterval(chargerCommandes, 60000);
+    setInterval(chargerCommandes,60000);
   } else {
     document.getElementById("login-error").style.display="block";
     document.getElementById("pwd-input").value="";
-    document.getElementById("pwd-input").focus();
   }
 }
 
-/* ===== CHARGEMENT DEPUIS GOOGLE SHEETS ===== */
+/* ===== CHARGEMENT SHEETS ===== */
 async function chargerCommandes(){
   document.getElementById("last-refresh").textContent="⏳ Actualisation...";
-  try {
+  try{
     let res=await fetch(SHEET_URL+"&t="+Date.now());
     let text=await res.text();
     let json=JSON.parse(text.replace("/*O_o*/\ngoogle.visualization.Query.setResponse(","").replace(");",""));
     let rows=json.table.rows;
-
     toutesCommandes=[];
     rows.forEach((row,i)=>{
-      if(!row.c||!row.c[1]||!row.c[1].v) return; // ignore lignes vides
-      let date=row.c[0]?row.c[0].v:"";
+      if(!row.c||!row.c[1]||!row.c[1].v)return;
+      let dateRecu=row.c[0]?row.c[0].v:"";
       let name=row.c[1]?row.c[1].v:"";
       let phone=row.c[2]?String(row.c[2].v):"";
       let order=row.c[3]?row.c[3].v:"";
-      let total=row.c[4]?row.c[4].v:"";
+      let total=row.c[4]?String(row.c[4].v):"";
       let payment=row.c[5]?row.c[5].v:"";
+      let dateRetrait=row.c[6]?row.c[6].v:"";
+      let creneau=row.c[7]?row.c[7].v:"";
 
-      // Extraire date et créneau depuis le détail commande
-      let dateRetrait=extractInfo(order,"Date souhaitee");
-      let creneau=extractInfo(order,"Tranche souhaitee");
+      // Extraire canal depuis dateRecu (ex: "13/06/2026 06:45 via WhatsApp")
+      let canal="";
+      let canalMatch=dateRecu.match(/via\s+(.+)$/i);
+      if(canalMatch)canal=canalMatch[1].trim();
 
-      toutesCommandes.push({id:i, date, name, phone, order, total, payment, dateRetrait, creneau});
+      // Extraire heure
+      let heure="";
+      let heureMatch=dateRecu.match(/(\d{2}:\d{2})/);
+      if(heureMatch)heure=heureMatch[1];
+
+      // Date propre
+      let datePropre=dateRecu.replace(/via.+$/i,"").trim();
+
+      toutesCommandes.push({id:i,dateRecu:datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau});
     });
-
-    toutesCommandes.reverse(); // plus récentes en premier
+    toutesCommandes.reverse();
     afficherCommandes();
     updateStats();
     let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    document.getElementById("last-refresh").textContent="Dernière actualisation : "+now;
-  } catch(e){
+    document.getElementById("last-refresh").textContent="Mis à jour à "+now+" • Actualisation auto toutes les 60s";
+  }catch(e){
     document.getElementById("last-refresh").textContent="❌ Erreur de chargement";
     showToast("❌ Impossible de charger les commandes");
   }
 }
 
-function extractInfo(text, key){
-  if(!text) return "";
-  let match=text.match(new RegExp(key+"\\s*[:\\-]\\s*(.+)","i"));
-  return match ? match[1].trim() : "";
+/* ===== BADGE CANAL ===== */
+function badgeCanal(canal){
+  if(!canal)return"";
+  let cls="canal-wa",icon="📲";
+  if(canal.toLowerCase().includes("sms")){cls="canal-sms";icon="💬";}
+  else if(canal.toLowerCase().includes("tel")){cls="canal-tel";icon="📞";}
+  else if(canal.toLowerCase().includes("carte")||canal.toLowerCase().includes("ligne")){cls="canal-carte";icon="💳";}
+  return`<span class="canal-badge ${cls}">${icon} ${canal}</span>`;
 }
 
 /* ===== AFFICHAGE ===== */
 function afficherCommandes(){
   let filtre=document.getElementById("filter-select").value;
   let container=document.getElementById("commandes-container");
-
   let filtered=toutesCommandes.filter(c=>{
-    if(filtre==="nouvelles") return !commandesConfirmees.includes(c.id);
-    if(filtre==="confirmees") return commandesConfirmees.includes(c.id);
+    if(commandesSupprimees.includes(c.id))return false;
+    if(filtre==="nouvelles")return!commandesConfirmees.includes(c.id);
+    if(filtre==="confirmees")return commandesConfirmees.includes(c.id);
     return true;
   });
-
   if(filtered.length===0){
-    container.innerHTML=`<div class="empty-state"><div class="icon">🍩</div><p>Aucune commande ${filtre==="nouvelles"?"en attente":filtre==="confirmees"?"confirmée":""} pour le moment.</p></div>`;
+    container.innerHTML=`<div class="empty-state"><div class="icon">🍩</div><p>Aucune commande ${filtre==="nouvelles"?"en attente":filtre==="confirmees"?"confirmée":""}.</p></div>`;
     return;
   }
-
   container.innerHTML=filtered.map(c=>renderCommande(c)).join("");
 }
 
@@ -199,19 +227,21 @@ function renderCommande(c){
   let confirmee=commandesConfirmees.includes(c.id);
   let phoneNorm=normalizePhone(c.phone);
   let phoneWA=phoneNorm.startsWith("0")?"33"+phoneNorm.substring(1):phoneNorm;
-
-  let msgWA=genererMessageConfirmation(c,false);
-  let msgSMS=genererMessageConfirmation(c,true);
+  let msgWA=genererMsg(c,false);
+  let msgSMS=genererMsg(c,true);
   let lienWA="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWA);
   let ua=navigator.userAgent.toLowerCase();
   let lienSMS="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMS);
 
-  return `<div class="commande-card ${confirmee?'confirmee':'nouvelle'}" id="card-${c.id}">
-    <span class="${confirmee?'badge-ok':'badge-new'}">${confirmee?'✅ CONFIRMÉE':'🆕 NOUVELLE'}</span>
+  return`<div class="commande-card ${confirmee?"confirmee":"nouvelle"}" id="card-${c.id}">
+    <span class="badge ${confirmee?"badge-ok":"badge-new"}">${confirmee?"✅ CONFIRMÉE":"🆕 NOUVELLE"}</span>
     <div class="commande-header">
       <div>
         <div class="client-name">${c.name||"—"}</div>
-        <div class="commande-date">Reçue le ${c.date||"—"}</div>
+        <div class="commande-meta">
+          📅 ${c.dateRecu||"—"} ${c.heure?"à "+c.heure:""}
+          ${badgeCanal(c.canal)}
+        </div>
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#ff4f8b;">${c.total||"—"} €</div>
     </div>
@@ -220,29 +250,36 @@ function renderCommande(c){
       <div class="info-item"><div class="label">💳 Règlement</div><div class="value">${c.payment||"—"}</div></div>
       <div class="info-item"><div class="label">🗓️ Date retrait</div><div class="value">${c.dateRetrait||"—"}</div></div>
       <div class="info-item"><div class="label">⏰ Créneau</div><div class="value">${c.creneau||"—"}</div></div>
-      <div class="info-item full"><div class="label">📦 Détail commande</div><div class="value" style="font-size:12px;font-weight:normal;color:#ccc;white-space:pre-wrap;margin-top:4px;">${(c.order||"—").replace(/\\n/g,"\n")}</div></div>
+      <div class="info-item full">
+        <div class="label">📦 Détail commande</div>
+        <div class="detail-box" style="margin-top:6px;">${(c.order||"—").replace(/\\n/g,"\n")}</div>
+      </div>
     </div>
+    <div class="total-row"><span>Total</span><span>${c.total||"—"} €</span></div>
     ${!confirmee?`
-    <a class="btn-confirm-wa" href="${lienWA}" target="_blank" onclick="marquerConfirmee(${c.id})">📲 Confirmer par WhatsApp</a>
-    <a class="btn-confirm-sms" href="${lienSMS}" onclick="marquerConfirmee(${c.id})">💬 Confirmer par SMS</a>
-    `:`<div style="text-align:center;color:#25D366;font-size:13px;padding:10px;">✅ Confirmation envoyée au client</div>`}
-    ${!confirmee?`<div style="text-align:center;margin-top:6px;"><button class="btn-mark-done" onclick="marquerConfirmee(${c.id})">Marquer comme confirmée sans envoyer</button></div>`:""}
+      <a class="btn-wa" href="${lienWA}" target="_blank" onclick="marquerConfirmee(${c.id})">📲 Confirmer par WhatsApp</a>
+      <a class="btn-sms" href="${lienSMS}" onclick="marquerConfirmee(${c.id})">💬 Confirmer par SMS</a>
+      <div class="actions-secondaires">
+        <button class="btn-annuler" onclick="marquerConfirmee(${c.id})">✅ Marquer confirmée sans envoyer</button>
+        <button class="btn-supprimer" onclick="demanderSuppression(${c.id})">🗑️ Supprimer</button>
+      </div>
+    `:`
+      <div style="text-align:center;color:#25D366;font-size:13px;padding:8px;">✅ Confirmation envoyée</div>
+      <div class="actions-secondaires" style="margin-top:8px;">
+        <button class="btn-supprimer" style="flex:1;" onclick="demanderSuppression(${c.id})">🗑️ Supprimer</button>
+      </div>
+    `}
   </div>`;
 }
 
-function genererMessageConfirmation(c, pourSMS=false){
+function genererMsg(c,pourSMS=false){
   let b=pourSMS?"":"*";
-  let name=c.name||"";
-  let date=c.dateRetrait||"—";
-  let time=c.creneau||"—";
-  let total=c.total||"—";
-  let msg=`Bonjour ${name} ! 😊\n\n`;
+  let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
   msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
-  msg+=`🗓️ Date : ${date}\n`;
-  msg+=`⏰ Créneau : ${time}\n`;
-  msg+=`💰 Total : ${total} €\n\n`;
-  msg+=`📍 ${b}Adresse de retrait :${b}\n`;
-  msg+=`36 rue du Chanoine Lallement, Reims\n\n`;
+  msg+=`🗓️ Date : ${c.dateRetrait||"—"}\n`;
+  msg+=`⏰ Créneau : ${c.creneau||"—"}\n`;
+  msg+=`💰 Total : ${c.total||"—"} €\n\n`;
+  msg+=`📍 ${b}Adresse de retrait :${b}\n36 rue du Chanoine Lallement, Reims\n\n`;
   msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — je descendrai te remettre ta commande en mains propres ! 🍩\n`;
   msg+=`\nÀ tout à l'heure ! 🧇\n— Oh! Mikaté`;
   return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
@@ -253,24 +290,53 @@ function marquerConfirmee(id){
     commandesConfirmees.push(id);
     localStorage.setItem('ohMikateConfirmees',JSON.stringify(commandesConfirmees));
     updateStats();
-    setTimeout(()=>afficherCommandes(),500);
+    setTimeout(()=>afficherCommandes(),400);
   }
 }
 
+/* ===== SUPPRESSION ===== */
+function demanderSuppression(id){
+  idASupprimer=id;
+  document.getElementById("confirm-popup").classList.add("show");
+}
+function fermerConfirm(){
+  idASupprimer=null;
+  document.getElementById("confirm-popup").classList.remove("show");
+}
+function confirmerSuppression(){
+  if(idASupprimer===null)return;
+  commandesSupprimees.push(idASupprimer);
+  localStorage.setItem('ohMikateSupprimees',JSON.stringify(commandesSupprimees));
+  // Retirer aussi des confirmées si besoin
+  commandesConfirmees=commandesConfirmees.filter(id=>id!==idASupprimer);
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(commandesConfirmees));
+  fermerConfirm();
+  updateStats();
+  afficherCommandes();
+  showToast("🗑️ Commande supprimée");
+}
+
+/* ===== STATS ===== */
 function updateStats(){
-  let total=toutesCommandes.length;
-  let confirmees=toutesCommandes.filter(c=>commandesConfirmees.includes(c.id)).length;
-  let nouvelles=total-confirmees;
-  document.getElementById("stat-total").textContent=total;
-  document.getElementById("stat-new").textContent=nouvelles;
-  document.getElementById("stat-done").textContent=confirmees;
+  let visible=toutesCommandes.filter(c=>!commandesSupprimees.includes(c.id));
+  let confirmees=visible.filter(c=>commandesConfirmees.includes(c.id));
+  let nouvelles=visible.filter(c=>!commandesConfirmees.includes(c.id));
+  let ca=visible.reduce((sum,c)=>{
+    let v=parseFloat(String(c.total).replace(",","."));
+    return sum+(isNaN(v)?0:v);
+  },0);
+  document.getElementById("stat-total").textContent=visible.length;
+  document.getElementById("stat-new").textContent=nouvelles.length;
+  document.getElementById("stat-done").textContent=confirmees.length;
+  document.getElementById("stat-ca").textContent=ca.toFixed(2)+"€";
 }
 
 function normalizePhone(raw){
-  if(!raw) return "";
+  if(!raw)return"";
   let p=String(raw).replace(/[\s\.\-\(\)]+/g,'');
-  if(p.startsWith("+33")) p="0"+p.substring(3);
-  else if(p.startsWith("0033")) p="0"+p.substring(4);
+  if(p.startsWith("+33"))p="0"+p.substring(3);
+  else if(p.startsWith("0033"))p="0"+p.substring(4);
+  if(!p.startsWith("0"))p="0"+p;
   return p;
 }
 
@@ -282,4 +348,3 @@ function showToast(m){
 </script>
 </body>
 </html>
-
