@@ -400,8 +400,9 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
     <div class="cancel-section">
       <h4>Un empêchement ? Vous pouvez annuler votre commande :</h4>
       <div class="cancel-links">
-        <a href="https://wa.me/33698213380?text=Je%20souhaite%20annuler%20ma%20commande." class="cancel-link" style="background:#ff4f8b22;color:#ff4f8b;border:1px solid #ff4f8b;">📲 Annuler via WhatsApp</a>
-        <a href="tel:0698213380" class="cancel-link" style="background:#007aff22;color:#007aff;border:1px solid #007aff;">📞 Annuler par appel</a>
+        <a id="cancel-whatsapp" href="#" class="cancel-link" style="background:#ff4f8b22;color:#ff4f8b;border:1px solid #ff4f8b;">📲 Annuler via WhatsApp</a>
+        <a id="cancel-sms" href="#" class="cancel-link" style="background:#007aff22;color:#007aff;border:1px solid #007aff;">💬 Annuler par SMS</a>
+        <a href="tel:0698213380" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
       </div>
     </div>
 
@@ -690,11 +691,18 @@ function getOrderText(cleanForSms=false, canal="WhatsApp"){
 /* ===== GÉNÈRE TEXTE DEPUIS STORAGE (page confirmation) ===== */
 function getConfirmOrderText(data, cleanForSms=false){
   let b=cleanForSms?"":"*";
-  let text=`${b}COMMANDE OH MIKATE - CONFIRMATION${b}\n`;
+  let now=new Date().toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  let text=`${b}COMMANDE OH MIKATE${b}\n`;
+  text+=`📅 Reçue le ${now} via ${data.canal||"carte"}\n`;
   text+=data.orderDetail;
   text+=`\n${b}TOTAL : ${data.total} EUR${b}`;
   if(data.notes)text+=`\n\nPRECISION CLIENT :\n"${data.notes}"`;
-  text+=`\n\n--- INFOS RETRAIT ---\nNom : ${data.name}\nTelephone : ${data.phone}\nDate souhaitee : ${data.date}\nTranche souhaitee : ${data.time}\nReglement : ${data.payment}\n\nLieu : Communique a la validation`;
+  text+=`\n\n--- INFOS RETRAIT ---`;
+  text+=`\nNom : ${data.name}`;
+  text+=`\nTelephone : ${data.phone}`;
+  text+=`\nDate souhaitee : ${data.date}`;
+  text+=`\nTranche souhaitee : ${data.time}`;
+  text+=`\nReglement : ${data.payment}`;
   return cleanForSms?text.normalize("NFD").replace(/[\u0300-\u036f]/g,""):text;
 }
 
@@ -888,6 +896,26 @@ window.onload=function(){
       let smsBody=getConfirmOrderText(data,true);
       let ua=navigator.userAgent.toLowerCase();
       let url="sms:"+targetPhone+(ua.indexOf("iphone")>-1?"&body=":"?body=")+encodeURIComponent(smsBody);
+      window.location.href=url;
+    });
+
+    // Lien annulation WhatsApp avec détail commande
+    let msgAnnulation=`Bonjour, je souhaite annuler ma commande :\n\n`+
+      `👤 Nom : ${data.name}\n`+
+      `📅 Date souhaitée : ${data.date}\n`+
+      `⏰ Créneau : ${data.time}\n`+
+      `💰 Total : ${data.total} €\n\n`+
+      `📦 Détail :\n${data.orderDetail}\n\n`+
+      `Merci de confirmer l'annulation.`;
+    let msgAnnulationSMS=msgAnnulation.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+
+    document.getElementById("cancel-whatsapp").href=
+      "https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnulation);
+
+    document.getElementById("cancel-sms").addEventListener("click",function(e){
+      e.preventDefault();
+      let ua=navigator.userAgent.toLowerCase();
+      let url="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgAnnulationSMS);
       window.location.href=url;
     });
 
