@@ -396,16 +396,6 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       <a id="confirm-sms" class="btn smsbtn" href="#">💬 Envoyer par SMS</a>
     </div>
 
-    <!-- RÉPONSE AU CLIENT (bouton pour vous, Soni) -->
-    <div class="confirm-card" style="margin-top:20px;">
-      <div class="confirm-card-header" style="background:#1a2a1a;color:#25D366;border-bottom:1px solid #1e3a1e;">✅ Valider et informer le client</div>
-      <div class="confirm-card-body">
-        <p style="font-size:13px;color:#aaa;margin:0 0 14px;">Une fois la commande acceptée, utilisez ce bouton pour envoyer automatiquement les informations de retrait au client.</p>
-        <a id="btn-reponse-client-wa" class="btn whatsapp" href="#" style="margin-bottom:10px;">📲 Confirmer au client par WhatsApp</a>
-        <a id="btn-reponse-client-sms" class="btn smsbtn" href="#">💬 Confirmer au client par SMS</a>
-      </div>
-    </div>
-
     <!-- ANNULATION -->
     <div class="cancel-section">
       <h4>Un empêchement ? Vous pouvez annuler votre commande :</h4>
@@ -592,7 +582,7 @@ function updateUI(){
   const buttons=[document.getElementById("whatsapp"),document.getElementById("sms-btn"),document.getElementById("phone-btn")];
   let shouldEnable=isFormValid();
   buttons.forEach(btn=>{if(shouldEnable){btn.removeAttribute("disabled");btn.classList.remove("disabled");}else{btn.setAttribute("disabled","true");btn.classList.add("disabled");}});
-  let whatsappMsg=encodeURIComponent(getOrderText(false));
+  let whatsappMsg=encodeURIComponent(getOrderText(false,"WhatsApp"));
   document.getElementById("whatsapp").href="https://wa.me/33"+targetPhone.substring(1)+"?text="+whatsappMsg;
 }
 
@@ -610,23 +600,27 @@ function isFormValid(){
   return true;
 }
 
-function checkForm(event){
+function checkForm(event, canal="WhatsApp"){
   if(!isFormValid()){showToast("⚠️ Formulaire incomplet !");if(event)event.preventDefault();return false;}
-  sendOrderToSheet();return true;
+  sendOrderToSheet(canal);return true;
 }
 
 /* ===== ENVOI GOOGLE SHEET ===== */
-function sendOrderToSheet(){
+function sendOrderToSheet(canal=""){
   let orderInfo=calculateTotalAndExtractStructure();
+  let phoneRaw=document.getElementById("client-phone").value;
+  let phoneNorm=normalizePhone(phoneRaw);
+  let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   let payload={
     name:document.getElementById("client-name").value,
-    phone:document.getElementById("client-phone").value,
+    phone:phoneNorm, // téléphone normalisé avec zéro
     order:orderInfo.detailsText,
     total:orderInfo.totalPrice.toFixed(2),
     payment:selectedPaymentMode,
-    date:new Date().toLocaleDateString('fr-FR'),
+    date:new Date().toLocaleDateString('fr-FR')+" "+now,
     dateRetrait:document.getElementById("client-date").value,
-    creneau:document.getElementById("client-time").value
+    creneau:document.getElementById("client-time").value,
+    canal:canal
   };
   fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
     method:"POST",mode:"no-cors",
@@ -638,16 +632,20 @@ function sendOrderToSheet(){
 /* ===== SAUVEGARDE COMMANDE AVANT PAIEMENT ===== */
 function saveOrderToStorage(){
   let orderInfo=calculateTotalAndExtractStructure();
+  let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   let data={
     name:document.getElementById("client-name").value.trim(),
-    phone:document.getElementById("client-phone").value.trim(),
+    phone:normalizePhone(document.getElementById("client-phone").value.trim()),
     date:document.getElementById("client-date").value,
     time:document.getElementById("client-time").value,
     notes:document.getElementById("client-notes").value.trim(),
-    payment:selectedPaymentMode==="PayPal"?"Paiement en ligne (carte)" : "Espèces (appoint à prévoir)",
+    payment:"Paiement en ligne (carte)",
     total:orderInfo.totalPrice.toFixed(2),
     orderDetail:orderInfo.detailsText,
-    summaryShort:orderInfo.summaryShort
+    summaryShort:orderInfo.summaryShort,
+    canal:"Carte bancaire",
+    heure:now,
+    dateCommande:new Date().toLocaleDateString('fr-FR')
   };
   localStorage.setItem('ohMikateCommande', JSON.stringify(data));
 }
@@ -668,32 +666,24 @@ function getMessageConfirmationClient(name, phone, date, time, total, pourSMS=fa
 }
 
 /* ===== TEXTE COMMANDE POUR WA / SMS ===== */
-function getOrderText(cleanForSms=false){
+function getOrderText(cleanForSms=false, canal="WhatsApp"){
   let name=document.getElementById("client-name").value.trim();
   let phoneField=document.getElementById("client-phone").value.trim();
+  let phoneNorm=normalizePhone(phoneField);
   let date=document.getElementById("client-date").value;
   let time=document.getElementById("client-time").value;
   let noteField=document.getElementById("client-notes").value.trim();
   let payText=selectedPaymentMode==="Espèces"?"Espèces (Appoint à prévoir)":"Paiement en ligne effectué ✅";
   let orderInfo=calculateTotalAndExtractStructure();
   let b=cleanForSms?"":"*";
-
-  // Génère les liens de confirmation rapide pour Soni
-  let phoneNorm=normalizePhone(phoneField);
-  let phoneWA=phoneNorm.startsWith("0")?"33"+phoneNorm.substring(1):phoneNorm;
-  let msgConfirmWA=getMessageConfirmationClient(name,phoneField,date,time,orderInfo.totalPrice.toFixed(2),false);
-  let msgConfirmSMS=getMessageConfirmationClient(name,phoneField,date,time,orderInfo.totalPrice.toFixed(2),true);
-  let lienWA="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgConfirmWA);
-  let ua=navigator.userAgent.toLowerCase();
-  let lienSMS="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgConfirmSMS);
+  let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
 
   let text=`${b}COMMANDE OH MIKATE${b}\n`;
+  text+=`📅 Reçue le ${new Date().toLocaleDateString('fr-FR')} à ${now} via ${canal}\n`;
   text+=orderInfo.detailsText;
   text+=`\n${b}TOTAL : ${orderInfo.totalPrice.toFixed(2)} EUR${b}`;
   if(noteField)text+=`\n\nPRECISION CLIENT :\n"${noteField}"`;
-  text+=`\n\n--- INFOS RETRAIT ---\nNom : ${name}\nTelephone : ${phoneField}\nDate souhaitee : ${date}\nTranche souhaitee : ${time}\nReglement : ${payText}`;
-  text+=`\n\n--- CONFIRMATION RAPIDE ---\n✅ Cliquez pour confirmer au client :\nWhatsApp : ${lienWA}\nSMS : ${lienSMS}`;
-
+  text+=`\n\n--- INFOS RETRAIT ---\nNom : ${name}\nTelephone : ${phoneNorm}\nDate souhaitee : ${date}\nTranche souhaitee : ${time}\nReglement : ${payText}`;
   return cleanForSms?text.normalize("NFD").replace(/[\u0300-\u036f]/g,""):text;
 }
 
@@ -710,14 +700,14 @@ function getConfirmOrderText(data, cleanForSms=false){
 
 /* ===== AUTRES FONCTIONS ===== */
 function triggerSMS(event){
-  if(!checkForm(event))return;
-  let smsBody=getOrderText(true);
+  if(!checkForm(event,"SMS"))return;
+  let smsBody=getOrderText(true,"SMS");
   let ua=navigator.userAgent.toLowerCase();
   let url="sms:"+targetPhone+(ua.indexOf("iphone")>-1?"&body=":"?body=")+encodeURIComponent(smsBody);
   showToast("📱 Redirection...");
   setTimeout(()=>{window.location.href=url;},500);
 }
-function triggerCall(event){if(!checkForm(event))return;showToast("📞 Lancement...");setTimeout(()=>{window.location.href="tel:"+targetPhone;},500);}
+function triggerCall(event){if(!checkForm(event,"Téléphone"))return;showToast("📞 Lancement...");setTimeout(()=>{window.location.href="tel:"+targetPhone;},500);}
 function selectPayment(mode){
   selectedPaymentMode=mode;
   document.getElementById("opt-paypal").classList.toggle("selected",mode==='PayPal');
@@ -857,32 +847,42 @@ window.onload=function(){
   const savedData=localStorage.getItem('ohMikateCommande');
 
   if(isSuccess && savedData){
-    // --- AFFICHER PAGE CONFIRMATION ---
     let data=JSON.parse(savedData);
+
+    // Envoi au Google Sheet avec date et créneau
+    fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
+      method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        name:data.name,
+        phone:data.phone,
+        order:data.orderDetail,
+        total:data.total,
+        payment:data.payment,
+        date:data.dateCommande+" "+data.heure+" via "+data.canal,
+        dateRetrait:data.date,
+        creneau:data.time,
+        canal:data.canal
+      })
+    });
 
     document.getElementById("main-page").style.display="none";
     document.getElementById("confirmation-page").style.display="block";
     document.body.style.paddingBottom="0";
 
-    // Remplir les infos client
     document.getElementById("c-name").textContent=data.name||"—";
     document.getElementById("c-phone").textContent=data.phone||"—";
     document.getElementById("c-date").textContent=data.date||"—";
     document.getElementById("c-time").textContent=data.time||"—";
-    document.getElementById("c-payment").innerHTML=data.payment==="Paiement en ligne (carte)"
-      ? '<span style="color:#25D366;">✅ '+data.payment+'</span>'
-      : data.payment||"—";
+    document.getElementById("c-payment").innerHTML='<span style="color:#25D366;">✅ '+data.payment+'</span>';
     document.getElementById("c-total").textContent=data.total+" €";
+    document.getElementById("c-order-detail").textContent=data.orderDetail||"—";
 
-    // Détail commande
-    let detailEl=document.getElementById("c-order-detail");
-    detailEl.textContent=data.orderDetail||"—";
-
-    // Bouton WhatsApp
+    // Bouton WhatsApp → envoie commande à Soni
     let waText=encodeURIComponent(getConfirmOrderText(data,false));
     document.getElementById("confirm-whatsapp").href="https://wa.me/33"+targetPhone.substring(1)+"?text="+waText;
 
-    // Bouton SMS
+    // Bouton SMS → envoie commande à Soni
     document.getElementById("confirm-sms").addEventListener("click",function(e){
       e.preventDefault();
       let smsBody=getConfirmOrderText(data,true);
@@ -891,47 +891,9 @@ window.onload=function(){
       window.location.href=url;
     });
 
-    // ===== MESSAGE DE CONFIRMATION À ENVOYER AU CLIENT =====
-    let clientPhone=normalizePhone(data.phone||"");
-    // Format international pour WhatsApp (enlève le 0, ajoute 33)
-    let clientPhoneWA=clientPhone.startsWith("0")?"33"+clientPhone.substring(1):clientPhone.replace("+","");
-
-    let msgConfirmation=
-`Bonjour ${data.name} ! 😊
-
-✅ Ta commande Oh! Mikaté est bien confirmée !
-
-🗓️ Date : ${data.date}
-⏰ Créneau : ${data.time}
-💰 Total : ${data.total} €
-
-📍 Adresse de retrait :
-*36 rue du Chanoine Lallement, Reims*
-
-🔔 Une fois arrivé(e) en bas de l'immeuble, merci d'appeler ou d'envoyer un message — je descends te remettre ta commande en mains propres ! 🍩
-
-À tout à l'heure !
-Oh! Mikaté 🧇`;
-
-    let msgConfirmationSMS=msgConfirmation.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\*/g,"");
-
-    // Bouton WhatsApp → ouvre WhatsApp avec le numéro du CLIENT
-    document.getElementById("btn-reponse-client-wa").href=
-      "https://wa.me/"+clientPhoneWA+"?text="+encodeURIComponent(msgConfirmation);
-
-    // Bouton SMS → ouvre SMS avec le numéro du CLIENT
-    document.getElementById("btn-reponse-client-sms").addEventListener("click",function(e){
-      e.preventDefault();
-      let ua=navigator.userAgent.toLowerCase();
-      let url="sms:"+data.phone+(ua.indexOf("iphone")>-1?"&body=":"?body=")+encodeURIComponent(msgConfirmationSMS);
-      window.location.href=url;
-    });
-
-    // Nettoyer localStorage après affichage
     localStorage.removeItem('ohMikateCommande');
 
   } else {
-    // --- MODE NORMAL ---
     document.getElementById("confirmation-page").style.display="none";
     document.getElementById("main-page").style.display="block";
     initDates();
