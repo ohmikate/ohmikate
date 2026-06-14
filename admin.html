@@ -8,7 +8,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:100vh;padding:20px 15px 60px;}
-#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
 .login-card{background:#111;border:2px solid #ff4f8b;border-radius:20px;padding:35px 25px;max-width:360px;width:100%;text-align:center;}
 .login-card h1{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#ff4f8b;letter-spacing:2px;margin-bottom:6px;}
 .login-card p{font-size:12px;color:#888;margin-bottom:24px;}
@@ -20,72 +20,100 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .header{text-align:center;padding:20px 0 16px;border-bottom:2px solid #ff4f8b;margin-bottom:20px;}
 .header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#ff4f8b;letter-spacing:2px;}
 .header p{font-size:11px;color:#888;margin-top:4px;}
-.toolbar{display:flex;gap:10px;max-width:600px;margin:0 auto 16px;align-items:center;}
-.refresh-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:10px 18px;font-size:14px;cursor:pointer;letter-spacing:1px;white-space:nowrap;}
-.filter-select{flex:1;padding:10px;background:#111;border:2px solid #222;border-radius:10px;color:#fff;font-size:13px;font-family:'Montserrat',sans-serif;}
+.toolbar{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;align-items:center;flex-wrap:wrap;}
+.refresh-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;white-space:nowrap;}
+.filter-select{flex:1;min-width:120px;padding:10px;background:#111;border:2px solid #222;border-radius:10px;color:#fff;font-size:13px;font-family:'Montserrat',sans-serif;}
 .filter-select:focus{border-color:#ff4f8b;outline:none;}
-.stats-bar{display:flex;gap:10px;max-width:600px;margin:0 auto 16px;}
-.stat-box{flex:1;background:#111;border:1px solid #222;border-radius:10px;padding:12px;text-align:center;}
-.stat-box .num{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#ff4f8b;}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:600px;margin:0 auto 16px;}
+.stat-box{background:#111;border:1px solid #222;border-radius:10px;padding:10px;text-align:center;}
+.stat-box .num{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#ff4f8b;}
 .stat-box .num.green{color:#25D366;}
 .stat-box .num.blue{color:#007aff;}
-.stat-box .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
-.commande-card{background:#111;border:1px solid #222;border-radius:16px;padding:18px;max-width:600px;margin:0 auto 14px;}
-.commande-card.nouvelle{border-color:#ff4f8b;box-shadow:0 0 12px rgba(255,79,139,0.15);}
-.commande-card.confirmee{border-color:#25D366;opacity:0.75;}
-.commande-card.supprimee{display:none;}
-.badge{display:inline-block;font-size:10px;font-weight:bold;padding:3px 10px;border-radius:20px;margin-bottom:10px;letter-spacing:1px;}
+.stat-box .num.orange{color:#ff9500;}
+.stat-box .lbl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* GROUPE JOUR */
+.jour-group{max-width:600px;margin:0 auto 20px;}
+.jour-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#1a1a1a;border-radius:10px;margin-bottom:10px;border-left:4px solid #ff4f8b;}
+.jour-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#fff;}
+.jour-stats{font-size:12px;color:#888;text-align:right;}
+.jour-ca{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ff4f8b;}
+.jour-count{font-size:11px;color:#888;}
+
+/* CRÉNEAUX */
+.creneaux-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:0 4px;}
+.creneau-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:bold;}
+.creneau-libre{background:#0a2a12;color:#25D366;border:1px solid #25D36644;}
+.creneau-charge{background:#2a1a00;color:#ff9500;border:1px solid #ff950044;}
+.creneau-plein{background:#2a0a0a;color:#ff4444;border:1px solid #ff444444;}
+.creneau-urgent{background:#ff4444;color:#fff;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+
+/* CARTE COMMANDE */
+.commande-card{background:#111;border:1px solid #222;border-radius:14px;padding:16px;margin-bottom:10px;}
+.commande-card.nouvelle{border-color:#ff4f8b;box-shadow:0 0 10px rgba(255,79,139,0.1);}
+.commande-card.confirmee{border-color:#25D366;opacity:0.8;}
+.commande-card.urgente{border-color:#ff9500;box-shadow:0 0 10px rgba(255,149,0,0.2);}
+.badge{display:inline-block;font-size:10px;font-weight:bold;padding:3px 8px;border-radius:20px;margin-bottom:8px;letter-spacing:1px;}
 .badge-new{background:#ff4f8b;color:#fff;}
 .badge-ok{background:#25D366;color:#fff;}
-.commande-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;}
-.client-name{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;}
-.commande-meta{font-size:11px;color:#666;margin-top:3px;line-height:1.6;}
-.canal-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:bold;margin-left:4px;}
+.badge-urgent{background:#ff9500;color:#fff;animation:pulse 1s infinite;}
+.commande-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.client-name{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;}
+.commande-meta{font-size:11px;color:#666;margin-top:2px;line-height:1.5;}
+.canal-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:bold;}
 .canal-wa{background:#25D36622;color:#25D366;border:1px solid #25D36644;}
 .canal-sms{background:#007aff22;color:#007aff;border:1px solid #007aff44;}
-.canal-tel{background:#ff950022;color:#ff9500;border:1px solid #ff950044;}
 .canal-carte{background:#635bff22;color:#a09af0;border:1px solid #635bff44;}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-.info-item{background:#1a1a1a;border-radius:8px;padding:9px 12px;}
-.info-item .label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+.info-item{background:#1a1a1a;border-radius:8px;padding:8px 10px;}
+.info-item .label{font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;}
 .info-item .value{font-size:13px;font-weight:bold;color:#fff;}
 .info-item.full{grid-column:1/-1;}
-.detail-box{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:8px;padding:12px;font-size:12px;color:#aaa;line-height:1.7;white-space:pre-wrap;}
-.total-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#1a0d12;border-radius:8px;margin:12px 0;font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;}
-.btn-wa{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:12px;border-radius:30px;font-size:15px;color:#fff;text-decoration:none;background:#25D366;margin-bottom:8px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
-.btn-sms{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:12px;border-radius:30px;font-size:15px;color:#fff;text-decoration:none;background:#007aff;margin-bottom:8px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.detail-box{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:8px;padding:10px;font-size:12px;color:#aaa;line-height:1.7;white-space:pre-wrap;margin-top:4px;}
+.total-row{display:flex;justify-content:space-between;padding:8px 12px;background:#1a0d12;border-radius:8px;margin:10px 0;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#ff4f8b;}
+.btn-wa{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#25D366;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.btn-sms{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#007aff;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
 .btn-wa:hover,.btn-sms:hover{filter:brightness(1.15);}
-.actions-secondaires{display:flex;gap:8px;margin-top:4px;}
-.btn-annuler{flex:1;background:none;border:1px solid #333;color:#888;font-size:12px;padding:9px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:0.2s;}
-.btn-supprimer{flex:1;background:none;border:1px solid #ff444433;color:#ff6666;font-size:12px;padding:9px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:0.2s;}
-.btn-annuler:hover{border-color:#25D366;color:#25D366;}
-.btn-supprimer:hover{background:#ff444422;border-color:#ff4444;}
-.empty-state{text-align:center;padding:50px 20px;color:#555;}
-.empty-state .icon{font-size:40px;margin-bottom:12px;}
+.actions-sec{display:flex;gap:8px;margin-top:4px;}
+.btn-marquer{flex:1;background:none;border:1px solid #333;color:#888;font-size:11px;padding:8px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:0.2s;}
+.btn-supp{flex:1;background:none;border:1px solid #ff444433;color:#ff6666;font-size:11px;padding:8px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:0.2s;}
+.btn-marquer:hover{border-color:#25D366;color:#25D366;}
+.btn-supp:hover{background:#ff444422;}
+.checkbox-wrap{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.cmd-checkbox{width:20px;height:20px;accent-color:#ff4f8b;cursor:pointer;flex-shrink:0;}
+.selection-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#111;border-top:2px solid #ff4f8b;padding:12px 16px;max-width:600px;margin:0 auto;border-radius:16px 16px 0 0;z-index:100;}
+.selection-bar.show{display:block;}
+.selection-bar-content{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.sel-count{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ff4f8b;flex:1;}
+.btn-sel-conf{font-family:'Bebas Neue',sans-serif;background:#25D366;color:#fff;border:none;border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;}
+.btn-sel-supp{font-family:'Bebas Neue',sans-serif;background:#ff4444;color:#fff;border:none;border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;}
+.btn-sel-annul{font-family:'Bebas Neue',sans-serif;background:#333;color:#aaa;border:none;border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;}
+.tout-select-wrap{display:flex;align-items:center;gap:8px;max-width:600px;margin:0 auto 10px;padding:8px 4px;}
+.tout-select-wrap label{font-size:13px;color:#888;cursor:pointer;}
 .loading{text-align:center;padding:40px;color:#888;font-size:14px;}
-#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#ff4f8b;color:white;padding:11px 22px;border-radius:30px;font-weight:bold;transition:0.4s;opacity:0;z-index:9999;text-align:center;font-size:13px;}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#ff4f8b;color:white;padding:11px 22px;border-radius:30px;font-weight:bold;transition:0.4s;opacity:0;z-index:9999;font-size:13px;text-align:center;}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-.confirm-popup{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9998;align-items:center;justify-content:center;padding:20px;}
-.confirm-popup.show{display:flex;}
-.confirm-box{background:#1a1a1a;border:2px solid #ff4444;border-radius:16px;padding:24px;max-width:340px;width:100%;text-align:center;}
-.confirm-box h3{color:#ff6666;font-size:18px;margin-bottom:12px;}
-.confirm-box p{font-size:13px;color:#aaa;margin-bottom:20px;line-height:1.5;}
-.confirm-box-btns{display:flex;gap:10px;}
-.confirm-box-btns button{flex:1;padding:12px;border-radius:20px;font-family:'Bebas Neue',sans-serif;font-size:15px;cursor:pointer;border:none;letter-spacing:1px;}
-.btn-confirm-delete{background:#ff4444;color:#fff;}
-.btn-cancel-delete{background:#222;color:#aaa;border:1px solid #333!important;}
+.popup{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9998;align-items:center;justify-content:center;padding:20px;}
+.popup.show{display:flex;}
+.popup-box{background:#1a1a1a;border:2px solid #ff4444;border-radius:16px;padding:24px;max-width:320px;width:100%;text-align:center;}
+.popup-box h3{color:#ff6666;font-size:18px;margin-bottom:10px;}
+.popup-box p{font-size:13px;color:#aaa;margin-bottom:18px;line-height:1.5;}
+.popup-btns{display:flex;gap:10px;}
+.popup-btns button{flex:1;padding:12px;border-radius:20px;font-family:'Bebas Neue',sans-serif;font-size:15px;cursor:pointer;border:none;letter-spacing:1px;}
+.btn-ok-supp{background:#ff4444;color:#fff;}
+.btn-cancel{background:#222;color:#aaa;}
 </style>
 </head>
 <body>
 <div id="toast"></div>
-
-<div class="confirm-popup" id="confirm-popup">
-  <div class="confirm-box">
-    <h3>⚠️ Supprimer la commande ?</h3>
-    <p>Cette action supprimera définitivement la commande de votre tableau de bord. Elle restera visible dans Google Sheets pour l'historique.</p>
-    <div class="confirm-box-btns">
-      <button class="btn-cancel-delete" onclick="fermerConfirm()">Annuler</button>
-      <button class="btn-confirm-delete" onclick="confirmerSuppression()">Supprimer</button>
+<div class="popup" id="popup-supp">
+  <div class="popup-box">
+    <h3>⚠️ Supprimer ?</h3>
+    <p>La commande sera supprimée du tableau de bord. Elle restera dans Google Sheets.</p>
+    <div class="popup-btns">
+      <button class="btn-cancel" onclick="fermerPopup()">Annuler</button>
+      <button class="btn-ok-supp" onclick="confirmerSuppression()">Supprimer</button>
     </div>
   </div>
 </div>
@@ -104,7 +132,7 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 <!-- ADMIN -->
 <div id="admin-screen">
   <div class="header">
-    <h1>🧇 Oh! Mikaté — Commandes</h1>
+    <h1>🧇 Oh! Mikaté</h1>
     <p id="last-refresh">Chargement...</p>
   </div>
 
@@ -112,56 +140,76 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
     <div class="stat-box"><div class="num" id="stat-total">0</div><div class="lbl">Total</div></div>
     <div class="stat-box"><div class="num" id="stat-new">0</div><div class="lbl">Nouvelles</div></div>
     <div class="stat-box"><div class="num green" id="stat-done">0</div><div class="lbl">Confirmées</div></div>
-    <div class="stat-box"><div class="num blue" id="stat-ca">0€</div><div class="lbl">CA</div></div>
+    <div class="stat-box"><div class="num orange" id="stat-ca">0€</div><div class="lbl">CA total</div></div>
   </div>
 
   <div class="toolbar">
-    <select class="filter-select" id="filter-select" onchange="afficherCommandes()">
+    <select class="filter-select" id="filter-vue" onchange="afficher()">
+      <option value="jour">Par jour</option>
+      <option value="semaine">Par semaine</option>
+    </select>
+    <select class="filter-select" id="filter-statut" onchange="afficher()">
       <option value="toutes">Toutes</option>
       <option value="nouvelles">🆕 Nouvelles</option>
       <option value="confirmees">✅ Confirmées</option>
     </select>
-    <button class="refresh-btn" onclick="chargerCommandes()">🔄 Actualiser</button>
+    <button class="refresh-btn" onclick="charger()">🔄</button>
   </div>
 
-  <div id="commandes-container"><div class="loading">⏳ Chargement...</div></div>
+  <div class="tout-select-wrap" id="tout-select-wrap" style="display:none;">
+    <input type="checkbox" id="tout-select" class="cmd-checkbox" onchange="toutSelectionner(this.checked)">
+    <label for="tout-select">Tout sélectionner</label>
+    <span id="sel-info" style="font-size:12px;color:#555;margin-left:8px;"></span>
+  </div>
+
+  <div id="container"><div class="loading">⏳ Chargement...</div></div>
+
+  <!-- Barre d'actions groupées -->
+  <div class="selection-bar" id="selection-bar">
+    <div class="selection-bar-content">
+      <span class="sel-count" id="sel-count">0 sélectionnée(s)</span>
+      <button class="btn-sel-conf" onclick="confirmerSelection()">✅ Confirmer</button>
+      <button class="btn-sel-supp" onclick="supprimerSelection()">🗑️ Supprimer</button>
+      <button class="btn-sel-annul" onclick="deselectionnerTout()">✕ Annuler</button>
+    </div>
+  </div>
 </div>
 
 <script>
 const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
 const SHEET_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
 const MOT_DE_PASSE="Ronciat";
+const TARGET="0698213380";
+const CRENEAUX=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
 let toutesCommandes=[];
-let commandesConfirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
-let commandesSupprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
-let idASupprimer=null;
+let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
+let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
+let idASupp=null;
 
-/* ===== LOGIN ===== */
+/* LOGIN */
 function login(){
-  let pwd=document.getElementById("pwd-input").value;
-  if(pwd===MOT_DE_PASSE){
+  if(document.getElementById("pwd-input").value===MOT_DE_PASSE){
     document.getElementById("login-screen").style.display="none";
     document.getElementById("admin-screen").style.display="block";
-    chargerCommandes();
-    setInterval(chargerCommandes,60000);
-  } else {
+    charger();
+    setInterval(charger,60000);
+  }else{
     document.getElementById("login-error").style.display="block";
     document.getElementById("pwd-input").value="";
   }
 }
 
-/* ===== CHARGEMENT SHEETS ===== */
-async function chargerCommandes(){
+/* CHARGEMENT */
+async function charger(){
   document.getElementById("last-refresh").textContent="⏳ Actualisation...";
   try{
     let res=await fetch(SHEET_URL+"&t="+Date.now());
     let text=await res.text();
     let json=JSON.parse(text.replace("/*O_o*/\ngoogle.visualization.Query.setResponse(","").replace(");",""));
-    let rows=json.table.rows;
     toutesCommandes=[];
-    rows.forEach((row,i)=>{
+    (json.table.rows||[]).forEach((row,i)=>{
       if(!row.c||!row.c[1]||!row.c[1].v)return;
-      let dateRecu=row.c[0]?row.c[0].v:"";
+      let dateRecu=row.c[0]?String(row.c[0].v):"";
       let name=row.c[1]?row.c[1].v:"";
       let phone=row.c[2]?String(row.c[2].v):"";
       let order=row.c[3]?row.c[3].v:"";
@@ -169,166 +217,325 @@ async function chargerCommandes(){
       let payment=row.c[5]?row.c[5].v:"";
       let dateRetrait=row.c[6]?row.c[6].v:"";
       let creneau=row.c[7]?row.c[7].v:"";
-
-      // Extraire canal depuis dateRecu (ex: "13/06/2026 06:45 via WhatsApp")
-      let canal="";
-      let canalMatch=dateRecu.match(/via\s+(.+)$/i);
-      if(canalMatch)canal=canalMatch[1].trim();
-
-      // Extraire heure
-      let heure="";
-      let heureMatch=dateRecu.match(/(\d{2}:\d{2})/);
-      if(heureMatch)heure=heureMatch[1];
-
-      // Date propre
-      let datePropre=dateRecu.replace(/via.+$/i,"").trim();
-
-      toutesCommandes.push({id:i,dateRecu:datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau});
+      let canal="",heure="",datePropre=dateRecu;
+      let cm=dateRecu.match(/via\s+(.+)$/i);if(cm)canal=cm[1].trim();
+      let hm=dateRecu.match(/(\d{2}:\d{2})/);if(hm)heure=hm[1];
+      datePropre=dateRecu.replace(/\s*via.+$/i,"").trim();
+      // Vérifier si créneau urgent (< 2h)
+      let urgent=false;
+      if(dateRetrait&&creneau){
+        let now=new Date();
+        let cm2=creneau.match(/(\d{1,2})h(\d{2})/);
+        if(cm2){
+          // Approx : si aujourd'hui et créneau dans moins de 2h
+          let slotH=parseInt(cm2[1]),slotM=parseInt(cm2[2]);
+          let slotMins=slotH*60+slotM;
+          let nowMins=now.getHours()*60+now.getMinutes();
+          if(slotMins-nowMins>0&&slotMins-nowMins<=120)urgent=true;
+        }
+      }
+      toutesCommandes.push({id:i,dateRecu:datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
     });
-    toutesCommandes.reverse();
-    afficherCommandes();
+    // Ordre chronologique : plus ancienne en premier
+    afficher();
     updateStats();
     let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    document.getElementById("last-refresh").textContent="Mis à jour à "+now+" • Actualisation auto toutes les 60s";
+    document.getElementById("last-refresh").textContent="Mis à jour à "+now+" • Auto toutes les 60s";
   }catch(e){
-    document.getElementById("last-refresh").textContent="❌ Erreur de chargement";
-    showToast("❌ Impossible de charger les commandes");
+    document.getElementById("last-refresh").textContent="❌ Erreur";
+    showToast("❌ Impossible de charger");
   }
 }
 
-/* ===== BADGE CANAL ===== */
+/* AFFICHAGE */
+function afficher(){
+  let vue=document.getElementById("filter-vue").value;
+  let statut=document.getElementById("filter-statut").value;
+  let container=document.getElementById("container");
+
+  let filtered=toutesCommandes.filter(c=>{
+    if(supprimees.includes(c.id))return false;
+    if(statut==="nouvelles")return!confirmees.includes(c.id);
+    if(statut==="confirmees")return confirmees.includes(c.id);
+    return true;
+  });
+
+  if(filtered.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">🍩</div><p>Aucune commande.</p></div>`;
+    return;
+  }
+
+  // Grouper par jour ou semaine
+  let groupes={};
+  filtered.forEach(c=>{
+    let key;
+    if(vue==="semaine"){
+      // Semaine ISO
+      let d=parseDate(c.dateRecu);
+      if(d){
+        let jan4=new Date(d.getFullYear(),0,4);
+        let semaine=Math.ceil(((d-jan4)/86400000+jan4.getDay()+1)/7);
+        key=`Semaine ${semaine} — ${d.getFullYear()}`;
+      }else key="Date inconnue";
+    }else{
+      // Jour
+      let d=parseDate(c.dateRecu);
+      if(d){
+        key=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+        key=key.charAt(0).toUpperCase()+key.slice(1);
+      }else key=c.dateRecu||"Date inconnue";
+    }
+    if(!groupes[key])groupes[key]=[];
+    groupes[key].push(c);
+  });
+
+  let html="";
+  Object.keys(groupes).forEach(jour=>{
+    let cmds=groupes[jour];
+    let ca=cmds.reduce((s,c)=>{
+      let v=parseFloat(String(c.total).replace(",","."));
+      return s+(isNaN(v)?0:v);
+    },0);
+    let nouvelles=cmds.filter(c=>!confirmees.includes(c.id)).length;
+
+    // Analyse des créneaux pour ce jour
+    let creneauxHtml=analyserCreneaux(cmds);
+
+    html+=`<div class="jour-group">
+      <div class="jour-header">
+        <div>
+          <div class="jour-title">📅 ${jour}</div>
+          <div class="jour-count">${cmds.length} commande${cmds.length>1?"s":""} • ${nouvelles} en attente</div>
+        </div>
+        <div class="jour-ca">${ca.toFixed(2)} €</div>
+      </div>
+      ${creneauxHtml}
+      ${cmds.map(c=>renderCommande(c)).join("")}
+    </div>`;
+  });
+
+  container.innerHTML=html;
+  // Afficher la case "Tout sélectionner" s'il y a des commandes
+  document.getElementById("tout-select-wrap").style.display=filtered.length>0?"flex":"none";
+}
+
+function parseDate(str){
+  if(!str)return null;
+  // Format DD/MM/YYYY ou DD/MM/YYYY HH:MM
+  let m=str.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if(m)return new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]));
+  return null;
+}
+
+function analyserCreneaux(cmds){
+  let counts={};
+  CRENEAUX.forEach(c=>counts[c]=0);
+  cmds.forEach(c=>{if(c.creneau&&counts[c.creneau]!==undefined)counts[c.creneau]++;});
+  let now=new Date();
+  let nowMins=now.getHours()*60+now.getMinutes();
+  let html='<div class="creneaux-bar">';
+  CRENEAUX.forEach(cr=>{
+    let n=counts[cr];
+    if(n===0)return;
+    let m=cr.match(/(\d{1,2})h(\d{2})/);
+    let slotMins=m?(parseInt(m[1])*60+parseInt(m[2])):999;
+    let diff=slotMins-nowMins;
+    let cls="creneau-libre",icon="✅";
+    if(diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
+    else if(n>=2){cls="creneau-charge";icon="⚠️";}
+    html+=`<span class="creneau-badge ${cls}">${icon} ${cr} (${n})</span>`;
+  });
+  html+='</div>';
+  return html;
+}
+
 function badgeCanal(canal){
   if(!canal)return"";
-  let cls="canal-wa",icon="📲";
-  if(canal.toLowerCase().includes("sms")){cls="canal-sms";icon="💬";}
-  else if(canal.toLowerCase().includes("tel")){cls="canal-tel";icon="📞";}
-  else if(canal.toLowerCase().includes("carte")||canal.toLowerCase().includes("ligne")){cls="canal-carte";icon="💳";}
+  let cls="canal-carte",icon="💳";
+  if(canal.toLowerCase().includes("whatsapp")){cls="canal-wa";icon="📲";}
+  else if(canal.toLowerCase().includes("sms")){cls="canal-sms";icon="💬";}
   return`<span class="canal-badge ${cls}">${icon} ${canal}</span>`;
 }
 
-/* ===== AFFICHAGE ===== */
-function afficherCommandes(){
-  let filtre=document.getElementById("filter-select").value;
-  let container=document.getElementById("commandes-container");
-  let filtered=toutesCommandes.filter(c=>{
-    if(commandesSupprimees.includes(c.id))return false;
-    if(filtre==="nouvelles")return!commandesConfirmees.includes(c.id);
-    if(filtre==="confirmees")return commandesConfirmees.includes(c.id);
-    return true;
-  });
-  if(filtered.length===0){
-    container.innerHTML=`<div class="empty-state"><div class="icon">🍩</div><p>Aucune commande ${filtre==="nouvelles"?"en attente":filtre==="confirmees"?"confirmée":""}.</p></div>`;
-    return;
-  }
-  container.innerHTML=filtered.map(c=>renderCommande(c)).join("");
-}
-
 function renderCommande(c){
-  let confirmee=commandesConfirmees.includes(c.id);
+  let isConf=confirmees.includes(c.id);
+  let isUrgent=c.urgent&&!isConf;
   let phoneNorm=normalizePhone(c.phone);
   let phoneWA=phoneNorm.startsWith("0")?"33"+phoneNorm.substring(1):phoneNorm;
-  let msgWA=genererMsg(c,false);
-  let msgSMS=genererMsg(c,true);
+  let msgWA=genMsg(c,false);
+  let msgSMS=genMsg(c,true);
   let lienWA="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWA);
   let ua=navigator.userAgent.toLowerCase();
   let lienSMS="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMS);
 
-  return`<div class="commande-card ${confirmee?"confirmee":"nouvelle"}" id="card-${c.id}">
-    <span class="badge ${confirmee?"badge-ok":"badge-new"}">${confirmee?"✅ CONFIRMÉE":"🆕 NOUVELLE"}</span>
+  return`<div class="commande-card ${isConf?"confirmee":isUrgent?"urgente":"nouvelle"}" id="card-${c.id}">
+    <div class="checkbox-wrap">
+      <input type="checkbox" class="cmd-checkbox" id="chk-${c.id}" onchange="onCheckChange()">
+      <span class="badge ${isConf?"badge-ok":isUrgent?"badge-urgent":"badge-new"}">${isConf?"✅ CONFIRMÉE":isUrgent?"⚡ URGENT":"🆕 NOUVELLE"}</span>
+    </div>
     <div class="commande-header">
       <div>
         <div class="client-name">${c.name||"—"}</div>
         <div class="commande-meta">
-          📅 ${c.dateRecu||"—"} ${c.heure?"à "+c.heure:""}
-          ${badgeCanal(c.canal)}
+          🕐 ${c.heure||"—"} ${badgeCanal(c.canal)}
         </div>
       </div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#ff4f8b;">${c.total||"—"} €</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;">${c.total||"—"} €</div>
     </div>
     <div class="info-grid">
-      <div class="info-item"><div class="label">📞 Téléphone</div><div class="value">${c.phone||"—"}</div></div>
+      <div class="info-item"><div class="label">📞 Tél</div><div class="value">${c.phone||"—"}</div></div>
       <div class="info-item"><div class="label">💳 Règlement</div><div class="value">${c.payment||"—"}</div></div>
-      <div class="info-item"><div class="label">🗓️ Date retrait</div><div class="value">${c.dateRetrait||"—"}</div></div>
+      <div class="info-item"><div class="label">🗓️ Retrait</div><div class="value">${c.dateRetrait||"—"}</div></div>
       <div class="info-item"><div class="label">⏰ Créneau</div><div class="value">${c.creneau||"—"}</div></div>
-      <div class="info-item full">
-        <div class="label">📦 Détail commande</div>
-        <div class="detail-box" style="margin-top:6px;">${(c.order||"—").replace(/\\n/g,"\n")}</div>
-      </div>
+      <div class="info-item full"><div class="label">📦 Commande</div><div class="detail-box">${(c.order||"—").replace(/\\n/g,"\n")}</div></div>
     </div>
     <div class="total-row"><span>Total</span><span>${c.total||"—"} €</span></div>
-    ${!confirmee?`
-      <a class="btn-wa" href="${lienWA}" target="_blank" onclick="marquerConfirmee(${c.id})">📲 Confirmer par WhatsApp</a>
-      <a class="btn-sms" href="${lienSMS}" onclick="marquerConfirmee(${c.id})">💬 Confirmer par SMS</a>
-      <div class="actions-secondaires">
-        <button class="btn-annuler" onclick="marquerConfirmee(${c.id})">✅ Marquer confirmée sans envoyer</button>
-        <button class="btn-supprimer" onclick="demanderSuppression(${c.id})">🗑️ Supprimer</button>
+    ${!isConf?`
+      <a class="btn-wa" href="${lienWA}" target="_blank" onclick="marquer(${c.id})">📲 Confirmer par WhatsApp</a>
+      <a class="btn-sms" href="${lienSMS}" onclick="marquer(${c.id})">💬 Confirmer par SMS</a>
+      <div class="actions-sec">
+        <button class="btn-marquer" onclick="marquer(${c.id})">✅ Marquer confirmée</button>
+        <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
       </div>
     `:`
-      <div style="text-align:center;color:#25D366;font-size:13px;padding:8px;">✅ Confirmation envoyée</div>
-      <div class="actions-secondaires" style="margin-top:8px;">
-        <button class="btn-supprimer" style="flex:1;" onclick="demanderSuppression(${c.id})">🗑️ Supprimer</button>
+      <div style="text-align:center;color:#25D366;font-size:12px;padding:6px;">✅ Confirmée</div>
+      <div class="actions-sec" style="margin-top:6px;">
+        <button class="btn-supp" style="flex:1;" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
       </div>
     `}
   </div>`;
 }
 
-function genererMsg(c,pourSMS=false){
+function genMsg(c,pourSMS=false){
   let b=pourSMS?"":"*";
+  let msgAnnul=`Bonjour, je souhaite annuler ma commande :\n\n`+
+    `👤 Nom : ${c.name}\n`+
+    `📅 Date souhaitée : ${c.dateRetrait||"—"}\n`+
+    `⏰ Créneau : ${c.creneau||"—"}\n`+
+    `💰 Total : ${c.total||"—"} €\n\n`+
+    `📦 Détail :\n${c.order||""}\n\n`+
+    `Merci de confirmer l'annulation.`;
+  let msgAnnulSMS=msgAnnul.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  let lienAnnulWA="https://wa.me/33698213380?text="+encodeURIComponent(msgAnnul);
+  let lienAnnulSMS="sms:0698213380?body="+encodeURIComponent(msgAnnulSMS);
+
   let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
   msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
   msg+=`🗓️ Date : ${c.dateRetrait||"—"}\n`;
   msg+=`⏰ Créneau : ${c.creneau||"—"}\n`;
   msg+=`💰 Total : ${c.total||"—"} €\n\n`;
+  msg+=`📦 ${b}Ta commande :${b}\n${c.order||""}\n\n`;
   msg+=`📍 ${b}Adresse de retrait :${b}\n36 rue du Chanoine Lallement, Reims\n\n`;
-  msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — je descendrai te remettre ta commande en mains propres ! 🍩\n`;
-  msg+=`\nÀ tout à l'heure ! 🧇\n— Oh! Mikaté`;
-  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
+  msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — je descendrai te remettre ta commande en mains propres ! 🍩\n\n`;
+  msg+=`━━━━━━━━━━━━━━━\n`;
+  msg+=`❌ ${b}Besoin d'annuler ?${b} Cliquez :\n`;
+  if(pourSMS){
+    msg+=`• SMS : ${lienAnnulSMS}\n• Appel : 0698213380`;
+    msg=msg.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  }else{
+    msg+=`• WhatsApp : ${lienAnnulWA}\n• SMS : ${lienAnnulSMS}\n• Appel : 0698213380`;
+  }
+  msg+=`\n\nÀ tout à l'heure ! 🧇\n— Oh! Mikaté`;
+  return msg;
 }
 
-function marquerConfirmee(id){
-  if(!commandesConfirmees.includes(id)){
-    commandesConfirmees.push(id);
-    localStorage.setItem('ohMikateConfirmees',JSON.stringify(commandesConfirmees));
+/* ===== SÉLECTION GROUPÉE ===== */
+function onCheckChange(){
+  let checked=getSelected();
+  let selBar=document.getElementById("selection-bar");
+  let selCount=document.getElementById("sel-count");
+  let toutChk=document.getElementById("tout-select");
+  let visible=getVisibleIds();
+  if(checked.length>0){
+    selBar.classList.add("show");
+    selCount.textContent=checked.length+" sélectionnée"+(checked.length>1?"s":"");
+  }else{
+    selBar.classList.remove("show");
+  }
+  toutChk.checked=checked.length===visible.length&&visible.length>0;
+  document.getElementById("sel-info").textContent=checked.length>0?checked.length+" / "+visible.length+" sélectionnée(s)":"";
+}
+
+function getSelected(){
+  return Array.from(document.querySelectorAll('.cmd-checkbox:checked')).map(c=>parseInt(c.id.replace('chk-','')));
+}
+
+function getVisibleIds(){
+  return Array.from(document.querySelectorAll('.cmd-checkbox')).map(c=>parseInt(c.id.replace('chk-','')));
+}
+
+function toutSelectionner(checked){
+  document.querySelectorAll('.cmd-checkbox').forEach(c=>{c.checked=checked;});
+  onCheckChange();
+}
+
+function deselectionnerTout(){
+  document.querySelectorAll('.cmd-checkbox').forEach(c=>{c.checked=false;});
+  document.getElementById("tout-select").checked=false;
+  onCheckChange();
+}
+
+function confirmerSelection(){
+  let ids=getSelected();
+  if(ids.length===0)return;
+  ids.forEach(id=>{
+    if(!confirmees.includes(id))confirmees.push(id);
+  });
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  deselectionnerTout();
+  updateStats();
+  setTimeout(afficher,300);
+  showToast(`✅ ${ids.length} commande${ids.length>1?"s":""} confirmée${ids.length>1?"s":""} !`);
+}
+
+function supprimerSelection(){
+  let ids=getSelected();
+  if(ids.length===0)return;
+  if(!confirm(`Supprimer ${ids.length} commande${ids.length>1?"s":""} ?`))return;
+  ids.forEach(id=>{
+    if(!supprimees.includes(id))supprimees.push(id);
+    confirmees=confirmees.filter(c=>c!==id);
+  });
+  localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  deselectionnerTout();
+  updateStats();
+  setTimeout(afficher,300);
+  showToast(`🗑️ ${ids.length} commande${ids.length>1?"s":""} supprimée${ids.length>1?"s":""}`);
+}
+
+function marquer(id){
+  if(!confirmees.includes(id)){
+    confirmees.push(id);
+    localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
     updateStats();
-    setTimeout(()=>afficherCommandes(),400);
+    setTimeout(afficher,400);
   }
 }
 
-/* ===== SUPPRESSION ===== */
-function demanderSuppression(id){
-  idASupprimer=id;
-  document.getElementById("confirm-popup").classList.add("show");
-}
-function fermerConfirm(){
-  idASupprimer=null;
-  document.getElementById("confirm-popup").classList.remove("show");
-}
+function demanderSupp(id){idASupp=id;document.getElementById("popup-supp").classList.add("show");}
+function fermerPopup(){idASupp=null;document.getElementById("popup-supp").classList.remove("show");}
 function confirmerSuppression(){
-  if(idASupprimer===null)return;
-  commandesSupprimees.push(idASupprimer);
-  localStorage.setItem('ohMikateSupprimees',JSON.stringify(commandesSupprimees));
-  // Retirer aussi des confirmées si besoin
-  commandesConfirmees=commandesConfirmees.filter(id=>id!==idASupprimer);
-  localStorage.setItem('ohMikateConfirmees',JSON.stringify(commandesConfirmees));
-  fermerConfirm();
+  if(idASupp===null)return;
+  supprimees.push(idASupp);
+  localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
+  confirmees=confirmees.filter(id=>id!==idASupp);
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  fermerPopup();
   updateStats();
-  afficherCommandes();
+  afficher();
   showToast("🗑️ Commande supprimée");
 }
 
-/* ===== STATS ===== */
 function updateStats(){
-  let visible=toutesCommandes.filter(c=>!commandesSupprimees.includes(c.id));
-  let confirmees=visible.filter(c=>commandesConfirmees.includes(c.id));
-  let nouvelles=visible.filter(c=>!commandesConfirmees.includes(c.id));
-  let ca=visible.reduce((sum,c)=>{
-    let v=parseFloat(String(c.total).replace(",","."));
-    return sum+(isNaN(v)?0:v);
-  },0);
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  let conf=visible.filter(c=>confirmees.includes(c.id));
+  let nouv=visible.filter(c=>!confirmees.includes(c.id));
+  let ca=visible.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
   document.getElementById("stat-total").textContent=visible.length;
-  document.getElementById("stat-new").textContent=nouvelles.length;
-  document.getElementById("stat-done").textContent=confirmees.length;
-  document.getElementById("stat-ca").textContent=ca.toFixed(2)+"€";
+  document.getElementById("stat-new").textContent=nouv.length;
+  document.getElementById("stat-done").textContent=conf.length;
+  document.getElementById("stat-ca").textContent=ca.toFixed(0)+"€";
 }
 
 function normalizePhone(raw){

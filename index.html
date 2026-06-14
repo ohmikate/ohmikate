@@ -329,7 +329,10 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
     </div>
     <button id="stripe-btn" class="btn" style="background:#635bff;display:none;margin-top:10px;" onclick="lancerPaiementStripe()">Payer en ligne 💳</button>
     <button id="especes-btn" class="btn especes" style="display:none;" onclick="alertEspeces()">💵 Règlement en Espèces (Merci de prévoir l'appoint)</button>
-    <a id="whatsapp" class="btn whatsapp disabled" target="_blank" onclick="return checkForm(event)">📲 Envoyer ma commande sur WhatsApp</a>
+    <div id="online-notice" style="display:none;background:#1a1a2e;border:1px solid #635bff;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#a09af0;margin-top:8px;">
+      💳 Après votre paiement en ligne, vous pourrez envoyer votre récapitulatif.
+    </div>
+    <a id="whatsapp" class="btn whatsapp disabled" target="_blank" onclick="return checkForm(event,'WhatsApp')">📲 Envoyer ma commande sur WhatsApp</a>
     <button id="sms-btn" class="btn smsbtn disabled" onclick="triggerSMS(event)">💬 Valider ma commande par SMS</button>
     <a id="phone-btn" class="btn phonebtn disabled" onclick="triggerCall(event)">📞 Valider et m'appeler au téléphone</a>
     <div class="small">💡 Choisis tes boîtes, configure tes lots et remplis tes coordonnées (*) pour débloquer l'envoi.</div>
@@ -339,14 +342,22 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 </div><!-- end #main-page -->
 
 
-<!-- ========== PAGE CONFIRMATION ========== -->
+<!-- ========== PAGE CONFIRMATION CARTE ========== -->
 <div id="confirmation-page">
   <div class="confirm-wrapper">
 
     <div class="confirm-header">
       <div class="check-icon">✓</div>
       <h1>Paiement confirmé !</h1>
-      <p>Votre commande a bien été enregistrée. Envoyez-la en validation ci-dessous.</p>
+      <p>Votre paiement a bien été reçu. Suivez l'étape ci-dessous.</p>
+    </div>
+
+    <!-- ALERTE IMPORTANTE -->
+    <div style="background:#1a0d00;border:2px solid #ff9500;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+      <div style="font-size:24px;margin-bottom:8px;">⚠️</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#ff9500;letter-spacing:1px;margin-bottom:6px;">DERNIÈRE ÉTAPE OBLIGATOIRE</div>
+      <div style="font-size:13px;color:#ccc;line-height:1.6;">Votre paiement est confirmé ✅<br>Pour finaliser et réserver votre créneau, <strong style="color:#fff;">envoyez votre récapitulatif ci-dessous</strong>.<br>Sans cet envoi, votre commande ne sera pas préparée.</div>
+      <div id="rappel-timer" style="margin-top:10px;font-size:12px;color:#ff9500;font-weight:bold;"></div>
     </div>
 
     <!-- INFOS CLIENT -->
@@ -388,12 +399,24 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       </div>
     </div>
 
-    <!-- BOUTONS VALIDATION (envoi vers Oh! Mikaté) -->
+    <!-- BOUTONS ENVOI -->
     <div class="action-section">
-      <h3>📨 Envoyer en validation</h3>
-      <p>Appuyez sur l'un des boutons ci-dessous pour transmettre votre commande et confirmer votre créneau de retrait.</p>
-      <a id="confirm-whatsapp" class="btn whatsapp" href="#" style="margin-bottom:10px;">📲 Envoyer sur WhatsApp</a>
-      <a id="confirm-sms" class="btn smsbtn" href="#">💬 Envoyer par SMS</a>
+      <h3>📨 Finaliser ma commande</h3>
+      <p>Envoyez votre récapitulatif pour confirmer votre créneau de retrait. Vous recevrez ensuite l'adresse complète.</p>
+
+      <div style="background:#111;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:14px;text-align:center;font-size:13px;color:#aaa;line-height:1.6;">
+        ⏳ Vous recevrez votre confirmation sous <strong style="color:#fff;">30 minutes maximum</strong> après envoi de votre récapitulatif.
+      </div>
+
+      <a id="confirm-whatsapp" class="btn whatsapp" href="#" style="margin-bottom:10px;font-size:18px;padding:16px;">📲 Envoyer sur WhatsApp</a>
+      <a id="confirm-sms" class="btn smsbtn" href="#" style="font-size:18px;padding:16px;">💬 Envoyer par SMS</a>
+
+      <div id="rappel-envoi" style="display:none;background:#1a1000;border:1px solid #ff9500;border-radius:10px;padding:12px;text-align:center;margin-top:12px;font-size:13px;color:#ff9500;">
+        ⚠️ N'oubliez pas d'envoyer votre récapitulatif pour valider votre commande !
+      </div>
+      <div id="envoi-confirme" style="display:none;background:#0a2a12;border:1px solid #25D366;border-radius:10px;padding:12px;text-align:center;margin-top:12px;color:#25D366;font-size:13px;">
+        ✅ Récapitulatif envoyé ! Vous recevrez votre confirmation sous 30 minutes.
+      </div>
     </div>
 
     <!-- ANNULATION -->
@@ -408,6 +431,74 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 
   </div>
 </div><!-- end #confirmation-page -->
+
+<!-- ========== PAGE CONFIRMATION ESPÈCES ========== -->
+<div id="especes-page" style="display:none;">
+  <div class="confirm-wrapper">
+
+    <div class="confirm-header">
+      <div class="check-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">📋</div>
+      <h1>Commande envoyée !</h1>
+      <p>Votre commande a bien été transmise. Conservez ce récapitulatif.</p>
+    </div>
+
+    <!-- RÉCAPITULATIF -->
+    <div class="confirm-card">
+      <div class="confirm-card-header">🧾 Votre récapitulatif</div>
+      <div class="confirm-card-body">
+        <div class="info-row">
+          <span class="info-label">Prénom</span>
+          <span class="info-value" id="e-name">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Date de retrait</span>
+          <span class="info-value" id="e-date">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Créneau</span>
+          <span class="info-value" id="e-time">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Règlement</span>
+          <span class="info-value" style="color:#ff9500;">💵 Espèces (appoint)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="confirm-card">
+      <div class="confirm-card-header">📦 Détail commande</div>
+      <div class="confirm-card-body">
+        <div id="e-order-detail" class="order-detail-box">—</div>
+      </div>
+      <div class="total-line">
+        <span>Total à prévoir</span>
+        <span id="e-total">0,00 €</span>
+      </div>
+    </div>
+
+    <!-- INFO ATTENTE -->
+    <div style="background:#111;border:1px solid #ff9500;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:8px;">⏳</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ff9500;letter-spacing:1px;margin-bottom:8px;">CONFIRMATION SOUS 30 MINUTES</div>
+      <div style="font-size:13px;color:#aaa;line-height:1.7;">
+        Votre commande est en cours de validation.<br>
+        Vous recevrez très prochainement un message de confirmation avec l'adresse exacte de retrait.<br><br>
+        <strong style="color:#fff;">💡 Pensez à prévoir l'appoint exact !</strong>
+      </div>
+    </div>
+
+    <!-- ANNULATION -->
+    <div class="cancel-section">
+      <h4>Un empêchement ? Vous pouvez annuler votre commande :</h4>
+      <div class="cancel-links">
+        <a id="e-cancel-whatsapp" href="#" class="cancel-link" style="background:#ff4f8b22;color:#ff4f8b;border:1px solid #ff4f8b;">📲 Annuler via WhatsApp</a>
+        <a id="e-cancel-sms" href="#" class="cancel-link" style="background:#007aff22;color:#007aff;border:1px solid #007aff;">💬 Annuler par SMS</a>
+        <a href="tel:0698213380" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
+      </div>
+    </div>
+
+  </div>
+</div><!-- end #especes-page -->
 
 
 <script>
@@ -560,10 +651,14 @@ function updateUI(){
   // Bouton Stripe
   let stripeBtn=document.getElementById("stripe-btn");
   let espBtn=document.getElementById("especes-btn");
+  let onlineNotice=document.getElementById("online-notice");
+  const btnsCommunication=[document.getElementById("whatsapp"),document.getElementById("sms-btn"),document.getElementById("phone-btn")];
+
   if(selectedPaymentMode==="PayPal"){
+    // Paiement en ligne → bouton Stripe visible, WA/SMS/Tel cachés
     stripeBtn.style.display="block";
     espBtn.style.display="none";
-    // Active/désactive selon si le formulaire est valide
+    onlineNotice.style.display="block";
     if(isFormValid()){
       stripeBtn.disabled=false;
       stripeBtn.classList.remove("disabled");
@@ -571,20 +666,41 @@ function updateUI(){
       stripeBtn.disabled=true;
       stripeBtn.classList.add("disabled");
     }
+    // Masquer et désactiver les boutons WA/SMS/Tel
+    btnsCommunication.forEach(btn=>{
+      btn.style.display="none";
+    });
+    document.querySelector(".small").style.display="none";
+
   }else if(selectedPaymentMode==="Espèces"){
-    stripeBtn.style.display="none";
-    espBtn.style.display="block";
-  }else{
+    // Espèces → bouton Stripe caché, WA/SMS/Tel visibles
     stripeBtn.style.display="none";
     espBtn.style.display="none";
+    onlineNotice.style.display="none";
+    btnsCommunication.forEach(btn=>{btn.style.display="block";});
+    document.querySelector(".small").style.display="block";
+    let shouldEnable=isFormValid();
+    btnsCommunication.forEach(btn=>{
+      if(shouldEnable){btn.removeAttribute("disabled");btn.classList.remove("disabled");}
+      else{btn.setAttribute("disabled","true");btn.classList.add("disabled");}
+    });
+    let whatsappMsg=encodeURIComponent(getOrderText(false,"WhatsApp"));
+    let waEl=document.getElementById("whatsapp");
+    waEl.href="https://wa.me/33"+targetPhone.substring(1)+"?text="+whatsappMsg;
+    waEl.onclick=function(e){
+      if(!checkForm(e,"WhatsApp"))return false;
+      setTimeout(()=>afficherPageEspeces(),800);
+      return true;
+    };
+  }else{
+    // Aucun mode sélectionné
+    stripeBtn.style.display="none";
+    espBtn.style.display="none";
+    onlineNotice.style.display="none";
+    btnsCommunication.forEach(btn=>{btn.style.display="block";});
+    document.querySelector(".small").style.display="block";
+    btnsCommunication.forEach(btn=>{btn.setAttribute("disabled","true");btn.classList.add("disabled");});
   }
-
-  // Boutons WhatsApp / SMS / Téléphone
-  const buttons=[document.getElementById("whatsapp"),document.getElementById("sms-btn"),document.getElementById("phone-btn")];
-  let shouldEnable=isFormValid();
-  buttons.forEach(btn=>{if(shouldEnable){btn.removeAttribute("disabled");btn.classList.remove("disabled");}else{btn.setAttribute("disabled","true");btn.classList.add("disabled");}});
-  let whatsappMsg=encodeURIComponent(getOrderText(false,"WhatsApp"));
-  document.getElementById("whatsapp").href="https://wa.me/33"+targetPhone.substring(1)+"?text="+whatsappMsg;
 }
 
 /* ===== VALIDATION FORMULAIRE ===== */
@@ -688,12 +804,12 @@ function getOrderText(cleanForSms=false, canal="WhatsApp"){
   return cleanForSms?text.normalize("NFD").replace(/[\u0300-\u036f]/g,""):text;
 }
 
-/* ===== GÉNÈRE TEXTE DEPUIS STORAGE (page confirmation) ===== */
+/* ===== GÉNÈRE TEXTE DEPUIS STORAGE (message envoyé à Soni) ===== */
 function getConfirmOrderText(data, cleanForSms=false){
   let b=cleanForSms?"":"*";
   let now=new Date().toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
   let text=`${b}COMMANDE OH MIKATE${b}\n`;
-  text+=`📅 Reçue le ${now} via ${data.canal||"carte"}\n`;
+  text+=`📅 Reçue le ${now} via Carte bancaire\n`;
   text+=data.orderDetail;
   text+=`\n${b}TOTAL : ${data.total} EUR${b}`;
   if(data.notes)text+=`\n\nPRECISION CLIENT :\n"${data.notes}"`;
@@ -702,7 +818,7 @@ function getConfirmOrderText(data, cleanForSms=false){
   text+=`\nTelephone : ${data.phone}`;
   text+=`\nDate souhaitee : ${data.date}`;
   text+=`\nTranche souhaitee : ${data.time}`;
-  text+=`\nReglement : ${data.payment}`;
+  text+=`\nReglement : Paiement en ligne (carte)`;
   return cleanForSms?text.normalize("NFD").replace(/[\u0300-\u036f]/g,""):text;
 }
 
@@ -713,9 +829,54 @@ function triggerSMS(event){
   let ua=navigator.userAgent.toLowerCase();
   let url="sms:"+targetPhone+(ua.indexOf("iphone")>-1?"&body=":"?body=")+encodeURIComponent(smsBody);
   showToast("📱 Redirection...");
-  setTimeout(()=>{window.location.href=url;},500);
+  setTimeout(()=>{
+    window.location.href=url;
+    afficherPageEspeces();
+  },800);
 }
-function triggerCall(event){if(!checkForm(event,"Téléphone"))return;showToast("📞 Lancement...");setTimeout(()=>{window.location.href="tel:"+targetPhone;},500);}
+function triggerCall(event){
+  if(!checkForm(event,"Téléphone"))return;
+  showToast("📞 Lancement...");
+  setTimeout(()=>{window.location.href="tel:"+targetPhone;},500);
+}
+
+/* ===== PAGE CONFIRMATION ESPÈCES ===== */
+function afficherPageEspeces(){
+  let name=document.getElementById("client-name").value.trim();
+  let date=document.getElementById("client-date").value;
+  let time=document.getElementById("client-time").value;
+  let phone=normalizePhone(document.getElementById("client-phone").value.trim());
+  let orderInfo=calculateTotalAndExtractStructure();
+
+  document.getElementById("main-page").style.display="none";
+  document.getElementById("especes-page").style.display="block";
+  document.body.style.paddingBottom="0";
+
+  document.getElementById("e-name").textContent=name||"—";
+  document.getElementById("e-date").textContent=date||"—";
+  document.getElementById("e-time").textContent=time||"—";
+  document.getElementById("e-order-detail").textContent=orderInfo.detailsText||"—";
+  document.getElementById("e-total").textContent=orderInfo.totalPrice.toFixed(2)+" €";
+
+  // Liens annulation espèces
+  let msgAnnul=`Bonjour, je souhaite annuler ma commande :\n\n`+
+    `👤 Nom : ${name}\n`+
+    `📅 Date souhaitée : ${date}\n`+
+    `⏰ Créneau : ${time}\n`+
+    `💰 Total : ${orderInfo.totalPrice.toFixed(2)} €\n\n`+
+    `📦 Détail :\n${orderInfo.detailsText}\n\n`+
+    `Merci de confirmer l'annulation.`;
+  let msgAnnulSMS=msgAnnul.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  let phoneWA=phone.startsWith("0")?"33"+phone.substring(1):phone;
+
+  document.getElementById("e-cancel-whatsapp").href=
+    "https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnul);
+  document.getElementById("e-cancel-sms").addEventListener("click",function(e){
+    e.preventDefault();
+    let ua=navigator.userAgent.toLowerCase();
+    window.location.href="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgAnnulSMS);
+  });
+}
 function selectPayment(mode){
   selectedPaymentMode=mode;
   document.getElementById("opt-paypal").classList.toggle("selected",mode==='PayPal');
@@ -723,24 +884,56 @@ function selectPayment(mode){
   updateUI();
 }
 function alertEspeces(){showToast("💵 Merci de préparer l'appoint !");}
+
 function initDates(){
   const dateSelect=document.getElementById("client-date");
   dateSelect.innerHTML='<option value="">-- Sélectionne une date --</option>';
-  let startDate=new Date(2026,6,1);
+  let now=new Date();
+  let startDate=new Date(2026,6,1); // 1er juillet 2026
+  // Si on est après le 1er juillet, on commence à aujourd'hui
+  if(now>startDate) startDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   for(let i=0;i<14;i++){
-    let d=new Date(startDate);d.setDate(startDate.getDate()+i);
+    let d=new Date(startDate);
+    d.setDate(startDate.getDate()+i);
     let label=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
     label=label.charAt(0).toUpperCase()+label.slice(1);
-    let opt=document.createElement("option");opt.value=opt.textContent=label;
+    let opt=document.createElement("option");
+    opt.value=opt.textContent=label;
     dateSelect.appendChild(opt);
   }
 }
 function handleDateChange(){
+  const dateSelect=document.getElementById("client-date");
   const timeSelect=document.getElementById("client-time");
   const warning=document.getElementById("time-warning");
   if(warning)warning.style.display="none";
   timeSelect.innerHTML='<option value="">-- Sélectionne une tranche horaire --</option>';
-  baseHours.forEach(t=>{let o=document.createElement("option");o.value=o.textContent=t;timeSelect.appendChild(o);});
+
+  let selectedDate=dateSelect.value;
+  let now=new Date();
+  let todayLabel=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  todayLabel=todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1);
+  let isToday=(selectedDate===todayLabel);
+  let currentMinutes=now.getHours()*60+now.getMinutes();
+
+  baseHours.forEach(t=>{
+    // Extrait l'heure de début du créneau ex: "17h30 - 18h00" → 17*60+30=1050
+    let match=t.match(/(\d{1,2})h(\d{2})/);
+    let slotMinutes=match?(parseInt(match[1])*60+parseInt(match[2])):0;
+    // Bloque le créneau si aujourd'hui et moins de 30min avant
+    if(isToday && slotMinutes-currentMinutes<30){
+      let o=document.createElement("option");
+      o.value="COMPLET";o.textContent=t+" (indisponible)";
+      o.disabled=true;o.style.color="#555";
+      timeSelect.appendChild(o);
+    } else {
+      let o=document.createElement("option");
+      o.value=o.textContent=t;
+      timeSelect.appendChild(o);
+    }
+  });
+
+  if(isToday&&warning)warning.style.display="block";
   updateUI();
 }
 function showToast(m){const t=document.getElementById("toast");t.innerHTML=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),5000);}
@@ -857,22 +1050,26 @@ window.onload=function(){
   if(isSuccess && savedData){
     let data=JSON.parse(savedData);
 
-    // Envoi au Google Sheet avec date et créneau
-    fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
-      method:"POST",mode:"no-cors",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        name:data.name,
-        phone:data.phone,
-        order:data.orderDetail,
-        total:data.total,
-        payment:data.payment,
-        date:data.dateCommande+" "+data.heure+" via "+data.canal,
-        dateRetrait:data.date,
-        creneau:data.time,
-        canal:data.canal
-      })
-    });
+    // Envoi au Google Sheet UNE SEULE FOIS (paiement carte uniquement)
+    // On vérifie qu'on n'a pas déjà envoyé pour éviter les doublons
+    if(!localStorage.getItem('ohMikateSheetSent')){
+      fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
+        method:"POST",mode:"no-cors",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          name:data.name,
+          phone:data.phone,
+          order:data.orderDetail,
+          total:data.total,
+          payment:"Paiement en ligne (carte)",
+          date:data.dateCommande+" "+data.heure+" via Carte bancaire",
+          dateRetrait:data.date,
+          creneau:data.time,
+          canal:"Carte bancaire"
+        })
+      });
+      localStorage.setItem('ohMikateSheetSent','1');
+    }
 
     document.getElementById("main-page").style.display="none";
     document.getElementById("confirmation-page").style.display="block";
@@ -886,20 +1083,47 @@ window.onload=function(){
     document.getElementById("c-total").textContent=data.total+" €";
     document.getElementById("c-order-detail").textContent=data.orderDetail||"—";
 
-    // Bouton WhatsApp → envoie commande à Soni
-    let waText=encodeURIComponent(getConfirmOrderText(data,false));
-    document.getElementById("confirm-whatsapp").href="https://wa.me/33"+targetPhone.substring(1)+"?text="+waText;
+    // Rappel après 30 secondes si pas encore envoyé
+    let envoiEffectue=false;
+    setTimeout(()=>{
+      if(!envoiEffectue){
+        document.getElementById("rappel-envoi").style.display="block";
+        document.getElementById("rappel-envoi").scrollIntoView({behavior:"smooth"});
+      }
+    },30000);
 
-    // Bouton SMS → envoie commande à Soni
+    // Fonction redirection après envoi (vers accueil après 3 secondes)
+    function apresEnvoi(){
+      envoiEffectue=true;
+      document.getElementById("rappel-envoi").style.display="none";
+      document.getElementById("envoi-confirme").style.display="block";
+      // Nettoyer et rediriger vers accueil après 4 secondes
+      setTimeout(()=>{
+        localStorage.removeItem('ohMikateCommande');
+        localStorage.removeItem('ohMikateSheetSent');
+        window.location.href=window.location.pathname;
+      },4000);
+    }
+
+    // Bouton WhatsApp
+    let waText=encodeURIComponent(getConfirmOrderText(data,false));
+    let waEl=document.getElementById("confirm-whatsapp");
+    waEl.href="https://wa.me/33"+targetPhone.substring(1)+"?text="+waText;
+    waEl.addEventListener("click",function(){
+      setTimeout(apresEnvoi,800);
+    });
+
+    // Bouton SMS
     document.getElementById("confirm-sms").addEventListener("click",function(e){
       e.preventDefault();
       let smsBody=getConfirmOrderText(data,true);
       let ua=navigator.userAgent.toLowerCase();
       let url="sms:"+targetPhone+(ua.indexOf("iphone")>-1?"&body=":"?body=")+encodeURIComponent(smsBody);
       window.location.href=url;
+      setTimeout(apresEnvoi,800);
     });
 
-    // Lien annulation WhatsApp avec détail commande
+    // Liens annulation avec détail commande
     let msgAnnulation=`Bonjour, je souhaite annuler ma commande :\n\n`+
       `👤 Nom : ${data.name}\n`+
       `📅 Date souhaitée : ${data.date}\n`+
@@ -911,19 +1135,19 @@ window.onload=function(){
 
     document.getElementById("cancel-whatsapp").href=
       "https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnulation);
-
     document.getElementById("cancel-sms").addEventListener("click",function(e){
       e.preventDefault();
       let ua=navigator.userAgent.toLowerCase();
-      let url="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgAnnulationSMS);
-      window.location.href=url;
+      window.location.href="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgAnnulationSMS);
     });
-
-    localStorage.removeItem('ohMikateCommande');
 
   } else {
     document.getElementById("confirmation-page").style.display="none";
+    document.getElementById("especes-page").style.display="none";
     document.getElementById("main-page").style.display="block";
+    // Nettoyer localStorage si on revient à l'accueil
+    localStorage.removeItem('ohMikateCommande');
+    localStorage.removeItem('ohMikateSheetSent');
     initDates();
     handleDateChange();
   }
