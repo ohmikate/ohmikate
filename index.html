@@ -257,22 +257,22 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 <h3>1. Choisis ton format de boîte</h3>
 <span class="info-limite" style="color:#ccc;">Sélectionne une ou plusieurs boîtes pour personnaliser tes beignets.</span>
 <div class="grid">
-  <div class="card product-card" data-name="6 beignets" data-price="5">
+  <div class="card product-card" data-name="9 beignets" data-price="5">
     <img src="Images/Beignet9.jpg">
-    <p>Boîte de 6 beignets — 5€</p>
-    <div class="qty-controls">
-      <button class="qty-btn minus" onclick="changeBoxQty('6 beignets',-1)">-</button>
-      <input type="number" id="qty-6" class="qty-input" value="0" min="0" onchange="setBoxQty('6 beignets',this.value)">
-      <button class="qty-btn plus" onclick="changeBoxQty('6 beignets',1)">+</button>
-    </div>
-  </div>
-  <div class="card product-card" data-name="9 beignets" data-price="7">
-    <img src="Images/Beignet9.jpg">
-    <p>Boîte de 9 beignets — 7€</p>
+    <p>Boîte de 9 beignets — 5€</p>
     <div class="qty-controls">
       <button class="qty-btn minus" onclick="changeBoxQty('9 beignets',-1)">-</button>
       <input type="number" id="qty-9" class="qty-input" value="0" min="0" onchange="setBoxQty('9 beignets',this.value)">
       <button class="qty-btn plus" onclick="changeBoxQty('9 beignets',1)">+</button>
+    </div>
+  </div>
+  <div class="card product-card" data-name="12 beignets" data-price="7">
+    <img src="Images/Beignet9.jpg">
+    <p>Boîte de 12 beignets — 7€</p>
+    <div class="qty-controls">
+      <button class="qty-btn minus" onclick="changeBoxQty('12 beignets',-1)">-</button>
+      <input type="number" id="qty-12" class="qty-input" value="0" min="0" onchange="setBoxQty('12 beignets',this.value)">
+      <button class="qty-btn plus" onclick="changeBoxQty('12 beignets',1)">+</button>
     </div>
   </div>
 </div>
@@ -328,6 +328,13 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       <span><span id="total">0.00</span> €</span>
     </div>
     <button id="stripe-btn" class="btn" style="background:#635bff;display:none;margin-top:10px;" onclick="lancerPaiementStripe()">Payer en ligne 💳</button>
+    <!-- Case CGV — visible seulement si paiement en ligne sélectionné -->
+    <div id="cgv-wrap" style="display:none;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;padding:12px;">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#aaa;line-height:1.5;">
+        <input type="checkbox" id="cgv-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#635bff;flex-shrink:0;margin-top:2px;">
+        <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#635bff;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté, notamment les modalités de commande, de retrait et d'annulation.</span>
+      </label>
+    </div>
     <button id="especes-btn" class="btn especes" style="display:none;" onclick="alertEspeces()">💵 Règlement en Espèces (Merci de prévoir l'appoint)</button>
     <div id="online-notice" style="display:none;background:#1a1a2e;border:1px solid #635bff;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#a09af0;margin-top:8px;">
       💳 Après votre paiement en ligne, vous pourrez envoyer votre récapitulatif.
@@ -503,8 +510,8 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 
 <script>
 /* ===== VARIABLES GLOBALES ===== */
-let boxesSelected = {"6 beignets":0,"9 beignets":0};
-const boxPrices = {"6 beignets":5.0,"9 beignets":7.0};
+let boxesSelected = {"9 beignets":0,"12 beignets":0};
+const boxPrices = {"9 beignets":5.0,"12 beignets":7.0};
 const supplementPricePerLot = 0.50;
 let selectedPaymentMode = "";
 const targetPhone = "0698213380";
@@ -512,7 +519,7 @@ const baseHours = ["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h0
 
 /* ===== QUANTITÉS BOÎTES ===== */
 function changeBoxQty(type,change){
-  let input=type==="6 beignets"?document.getElementById("qty-6"):document.getElementById("qty-9");
+  let input=type==="9 beignets"?document.getElementById("qty-9"):document.getElementById("qty-12");
   let newVal=Math.max(0,(parseInt(input.value)||0)+change);
   input.value=newVal;setBoxQty(type,newVal);
 }
@@ -527,26 +534,41 @@ function setBoxQty(type,value){
 /* ===== FORMULAIRE COMPOSITION ===== */
 function generateCompositionForm(){
   const container=document.getElementById("composition-zone");
-  if(boxesSelected["6 beignets"]===0&&boxesSelected["9 beignets"]===0){container.innerHTML="";return;}
+  if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0){container.innerHTML="";return;}
   let currentSelections={};
   container.querySelectorAll("select").forEach(sel=>{currentSelections[sel.id]=sel.value;});
   let html="<h3>2. Personnalise tes lots de 3 beignets</h3>";
-  html+='<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 beignets. Laisse sur "Nature" si tu ne veux aucun supplément (+0,50€ par nappage ou garniture par lot).</span>';
-  for(let b=1;b<=boxesSelected["6 beignets"];b++){
-    html+=`<div class="box-composer"><div class="box-title">📦 Boîte de 6 Beignets n°${b}</div>`;
-    for(let lot=1;lot<=2;lot++){html+=generateLotRowHtml(`box6-${b}-lot${lot}`,`Lot de 3 beignets (${lot}/2)`,"Images/Beignet9.jpg");}
-    html+=`</div>`;
-  }
+  html+='<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 beignets. Le bouton 📋 permet de copier les choix vers le lot suivant.</span>';
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
     html+=`<div class="box-composer"><div class="box-title">📦 Boîte de 9 Beignets n°${b}</div>`;
-    for(let lot=1;lot<=3;lot++){html+=generateLotRowHtml(`box9-${b}-lot${lot}`,`Lot de 3 beignets (${lot}/3)`,"Images/Beignet9.jpg");}
+    for(let lot=1;lot<=3;lot++){
+      let pfx=`box9-${b}`;
+      html+=generateLotRowHtml(`${pfx}-lot${lot}`,`Lot de 3 beignets (${lot}/3)`,"Images/Beignet9.jpg",true,pfx,3);
+    }
+    html+=`</div>`;
+  }
+  for(let b=1;b<=boxesSelected["12 beignets"];b++){
+    html+=`<div class="box-composer"><div class="box-title">📦 Boîte de 12 Beignets n°${b}</div>`;
+    for(let lot=1;lot<=4;lot++){
+      let pfx=`box12-${b}`;
+      html+=generateLotRowHtml(`${pfx}-lot${lot}`,`Lot de 3 beignets (${lot}/4)`,"Images/Beignet9.jpg",true,pfx,4);
+    }
     html+=`</div>`;
   }
   container.innerHTML=html;
   container.querySelectorAll("select").forEach(sel=>{if(currentSelections[sel.id])sel.value=currentSelections[sel.id];});
 }
 
-function generateLotRowHtml(idPrefix,labelTitle,defaultImg){
+function generateLotRowHtml(idPrefix,labelTitle,defaultImg,isFirst=false,boxPrefix="",totalLots=3){
+  // Bouton dupliquer vers le lot suivant (sauf dernier lot)
+  let lotNum=parseInt(idPrefix.split("lot")[1]);
+  let dupBtn="";
+  if(lotNum<totalLots){
+    dupBtn=`<button type="button" onclick="dupliquerVersLotSuivant('${idPrefix}','${boxPrefix}',${lotNum+1},'${defaultImg}')" style="margin-top:8px;background:#1a1a2e;border:1px solid #635bff;color:#a09af0;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;width:100%;">
+      📋 Copier vers le lot ${lotNum+1}
+    </button>`;
+  }
+
   return `<div class="lot-row" data-prefix="${idPrefix}">
     <img id="${idPrefix}-img" src="${defaultImg}" class="lot-preview-img" alt="Aperçu lot">
     <div class="lot-content">
@@ -574,8 +596,25 @@ function generateLotRowHtml(idPrefix,labelTitle,defaultImg){
           <option value="Pot Pâte d'arachide">Pot Pâte d'arachide (+0,50€)</option>
         </select></div>
       </div>
+      ${dupBtn}
     </div>
   </div>`;
+}
+
+/* ===== DUPLIQUER VERS LOT SUIVANT ===== */
+function dupliquerVersLotSuivant(srcPrefix,boxPrefix,lotDest,defaultImg){
+  let base=document.getElementById(`${srcPrefix}-base`)?.value||"Nature";
+  let nappage=document.getElementById(`${srcPrefix}-nappage`)?.value||"Aucun";
+  let garniture=document.getElementById(`${srcPrefix}-garniture`)?.value||"Aucun";
+  let pot=document.getElementById(`${srcPrefix}-pot`)?.value||"Aucun";
+  let destPrefix=`${boxPrefix}-lot${lotDest}`;
+  let s=document.getElementById(`${destPrefix}-base`);if(s)s.value=base;
+  let sn=document.getElementById(`${destPrefix}-nappage`);if(sn)sn.value=nappage;
+  let sg=document.getElementById(`${destPrefix}-garniture`);if(sg)sg.value=garniture;
+  let sp=document.getElementById(`${destPrefix}-pot`);if(sp)sp.value=pot;
+  updateLotImage(destPrefix,defaultImg);
+  updateUI();
+  showToast(`📋 Lot ${lotDest-1} copié vers le lot ${lotDest} !`);
 }
 
 function updateLotImage(idPrefix,defaultImg){
@@ -594,33 +633,33 @@ function updateLotImage(idPrefix,defaultImg){
 /* ===== CALCUL TOTAL ===== */
 function calculateTotalAndExtractStructure(){
   let total=0;let textSummaryList=[];let structuredOrderText="";
-  total+=boxesSelected["6 beignets"]*boxPrices["6 beignets"];
-  if(boxesSelected["6 beignets"]>0)textSummaryList.push(`${boxesSelected["6 beignets"]}x Boîte de 6`);
   total+=boxesSelected["9 beignets"]*boxPrices["9 beignets"];
   if(boxesSelected["9 beignets"]>0)textSummaryList.push(`${boxesSelected["9 beignets"]}x Boîte de 9`);
-  for(let b=1;b<=boxesSelected["6 beignets"];b++){
-    structuredOrderText+=`\n📦 BOÎTE DE 6 BEIGNETS n°${b} :\n`;
-    let potCount=0;
-    for(let lot=1;lot<=2;lot++){
-      let idPrefix=`box6-${b}-lot${lot}`;
-      let nappage=document.getElementById(`${idPrefix}-nappage`)?.value||"Aucun";
-      let garniture=document.getElementById(`${idPrefix}-garniture`)?.value||"Aucun";
-      let pot=document.getElementById(`${idPrefix}-pot`)?.value||"Aucun";
-      if(nappage!=="Aucun")total+=supplementPricePerLot;
-      if(garniture!=="Aucun")total+=supplementPricePerLot;
-      if(pot!=="Aucun"&&potCount<2){total+=0.50;potCount++;}
-      structuredOrderText+=`  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value||"Nature"}`;
-      if(nappage!=="Aucun")structuredOrderText+=` + ${nappage}`;
-      if(garniture!=="Aucun")structuredOrderText+=` + ${garniture}`;
-      if(pot!=="Aucun"&&potCount<=2)structuredOrderText+=` + ${pot}`;
-      structuredOrderText+=`\n`;
-    }
-  }
+  total+=boxesSelected["12 beignets"]*boxPrices["12 beignets"];
+  if(boxesSelected["12 beignets"]>0)textSummaryList.push(`${boxesSelected["12 beignets"]}x Boîte de 12`);
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
     structuredOrderText+=`\n📦 BOÎTE DE 9 BEIGNETS n°${b} :\n`;
     let potCount=0;
     for(let lot=1;lot<=3;lot++){
       let idPrefix=`box9-${b}-lot${lot}`;
+      let nappage=document.getElementById(`${idPrefix}-nappage`)?.value||"Aucun";
+      let garniture=document.getElementById(`${idPrefix}-garniture`)?.value||"Aucun";
+      let pot=document.getElementById(`${idPrefix}-pot`)?.value||"Aucun";
+      if(nappage!=="Aucun")total+=supplementPricePerLot;
+      if(garniture!=="Aucun")total+=supplementPricePerLot;
+      if(pot!=="Aucun"&&potCount<3){total+=0.50;potCount++;}
+      structuredOrderText+=`  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value||"Nature"}`;
+      if(nappage!=="Aucun")structuredOrderText+=` + ${nappage}`;
+      if(garniture!=="Aucun")structuredOrderText+=` + ${garniture}`;
+      if(pot!=="Aucun"&&potCount<=3)structuredOrderText+=` + ${pot}`;
+      structuredOrderText+=`\n`;
+    }
+  }
+  for(let b=1;b<=boxesSelected["12 beignets"];b++){
+    structuredOrderText+=`\n📦 BOÎTE DE 12 BEIGNETS n°${b} :\n`;
+    let potCount=0;
+    for(let lot=1;lot<=4;lot++){
+      let idPrefix=`box12-${b}-lot${lot}`;
       let nappage=document.getElementById(`${idPrefix}-nappage`)?.value||"Aucun";
       let garniture=document.getElementById(`${idPrefix}-garniture`)?.value||"Aucun";
       let pot=document.getElementById(`${idPrefix}-pot`)?.value||"Aucun";
@@ -646,7 +685,7 @@ function updateUI(){
     :"Aucune sélection";
   document.getElementById("total").innerText=total.toFixed(2);
   const summaryBar=document.getElementById("summary-bar");
-  if(boxesSelected["6 beignets"]>0||boxesSelected["9 beignets"]>0)summaryBar.classList.add("show");else summaryBar.classList.remove("show");
+  if(boxesSelected["9 beignets"]>0||boxesSelected["12 beignets"]>0)summaryBar.classList.add("show");else summaryBar.classList.remove("show");
 
   // Bouton Stripe
   let stripeBtn=document.getElementById("stripe-btn");
@@ -655,28 +694,29 @@ function updateUI(){
   const btnsCommunication=[document.getElementById("whatsapp"),document.getElementById("sms-btn"),document.getElementById("phone-btn")];
 
   if(selectedPaymentMode==="PayPal"){
-    // Paiement en ligne → bouton Stripe visible, WA/SMS/Tel cachés
+    // Paiement en ligne → bouton Stripe visible, CGV, WA/SMS/Tel cachés
     stripeBtn.style.display="block";
     espBtn.style.display="none";
-    onlineNotice.style.display="block";
-    if(isFormValid()){
+    onlineNotice.style.display="none";
+    document.getElementById("cgv-wrap").style.display="block";
+    let cgvOk=document.getElementById("cgv-check").checked;
+    if(isFormValid()&&cgvOk){
       stripeBtn.disabled=false;
       stripeBtn.classList.remove("disabled");
+      stripeBtn.textContent="Payer en ligne 💳";
     } else {
       stripeBtn.disabled=true;
       stripeBtn.classList.add("disabled");
+      stripeBtn.textContent=isFormValid()&&!cgvOk?"✅ Acceptez les CGV pour continuer":"Payer en ligne 💳";
     }
-    // Masquer et désactiver les boutons WA/SMS/Tel
-    btnsCommunication.forEach(btn=>{
-      btn.style.display="none";
-    });
+    btnsCommunication.forEach(btn=>{btn.style.display="none";});
     document.querySelector(".small").style.display="none";
 
   }else if(selectedPaymentMode==="Espèces"){
-    // Espèces → bouton Stripe caché, WA/SMS/Tel visibles
     stripeBtn.style.display="none";
     espBtn.style.display="none";
     onlineNotice.style.display="none";
+    document.getElementById("cgv-wrap").style.display="none";
     btnsCommunication.forEach(btn=>{btn.style.display="block";});
     document.querySelector(".small").style.display="block";
     let shouldEnable=isFormValid();
@@ -689,7 +729,7 @@ function updateUI(){
     waEl.href="https://wa.me/33"+targetPhone.substring(1)+"?text="+whatsappMsg;
     waEl.onclick=function(e){
       if(!checkForm(e,"WhatsApp"))return false;
-      setTimeout(()=>afficherPageEspeces(),800);
+      setTimeout(()=>afficherPageEspeces("WhatsApp"),800);
       return true;
     };
   }else{
@@ -697,6 +737,7 @@ function updateUI(){
     stripeBtn.style.display="none";
     espBtn.style.display="none";
     onlineNotice.style.display="none";
+    document.getElementById("cgv-wrap").style.display="none";
     btnsCommunication.forEach(btn=>{btn.style.display="block";});
     document.querySelector(".small").style.display="block";
     btnsCommunication.forEach(btn=>{btn.setAttribute("disabled","true");btn.classList.add("disabled");});
@@ -705,7 +746,7 @@ function updateUI(){
 
 /* ===== VALIDATION FORMULAIRE ===== */
 function isFormValid(){
-  if(boxesSelected["6 beignets"]===0&&boxesSelected["9 beignets"]===0)return false;
+  if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0)return false;
   let name=document.getElementById("client-name").value.trim();
   let raw=document.getElementById("client-phone").value.trim();
   let phone=normalizePhone(raw);
@@ -776,8 +817,8 @@ function getMessageConfirmationClient(name, phone, date, time, total, pourSMS=fa
   msg+=`⏰ Créneau : ${time}\n`;
   msg+=`💰 Total : ${total} €\n\n`;
   msg+=`📍 ${b}Adresse de retrait :${b}\n`;
-  msg+=`36 rue du Chanoine Lallement, Reims\n\n`;
-  msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — je descendrai te remettre ta commande en mains propres ! 🍩\n`;
+  msg+=`Communiquée lors de la confirmation de votre commande.\n\n`;
+  msg+=`🔔 Une fois l'adresse reçue et arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — tu auras ta commande en mains propres ! 🍩\n`;
   msg+=`\nÀ tout à l'heure ! 🧇\n— Oh! Mikaté`;
   return pourSMS ? msg.normalize("NFD").replace(/[\u0300-\u036f]/g,"") : msg;
 }
@@ -831,7 +872,7 @@ function triggerSMS(event){
   showToast("📱 Redirection...");
   setTimeout(()=>{
     window.location.href=url;
-    afficherPageEspeces();
+    afficherPageEspeces("SMS");
   },800);
 }
 function triggerCall(event){
@@ -841,7 +882,7 @@ function triggerCall(event){
 }
 
 /* ===== PAGE CONFIRMATION ESPÈCES ===== */
-function afficherPageEspeces(){
+function afficherPageEspeces(canalEspeces="WhatsApp"){
   let name=document.getElementById("client-name").value.trim();
   let date=document.getElementById("client-date").value;
   let time=document.getElementById("client-time").value;
@@ -852,15 +893,33 @@ function afficherPageEspeces(){
   document.getElementById("especes-page").style.display="block";
   document.body.style.paddingBottom="0";
 
+  // Envoi Google Sheet pour les commandes espèces
+  let now2=new Date();
+  let heure2=now2.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  let dateStr=now2.toLocaleDateString('fr-FR')+" "+heure2+" via "+canalEspeces;
+  fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      name,phone,
+      order:orderInfo.detailsText,
+      total:orderInfo.totalPrice.toFixed(2),
+      payment:"Espèces",
+      date:dateStr,
+      dateRetrait:date,
+      creneau:time,
+      canal:canalEspeces
+    })
+  });
+
   document.getElementById("e-name").textContent=name||"—";
   document.getElementById("e-date").textContent=date||"—";
   document.getElementById("e-time").textContent=time||"—";
   document.getElementById("e-order-detail").textContent=orderInfo.detailsText||"—";
   document.getElementById("e-total").textContent=orderInfo.totalPrice.toFixed(2)+" €";
 
-  // Liens annulation espèces
+  // Liens annulation espèces (sans nom)
   let msgAnnul=`Bonjour, je souhaite annuler ma commande :\n\n`+
-    `👤 Nom : ${name}\n`+
     `📅 Date souhaitée : ${date}\n`+
     `⏰ Créneau : ${time}\n`+
     `💰 Total : ${orderInfo.totalPrice.toFixed(2)} €\n\n`+
@@ -1007,9 +1066,8 @@ async function lancerPaiementStripe(){
   let orderInfo=calculateTotalAndExtractStructure();
   let montantCentimes=Math.round(orderInfo.totalPrice*100);
 
-  // Sauvegarde avant redirection
+  // Sauvegarde avant redirection (Sheet envoyé uniquement sur ?success=true)
   saveOrderToStorage();
-  sendOrderToSheet();
 
   // Affichage chargement
   let btn=document.getElementById("stripe-btn");
@@ -1092,17 +1150,17 @@ window.onload=function(){
       }
     },30000);
 
-    // Fonction redirection après envoi (vers accueil après 3 secondes)
+    // Fonction après envoi - reste sur la page, affiche confirmation
     function apresEnvoi(){
       envoiEffectue=true;
       document.getElementById("rappel-envoi").style.display="none";
       document.getElementById("envoi-confirme").style.display="block";
-      // Nettoyer et rediriger vers accueil après 4 secondes
+      // Scroll vers le bas pour montrer le bloc annulation
       setTimeout(()=>{
-        localStorage.removeItem('ohMikateCommande');
-        localStorage.removeItem('ohMikateSheetSent');
-        window.location.href=window.location.pathname;
-      },4000);
+        document.getElementById("envoi-confirme").scrollIntoView({behavior:"smooth"});
+      },300);
+      // PAS de redirection automatique — le client reste sur la page
+      // pour accéder au lien d'annulation si besoin
     }
 
     // Bouton WhatsApp
@@ -1123,9 +1181,8 @@ window.onload=function(){
       setTimeout(apresEnvoi,800);
     });
 
-    // Liens annulation avec détail commande
+    // Liens annulation avec détail commande (sans nom car déjà identifié)
     let msgAnnulation=`Bonjour, je souhaite annuler ma commande :\n\n`+
-      `👤 Nom : ${data.name}\n`+
       `📅 Date souhaitée : ${data.date}\n`+
       `⏰ Créneau : ${data.time}\n`+
       `💰 Total : ${data.total} €\n\n`+

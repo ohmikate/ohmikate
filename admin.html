@@ -207,6 +207,8 @@ async function charger(){
     let text=await res.text();
     let json=JSON.parse(text.replace("/*O_o*/\ngoogle.visualization.Query.setResponse(","").replace(");",""));
     toutesCommandes=[];
+    let ancienTotal=toutesCommandes.length;
+    let nouvellesTotales=0;
     (json.table.rows||[]).forEach((row,i)=>{
       if(!row.c||!row.c[1]||!row.c[1].v)return;
       let dateRecu=row.c[0]?String(row.c[0].v):"";
@@ -236,7 +238,17 @@ async function charger(){
       }
       toutesCommandes.push({id:i,dateRecu:datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
     });
-    // Ordre chronologique : plus ancienne en premier
+    // Détecter nouvelles commandes et alerter
+    let idsConnus=JSON.parse(localStorage.getItem('ohMikateIdsConnus')||'[]');
+    let nouveaux=toutesCommandes.filter(c=>!idsConnus.includes(c.id)&&!supprimees.includes(c.id));
+    if(nouveaux.length>0&&idsConnus.length>0){
+      // Nouvelle(s) commande(s) !
+      jouerSon();
+      if(navigator.vibrate)navigator.vibrate([300,100,300]);
+      showToast(`🆕 ${nouveaux.length} nouvelle${nouveaux.length>1?"s":""} commande${nouveaux.length>1?"s":""} !`);
+    }
+    localStorage.setItem('ohMikateIdsConnus',JSON.stringify(toutesCommandes.map(c=>c.id)));
+
     afficher();
     updateStats();
     let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
@@ -321,9 +333,15 @@ function afficher(){
 
 function parseDate(str){
   if(!str)return null;
-  // Format DD/MM/YYYY ou DD/MM/YYYY HH:MM
+  // Format DD/MM/YYYY
   let m=str.match(/(\d{2})\/(\d{2})\/(\d{4})/);
   if(m)return new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]));
+  // Format Date(YYYY,M,D,...) de Google Sheets
+  let m2=str.match(/Date\((\d{4}),(\d+),(\d+)/);
+  if(m2)return new Date(parseInt(m2[1]),parseInt(m2[2]),parseInt(m2[3]));
+  // Format YYYY-MM-DD
+  let m3=str.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if(m3)return new Date(parseInt(m3[1]),parseInt(m3[2])-1,parseInt(m3[3]));
   return null;
 }
 
@@ -426,17 +444,10 @@ function genMsg(c,pourSMS=false){
   msg+=`💰 Total : ${c.total||"—"} €\n\n`;
   msg+=`📦 ${b}Ta commande :${b}\n${c.order||""}\n\n`;
   msg+=`📍 ${b}Adresse de retrait :${b}\n36 rue du Chanoine Lallement, Reims\n\n`;
-  msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — je descendrai te remettre ta commande en mains propres ! 🍩\n\n`;
+  msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — tu auras ta commande en mains propres ! 🍩\n\n`;
   msg+=`━━━━━━━━━━━━━━━\n`;
-  msg+=`❌ ${b}Besoin d'annuler ?${b} Cliquez :\n`;
-  if(pourSMS){
-    msg+=`• SMS : ${lienAnnulSMS}\n• Appel : 0698213380`;
-    msg=msg.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-  }else{
-    msg+=`• WhatsApp : ${lienAnnulWA}\n• SMS : ${lienAnnulSMS}\n• Appel : 0698213380`;
-  }
-  msg+=`\n\nÀ tout à l'heure ! 🧇\n— Oh! Mikaté`;
-  return msg;
+  msg+=`À tout à l'heure ! 🧇\n— Oh! Mikaté`;
+  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
 }
 
 /* ===== SÉLECTION GROUPÉE ===== */
@@ -545,6 +556,23 @@ function normalizePhone(raw){
   else if(p.startsWith("0033"))p="0"+p.substring(4);
   if(!p.startsWith("0"))p="0"+p;
   return p;
+}
+
+function jouerSon(){
+  try{
+    let ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [523,659,784].forEach((freq,i)=>{
+      let o=ctx.createOscillator();
+      let g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=freq;
+      o.type="sine";
+      g.gain.setValueAtTime(0.3,ctx.currentTime+i*0.15);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.15+0.3);
+      o.start(ctx.currentTime+i*0.15);
+      o.stop(ctx.currentTime+i*0.15+0.3);
+    });
+  }catch(e){}
 }
 
 function showToast(m){
