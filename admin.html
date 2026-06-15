@@ -426,17 +426,6 @@ function renderCommande(c){
 
 function genMsg(c,pourSMS=false){
   let b=pourSMS?"":"*";
-  let msgAnnul=`Bonjour, je souhaite annuler ma commande :\n\n`+
-    `👤 Nom : ${c.name}\n`+
-    `📅 Date souhaitée : ${c.dateRetrait||"—"}\n`+
-    `⏰ Créneau : ${c.creneau||"—"}\n`+
-    `💰 Total : ${c.total||"—"} €\n\n`+
-    `📦 Détail :\n${c.order||""}\n\n`+
-    `Merci de confirmer l'annulation.`;
-  let msgAnnulSMS=msgAnnul.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-  let lienAnnulWA="https://wa.me/33698213380?text="+encodeURIComponent(msgAnnul);
-  let lienAnnulSMS="sms:0698213380?body="+encodeURIComponent(msgAnnulSMS);
-
   let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
   msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
   msg+=`🗓️ Date : ${c.dateRetrait||"—"}\n`;

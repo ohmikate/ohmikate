@@ -786,31 +786,6 @@ function checkForm(event, canal="WhatsApp"){
   return true;
 }
 
-/* ===== ENVOI GOOGLE SHEET ===== */
-function sendOrderToSheet(canal=""){
-  let orderInfo=calculateTotalAndExtractStructure();
-  let phoneNorm=normalizePhone(document.getElementById("client-phone").value);
-  let now=new Date();
-  let dateStr=now.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
-  let heureStr=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  let payload={
-    name:document.getElementById("client-name").value,
-    phone:phoneNorm,
-    order:orderInfo.detailsText,
-    total:orderInfo.totalPrice.toFixed(2),
-    payment:selectedPaymentMode==="Espèces"?"Espèces":"Paiement en ligne (carte)",
-    date:dateStr+" "+heureStr+" via "+(canal||"WhatsApp"),
-    dateRetrait:document.getElementById("client-date").value,
-    creneau:document.getElementById("client-time").value,
-    canal:canal
-  };
-  fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
-    method:"POST",mode:"no-cors",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(payload)
-  });
-}
-
 /* ===== SAUVEGARDE COMMANDE AVANT PAIEMENT ===== */
 function saveOrderToStorage(){
   let orderInfo=calculateTotalAndExtractStructure();
