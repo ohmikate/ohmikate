@@ -314,7 +314,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 <div class="form-group">
   <label>Choisis ton mode de règlement : <span class="requis">*</span></label>
   <div class="payment-selector">
-    <div id="opt-paypal" class="pay-opt" onclick="selectPayment('PayPal')">💳 En ligne</div>
+    <div id="opt-carte" class="pay-opt" onclick="selectPayment('Carte')">💳 En ligne</div>
     <div id="opt-especes" class="pay-opt" onclick="selectPayment('Espèces')">💵 Espèces (Appoint requis)</div>
   </div>
 </div>
@@ -328,14 +328,28 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       <span><span id="total">0.00</span> €</span>
     </div>
     <button id="stripe-btn" class="btn" style="background:#635bff;display:none;margin-top:10px;" onclick="lancerPaiementStripe()">Payer en ligne 💳</button>
-    <!-- Case CGV — visible seulement si paiement en ligne sélectionné -->
+    <!-- Case CGV paiement en ligne -->
     <div id="cgv-wrap" style="display:none;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;padding:12px;">
       <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#aaa;line-height:1.5;">
         <input type="checkbox" id="cgv-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#635bff;flex-shrink:0;margin-top:2px;">
-        <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#635bff;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté, notamment les modalités de commande, de retrait et d'annulation.</span>
+        <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#635bff;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté.</span>
+      </label>
+    </div>
+    <!-- Case CGV espèces -->
+    <div id="cgv-especes-wrap" style="display:none;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;padding:12px;">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#aaa;line-height:1.5;">
+        <input type="checkbox" id="cgv-especes-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#ff9500;flex-shrink:0;margin-top:2px;">
+        <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#ff9500;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté.</span>
       </label>
     </div>
     <button id="especes-btn" class="btn especes" style="display:none;" onclick="alertEspeces()">💵 Règlement en Espèces (Merci de prévoir l'appoint)</button>
+    <!-- Case CGV espèces -->
+    <div id="cgv-especes-wrap" style="display:none;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;padding:12px;">
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#aaa;line-height:1.5;">
+        <input type="checkbox" id="cgv-especes-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#ff4f8b;flex-shrink:0;margin-top:2px;">
+        <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#ff4f8b;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté.</span>
+      </label>
+    </div>
     <div id="online-notice" style="display:none;background:#1a1a2e;border:1px solid #635bff;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#a09af0;margin-top:8px;">
       💳 Après votre paiement en ligne, vous pourrez envoyer votre récapitulatif.
     </div>
@@ -693,7 +707,7 @@ function updateUI(){
   let onlineNotice=document.getElementById("online-notice");
   const btnsCommunication=[document.getElementById("whatsapp"),document.getElementById("sms-btn"),document.getElementById("phone-btn")];
 
-  if(selectedPaymentMode==="PayPal"){
+  if(selectedPaymentMode==="Carte"){
     // Paiement en ligne → bouton Stripe visible, CGV, WA/SMS/Tel cachés
     stripeBtn.style.display="block";
     espBtn.style.display="none";
@@ -717,9 +731,11 @@ function updateUI(){
     espBtn.style.display="none";
     onlineNotice.style.display="none";
     document.getElementById("cgv-wrap").style.display="none";
+    document.getElementById("cgv-especes-wrap").style.display="block";
     btnsCommunication.forEach(btn=>{btn.style.display="block";});
     document.querySelector(".small").style.display="block";
-    let shouldEnable=isFormValid();
+    let cgvEspOk=document.getElementById("cgv-especes-check").checked;
+    let shouldEnable=isFormValid()&&cgvEspOk;
     btnsCommunication.forEach(btn=>{
       if(shouldEnable){btn.removeAttribute("disabled");btn.classList.remove("disabled");}
       else{btn.setAttribute("disabled","true");btn.classList.add("disabled");}
@@ -738,6 +754,7 @@ function updateUI(){
     espBtn.style.display="none";
     onlineNotice.style.display="none";
     document.getElementById("cgv-wrap").style.display="none";
+    document.getElementById("cgv-especes-wrap").style.display="none";
     btnsCommunication.forEach(btn=>{btn.style.display="block";});
     document.querySelector(".small").style.display="block";
     btnsCommunication.forEach(btn=>{btn.setAttribute("disabled","true");btn.classList.add("disabled");});
@@ -760,22 +777,29 @@ function isFormValid(){
 
 function checkForm(event, canal="WhatsApp"){
   if(!isFormValid()){showToast("⚠️ Formulaire incomplet !");if(event)event.preventDefault();return false;}
-  sendOrderToSheet(canal);return true;
+  if(selectedPaymentMode==="Espèces"){
+    let cgvOk=document.getElementById("cgv-especes-check")?.checked;
+    if(!cgvOk){showToast("⚠️ Veuillez accepter les CGV !");if(event)event.preventDefault();return false;}
+  }
+  // sendOrderToSheet est appelé uniquement dans afficherPageEspeces pour les espèces
+  // et dans window.onload pour la carte — pas ici pour éviter les doublons
+  return true;
 }
 
 /* ===== ENVOI GOOGLE SHEET ===== */
 function sendOrderToSheet(canal=""){
   let orderInfo=calculateTotalAndExtractStructure();
-  let phoneRaw=document.getElementById("client-phone").value;
-  let phoneNorm=normalizePhone(phoneRaw);
-  let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  let phoneNorm=normalizePhone(document.getElementById("client-phone").value);
+  let now=new Date();
+  let dateStr=now.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  let heureStr=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   let payload={
     name:document.getElementById("client-name").value,
-    phone:phoneNorm, // téléphone normalisé avec zéro
+    phone:phoneNorm,
     order:orderInfo.detailsText,
     total:orderInfo.totalPrice.toFixed(2),
-    payment:selectedPaymentMode,
-    date:new Date().toLocaleDateString('fr-FR')+" "+now,
+    payment:selectedPaymentMode==="Espèces"?"Espèces":"Paiement en ligne (carte)",
+    date:dateStr+" "+heureStr+" via "+(canal||"WhatsApp"),
     dateRetrait:document.getElementById("client-date").value,
     creneau:document.getElementById("client-time").value,
     canal:canal
@@ -882,7 +906,11 @@ function triggerCall(event){
 }
 
 /* ===== PAGE CONFIRMATION ESPÈCES ===== */
+let espècesPageAffichée=false; // Verrou anti-doublon
 function afficherPageEspeces(canalEspeces="WhatsApp"){
+  if(espècesPageAffichée)return; // Bloque le double appel
+  espècesPageAffichée=true;
+
   let name=document.getElementById("client-name").value.trim();
   let date=document.getElementById("client-date").value;
   let time=document.getElementById("client-time").value;
@@ -893,10 +921,11 @@ function afficherPageEspeces(canalEspeces="WhatsApp"){
   document.getElementById("especes-page").style.display="block";
   document.body.style.paddingBottom="0";
 
-  // Envoi Google Sheet pour les commandes espèces
+  // Envoi Google Sheet UNE SEULE FOIS pour les commandes espèces
   let now2=new Date();
   let heure2=now2.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  let dateStr=now2.toLocaleDateString('fr-FR')+" "+heure2+" via "+canalEspeces;
+  // Format date DD/MM/YYYY pour que l'admin puisse la parser correctement
+  let dateStr=now2.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+" "+heure2+" via "+canalEspeces;
   fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
     method:"POST",mode:"no-cors",
     headers:{"Content-Type":"application/json"},
@@ -938,7 +967,7 @@ function afficherPageEspeces(canalEspeces="WhatsApp"){
 }
 function selectPayment(mode){
   selectedPaymentMode=mode;
-  document.getElementById("opt-paypal").classList.toggle("selected",mode==='PayPal');
+  document.getElementById("opt-carte").classList.toggle("selected",mode==='Carte');
   document.getElementById("opt-especes").classList.toggle("selected",mode==='Espèces');
   updateUI();
 }
