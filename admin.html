@@ -395,7 +395,10 @@ function renderCommande(c){
       <div>
         <div class="client-name">${c.name||"—"}</div>
         <div class="commande-meta">
-          🕐 ${c.heure||"—"} ${badgeCanal(c.canal)}
+          🕐 ${c.heure||"—"} &nbsp;|&nbsp; ${badgeCanal(c.canal)}
+        </div>
+        <div class="commande-meta" style="margin-top:3px;font-size:11px;color:#555;">
+          📅 Reçue le ${c.dateRecu||"—"}
         </div>
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;">${c.total||"—"} €</div>
@@ -426,9 +429,18 @@ function renderCommande(c){
 
 function genMsg(c,pourSMS=false){
   let b=pourSMS?"":"*";
+
+  // Formater la date de retrait lisiblement
+  let dateRetrait=c.dateRetrait||"—";
+  let d=parseDate(dateRetrait);
+  if(d){
+    dateRetrait=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    dateRetrait=dateRetrait.charAt(0).toUpperCase()+dateRetrait.slice(1);
+  }
+
   let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
   msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
-  msg+=`🗓️ Date : ${c.dateRetrait||"—"}\n`;
+  msg+=`🗓️ Date : ${dateRetrait}\n`;
   msg+=`⏰ Créneau : ${c.creneau||"—"}\n`;
   msg+=`💰 Total : ${c.total||"—"} €\n\n`;
   msg+=`📦 ${b}Ta commande :${b}\n${c.order||""}\n\n`;
