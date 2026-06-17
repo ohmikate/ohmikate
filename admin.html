@@ -217,12 +217,38 @@ async function charger(){
       let order=row.c[3]?row.c[3].v:"";
       let total=row.c[4]?String(row.c[4].v):"";
       let payment=row.c[5]?row.c[5].v:"";
-      let dateRetrait=row.c[6]?row.c[6].v:"";
-      let creneau=row.c[7]?row.c[7].v:"";
-      let canal="",heure="",datePropre=dateRecu;
-      let cm=dateRecu.match(/via\s+(.+)$/i);if(cm)canal=cm[1].trim();
-      let hm=dateRecu.match(/(\d{2}:\d{2})/);if(hm)heure=hm[1];
-      datePropre=dateRecu.replace(/\s*via.+$/i,"").trim();
+      // Colonnes supplémentaires (peuvent exister ou non)
+      let dateRetrait=row.c[6]?String(row.c[6].v):"";
+      let creneau=row.c[7]?String(row.c[7].v):"";
+      let canal=row.c[8]?String(row.c[8].v):"";
+
+      // Extraction heure et canal depuis la colonne dateRecu (format: "15/06/2026 14:05 via WhatsApp")
+      let heure="",datePropre=dateRecu;
+      if(dateRecu.includes("via")){
+        let canalMatch=dateRecu.match(/via\s+(.+)$/i);
+        if(canalMatch&&!canal)canal=canalMatch[1].trim();
+        let heureMatch=dateRecu.match(/(\d{2}:\d{2})/);
+        if(heureMatch)heure=heureMatch[1];
+        datePropre=dateRecu.replace(/\s*via.+$/i,"").trim();
+      } else if(dateRecu.startsWith("Date(")){
+        // Format Google Sheets natif Date(2026,5,9,0,0,0)
+        let dm=dateRecu.match(/Date\((\d{4}),(\d+),(\d+)(?:,(\d+),(\d+))?/);
+        if(dm){
+          let d=new Date(parseInt(dm[1]),parseInt(dm[2]),parseInt(dm[3]));
+          datePropre=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+          if(dm[4]&&dm[5])heure=dm[4].padStart(2,'0')+":"+dm[5].padStart(2,'0');
+        }
+      }
+
+      // Normaliser le canal
+      if(!canal&&payment){
+        if(payment.toLowerCase().includes("carte")||payment.toLowerCase().includes("ligne"))canal="Carte bancaire";
+        else if(payment.toLowerCase().includes("paypal"))canal="Carte bancaire";
+        else if(payment.toLowerCase().includes("esp"))canal="Espèces";
+      }
+
+      // Normaliser payment (supprimer PayPal)
+      if(payment.toLowerCase().includes("paypal"))payment="Paiement en ligne (carte)";
       // Vérifier si créneau urgent (< 2h)
       let urgent=false;
       if(dateRetrait&&creneau){
@@ -309,9 +335,9 @@ function afficher(){
       return s+(isNaN(v)?0:v);
     },0);
     let nouvelles=cmds.filter(c=>!confirmees.includes(c.id)).length;
-
-    // Analyse des créneaux pour ce jour
-    let creneauxHtml=analyserCreneaux(cmds);
+    // Récupère la date du premier commit pour l'analyse créneaux
+    let jourDate=parseDate(cmds[0]?.dateRecu||"");
+    let creneauxHtml=analyserCreneaux(cmds,jourDate);
 
     html+=`<div class="jour-group">
       <div class="jour-header">
@@ -333,10 +359,11 @@ function afficher(){
 
 function parseDate(str){
   if(!str)return null;
-  // Format DD/MM/YYYY
+  // Format DD/MM/YYYY HH:MM via Canal
   let m=str.match(/(\d{2})\/(\d{2})\/(\d{4})/);
   if(m)return new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]));
-  // Format Date(YYYY,M,D,...) de Google Sheets
+  // Format Date(YYYY,M,D) de Google Sheets — ATTENTION: mois est 0-indexé dans JS mais PAS dans Sheets
+  // Sheets: Date(2026,6,1) = 1er juillet 2026 (mois 6 = juillet car 0=jan)
   let m2=str.match(/Date\((\d{4}),(\d+),(\d+)/);
   if(m2)return new Date(parseInt(m2[1]),parseInt(m2[2]),parseInt(m2[3]));
   // Format YYYY-MM-DD
@@ -345,12 +372,31 @@ function parseDate(str){
   return null;
 }
 
-function analyserCreneaux(cmds){
+/* ===== FORMATER DATE RETRAIT LISIBLEMENT ===== */
+function formatDateRetrait(str){
+  if(!str)return"—";
+  // Si déjà en format lisible (ex: "Mercredi 1 juillet")
+  if(/[a-zA-ZàâäéèêëîïôùûüçÀÂÄÉÈÊËÎÏÔÙÛÜÇ]/.test(str)&&!str.includes("Date("))return str;
+  let d=parseDate(str);
+  if(!d)return str;
+  let label=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  return label.charAt(0).toUpperCase()+label.slice(1);
+}
+
+function analyserCreneaux(cmds, jourDate){
   let counts={};
   CRENEAUX.forEach(c=>counts[c]=0);
   cmds.forEach(c=>{if(c.creneau&&counts[c.creneau]!==undefined)counts[c.creneau]++;});
   let now=new Date();
   let nowMins=now.getHours()*60+now.getMinutes();
+  // Vérifie si le groupe correspond à aujourd'hui
+  let isToday=false;
+  if(jourDate){
+    let today=new Date();
+    isToday=(jourDate.getDate()===today.getDate()&&
+             jourDate.getMonth()===today.getMonth()&&
+             jourDate.getFullYear()===today.getFullYear());
+  }
   let html='<div class="creneaux-bar">';
   CRENEAUX.forEach(cr=>{
     let n=counts[cr];
@@ -359,7 +405,8 @@ function analyserCreneaux(cmds){
     let slotMins=m?(parseInt(m[1])*60+parseInt(m[2])):999;
     let diff=slotMins-nowMins;
     let cls="creneau-libre",icon="✅";
-    if(diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
+    // Urgence seulement si c'est aujourd'hui ET dans moins de 2h
+    if(isToday&&diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
     else if(n>=2){cls="creneau-charge";icon="⚠️";}
     html+=`<span class="creneau-badge ${cls}">${icon} ${cr} (${n})</span>`;
   });
@@ -395,9 +442,9 @@ function renderCommande(c){
       <div>
         <div class="client-name">${c.name||"—"}</div>
         <div class="commande-meta">
-          🕐 ${c.heure||"—"} &nbsp;|&nbsp; ${badgeCanal(c.canal)}
+          🕐 ${c.heure||"—"} &nbsp;|&nbsp; ${badgeCanal(c.canal||"—")}
         </div>
-        <div class="commande-meta" style="margin-top:3px;font-size:11px;color:#555;">
+        <div class="commande-meta" style="margin-top:3px;font-size:11px;color:#666;">
           📅 Reçue le ${c.dateRecu||"—"}
         </div>
       </div>
@@ -406,7 +453,7 @@ function renderCommande(c){
     <div class="info-grid">
       <div class="info-item"><div class="label">📞 Tél</div><div class="value">${c.phone||"—"}</div></div>
       <div class="info-item"><div class="label">💳 Règlement</div><div class="value">${c.payment||"—"}</div></div>
-      <div class="info-item"><div class="label">🗓️ Retrait</div><div class="value">${c.dateRetrait||"—"}</div></div>
+      <div class="info-item"><div class="label">🗓️ Retrait</div><div class="value">${formatDateRetrait(c.dateRetrait)}</div></div>
       <div class="info-item"><div class="label">⏰ Créneau</div><div class="value">${c.creneau||"—"}</div></div>
       <div class="info-item full"><div class="label">📦 Commande</div><div class="detail-box">${(c.order||"—").replace(/\\n/g,"\n")}</div></div>
     </div>
@@ -430,13 +477,7 @@ function renderCommande(c){
 function genMsg(c,pourSMS=false){
   let b=pourSMS?"":"*";
 
-  // Formater la date de retrait lisiblement
-  let dateRetrait=c.dateRetrait||"—";
-  let d=parseDate(dateRetrait);
-  if(d){
-    dateRetrait=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    dateRetrait=dateRetrait.charAt(0).toUpperCase()+dateRetrait.slice(1);
-  }
+  let dateRetrait=formatDateRetrait(c.dateRetrait);
 
   let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
   msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
