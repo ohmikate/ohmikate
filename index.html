@@ -319,24 +319,6 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
   </div>
 </div>
 
-<!-- NEWSLETTER -->
-<div style="margin:0 15px 20px;padding:24px 20px;background:#111;border-radius:16px;border:2px solid #ff4f8b;text-align:center;">
-  <div style="font-size:28px;margin-bottom:8px;">📬</div>
-  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#ff4f8b;letter-spacing:2px;margin-bottom:6px;">Restez informé(e) !</h3>
-  <p style="font-size:13px;color:#aaa;margin-bottom:16px;line-height:1.6;">Nouveautés, offres spéciales, promos exclusives...<br>Inscrivez-vous à la newsletter Oh! Mikaté 🧇</p>
-  <div style="max-width:400px;margin:0 auto;overflow:hidden;border-radius:12px;">
-    <iframe
-      width="100%"
-      height="220"
-      src="https://9660c3d2.sibforms.com/v2/serve/MUIFAKYHEqjZkF5JA3RIhxG6g9B29m4qzGVxA5_G5ElTGqZjXWSPCGoX9eZA1JCtMX2OJmv0e9Fe5hV_wIODiufMB0XNoD6t5eHC4gpVTT09LCC-XjuQU7vJPTTAkzjquyluy7V4S2WvA2rnYtHXVMeSvEjX0Q82DBQV3o2XuwcvLB_QElcUozGH-GvBIlD5MLghU4XI3XJFl-jyXA=="
-      frameborder="0"
-      scrolling="auto"
-      allowfullscreen
-      style="display:block;border:none;background:#fff;border-radius:12px;">
-    </iframe>
-  </div>
-  <p style="font-size:11px;color:#555;margin-top:12px;">Pas de spam — désabonnement possible à tout moment.</p>
-</div>
 
 <div id="summary-bar" class="summary">
   <div class="summary-content">
@@ -456,6 +438,21 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       <div id="envoi-confirme" style="display:none;background:#0a2a12;border:1px solid #25D366;border-radius:10px;padding:12px;text-align:center;margin-top:12px;color:#25D366;font-size:13px;">
         ✅ Récapitulatif envoyé ! Vous recevrez votre confirmation sous 30 minutes.
       </div>
+
+      <!-- NEWSLETTER après envoi -->
+      <div id="newsletter-carte" style="display:none;margin-top:20px;background:#111;border-radius:16px;border:1px solid #ff4f8b44;text-align:center;overflow:hidden;">
+        <div style="padding:16px 16px 8px;">
+          <div style="font-size:20px;margin-bottom:6px;">📬</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#ff4f8b;letter-spacing:1px;margin-bottom:4px;">Restez informé(e) !</div>
+          <div style="font-size:12px;color:#888;margin-bottom:10px;">Promos, nouveautés et offres exclusives Oh! Mikaté 🧇</div>
+        </div>
+        <iframe width="100%" height="200"
+          src="https://9660c3d2.sibforms.com/v2/serve/MUIFAKYHEqjZkF5JA3RIhxG6g9B29m4qzGVxA5_G5ElTGqZjXWSPCGoX9eZA1JCtMX2OJmv0e9Fe5hV_wIODiufMB0XNoD6t5eHC4gpVTT09LCC-XjuQU7vJPTTAkzjquyluy7V4S2WvA2rnYtHXVMeSvEjX0Q82DBQV3o2XuwcvLB_QElcUozGH-GvBIlD5MLghU4XI3XJFl-jyXA=="
+          frameborder="0" scrolling="auto" allowfullscreen
+          style="display:block;border:none;background:#fff;">
+        </iframe>
+        <div style="font-size:10px;color:#555;padding:8px;">Pas de spam — désabonnement possible à tout moment.</div>
+      </div>
     </div>
 
     <!-- ANNULATION -->
@@ -558,6 +555,13 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
     <div style="text-align:center;margin-top:20px;padding:16px;background:#111;border-radius:12px;border:1px solid #222;">
       <div style="font-size:13px;color:#888;margin-bottom:8px;">Une question ? Contactez-nous :</div>
       <a href="mailto:ohmikate51@gmail.com" style="color:#ff4f8b;text-decoration:none;font-weight:bold;font-size:14px;">📧 ohmikate51@gmail.com</a>
+    </div>
+
+    <!-- NOUVELLE COMMANDE -->
+    <div style="text-align:center;margin-top:16px;">
+      <button onclick="nouvelleCommande()" style="background:none;border:1px solid #333;color:#555;font-size:12px;padding:10px 20px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;">
+        🔄 Passer une nouvelle commande
+      </button>
     </div>
 
   </div>
@@ -958,6 +962,13 @@ function afficherPageEspeces(canalEspeces="WhatsApp"){
   document.getElementById("especes-page").style.display="block";
   document.body.style.paddingBottom="0";
 
+  // Sauvegarder l'état pour restaurer la page si le client revient
+  localStorage.setItem('ohMikateEtatEspeces', JSON.stringify({
+    name, date, time, phone,
+    orderDetail: orderInfo.detailsText,
+    total: orderInfo.totalPrice.toFixed(2)
+  }));
+
   // Envoi Google Sheet UNE SEULE FOIS pour les commandes espèces
   let now2=new Date();
   let heure2=now2.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
@@ -1009,6 +1020,14 @@ function selectPayment(mode){
   updateUI();
 }
 function alertEspeces(){showToast("💵 Merci de préparer l'appoint !");}
+
+/* ===== NOUVELLE COMMANDE ===== */
+function nouvelleCommande(){
+  localStorage.removeItem('ohMikateEtatEspeces');
+  localStorage.removeItem('ohMikateCommande');
+  localStorage.removeItem('ohMikateSheetSent');
+  window.location.href=window.location.pathname;
+}
 
 function initDates(){
   const dateSelect=document.getElementById("client-date");
@@ -1203,7 +1222,7 @@ window.onload=function(){
     document.getElementById("c-phone").textContent=data.phone||"—";
     document.getElementById("c-date").textContent=data.date||"—";
     document.getElementById("c-time").textContent=data.time||"—";
-    document.getElementById("c-payment").innerHTML='<span style="color:#25D366;">✅ '+data.payment+'</span>';
+    document.getElementById("c-payment").innerHTML='<span style="color:#25D366;">✅ Paiement en ligne confirmé</span>';
     document.getElementById("c-total").textContent=data.total+" €";
     document.getElementById("c-order-detail").textContent=data.orderDetail||"—";
 
@@ -1265,16 +1284,47 @@ window.onload=function(){
     });
 
   } else {
-    document.getElementById("confirmation-page").style.display="none";
-    document.getElementById("especes-page").style.display="none";
-    document.getElementById("main-page").style.display="block";
-    // Nettoyer localStorage si on revient à l'accueil
-    localStorage.removeItem('ohMikateCommande');
-    localStorage.removeItem('ohMikateSheetSent');
-    initDates();
-    handleDateChange();
+    // Vérifier si on doit afficher la page espèces (client revenu après envoi WA/SMS)
+    let etatEspeces=localStorage.getItem('ohMikateEtatEspeces');
+    if(etatEspeces){
+      let dataEsp=JSON.parse(etatEspeces);
+      document.getElementById("main-page").style.display="none";
+      document.getElementById("especes-page").style.display="block";
+      document.body.style.paddingBottom="0";
+      document.getElementById("e-name").textContent=dataEsp.name||"—";
+      document.getElementById("e-date").textContent=dataEsp.date||"—";
+      document.getElementById("e-time").textContent=dataEsp.time||"—";
+      document.getElementById("e-order-detail").textContent=dataEsp.orderDetail||"—";
+      document.getElementById("e-total").textContent=dataEsp.total+" €";
+      // Restaurer les liens annulation
+      let msgAnnulEsp=`Bonjour, je souhaite annuler ma commande :\n\n`+
+        `📅 Date souhaitée : ${dataEsp.date}\n`+
+        `⏰ Créneau : ${dataEsp.time}\n`+
+        `💰 Total : ${dataEsp.total} €\n\n`+
+        `📦 Détail :\n${dataEsp.orderDetail}\n\n`+
+        `Merci de confirmer l'annulation.`;
+      let msgAnnulEspSMS=msgAnnulEsp.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+      document.getElementById("e-cancel-whatsapp").href=
+        "https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnulEsp);
+      document.getElementById("e-cancel-sms").addEventListener("click",function(e){
+        e.preventDefault();
+        let ua=navigator.userAgent.toLowerCase();
+        window.location.href="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgAnnulEspSMS);
+      });
+      // Afficher confirmation envoi
+      document.getElementById("envoi-confirme-especes") && (document.getElementById("envoi-confirme-especes").style.display="block");
+    } else {
+      document.getElementById("confirmation-page").style.display="none";
+      document.getElementById("especes-page").style.display="none";
+      document.getElementById("main-page").style.display="block";
+      localStorage.removeItem('ohMikateCommande');
+      localStorage.removeItem('ohMikateSheetSent');
+      initDates();
+      handleDateChange();
+    }
   }
 };
 </script>
 </body>
 </html>
+
