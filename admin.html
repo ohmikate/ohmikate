@@ -222,22 +222,29 @@ async function charger(){
       let creneau=row.c[7]?String(row.c[7].v):"";
       canal = row.c[8] ? String(row.c[8].v) : "";
 
-      // Extraction heure et canal depuis la colonne dateRecu (format: "15/06/2026 14:05 via WhatsApp")
-      let heure = "", datePropre = dateRecu;
-      if(dateRecu.includes("via")){
-        let canalMatch=dateRecu.match(/via\s+(.+)$/i);
-        if(canalMatch&&!canal)canal=canalMatch[1].trim();
-        let heureMatch=dateRecu.match(/(\d{2}:\d{2})/);
-        if(heureMatch)heure=heureMatch[1];
-        datePropre=dateRecu.replace(/\s*via.+$/i,"").trim();
-      } else if(dateRecu.startsWith("Date(")){
-        // Format Google Sheets natif Date(2026,5,9,0,0,0)
-        let dm=dateRecu.match(/Date\((\d{4}),(\d+),(\d+)(?:,(\d+),(\d+))?/);
-        if(dm){
-          let d=new Date(parseInt(dm[1]),parseInt(dm[2]),parseInt(dm[3]));
-          datePropre=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
-          if(dm[4]&&dm[5])heure=dm[4].padStart(2,'0')+":"+dm[5].padStart(2,'0');
-        }
+     // Extraction heure et canal depuis la colonne dateRecu
+let heure = "", datePropre = dateRecu;
+
+if (dateRecu.includes("via")) {
+  let canalMatch = dateRecu.match(/via\s+(.+)$/i);
+  if (canalMatch && !canal) canal = canalMatch[1].trim();
+  let heureMatch = dateRecu.match(/(\d{2}:\d{2})/);
+  if (heureMatch) heure = heureMatch[1];
+  datePropre = dateRecu.replace(/\s*via.+$/i, "").trim();
+} else if (dateRecu.startsWith("Date(")) {
+  // Format Google Sheets natif Date(2026,5,9,0,0,0)
+  let dm = dateRecu.match(/Date\((\d{4}),(\d+),(\d+)(?:,(\d+),(\d+))?/);
+  if (dm) {
+    let d = new Date(parseInt(dm[1]), parseInt(dm[2]), parseInt(dm[3]));
+    datePropre = d.toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit', year: 'numeric'});
+    if (dm[4] && dm[5]) heure = dm[4].padStart(2, '0') + ":" + dm[5].padStart(2, '0');
+  }
+} else if (dateRecu.trim() !== "") {
+  // Sécurité : Si le format est déjà une date propre ou brute (ex: "19/06/2026 14:05" ou juste "19/06/2026")
+  let heureMatch = dateRecu.match(/(\d{2}:\d{2})/);
+  if (heureMatch) heure = heureMatch[1];
+  datePropre = dateRecu.replace(/\s*\d{2}:\d{2}.*$/, "").trim();
+}
       }
 
       // Normaliser le canal
