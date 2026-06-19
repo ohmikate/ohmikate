@@ -220,7 +220,7 @@ async function charger(){
       // Colonnes supplémentaires (peuvent exister ou non)
       let dateRetrait=row.c[6]?String(row.c[6].v):"";
       let creneau=row.c[7]?String(row.c[7].v):"";
-      let canal=row.c[8]?String(row.c[8].v):"";
+      canal = row.c[8] ? String(row.c[8].v) : "";
 
       // Extraction heure et canal depuis la colonne dateRecu (format: "15/06/2026 14:05 via WhatsApp")
       let heure="",datePropre=dateRecu;
@@ -359,7 +359,7 @@ function afficher(){
 
 function parseDate(str){
   if(!str)return null;
-  // Format DD/MM/YYYY HH:MM via Canal
+  // Format DD/MM/YYYY HH:MM via 
   let m=str.match(/(\d{2})\/(\d{2})\/(\d{4})/);
   if(m)return new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]));
   // Format Date(YYYY,M,D) de Google Sheets — ATTENTION: mois est 0-indexé dans JS mais PAS dans Sheets
