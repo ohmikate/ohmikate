@@ -230,7 +230,7 @@ async function charger(){
       let dateRecu_fmt=row.c[0]&&row.c[0].f?String(row.c[0].f):"";
 
       // Priorité : valeur formatée (f) qui contient le texte original
-      let dateRecu=dateRecu_fmt||dateRecu_raw;
+      dateRecu=dateRecu_fmt||dateRecu_raw;
 
       if(dateRecu.includes("via")){
         // Format texte: "19/06/2026 10:28 via WhatsApp"
