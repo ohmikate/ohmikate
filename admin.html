@@ -220,31 +220,38 @@ async function charger(){
       // Colonnes supplémentaires (peuvent exister ou non)
       let dateRetrait=row.c[6]?String(row.c[6].v):"";
       let creneau=row.c[7]?String(row.c[7].v):"";
-      canal = row.c[8] ? String(row.c[8].v) : "";
+      let canal=row.c[8]?String(row.c[8].v):"";
 
-     // Extraction heure et canal depuis la colonne dateRecu
-let heure = "", datePropre = dateRecu;
+      // Extraction heure et canal — gère tous les formats possibles
+      let heure="",datePropre="",canal=row.c[8]?String(row.c[8].v):"";
 
-if (dateRecu && dateRecu.includes("via")) {
-  let heureMatch = dateRecu.match(/(\d{2}:\d{2})/);
-  if (heureMatch) heure = heureMatch[1];
-  datePropre = dateRecu.split("via")[0].trim();
-}
-} else if (dateRecu.startsWith("Date(")) {
-  // Format Google Sheets natif Date(2026,5,9,0,0,0)
-  let dm = dateRecu.match(/Date\((\d{4}),(\d+),(\d+)(?:,(\d+),(\d+))?/);
-  if (dm) {
-    let d = new Date(parseInt(dm[1]), parseInt(dm[2]), parseInt(dm[3]));
-    datePropre = d.toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit', year: 'numeric'});
-    if (dm[4] && dm[5]) heure = dm[4].padStart(2, '0') + ":" + dm[5].padStart(2, '0');
-  }
-} else if (dateRecu.trim() !== "") {
-  // Sécurité : Si le format est déjà une date propre ou brute (ex: "19/06/2026 14:05" ou juste "19/06/2026")
-  let heureMatch = dateRecu.match(/(\d{2}:\d{2})/);
-  if (heureMatch) heure = heureMatch[1];
-  datePropre = dateRecu.replace(/\s*\d{2}:\d{2}.*$/, "").trim();
-}
-      
+      // Récupérer la valeur brute ET formatée de Google Sheets
+      let dateRecu_raw=row.c[0]?String(row.c[0].v):"";
+      let dateRecu_fmt=row.c[0]&&row.c[0].f?String(row.c[0].f):"";
+
+      // Priorité : valeur formatée (f) qui contient le texte original
+      let dateRecu=dateRecu_fmt||dateRecu_raw;
+
+      if(dateRecu.includes("via")){
+        // Format texte: "19/06/2026 10:28 via WhatsApp"
+        let canalMatch=dateRecu.match(/via\s+(.+)$/i);
+        if(canalMatch&&!canal)canal=canalMatch[1].trim();
+        let heureMatch=dateRecu.match(/(\d{1,2}[h:]\d{2})/);
+        if(heureMatch)heure=heureMatch[1].replace("h",":");
+        datePropre=dateRecu.replace(/\s*via.+$/i,"").replace(/(\d{2}[h:]\d{2})/,"").trim();
+      } else if(dateRecu_raw.startsWith("Date(")){
+        // Format natif Google Sheets: Date(2026,5,19,10,28,0)
+        let dm=dateRecu_raw.match(/Date\((\d{4}),(\d+),(\d+)(?:,(\d+),(\d+))?/);
+        if(dm){
+          let d=new Date(parseInt(dm[1]),parseInt(dm[2]),parseInt(dm[3]));
+          datePropre=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+          if(dm[4]!==undefined&&dm[5]!==undefined){
+            heure=dm[4].padStart(2,'0')+":"+dm[5].padStart(2,'0');
+          }
+        }
+      } else {
+        datePropre=dateRecu;
+      }
 
       // Normaliser le canal
       if(!canal&&payment){
@@ -268,7 +275,7 @@ if (dateRecu && dateRecu.includes("via")) {
           if(slotMins-nowMins>0&&slotMins-nowMins<=120)urgent=true;
         }
       }
-      toutesCommandes.push({id:i, dateRecu:dateRecu, datePropre:datePropre, heure:heure, canal:canal, name:name, phone:phone, order:order, total:total, payment:payment, dateRetrait:dateRetrait, creneau:creneau, urgent:urgent});
+      toutesCommandes.push({id:i,dateRecu:datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
     });
     // Détecter nouvelles commandes et alerter
     let idsConnus=JSON.parse(localStorage.getItem('ohMikateIdsConnus')||'[]');
@@ -365,7 +372,7 @@ function afficher(){
 
 function parseDate(str){
   if(!str)return null;
-  // Format DD/MM/YYYY HH:MM via 
+  // Format DD/MM/YYYY HH:MM via Canal
   let m=str.match(/(\d{2})\/(\d{2})\/(\d{4})/);
   if(m)return new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]));
   // Format Date(YYYY,M,D) de Google Sheets — ATTENTION: mois est 0-indexé dans JS mais PAS dans Sheets
@@ -451,7 +458,7 @@ function renderCommande(c){
           🕐 ${c.heure||"—"} &nbsp;|&nbsp; ${badgeCanal(c.canal||"—")}
         </div>
         <div class="commande-meta" style="margin-top:3px;font-size:11px;color:#666;">
-          📅 Reçue le ${c.datePropre || "-"}
+          📅 Reçue le ${c.dateRecu||"—"}
         </div>
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;">${c.total||"—"} €</div>
@@ -473,8 +480,9 @@ function renderCommande(c){
       </div>
     `:`
       <div style="text-align:center;color:#25D366;font-size:12px;padding:6px;">✅ Confirmée</div>
-      <div class="actions-sec" style="margin-top:6px;">
-        <button class="btn-supp" style="flex:1;" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
+      <div class="actions-sec" style="margin-top:8px;">
+        <button class="btn-marquer" onclick="annulerConfirmation(${c.id})" style="border-color:#ff9500;color:#ff9500;">↩️ Annuler la confirmation</button>
+        <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
       </div>
     `}
   </div>`;
@@ -570,6 +578,14 @@ function marquer(id){
     updateStats();
     setTimeout(afficher,400);
   }
+}
+
+function annulerConfirmation(id){
+  confirmees=confirmees.filter(c=>c!==id);
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  updateStats();
+  setTimeout(afficher,300);
+  showToast("↩️ Confirmation annulée");
 }
 
 function demanderSupp(id){idASupp=id;document.getElementById("popup-supp").classList.add("show");}
