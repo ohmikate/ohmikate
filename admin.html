@@ -275,7 +275,7 @@ async function charger(){
           if(slotMins-nowMins>0&&slotMins-nowMins<=120)urgent=true;
         }
       }
-      toutesCommandes.push({id:i,dateRecu:datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
+      toutesCommandes.push({id:i,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
     });
     // Détecter nouvelles commandes et alerter
     let idsConnus=JSON.parse(localStorage.getItem('ohMikateIdsConnus')||'[]');
