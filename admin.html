@@ -223,7 +223,7 @@ async function charger(){
       canal = row.c[8] ? String(row.c[8].v) : "";
 
       // Extraction heure et canal depuis la colonne dateRecu (format: "15/06/2026 14:05 via WhatsApp")
-      let heure="",datePropre=dateRecu;
+      let heure = "", datePropre = dateRecu;
       if(dateRecu.includes("via")){
         let canalMatch=dateRecu.match(/via\s+(.+)$/i);
         if(canalMatch&&!canal)canal=canalMatch[1].trim();
@@ -262,7 +262,7 @@ async function charger(){
           if(slotMins-nowMins>0&&slotMins-nowMins<=120)urgent=true;
         }
       }
-      toutesCommandes.push({id:i,dateRecu:datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
+      toutesCommandes.push({id:i, dateRecu:dateRecu, datePropre:datePropre, heure:heure, canal:canal, name:name, phone:phone, order:order, total:total, payment:payment, dateRetrait:dateRetrait, creneau:creneau, urgent:urgent});
     });
     // Détecter nouvelles commandes et alerter
     let idsConnus=JSON.parse(localStorage.getItem('ohMikateIdsConnus')||'[]');
@@ -445,7 +445,7 @@ function renderCommande(c){
           🕐 ${c.heure||"—"} &nbsp;|&nbsp; ${badgeCanal(c.canal||"—")}
         </div>
         <div class="commande-meta" style="margin-top:3px;font-size:11px;color:#666;">
-          📅 Reçue le ${c.dateRecu||"—"}
+          📅 Reçue le ${c.datePropre || "-"}
         </div>
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;">${c.total||"—"} €</div>
