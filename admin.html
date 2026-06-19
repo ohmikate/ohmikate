@@ -225,12 +225,11 @@ async function charger(){
      // Extraction heure et canal depuis la colonne dateRecu
 let heure = "", datePropre = dateRecu;
 
-if (dateRecu.includes("via")) {
-  let canalMatch = dateRecu.match(/via\s+(.+)$/i);
-  if (canalMatch && !canal) canal = canalMatch[1].trim();
+if (dateRecu && dateRecu.includes("via")) {
   let heureMatch = dateRecu.match(/(\d{2}:\d{2})/);
   if (heureMatch) heure = heureMatch[1];
-  datePropre = dateRecu.replace(/\s*via.+$/i, "").trim();
+  datePropre = dateRecu.split("via")[0].trim();
+}
 } else if (dateRecu.startsWith("Date(")) {
   // Format Google Sheets natif Date(2026,5,9,0,0,0)
   let dm = dateRecu.match(/Date\((\d{4}),(\d+),(\d+)(?:,(\d+),(\d+))?/);
@@ -245,7 +244,7 @@ if (dateRecu.includes("via")) {
   if (heureMatch) heure = heureMatch[1];
   datePropre = dateRecu.replace(/\s*\d{2}:\d{2}.*$/, "").trim();
 }
-      }
+      
 
       // Normaliser le canal
       if(!canal&&payment){
