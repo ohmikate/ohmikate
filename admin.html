@@ -221,8 +221,22 @@ async function charger(){
       let dateRetrait=row.c[6]?String(row.c[6].v):"";
 let creneau=row.c[7]?String(row.c[7].v):"";
 let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
-let heure=row.c[9]?String(row.c[9].v):"";  // Lit la colonne J (Heure)
-let datePropre=row.c[0]?String(row.c[0].v):""; // Lit la colonne A (Date propre)
+let heureRaw = row.c[9] ? String(row.c[9].v) : "";
+      let heure = heureRaw;
+      if (heureRaw.startsWith("Date(")) {
+        let hm = heureRaw.match(/Date\(\d+,\d+,\d+,(\d+),(\d+)/);
+        if (hm) heure = hm[1].padStart(2, '0') + ":" + hm[2].padStart(2, '0');
+      }
+
+      let dateRaw = row.c[0] ? String(row.c[0].v) : "";
+      let datePropre = dateRaw;
+      if (dateRaw.startsWith("Date(")) {
+        let dm = dateRaw.match(/Date\((\d+),(\d+),(\d+)/);
+        if (dm) {
+          let d = new Date(parseInt(dm[1]), parseInt(dm[2]), parseInt(dm[3]));
+          datePropre = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+      }
 
       // Normaliser le canal
       if(!canal&&payment){
