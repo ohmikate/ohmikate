@@ -21,6 +21,28 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#ff4f8b;letter-spacing:2px;}
 .header p{font-size:11px;color:#888;margin-top:4px;}
 .toolbar{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;align-items:center;flex-wrap:wrap;}
+.page-tabs{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;}
+.page-tab{flex:1;background:#111;border:2px solid #222;color:#888;font-size:13px;font-weight:bold;padding:11px 10px;border-radius:10px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;transition:.15s;}
+.page-tab.page-tab-active{background:#ff4f8b;border-color:#ff4f8b;color:#fff;}
+.histo-jour{background:#111;border:2px solid #222;border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
+.histo-jour-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.histo-jour-titre{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#fff;}
+.histo-jour-stats{display:flex;gap:14px;align-items:center;}
+.histo-jour-nb{font-size:12px;color:#888;}
+.histo-jour-ca{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;}
+.histo-jour-chevron{color:#666;font-size:13px;margin-left:8px;transition:transform .2s;}
+.histo-jour-chevron.open{transform:rotate(180deg);}
+.histo-jour-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #222;}
+.histo-jour-detail.open{display:block;}
+.histo-ligne{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1a1a1a;font-size:13px;}
+.histo-ligne:last-child{border-bottom:none;}
+.histo-ligne-nom{color:#fff;font-weight:bold;}
+.histo-ligne-meta{color:#777;font-size:11px;margin-top:2px;}
+.histo-ligne-prix{color:#ff4f8b;font-weight:bold;}
+.histo-totaux-globaux{display:flex;justify-content:space-around;max-width:600px;margin:0 auto 16px;background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:14px;}
+.histo-total-item{text-align:center;}
+.histo-total-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;}
+.histo-total-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
 .refresh-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;white-space:nowrap;}
 .filter-select{flex:1;min-width:120px;padding:10px;background:#111;border:2px solid #222;border-radius:10px;color:#fff;font-size:13px;font-family:'Montserrat',sans-serif;}
 .filter-select:focus{border-color:#ff4f8b;outline:none;}
@@ -148,26 +170,37 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
     <div class="stat-box"><div class="num orange" id="stat-ca">0€</div><div class="lbl">CA total</div></div>
   </div>
 
-  <div class="toolbar">
-    <select class="filter-select" id="filter-vue" onchange="afficher()">
-      <option value="jour">Par jour</option>
-      <option value="semaine">Par semaine</option>
-    </select>
-    <select class="filter-select" id="filter-statut" onchange="afficher()">
-      <option value="toutes">Toutes</option>
-      <option value="nouvelles">🆕 Nouvelles</option>
-      <option value="confirmees">✅ Confirmées</option>
-    </select>
-    <button class="refresh-btn" onclick="charger()">🔄</button>
+  <div class="page-tabs">
+    <button class="page-tab page-tab-active" id="ptab-commandes" onclick="switchPageTab('commandes')">📋 Commandes</button>
+    <button class="page-tab" id="ptab-historique" onclick="switchPageTab('historique')">📊 Historique</button>
   </div>
 
-  <div class="tout-select-wrap" id="tout-select-wrap" style="display:none;">
-    <input type="checkbox" id="tout-select" class="cmd-checkbox" onchange="toutSelectionner(this.checked)">
-    <label for="tout-select">Tout sélectionner</label>
-    <span id="sel-info" style="font-size:12px;color:#555;margin-left:8px;"></span>
+  <div id="vue-commandes">
+    <div class="toolbar">
+      <select class="filter-select" id="filter-vue" onchange="afficher()">
+        <option value="jour">Par jour</option>
+        <option value="semaine">Par semaine</option>
+      </select>
+      <select class="filter-select" id="filter-statut" onchange="afficher()">
+        <option value="toutes">Toutes</option>
+        <option value="nouvelles">🆕 Nouvelles</option>
+        <option value="confirmees">✅ Confirmées</option>
+      </select>
+      <button class="refresh-btn" onclick="charger()">🔄</button>
+    </div>
+
+    <div class="tout-select-wrap" id="tout-select-wrap" style="display:none;">
+      <input type="checkbox" id="tout-select" class="cmd-checkbox" onchange="toutSelectionner(this.checked)">
+      <label for="tout-select">Tout sélectionner</label>
+      <span id="sel-info" style="font-size:12px;color:#555;margin-left:8px;"></span>
+    </div>
+
+    <div id="container"><div class="loading">⏳ Chargement...</div></div>
   </div>
 
-  <div id="container"><div class="loading">⏳ Chargement...</div></div>
+  <div id="vue-historique" style="display:none;">
+    <div id="histo-container"><div class="loading">⏳ Chargement...</div></div>
+  </div>
 
   <!-- Barre d'actions groupées -->
   <div class="selection-bar" id="selection-bar">
@@ -298,6 +331,7 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
 
     afficher();
     updateStats();
+    if(document.getElementById("vue-historique").style.display!=="none")afficherHistorique();
     let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
     document.getElementById("last-refresh").textContent="Mis à jour à "+now+" • Auto toutes les 60s";
   }catch(e){
@@ -374,6 +408,90 @@ function afficher(){
   container.innerHTML=html;
   // Afficher la case "Tout sélectionner" s'il y a des commandes
   document.getElementById("tout-select-wrap").style.display=filtered.length>0?"flex":"none";
+}
+
+/* ===== ONGLETS DE PAGE (Commandes / Historique) ===== */
+function switchPageTab(tab){
+  document.getElementById("ptab-commandes").classList.toggle("page-tab-active",tab==="commandes");
+  document.getElementById("ptab-historique").classList.toggle("page-tab-active",tab==="historique");
+  document.getElementById("vue-commandes").style.display=tab==="commandes"?"block":"none";
+  document.getElementById("vue-historique").style.display=tab==="historique"?"block":"none";
+  if(tab==="historique")afficherHistorique();
+}
+
+/* ===== VUE HISTORIQUE : cumul par date de retrait ===== */
+function afficherHistorique(){
+  let container=document.getElementById("histo-container");
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+
+  if(visible.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📊</div><p>Aucune commande.</p></div>`;
+    return;
+  }
+
+  // Regroupe par date de retrait réelle
+  let groupes={};
+  visible.forEach(c=>{
+    let key=c.dateRetrait?formatDateRetrait(c.dateRetrait):"Date de retrait inconnue";
+    if(!groupes[key])groupes[key]={cmds:[],dateObj:parseDate(c.dateRetrait)};
+    groupes[key].cmds.push(c);
+  });
+
+  // Tri chronologique décroissant (le plus récent en premier)
+  let jours=Object.keys(groupes).sort((a,b)=>{
+    let da=groupes[a].dateObj,db=groupes[b].dateObj;
+    if(!da&&!db)return 0;
+    if(!da)return 1;
+    if(!db)return -1;
+    return db-da;
+  });
+
+  let caGlobal=visible.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+
+  let html=`<div class="histo-totaux-globaux">
+    <div class="histo-total-item"><div class="histo-total-num">${visible.length}</div><div class="histo-total-lbl">Commandes</div></div>
+    <div class="histo-total-item"><div class="histo-total-num">${jours.length}</div><div class="histo-total-lbl">Jours</div></div>
+    <div class="histo-total-item"><div class="histo-total-num">${caGlobal.toFixed(2)}€</div><div class="histo-total-lbl">CA total</div></div>
+  </div>`;
+
+  jours.forEach((jour,idx)=>{
+    let cmds=groupes[jour].cmds;
+    let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+    let safeId="histo-"+idx;
+    html+=`<div class="histo-jour">
+      <div class="histo-jour-header" onclick="toggleHistoJour('${safeId}')">
+        <div class="histo-jour-titre">🗓️ ${jour}</div>
+        <div class="histo-jour-stats">
+          <div>
+            <div class="histo-jour-ca">${ca.toFixed(2)} €</div>
+            <div class="histo-jour-nb">${cmds.length} commande${cmds.length>1?"s":""}</div>
+          </div>
+          <span class="histo-jour-chevron" id="chevron-${safeId}">▼</span>
+        </div>
+      </div>
+      <div class="histo-jour-detail" id="detail-${safeId}">
+        ${cmds.map(c=>{
+          let isConf=confirmees.includes(c.id);
+          let isPrete=pretes.includes(c.id);
+          let statutIcon=isPrete?"📦":isConf?"✅":"🆕";
+          return `<div class="histo-ligne">
+            <div>
+              <div class="histo-ligne-nom">${statutIcon} ${c.name||"—"}</div>
+              <div class="histo-ligne-meta">⏰ ${c.creneau||"—"} • ${badgeCanal(c.canal||"—")}</div>
+            </div>
+            <div class="histo-ligne-prix">${c.total||"—"} €</div>
+          </div>`;
+        }).join("")}
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML=html;
+}
+
+function toggleHistoJour(safeId){
+  document.getElementById("detail-"+safeId).classList.toggle("open");
+  document.getElementById("chevron-"+safeId).classList.toggle("open");
 }
 
 function parseDate(str){
