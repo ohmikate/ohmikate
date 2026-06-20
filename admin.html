@@ -389,6 +389,15 @@ function parseDate(str){
   // Format YYYY-MM-DD
   let m3=str.match(/(\d{4})-(\d{2})-(\d{2})/);
   if(m3)return new Date(parseInt(m3[1]),parseInt(m3[2])-1,parseInt(m3[3]));
+  // Format texte français (ex: "Mercredi 1 juillet 2026" ou "1 juillet 2026")
+  const MOIS_FR={janvier:0,février:1,fevrier:1,mars:2,avril:3,mai:4,juin:5,juillet:6,août:7,aout:7,septembre:8,octobre:9,novembre:10,décembre:11,decembre:11};
+  let strNorm=str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  let m4=strNorm.match(/(\d{1,2})\s+([a-zéû]+)\s+(\d{4})/);
+  if(m4){
+    let moisNom=m4[2].normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    let moisIdx=MOIS_FR[moisNom]??MOIS_FR[m4[2]];
+    if(moisIdx!==undefined)return new Date(parseInt(m4[3]),moisIdx,parseInt(m4[1]));
+  }
   return null;
 }
 
