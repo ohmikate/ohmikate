@@ -1,4 +1,3 @@
-  
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,6 +12,9 @@ body{margin:0;font-family:'Montserrat',sans-serif;background:#000;color:#fff;pad
 .hero{width:100%;max-width:1200px;margin:0 auto;background:#111;overflow:hidden;}
 .hero img{width:100%;height:auto;display:block;}
 .section{padding:20px;max-width:900px;margin:auto;}
+.compose-layout{display:flex;flex-direction:column;gap:10px;}
+.compose-col-left{flex:0 0 auto;}
+.compose-col-right{flex:1 1 auto;min-width:0;}
 h2{font-family:'Bebas Neue',sans-serif;text-align:center;color:#ff4f8b;margin:25px 0;font-size:32px;letter-spacing:2px;text-transform:uppercase;}
 h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-left:10px;margin-top:30px;font-size:22px;margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
 .info-limite{color:#ff4f8b;font-size:13px;font-style:italic;margin-bottom:15px;display:block;}
@@ -26,13 +28,51 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 .qty-input{font-size:15px;font-weight:bold;width:40px;height:35px;background:transparent;border:none;color:white;text-align:center;-moz-appearance:textfield;}
 .qty-input::-webkit-outer-spin-button,.qty-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 .card.has-qty{border-color:#ff4f8b;}
-.box-composer{background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:15px;margin-top:20px;}
-.box-title{font-size:16px;font-weight:bold;color:#ff4f8b;margin-bottom:15px;border-bottom:1px solid #222;padding-bottom:5px;text-transform:uppercase;}
-.lot-row{background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:12px;margin-bottom:12px;display:flex;gap:15px;align-items:center;}
-.lot-preview-img{width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #444;flex-shrink:0;}
-.lot-content{flex-grow:1;}
-.lot-title{font-size:14px;font-weight:bold;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+.box-composer{background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:12px;margin-top:16px;}
+.box-title{font-size:15px;font-weight:bold;color:#ff4f8b;margin-bottom:10px;border-bottom:1px solid #222;padding-bottom:5px;text-transform:uppercase;}
+.lot-row{background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:8px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;}
+.lot-preview-img{width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid #444;flex-shrink:0;}
+.lot-content{flex-grow:1;min-width:0;}
+.lot-title{font-size:12px;font-weight:bold;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
 .selectors-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.lot-selects-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.lot-selects-row .chip-section{margin-bottom:0;}
+.lot-selects-row .select-custom{padding:8px 4px;font-size:11.5px;height:36px;}
+.lot-selects-row .chip-label{font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lot-selects-row .chip-price{display:block;margin-left:0;font-size:9px;}
+@media (max-width:380px){
+  .lot-selects-row{grid-template-columns:repeat(3,1fr);gap:4px;}
+  .lot-selects-row .select-custom{font-size:10.5px;padding:8px 2px;}
+}
+.chip-section{margin-bottom:8px;}
+.chip-label{font-size:10.5px;color:#999;font-weight:bold;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px;}
+.chip-price{color:#ff4f8b;font-weight:normal;text-transform:none;letter-spacing:0;margin-left:4px;}
+.chip-group{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{background:#000;border:1.5px solid #333;color:#ccc;font-size:11.5px;font-weight:bold;padding:5px 10px;border-radius:16px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:.15s;white-space:nowrap;line-height:1.3;}
+.chip:active{transform:scale(0.96);}
+.chip.selected{background:#ff4f8b;border-color:#ff4f8b;color:#fff;box-shadow:0 2px 8px rgba(255,79,139,0.35);}
+.progress-tracker{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 20px;flex-wrap:wrap;}
+.progress-step{display:flex;align-items:center;gap:6px;font-size:11px;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;}
+.progress-dot{width:22px;height:22px;border-radius:50%;background:#222;border:1.5px solid #333;color:#666;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.progress-step.step-active{color:#ff4f8b;}
+.progress-step.step-active .progress-dot{border-color:#ff4f8b;color:#ff4f8b;}
+.progress-step.step-done{color:#25D366;}
+.progress-step.step-done .progress-dot{background:#25D366;border-color:#25D366;color:#fff;}
+.progress-line{width:24px;height:1.5px;background:#333;}
+.box-subtotal{color:#ff4f8b;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0;}
+.lot-badge{color:#25D366;font-size:13px;}
+.lot-row.lot-configured{border-color:#25D366;}
+.lot-row{display:none;}
+.lot-row.lot-active{display:flex;}
+.lot-tabs{display:flex;gap:6px;margin-bottom:10px;}
+.lot-tab{flex:1;background:#000;border:1.5px solid #333;color:#aaa;font-size:12px;font-weight:bold;padding:8px 6px;border-radius:8px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;transition:.15s;display:flex;align-items:center;justify-content:center;gap:4px;}
+.lot-tab.lot-tab-active{background:#ff4f8b;border-color:#ff4f8b;color:#fff;}
+.lot-tab .lot-tab-check{color:#25D366;font-size:12px;}
+.lot-tab.lot-tab-active .lot-tab-check{color:#fff;}
+@media (max-width:420px){
+  .lot-preview-img{width:48px;height:48px;}
+  .lot-tab{font-size:11px;padding:7px 4px;}
+}
 .select-custom{width:100%;padding:10px;background:#000;border:1px solid #444;border-radius:6px;color:white;font-size:13px;height:40px;box-sizing:border-box;}
 .select-custom:focus{border-color:#ff4f8b;outline:none;}
 .form-group{margin-bottom:15px;}
@@ -115,6 +155,15 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 
 <div class="section">
 <h2>✨ Compose ta boîte de Mikatés</h2>
+<div id="progress-tracker" class="progress-tracker">
+  <div class="progress-step" id="step-1"><span class="progress-dot" data-num="1">1</span>Boîtes</div>
+  <div class="progress-line"></div>
+  <div class="progress-step" id="step-2"><span class="progress-dot" data-num="2">2</span>Personnalisation</div>
+  <div class="progress-line"></div>
+  <div class="progress-step" id="step-3"><span class="progress-dot" data-num="3">3</span>Coordonnées</div>
+</div>
+<div class="compose-layout">
+<div class="compose-col compose-col-left">
 <h3>1. Choisis ton format de boîte</h3>
 <span class="info-limite" style="color:#ccc;">Sélectionne une ou plusieurs boîtes pour personnaliser tes beignets.</span>
 <div class="grid">
@@ -137,7 +186,11 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
     </div>
   </div>
 </div>
+</div><!-- end compose-col-left -->
+<div class="compose-col compose-col-right">
 <div id="composition-zone"></div>
+</div><!-- end compose-col-right -->
+</div><!-- end compose-layout -->
 <div style="background:#222;padding:15px;border-radius:8px;margin:20px 0;border-left:4px solid #ff4f8b;">
   <h3 style="margin-top:0;color:#ff4f8b;font-size:18px;">⚠️ Informations Allergènes</h3>
   <p style="font-size:13px;line-height:1.5;color:#ccc;">Les Mikatés peuvent contenir ou être en contact avec : <strong>gluten (blé), arachides, fruits à coque, produits laitiers (lait) et soja</strong>. Merci de nous signaler toute allergie sévère dans la zone "Précisions" ci-dessous.</p>
@@ -336,21 +389,123 @@ function generateCompositionForm(){
   const container=document.getElementById("composition-zone");
   if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0){container.innerHTML="";return;}
   let currentSelections={};
-  container.querySelectorAll("select").forEach(sel=>{currentSelections[sel.id]=sel.value;});
-  let html="<h3>2. Personnalise tes lots de 3 beignets</h3>";
-  html+='<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 beignets. Le bouton 📋 permet de copier les choix vers le lot suivant.</span>';
+  container.querySelectorAll(".lot-field").forEach(g=>{currentSelections[g.id]=g.tagName==="SELECT"?g.value:g.dataset.value;});
+  let html="<h3>2. Personnalise tes lots</h3>";
+  html+='<span class="info-limite" style="color:#aaa;">👉 Utilise les onglets <b style="color:#ff4f8b;">Lot 1 / Lot 2 / Lot 3</b> pour personnaliser chaque lot de ta boîte.</span>';
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
-    html+=`<div class="box-composer"><div class="box-title">📦 Boîte de 9 Beignets n°${b}</div>`;
-    for(let lot=1;lot<=3;lot++){let pfx=`box9-${b}`;html+=generateLotRowHtml(`${pfx}-lot${lot}`,`Lot de 3 beignets (${lot}/3)`,"Images/Beignet9.jpg",true,pfx,3);}
+    let pfx9=`box9-${b}`;
+    html+=`<div class="box-composer" id="composer-${pfx9}" data-baseprice="${boxPrices["9 beignets"]}"><div class="box-title">📦 Boîte de 9 Beignets n°${b} <span class="box-subtotal" id="subtotal-${pfx9}"></span></div>`;
+    html+=generateLotTabsHtml(pfx9,3);
+    for(let lot=1;lot<=3;lot++){html+=generateLotRowHtml(`${pfx9}-lot${lot}`,`Lot de 3 beignets (${lot}/3)`,"Images/Beignet9.jpg",lot===1,pfx9,3);}
     html+=`</div>`;
   }
   for(let b=1;b<=boxesSelected["12 beignets"];b++){
-    html+=`<div class="box-composer"><div class="box-title">📦 Boîte de 12 Beignets n°${b}</div>`;
-    for(let lot=1;lot<=4;lot++){let pfx=`box12-${b}`;html+=generateLotRowHtml(`${pfx}-lot${lot}`,`Lot de 3 beignets (${lot}/4)`,"Images/Beignet9.jpg",true,pfx,4);}
+    let pfx12=`box12-${b}`;
+    html+=`<div class="box-composer" id="composer-${pfx12}" data-baseprice="${boxPrices["12 beignets"]}"><div class="box-title">📦 Boîte de 12 Beignets n°${b} <span class="box-subtotal" id="subtotal-${pfx12}"></span></div>`;
+    html+=generateLotTabsHtml(pfx12,3);
+    for(let lot=1;lot<=3;lot++){html+=generateLotRowHtml(`${pfx12}-lot${lot}`,`Lot de 4 beignets (${lot}/3)`,"Images/Beignet9.jpg",lot===1,pfx12,3);}
     html+=`</div>`;
   }
   container.innerHTML=html;
-  container.querySelectorAll("select").forEach(sel=>{if(currentSelections[sel.id])sel.value=currentSelections[sel.id];});
+  container.querySelectorAll(".lot-field").forEach(g=>{
+    let m=g.id.match(/^(.*)-(base|nappage|garniture|pot)$/);
+    if(!m)return;
+    let val=currentSelections[g.id]||(g.tagName==="SELECT"?g.value:g.dataset.value);
+    setChipValue(m[1],m[2],val);
+  });
+  container.querySelectorAll(".lot-row").forEach(row=>{updateLotImage(row.dataset.prefix,row.dataset.defaultimg);});
+}
+
+function isLotConfigured(idPrefix){
+  return getLotValue(idPrefix,"base")!=="Nature"||getLotValue(idPrefix,"nappage")!=="Aucun"||getLotValue(idPrefix,"garniture")!=="Aucun"||getLotValue(idPrefix,"pot")!=="Aucun";
+}
+
+function lotSupplementTotal(idPrefix,potCounterObj,potCap){
+  let sup=0;
+  if(getLotValue(idPrefix,"nappage")!=="Aucun")sup+=supplementPricePerLot;
+  if(getLotValue(idPrefix,"garniture")!=="Aucun")sup+=supplementPricePerLot;
+  if(getLotValue(idPrefix,"pot")!=="Aucun"&&potCounterObj.count<potCap){sup+=0.50;potCounterObj.count++;}
+  return sup;
+}
+
+function refreshComposerUI(){
+  document.querySelectorAll(".box-composer").forEach(box=>{
+    let pfx=box.id.replace("composer-","");
+    let lots=box.querySelectorAll(".lot-row");
+    let base=parseFloat(box.dataset.baseprice)||0;
+    let total=base;
+    let potCounter={count:0};
+    lots.forEach(row=>{
+      let idPrefix=row.dataset.prefix;
+      total+=lotSupplementTotal(idPrefix,potCounter,lots.length);
+      let configured=isLotConfigured(idPrefix);
+      row.classList.toggle("lot-configured",configured);
+      let badge=row.querySelector(".lot-badge");
+      if(badge)badge.textContent=configured?"✅":"";
+      let tabCheck=document.getElementById(`tabcheck-${idPrefix}`);
+      if(tabCheck)tabCheck.textContent=configured?" ✅":"";
+    });
+    let subEl=document.getElementById(`subtotal-${pfx}`);
+    if(subEl)subEl.textContent=`— ${total.toFixed(2)}€`;
+  });
+}
+
+function saveDraftToStorage(){
+  try{
+    localStorage.setItem('ohMikateDraft',JSON.stringify({
+      name:document.getElementById("client-name")?.value||"",
+      phone:document.getElementById("client-phone")?.value||"",
+      notes:document.getElementById("client-notes")?.value||"",
+      savedAt:Date.now()
+    }));
+  }catch(e){}
+}
+
+function updateProgressTracker(){
+  const tracker=document.getElementById("progress-tracker");
+  if(!tracker)return;
+  let step1=(boxesSelected["9 beignets"]>0||boxesSelected["12 beignets"]>0);
+  let anyConfigured=Array.from(document.querySelectorAll(".lot-row")).some(r=>isLotConfigured(r.dataset.prefix));
+  let name=document.getElementById("client-name")?.value.trim();
+  let date=document.getElementById("client-date")?.value;
+  let time=document.getElementById("client-time")?.value;
+  let step3=!!(name&&date&&time&&selectedPaymentMode);
+  const setStep=(id,active,done)=>{
+    let el=document.getElementById(id);
+    if(!el)return;
+    el.classList.toggle("step-done",done);
+    el.classList.toggle("step-active",active&&!done);
+    let dot=el.querySelector(".progress-dot");
+    if(dot)dot.textContent=done?"✓":dot.dataset.num;
+  };
+  setStep("step-1",step1,step1);
+  setStep("step-2",step1,anyConfigured);
+  setStep("step-3",anyConfigured,step3);
+}
+
+function chipBtn(idPrefix,field,value,label){
+  return `<button type="button" class="chip" data-val="${value}" onclick="selectChip('${idPrefix}','${field}','${value}')">${label}</button>`;
+}
+
+function generateLotTabsHtml(boxPrefix,totalLots){
+  let html='<div class="lot-tabs" id="tabs-'+boxPrefix+'">';
+  for(let lot=1;lot<=totalLots;lot++){
+    let idPrefix=`${boxPrefix}-lot${lot}`;
+    html+=`<button type="button" class="lot-tab${lot===1?' lot-tab-active':''}" id="tab-${idPrefix}" onclick="switchLotTab('${boxPrefix}','${idPrefix}',${totalLots})">Lot ${lot}<span class="lot-tab-check" id="tabcheck-${idPrefix}"></span></button>`;
+  }
+  html+='</div>';
+  return html;
+}
+
+function switchLotTab(boxPrefix,idPrefix,totalLots){
+  for(let lot=1;lot<=totalLots;lot++){
+    let p=`${boxPrefix}-lot${lot}`;
+    let row=document.querySelector(`.lot-row[data-prefix="${p}"]`);
+    let tab=document.getElementById(`tab-${p}`);
+    let active=(p===idPrefix);
+    if(row)row.classList.toggle("lot-active",active);
+    if(tab)tab.classList.toggle("lot-tab-active",active);
+  }
 }
 
 function generateLotRowHtml(idPrefix,labelTitle,defaultImg,isFirst,boxPrefix,totalLots){
@@ -359,55 +514,114 @@ function generateLotRowHtml(idPrefix,labelTitle,defaultImg,isFirst,boxPrefix,tot
   if(lotNum<totalLots){
     dupBtn=`<button type="button" onclick="dupliquerVersLotSuivant('${idPrefix}','${boxPrefix}',${lotNum+1},'${defaultImg}')" style="margin-top:8px;background:#1a1a2e;border:1px solid #635bff;color:#a09af0;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;width:100%;">📋 Copier vers le lot ${lotNum+1}</button>`;
   }
-  return `<div class="lot-row" data-prefix="${idPrefix}">
+  let sameTasteBtn="";
+  if(lotNum===1){
+    sameTasteBtn=`<button type="button" onclick="applyToAllLots('${boxPrefix}',${totalLots},'${defaultImg}')" style="margin-top:8px;background:#ff4f8b;border:none;color:#fff;font-size:11px;font-weight:bold;padding:8px 12px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;width:100%;">⚡ Même goût pour toute la boîte</button>`;
+  }
+  return `<div class="lot-row${isFirst?' lot-active':''}" data-prefix="${idPrefix}" data-defaultimg="${defaultImg}">
     <img id="${idPrefix}-img" src="${defaultImg}" class="lot-preview-img" alt="Aperçu lot">
     <div class="lot-content">
-      <div class="lot-title">✨ ${labelTitle}</div>
-      <div class="selectors-container">
-        <div><select id="${idPrefix}-base" class="select-custom" onchange="updateLotImage('${idPrefix}','${defaultImg}');updateUI();">
-          <option value="Nature">Enrobage : Aucun (Nature)</option>
-          <option value="Sucre">Sucre (+0€)</option>
-          <option value="Noix de coco">Noix de coco (+0€)</option>
-        </select></div>
-        <div><select id="${idPrefix}-nappage" class="select-custom" onchange="updateLotImage('${idPrefix}','${defaultImg}');updateUI();">
-          <option value="Aucun">🍫 Nappage : Aucun</option>
-          <option value="Chocolat">Chocolat (+0,50€)</option>
-          <option value="Caramel">Caramel (+0,50€)</option>
-        </select></div>
-        <div><select id="${idPrefix}-garniture" class="select-custom" onchange="updateLotImage('${idPrefix}','${defaultImg}');updateUI();">
-          <option value="Aucun">🥜 Garniture : Aucun</option>
-          <option value="Éclats M&M's">M&M's (+0,50€)</option>
-          <option value="Éclats Spéculoos">Spéculoos (+0,50€)</option>
-          <option value="Éclats Cacahuète">Cacahuètes (+0,50€)</option>
-        </select></div>
-        <div><select id="${idPrefix}-pot" class="select-custom" onchange="updateUI();">
-          <option value="Aucun">Pot : Aucun</option>
-          <option value="Pot Nutella">Pot Nutella (+0,50€)</option>
-          <option value="Pot Pâte d'arachide">Pot Pâte d'arachide (+0,50€)</option>
-        </select></div>
+      <div class="lot-title">✨ ${labelTitle} <span class="lot-badge"></span></div>
+      <div class="chip-section">
+        <div class="chip-label">Enrobage</div>
+        <div class="chip-group lot-field" id="${idPrefix}-base" data-value="Nature">
+          ${chipBtn(idPrefix,'base','Nature','Nature')}
+          ${chipBtn(idPrefix,'base','Sucre','🍚 Sucre')}
+          ${chipBtn(idPrefix,'base','Noix de coco','🥥 Coco')}
+        </div>
       </div>
+      <div class="lot-selects-row">
+        <div class="chip-section">
+          <div class="chip-label">🍫 Nappage<span class="chip-price">+0,50€</span></div>
+          <select class="select-custom lot-field" id="${idPrefix}-nappage" data-value="Aucun" onchange="selectChip('${idPrefix}','nappage',this.value)">
+            <option value="Aucun">Aucun</option>
+            <option value="Chocolat">🍫 Chocolat</option>
+            <option value="Caramel">🍮 Caramel</option>
+          </select>
+        </div>
+        <div class="chip-section">
+          <div class="chip-label">🥜 Garniture<span class="chip-price">+0,50€</span></div>
+          <select class="select-custom lot-field" id="${idPrefix}-garniture" data-value="Aucun" onchange="selectChip('${idPrefix}','garniture',this.value)">
+            <option value="Aucun">Aucun</option>
+            <option value="Éclats M&M's">🍬 M&M's</option>
+            <option value="Éclats Spéculoos">🍪 Spéculoos</option>
+            <option value="Éclats Cacahuète">🥜 Cacahuètes</option>
+          </select>
+        </div>
+        <div class="chip-section">
+          <div class="chip-label">🍯 Pot<span class="chip-price">+0,50€</span></div>
+          <select class="select-custom lot-field" id="${idPrefix}-pot" data-value="Aucun" onchange="selectChip('${idPrefix}','pot',this.value)">
+            <option value="Aucun">Aucun</option>
+            <option value="Pot Nutella">🍫 Nutella</option>
+            <option value="Pot Pâte d'arachide">🥜 Pâte d'arachide</option>
+          </select>
+        </div>
+      </div>
+      ${sameTasteBtn}
       ${dupBtn}
     </div>
   </div>`;
 }
 
+function getLotValue(idPrefix,field){
+  let el=document.getElementById(`${idPrefix}-${field}`);
+  if(!el)return field==="base"?"Nature":"Aucun";
+  if(el.tagName==="SELECT")return el.value;
+  return el.dataset.value||(field==="base"?"Nature":"Aucun");
+}
+
+function setChipValue(idPrefix,field,value){
+  let el=document.getElementById(`${idPrefix}-${field}`);
+  if(!el)return;
+  if(el.tagName==="SELECT"){el.value=value;return;}
+  el.dataset.value=value;
+  el.querySelectorAll(".chip").forEach(c=>c.classList.toggle("selected",c.dataset.val===value));
+}
+
+function selectChip(idPrefix,field,value){
+  setChipValue(idPrefix,field,value);
+  let row=document.querySelector(`[data-prefix="${idPrefix}"]`);
+  let defaultImg=row?.dataset.defaultimg||"Images/Beignet9.jpg";
+  updateLotImage(idPrefix,defaultImg);
+  updateUI();
+}
+
 function dupliquerVersLotSuivant(srcPrefix,boxPrefix,lotDest,defaultImg){
-  let base=document.getElementById(`${srcPrefix}-base`)?.value||"Nature";
-  let nappage=document.getElementById(`${srcPrefix}-nappage`)?.value||"Aucun";
-  let garniture=document.getElementById(`${srcPrefix}-garniture`)?.value||"Aucun";
-  let pot=document.getElementById(`${srcPrefix}-pot`)?.value||"Aucun";
+  let base=getLotValue(srcPrefix,"base");
+  let nappage=getLotValue(srcPrefix,"nappage");
+  let garniture=getLotValue(srcPrefix,"garniture");
+  let pot=getLotValue(srcPrefix,"pot");
   let destPrefix=`${boxPrefix}-lot${lotDest}`;
-  let s=document.getElementById(`${destPrefix}-base`);if(s)s.value=base;
-  let sn=document.getElementById(`${destPrefix}-nappage`);if(sn)sn.value=nappage;
-  let sg=document.getElementById(`${destPrefix}-garniture`);if(sg)sg.value=garniture;
-  let sp=document.getElementById(`${destPrefix}-pot`);if(sp)sp.value=pot;
+  setChipValue(destPrefix,"base",base);
+  setChipValue(destPrefix,"nappage",nappage);
+  setChipValue(destPrefix,"garniture",garniture);
+  setChipValue(destPrefix,"pot",pot);
   updateLotImage(destPrefix,defaultImg);updateUI();
+  switchLotTab(boxPrefix,destPrefix,3);
   showToast(`📋 Lot ${lotDest-1} copié vers le lot ${lotDest} !`);
 }
 
+function applyToAllLots(boxPrefix,totalLots,defaultImg){
+  let srcPrefix=`${boxPrefix}-lot1`;
+  let base=getLotValue(srcPrefix,"base");
+  let nappage=getLotValue(srcPrefix,"nappage");
+  let garniture=getLotValue(srcPrefix,"garniture");
+  let pot=getLotValue(srcPrefix,"pot");
+  for(let lot=1;lot<=totalLots;lot++){
+    let destPrefix=`${boxPrefix}-lot${lot}`;
+    setChipValue(destPrefix,"base",base);
+    setChipValue(destPrefix,"nappage",nappage);
+    setChipValue(destPrefix,"garniture",garniture);
+    setChipValue(destPrefix,"pot",pot);
+    updateLotImage(destPrefix,defaultImg);
+  }
+  updateUI();
+  showToast("⚡ Appliqué à toute la boîte !");
+}
+
 function updateLotImage(idPrefix,defaultImg){
-  const nappage=document.getElementById(`${idPrefix}-nappage`)?.value||"Aucun";
-  const garniture=document.getElementById(`${idPrefix}-garniture`)?.value||"Aucun";
+  const nappage=getLotValue(idPrefix,"nappage");
+  const garniture=getLotValue(idPrefix,"garniture");
   const imgEl=document.getElementById(`${idPrefix}-img`);
   if(!imgEl)return;
   if(nappage!=="Aucun"){imgEl.src=nappage==="Chocolat"?"Images/Chocolat.jpg":"Images/Caramel.jpg";}
@@ -430,13 +644,13 @@ function calculateTotalAndExtractStructure(){
     let potCount=0;
     for(let lot=1;lot<=3;lot++){
       let idPrefix=`box9-${b}-lot${lot}`;
-      let nappage=document.getElementById(`${idPrefix}-nappage`)?.value||"Aucun";
-      let garniture=document.getElementById(`${idPrefix}-garniture`)?.value||"Aucun";
-      let pot=document.getElementById(`${idPrefix}-pot`)?.value||"Aucun";
+      let nappage=getLotValue(idPrefix,"nappage");
+      let garniture=getLotValue(idPrefix,"garniture");
+      let pot=getLotValue(idPrefix,"pot");
       if(nappage!=="Aucun")total+=supplementPricePerLot;
       if(garniture!=="Aucun")total+=supplementPricePerLot;
       if(pot!=="Aucun"&&potCount<3){total+=0.50;potCount++;}
-      structuredOrderText+=`  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value||"Nature"}`;
+      structuredOrderText+=`  - Lot ${lot} : ${getLotValue(idPrefix,"base")}`;
       if(nappage!=="Aucun")structuredOrderText+=` + ${nappage}`;
       if(garniture!=="Aucun")structuredOrderText+=` + ${garniture}`;
       if(pot!=="Aucun"&&potCount<=3)structuredOrderText+=` + ${pot}`;
@@ -446,18 +660,18 @@ function calculateTotalAndExtractStructure(){
   for(let b=1;b<=boxesSelected["12 beignets"];b++){
     structuredOrderText+=`\n📦 BOÎTE DE 12 BEIGNETS n°${b} :\n`;
     let potCount=0;
-    for(let lot=1;lot<=4;lot++){
+    for(let lot=1;lot<=3;lot++){
       let idPrefix=`box12-${b}-lot${lot}`;
-      let nappage=document.getElementById(`${idPrefix}-nappage`)?.value||"Aucun";
-      let garniture=document.getElementById(`${idPrefix}-garniture`)?.value||"Aucun";
-      let pot=document.getElementById(`${idPrefix}-pot`)?.value||"Aucun";
+      let nappage=getLotValue(idPrefix,"nappage");
+      let garniture=getLotValue(idPrefix,"garniture");
+      let pot=getLotValue(idPrefix,"pot");
       if(nappage!=="Aucun")total+=supplementPricePerLot;
       if(garniture!=="Aucun")total+=supplementPricePerLot;
-      if(pot!=="Aucun"&&potCount<4){total+=0.50;potCount++;}
-      structuredOrderText+=`  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value||"Nature"}`;
+      if(pot!=="Aucun"&&potCount<3){total+=0.50;potCount++;}
+      structuredOrderText+=`  - Lot ${lot} : ${getLotValue(idPrefix,"base")}`;
       if(nappage!=="Aucun")structuredOrderText+=` + ${nappage}`;
       if(garniture!=="Aucun")structuredOrderText+=` + ${garniture}`;
-      if(pot!=="Aucun"&&potCount<=4)structuredOrderText+=` + ${pot}`;
+      if(pot!=="Aucun"&&potCount<=3)structuredOrderText+=` + ${pot}`;
       structuredOrderText+=`\n`;
     }
   }
@@ -468,6 +682,9 @@ function calculateTotalAndExtractStructure(){
 function updateUI(){
   let orderInfo=calculateTotalAndExtractStructure();
   let total=orderInfo.totalPrice;
+  refreshComposerUI();
+  updateProgressTracker();
+  saveDraftToStorage();
   document.getElementById("recap").innerHTML=orderInfo.summaryShort?
     "<b>Sélection :</b><br>"+orderInfo.summaryShort+"<br><br><b>Détail :</b><br><small>"+orderInfo.detailsText.replace(/\n/g,"<br>")+"</small>"
     :"Aucune sélection";
