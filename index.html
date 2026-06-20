@@ -201,24 +201,15 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 ⭐ Préparation à la commande<br>📍 Retrait sur Reims
   <section style="margin:20px 15px;padding:20px;background:#222;border-radius:10px;border:1px solid #ff4f8b;">
     <h2 style="color:#ff4f8b;text-align:center;margin-top:0;">Oh! Mikaté : Authentiques beignets congolais</h2>
-    <p style="line-height:1.6;color:#ccc;text-align:center;">Envie d'une pause gourmande ? Découvrez les <strong>Mikatés</strong>, préparés avec passion. Une expérience gustative à petits prix : des <strong>beignets</strong> bien moelleux, déclinables avec les nappages et garnitures proposés.</p>
+    <p style="line-height:1.6;color:#ccc;text-align:center;">Envie d'une pause gourmande? Découvrez les <strong>Mikatés</strong>, préparés avec passion. Une expérience gustative à petits prix : des <strong>beignets</strong> bien moelleux, déclinables avec les nappages et garnitures proposés.</p>
     <p style="line-height:1.6;color:#ccc;text-align:center;margin-bottom:0;">Idéal pour vos événements, vos goûters ou pour le plaisir. Commandez vos boîtes en ligne puis venez les récupérer sur place.</p>
-
-    <div style="text-align:center;margin-top:20px;border-top:1px solid #444;padding-top:18px;">
-      <h3 style="font-size:15px;color:#ff4f8b;margin-bottom:10px;">👩‍🍳 Dans les coulisses</h3>
-      <img src="Images/ill-coulisses.jpg" alt="Préparation des Mikatés Oh! Mikaté" style="display:block;width:150px;margin:0 auto;border-radius:8px;border:2px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,0.45);transform:rotate(-2deg);">
-      <p style="font-size:11px;color:#999;font-style:italic;margin-top:8px;">Préparé avec soin, pour vous régaler! </p>
-    </div>
-
     <div style="text-align:center;margin-top:20px;border-top:1px solid #444;padding-top:15px;">
       <h3 style="font-size:16px;color:#ff4f8b;margin-bottom:10px;">Rejoignez Oh! Mikaté</h3>
       <div style="display:flex;justify-content:center;gap:15px;margin-bottom:10px;">
         <a href="https://www.snapchat.com/add/ohmikate" target="_blank" style="text-decoration:none;font-size:14px;background:#FFFC00;color:#000;padding:6px 12px;border-radius:20px;font-weight:bold;">👻 Snapchat</a>
         <a href="https://www.instagram.com/oh_mikate" target="_blank" style="text-decoration:none;font-size:14px;background:#E1306C;color:#fff;padding:6px 12px;border-radius:20px;font-weight:bold;">📸 Instagram</a>
       </div>
-      <p style="font-size:11px;color:#aaa;font-style:italic;line-height:1.3;margin-top:10px;"><strong>✨STOCK EN TEMPS REÉL, PROMOS, NOUVEAUTÉS ET OFFRES SPÉCIALES !✨
-
-</strong></p>
+      <p style="font-size:11px;color:#aaa;font-style:italic;line-height:1.3;margin-top:10px;"><strong>✨STOCK EN TEMPS REÉL, PROMOS, NOUVEAUTÉS ET OFFRES SPÉCIALES !✨</strong></p>
     </div>
   </section>
 </div>
@@ -248,7 +239,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
     </div>
   </div>
   <div class="card product-card" data-name="12 beignets" data-price="7">
-    <img src="Images/Beignet6jpg">
+    <img src="Images/Beignet9.jpg">
     <p>Boîte de 12 beignets — 7€</p>
     <div class="qty-controls">
       <button class="qty-btn minus" onclick="changeBoxQty('12 beignets',-1)">-</button>
@@ -584,7 +575,7 @@ function generateCompositionForm(){
     let pfx9=`box9-${b}`;
     html+=`<div class="box-composer" id="composer-${pfx9}" data-baseprice="${boxPrices["9 beignets"]}"><div class="box-title"><span>📦 Boîte de 9 Beignets n°${b} <span class="box-subtotal" id="subtotal-${pfx9}"></span></span><button type="button" class="box-remove-btn" onclick="removeBox('9 beignets',${b})">🗑️ Supprimer</button></div>`;
     html+=generateLotTabsHtml(pfx9,3);
-    for(let lot=1;lot<=3;lot++){html+=generateLotRowHtml(`${pfx9}-lot${lot}`,`Lot de 3 beignets (${lot}/3)`,"Images/Beignet9.jpg",lot===1,pfx9,3);}
+    for(let lot=1;lot<=3;lot++){html+=generateLotRowHtml(`${pfx9}-lot${lot}`,`Lot de 3 beignets (${lot}/3)`,"Images/Beignet6.jpg",lot===1,pfx9,3);}
     html+=`</div>`;
   }
   for(let b=1;b<=boxesSelected["12 beignets"];b++){
