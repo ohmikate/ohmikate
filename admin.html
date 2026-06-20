@@ -222,35 +222,7 @@ async function charger(){
 let creneau=row.c[7]?String(row.c[7].v):"";
 let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
 let heure=row.c[9]?String(row.c[9].v):"";  // Lit la colonne J (Heure)
-let datePropre=dateRecu_raw;                 // Lit la colonne A (Date propre)
-
-      // Récupérer la valeur brute ET formatée de Google Sheets
-      let dateRecu_raw=row.c[0]?String(row.c[0].v):"";
-      let dateRecu_fmt=row.c[0]&&row.c[0].f?String(row.c[0].f):"";
-
-      // Priorité : valeur formatée (f) qui contient le texte original
-      dateRecu=dateRecu_fmt||dateRecu_raw;
-
-      if(dateRecu.includes("via")){
-        // Format texte: "19/06/2026 10:28 via WhatsApp"
-        let canalMatch=dateRecu.match(/via\s+(.+)$/i);
-        if(canalMatch&&!canal)canal=canalMatch[1].trim();
-        let heureMatch=dateRecu.match(/(\d{1,2}[h:]\d{2})/);
-        if(heureMatch)heure=heureMatch[1].replace("h",":");
-        datePropre=dateRecu.replace(/\s*via.+$/i,"").replace(/(\d{2}[h:]\d{2})/,"").trim();
-      } else if(dateRecu_raw.startsWith("Date(")){
-        // Format natif Google Sheets: Date(2026,5,19,10,28,0)
-        let dm=dateRecu_raw.match(/Date\((\d{4}),(\d+),(\d+)(?:,(\d+),(\d+))?/);
-        if(dm){
-          let d=new Date(parseInt(dm[1]),parseInt(dm[2]),parseInt(dm[3]));
-          datePropre=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
-          if(dm[4]!==undefined&&dm[5]!==undefined){
-            heure=dm[4].padStart(2,'0')+":"+dm[5].padStart(2,'0');
-          }
-        }
-      } else {
-        datePropre=dateRecu;
-      }
+let datePropre=row.c[0]?String(row.c[0].v):""; // Lit la colonne A (Date propre)
 
       // Normaliser le canal
       if(!canal&&payment){
