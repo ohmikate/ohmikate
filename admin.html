@@ -54,10 +54,14 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .commande-card.nouvelle{border-color:#ff4f8b;box-shadow:0 0 10px rgba(255,79,139,0.1);}
 .commande-card.confirmee{border-color:#25D366;opacity:0.8;}
 .commande-card.urgente{border-color:#ff9500;box-shadow:0 0 10px rgba(255,149,0,0.2);}
+.commande-card.prete{border-color:#007aff;opacity:0.85;}
 .badge{display:inline-block;font-size:10px;font-weight:bold;padding:3px 8px;border-radius:20px;margin-bottom:8px;letter-spacing:1px;}
 .badge-new{background:#ff4f8b;color:#fff;}
 .badge-ok{background:#25D366;color:#fff;}
 .badge-urgent{background:#ff9500;color:#fff;animation:pulse 1s infinite;}
+.badge-prete{background:#007aff;color:#fff;}
+.btn-prete{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#007aff;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.btn-prete:hover{filter:brightness(1.15);}
 .commande-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
 .client-name{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;}
 .commande-meta{font-size:11px;color:#666;margin-top:2px;line-height:1.5;}
@@ -184,6 +188,7 @@ const CRENEAUX=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00",
 let toutesCommandes=[];
 let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
 let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
+let pretes=JSON.parse(localStorage.getItem('ohMikatePretes')||'[]');
 let idASupp=null;
 
 /* LOGIN */
@@ -257,17 +262,24 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
 
       // Normaliser payment (supprimer PayPal)
       if(payment.toLowerCase().includes("paypal"))payment="Paiement en ligne (carte)";
-      // Vérifier si créneau urgent (< 2h)
+      // Vérifier si créneau urgent (aujourd'hui ET dans moins de 2h)
       let urgent=false;
       if(dateRetrait&&creneau){
-        let now=new Date();
-        let cm2=creneau.match(/(\d{1,2})h(\d{2})/);
-        if(cm2){
-          // Approx : si aujourd'hui et créneau dans moins de 2h
-          let slotH=parseInt(cm2[1]),slotM=parseInt(cm2[2]);
-          let slotMins=slotH*60+slotM;
-          let nowMins=now.getHours()*60+now.getMinutes();
-          if(slotMins-nowMins>0&&slotMins-nowMins<=120)urgent=true;
+        let dRetrait=parseDate(dateRetrait);
+        let today=new Date();
+        let isRetraitAujourdhui=dRetrait&&
+          dRetrait.getDate()===today.getDate()&&
+          dRetrait.getMonth()===today.getMonth()&&
+          dRetrait.getFullYear()===today.getFullYear();
+        if(isRetraitAujourdhui){
+          let now=new Date();
+          let cm2=creneau.match(/(\d{1,2})h(\d{2})/);
+          if(cm2){
+            let slotH=parseInt(cm2[1]),slotM=parseInt(cm2[2]);
+            let slotMins=slotH*60+slotM;
+            let nowMins=now.getHours()*60+now.getMinutes();
+            if(slotMins-nowMins>0&&slotMins-nowMins<=120)urgent=true;
+          }
         }
       }
       toutesCommandes.push({id:i,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
@@ -432,6 +444,7 @@ function badgeCanal(canal){
 
 function renderCommande(c){
   let isConf=confirmees.includes(c.id);
+  let isPrete=pretes.includes(c.id);
   let isUrgent=c.urgent&&!isConf;
   let phoneNorm=normalizePhone(c.phone);
   let phoneWA=phoneNorm.startsWith("0")?"33"+phoneNorm.substring(1):phoneNorm;
@@ -440,11 +453,19 @@ function renderCommande(c){
   let lienWA="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWA);
   let ua=navigator.userAgent.toLowerCase();
   let lienSMS="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMS);
+  let msgWAPret=genMsgPret(c,false);
+  let msgSMSPret=genMsgPret(c,true);
+  let lienWAPret="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWAPret);
+  let lienSMSPret="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMSPret);
 
-  return`<div class="commande-card ${isConf?"confirmee":isUrgent?"urgente":"nouvelle"}" id="card-${c.id}">
+  let cardCls=isPrete?"prete":isConf?"confirmee":isUrgent?"urgente":"nouvelle";
+  let badgeCls=isPrete?"badge-prete":isConf?"badge-ok":isUrgent?"badge-urgent":"badge-new";
+  let badgeTxt=isPrete?"📦 PRÊTE":isConf?"✅ CONFIRMÉE":isUrgent?"⚡ URGENT":"🆕 NOUVELLE";
+
+  return`<div class="commande-card ${cardCls}" id="card-${c.id}">
     <div class="checkbox-wrap">
       <input type="checkbox" class="cmd-checkbox" id="chk-${c.id}" onchange="onCheckChange()">
-      <span class="badge ${isConf?"badge-ok":isUrgent?"badge-urgent":"badge-new"}">${isConf?"✅ CONFIRMÉE":isUrgent?"⚡ URGENT":"🆕 NOUVELLE"}</span>
+      <span class="badge ${badgeCls}">${badgeTxt}</span>
     </div>
     <div class="commande-header">
       <div>
@@ -466,7 +487,13 @@ function renderCommande(c){
       <div class="info-item full"><div class="label">📦 Commande</div><div class="detail-box">${(c.order||"—").replace(/\\n/g,"\n")}</div></div>
     </div>
     <div class="total-row"><span>Total</span><span>${c.total||"—"} €</span></div>
-    ${!isConf?`
+    ${isPrete?`
+      <div style="text-align:center;color:#007aff;font-size:12px;padding:6px;">📦 Commande prête — client prévenu</div>
+      <div class="actions-sec" style="margin-top:8px;">
+        <button class="btn-marquer" onclick="annulerPrete(${c.id})" style="border-color:#ff9500;color:#ff9500;">↩️ Annuler "prête"</button>
+        <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
+      </div>
+    `:!isConf?`
       <a class="btn-wa" href="${lienWA}" target="_blank" onclick="marquer(${c.id})">📲 Confirmer par WhatsApp</a>
       <a class="btn-sms" href="${lienSMS}" onclick="marquer(${c.id})">💬 Confirmer par SMS</a>
       <div class="actions-sec">
@@ -475,6 +502,8 @@ function renderCommande(c){
       </div>
     `:`
       <div style="text-align:center;color:#25D366;font-size:12px;padding:6px;">✅ Confirmée</div>
+      <a class="btn-prete" href="${lienWAPret}" target="_blank" onclick="marquerPrete(${c.id})">📦 Commande prête (WhatsApp)</a>
+      <a class="btn-sms" href="${lienSMSPret}" onclick="marquerPrete(${c.id})">💬 Commande prête (SMS)</a>
       <div class="actions-sec" style="margin-top:8px;">
         <button class="btn-marquer" onclick="annulerConfirmation(${c.id})" style="border-color:#ff9500;color:#ff9500;">↩️ Annuler la confirmation</button>
         <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
@@ -498,6 +527,15 @@ function genMsg(c,pourSMS=false){
   msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — tu auras ta commande en mains propres ! 🍩\n\n`;
   msg+=`━━━━━━━━━━━━━━━\n`;
   msg+=`À tout à l'heure ! 🧇\n— Oh! Mikaté`;
+  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
+}
+
+function genMsgPret(c,pourSMS=false){
+  let b=pourSMS?"":"*";
+  let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
+  msg+=`📦 ${b}Ta commande Oh! Mikaté est prête, tu peux venir la récupérer dès maintenant.${b}\n\n`;
+  msg+=`━━━━━━━━━━━━━━━\n`;
+  msg+=`À tout de suite ! 🧇\n— Oh! Mikaté`;
   return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
 }
 
@@ -557,9 +595,11 @@ function supprimerSelection(){
   ids.forEach(id=>{
     if(!supprimees.includes(id))supprimees.push(id);
     confirmees=confirmees.filter(c=>c!==id);
+    pretes=pretes.filter(p=>p!==id);
   });
   localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
   deselectionnerTout();
   updateStats();
   setTimeout(afficher,300);
@@ -583,6 +623,23 @@ function annulerConfirmation(id){
   showToast("↩️ Confirmation annulée");
 }
 
+function marquerPrete(id){
+  if(!pretes.includes(id)){
+    pretes.push(id);
+    localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+    updateStats();
+    setTimeout(afficher,400);
+  }
+}
+
+function annulerPrete(id){
+  pretes=pretes.filter(p=>p!==id);
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  updateStats();
+  setTimeout(afficher,300);
+  showToast("↩️ Statut \"prête\" annulé");
+}
+
 function demanderSupp(id){idASupp=id;document.getElementById("popup-supp").classList.add("show");}
 function fermerPopup(){idASupp=null;document.getElementById("popup-supp").classList.remove("show");}
 function confirmerSuppression(){
@@ -591,6 +648,8 @@ function confirmerSuppression(){
   localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
   confirmees=confirmees.filter(id=>id!==idASupp);
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  pretes=pretes.filter(id=>id!==idASupp);
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
   fermerPopup();
   updateStats();
   afficher();
