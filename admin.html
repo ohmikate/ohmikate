@@ -219,11 +219,10 @@ async function charger(){
       let payment=row.c[5]?row.c[5].v:"";
       // Colonnes supplémentaires (peuvent exister ou non)
       let dateRetrait=row.c[6]?String(row.c[6].v):"";
-      let creneau=row.c[7]?String(row.c[7].v):"";
-      let canal=row.c[8]?String(row.c[8].v):"";
-
-      // Extraction heure et canal — gère tous les formats possibles
-     let heure="",datePropre="";
+let creneau=row.c[7]?String(row.c[7].v):"";
+let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
+let heure=row.c[9]?String(row.c[9].v):"";  // Lit la colonne J (Heure)
+let datePropre=dateRecu_raw;                 // Lit la colonne A (Date propre)
 
       // Récupérer la valeur brute ET formatée de Google Sheets
       let dateRecu_raw=row.c[0]?String(row.c[0].v):"";
