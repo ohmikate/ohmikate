@@ -200,8 +200,8 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 <div style="background:#111;padding:15px;text-align:center;font-size:14px;margin:15px;border-radius:10px;border:1px solid #333;">
 ⭐ Préparation à la commande<br>📍 Retrait sur Reims
   <section style="margin:20px 15px;padding:20px;background:#222;border-radius:10px;border:1px solid #ff4f8b;">
-    <h2 style="color:#ff4f8b;text-align:center;margin-top:0;">Oh! Mikaté : Authentiques beignets congolais à Reims</h2>
-    <p style="line-height:1.6;color:#ccc;text-align:center;">Envie d'une pause gourmande ? Découvrez les <strong>Mikatés</strong>, préparés avec passion à <strong>Reims</strong>. Je vous propose une expérience gustative à petits prix: des <strong>beignets</strong> bien moelleux, déclinables avec les nappages et garnitures proposés.</p>
+    <h2 style="color:#ff4f8b;text-align:center;margin-top:0;">Oh! Mikaté : Authentiques beignets congolais</h2>
+    <p style="line-height:1.6;color:#ccc;text-align:center;">Envie d'une pause gourmande ? Découvrez les <strong>Mikatés</strong>, préparés avec passion. Une expérience gustative à petits prix : des <strong>beignets</strong> bien moelleux, déclinables avec les nappages et garnitures proposés.</p>
     <p style="line-height:1.6;color:#ccc;text-align:center;margin-bottom:0;">Idéal pour vos événements ou vos pauses gourmandes, commandez vos boîtes en ligne et venez les récupérer sur place.</p>
     <div style="text-align:center;margin-top:20px;border-top:1px solid #444;padding-top:15px;">
       <h3 style="font-size:16px;color:#ff4f8b;margin-bottom:10px;">Rejoignez Oh! Mikaté</h3>
@@ -227,6 +227,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 <div class="compose-col compose-col-left">
 <h3>1. Choisis ton format de boîte</h3>
 <span class="info-limite" style="color:#ccc;">Sélectionne une ou plusieurs boîtes pour personnaliser tes beignets.</span>
+<span class="info-limite" style="color:#aaa;font-style:normal;font-size:11px;">📦 Maximum 10 boîtes par commande. Besoin de plus (gros événement) ? Contacte-nous au 0745915946.</span>
 <div class="grid">
   <div class="card product-card" data-name="9 beignets" data-price="5">
     <img src="Images/Beignet9.jpg">
@@ -312,12 +313,11 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
         <span id="summary-mini-count" class="summary-mini-count"></span>
       </div>
       <button type="button" class="summary-toggle-btn" id="summary-toggle-btn" onclick="event.stopPropagation();toggleSummary();">
-        <span id="summary-toggle-label">Voir ma commande</span><span class="chevron">▲</span>
+        <span id="summary-toggle-label">Finaliser ma commande</span><span class="chevron">▲</span>
       </button>
     </div>
     <div id="summary-expanded" class="summary-expanded">
       <div class="summary-expanded-inner">
-        <div id="recap">Aucune sélection</div>
         <div class="total"><span>Total :</span><span><span id="total">0.00</span> €</span></div>
         <button id="stripe-btn" class="btn" style="background:#635bff;display:none;margin-top:10px;" onclick="lancerPaiementStripe()">Payer en ligne 💳</button>
         <div id="cgv-wrap" style="display:none;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;padding:12px;">
@@ -393,7 +393,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       <div class="cancel-links">
         <a id="cancel-whatsapp" href="#" class="cancel-link" style="background:#ff4f8b22;color:#ff4f8b;border:1px solid #ff4f8b;">📲 Annuler via WhatsApp</a>
         <a id="cancel-sms" href="#" class="cancel-link" style="background:#007aff22;color:#007aff;border:1px solid #007aff;">💬 Annuler par SMS</a>
-        <a href="tel:0698213380" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
+        <a href="tel:0745915946" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
       </div>
     </div>
     <div style="text-align:center;margin-top:20px;padding:16px;background:#111;border-radius:12px;border:1px solid #222;">
@@ -436,7 +436,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       <div class="cancel-links">
         <a id="e-cancel-whatsapp" href="#" class="cancel-link" style="background:#ff4f8b22;color:#ff4f8b;border:1px solid #ff4f8b;">📲 Annuler via WhatsApp</a>
         <a id="e-cancel-sms" href="#" class="cancel-link" style="background:#007aff22;color:#007aff;border:1px solid #007aff;">💬 Annuler par SMS</a>
-        <a href="tel:0698213380" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
+        <a href="tel:0745915946" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
       </div>
     </div>
     <div style="text-align:center;margin-top:20px;padding:16px;background:#111;border-radius:12px;border:1px solid #222;">
@@ -453,18 +453,33 @@ let boxesSelected={"9 beignets":0,"12 beignets":0};
 const boxPrices={"9 beignets":5.0,"12 beignets":7.0};
 const supplementPricePerLot=0.50;
 let selectedPaymentMode="";
-const targetPhone="0698213380";
+const targetPhone="0745915946";
 const baseHours=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
 let espècesPageAffichée=false;
 
 /* ===== QUANTITÉS ===== */
+const MAX_BOXES_TOTAL=10;
 function changeBoxQty(type,change){
   let input=type==="9 beignets"?document.getElementById("qty-9"):document.getElementById("qty-12");
   let newVal=Math.max(0,(parseInt(input.value)||0)+change);
+  let otherType=type==="9 beignets"?"12 beignets":"9 beignets";
+  let otherVal=boxesSelected[otherType]||0;
+  if(change>0&&(newVal+otherVal)>MAX_BOXES_TOTAL){
+    showToast("⚠️ Maximum "+MAX_BOXES_TOTAL+" boîtes par commande. Pour un évènement, contacte-nous au 0745915946.");
+    newVal=Math.max(0,MAX_BOXES_TOTAL-otherVal);
+  }
   input.value=newVal;setBoxQty(type,newVal);
 }
 function setBoxQty(type,value){
   let val=Math.max(0,parseInt(value)||0);
+  let otherType=type==="9 beignets"?"12 beignets":"9 beignets";
+  let otherVal=boxesSelected[otherType]||0;
+  if((val+otherVal)>MAX_BOXES_TOTAL){
+    showToast("⚠️ Maximum "+MAX_BOXES_TOTAL+" boîtes par commande. Pour un évènement, contacte-nous au 0745915946.");
+    val=Math.max(0,MAX_BOXES_TOTAL-otherVal);
+    let input=type==="9 beignets"?document.getElementById("qty-9"):document.getElementById("qty-12");
+    input.value=val;
+  }
   let totalBefore=(boxesSelected["9 beignets"]||0)+(boxesSelected["12 beignets"]||0);
   boxesSelected[type]=val;
   let totalAfter=(boxesSelected["9 beignets"]||0)+(boxesSelected["12 beignets"]||0);
@@ -852,9 +867,6 @@ function updateUI(){
   let formOkExceptPayment=isFormValidExceptPayment();
   document.getElementById("opt-carte").classList.toggle("pay-disabled",!formOkExceptPayment);
   document.getElementById("opt-especes").classList.toggle("pay-disabled",!formOkExceptPayment);
-  document.getElementById("recap").innerHTML=orderInfo.summaryShort?
-    "<b>Sélection :</b><br>"+orderInfo.summaryShort+"<br><br><b>Détail :</b><br><small>"+orderInfo.detailsText.replace(/\n/g,"<br>")+"</small>"
-    :"Aucune sélection";
   const recapInlineBox=document.getElementById("recap-inline-box");
   if(orderInfo.summaryShort){
     recapInlineBox.style.display="block";
@@ -920,7 +932,7 @@ function toggleSummary(forceOpen){
   const willExpand=typeof forceOpen==="boolean"?forceOpen:!bar.classList.contains("expanded");
   bar.classList.toggle("expanded",willExpand);
   backdrop.classList.toggle("show",willExpand);
-  document.getElementById("summary-toggle-label").textContent=willExpand?"Réduire":"Voir ma commande";
+  document.getElementById("summary-toggle-label").textContent=willExpand?"Réduire":"Finaliser ma commande";
 }
 
 function syncSummaryPadding(){
