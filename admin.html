@@ -42,6 +42,7 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 
 /* CRÉNEAUX */
 .creneaux-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:0 4px;}
+.creneaux-date-label{font-size:11px;color:#888;font-weight:bold;padding:0 4px;margin:8px 0 4px;}
 .creneau-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:bold;}
 .creneau-libre{background:#0a2a12;color:#25D366;border:1px solid #25D36644;}
 .creneau-charge{background:#2a1a00;color:#ff9500;border:1px solid #ff950044;}
@@ -355,9 +356,7 @@ function afficher(){
       return s+(isNaN(v)?0:v);
     },0);
     let nouvelles=cmds.filter(c=>!confirmees.includes(c.id)).length;
-    // Récupère la date du premier commit pour l'analyse créneaux
-    let jourDate=parseDate(cmds[0]?.dateRecu||"");
-    let creneauxHtml=analyserCreneaux(cmds,jourDate);
+    let creneauxHtml=analyserCreneaux(cmds);
 
     html+=`<div class="jour-group">
       <div class="jour-header">
@@ -412,34 +411,53 @@ function formatDateRetrait(str){
   return label.charAt(0).toUpperCase()+label.slice(1);
 }
 
-function analyserCreneaux(cmds, jourDate){
-  let counts={};
-  CRENEAUX.forEach(c=>counts[c]=0);
-  cmds.forEach(c=>{if(c.creneau&&counts[c.creneau]!==undefined)counts[c.creneau]++;});
+function analyserCreneaux(cmds){
+  // Regroupe par date de retrait réelle (et non par le groupe d'affichage,
+  // qui peut mélanger plusieurs dates de retrait différentes le même jour)
+  let parDateRetrait={};
+  let ordreDate=[];
+  cmds.forEach(c=>{
+    if(!c.creneau)return;
+    let key=c.dateRetrait||"Date inconnue";
+    if(!parDateRetrait[key]){parDateRetrait[key]=[];ordreDate.push(key);}
+    parDateRetrait[key].push(c);
+  });
+
+  let plusieursDates=ordreDate.length>1;
   let now=new Date();
   let nowMins=now.getHours()*60+now.getMinutes();
-  // Vérifie si le groupe correspond à aujourd'hui
-  let isToday=false;
-  if(jourDate){
-    let today=new Date();
-    isToday=(jourDate.getDate()===today.getDate()&&
-             jourDate.getMonth()===today.getMonth()&&
-             jourDate.getFullYear()===today.getFullYear());
-  }
-  let html='<div class="creneaux-bar">';
-  CRENEAUX.forEach(cr=>{
-    let n=counts[cr];
-    if(n===0)return;
-    let m=cr.match(/(\d{1,2})h(\d{2})/);
-    let slotMins=m?(parseInt(m[1])*60+parseInt(m[2])):999;
-    let diff=slotMins-nowMins;
-    let cls="creneau-libre",icon="✅";
-    // Urgence seulement si c'est aujourd'hui ET dans moins de 2h
-    if(isToday&&diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
-    else if(n>=2){cls="creneau-charge";icon="⚠️";}
-    html+=`<span class="creneau-badge ${cls}">${icon} ${cr} (${n})</span>`;
+  let today=new Date();
+
+  let html="";
+  ordreDate.forEach(dateKey=>{
+    let groupeCmds=parDateRetrait[dateKey];
+    let dRetrait=parseDate(dateKey);
+    let isToday=dRetrait&&
+      dRetrait.getDate()===today.getDate()&&
+      dRetrait.getMonth()===today.getMonth()&&
+      dRetrait.getFullYear()===today.getFullYear();
+    let counts={};
+    groupeCmds.forEach(c=>{counts[c.creneau]=(counts[c.creneau]||0)+1;});
+
+    let badges="";
+    CRENEAUX.forEach(cr=>{
+      let n=counts[cr];
+      if(!n)return;
+      let m=cr.match(/(\d{1,2})h(\d{2})/);
+      let slotMins=m?(parseInt(m[1])*60+parseInt(m[2])):999;
+      let diff=slotMins-nowMins;
+      let cls="creneau-libre",icon="✅";
+      if(isToday&&diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
+      else if(n>=2){cls="creneau-charge";icon="⚠️";}
+      badges+=`<span class="creneau-badge ${cls}">${icon} ${cr} (${n})</span>`;
+    });
+    if(!badges)return;
+
+    if(plusieursDates){
+      html+=`<div class="creneaux-date-label">🗓️ Retrait : ${formatDateRetrait(dateKey)}</div>`;
+    }
+    html+=`<div class="creneaux-bar">${badges}</div>`;
   });
-  html+='</div>';
   return html;
 }
 
