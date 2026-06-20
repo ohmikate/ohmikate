@@ -12,6 +12,9 @@ body{margin:0;font-family:'Montserrat',sans-serif;background:#000;color:#fff;pad
 .hero{width:100%;max-width:1200px;margin:0 auto;background:#111;overflow:hidden;}
 .hero img{width:100%;height:auto;display:block;}
 .section{padding:20px;max-width:900px;margin:auto;}
+.compose-layout{display:flex;flex-direction:column;gap:10px;}
+.compose-col-left{flex:0 0 auto;}
+.compose-col-right{flex:1 1 auto;min-width:0;}
 h2{font-family:'Bebas Neue',sans-serif;text-align:center;color:#ff4f8b;margin:25px 0;font-size:32px;letter-spacing:2px;text-transform:uppercase;}
 h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-left:10px;margin-top:30px;font-size:22px;margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
 .info-limite{color:#ff4f8b;font-size:13px;font-style:italic;margin-bottom:15px;display:block;}
@@ -25,13 +28,51 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 .qty-input{font-size:15px;font-weight:bold;width:40px;height:35px;background:transparent;border:none;color:white;text-align:center;-moz-appearance:textfield;}
 .qty-input::-webkit-outer-spin-button,.qty-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 .card.has-qty{border-color:#ff4f8b;}
-.box-composer{background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:15px;margin-top:20px;}
-.box-title{font-size:16px;font-weight:bold;color:#ff4f8b;margin-bottom:15px;border-bottom:1px solid #222;padding-bottom:5px;text-transform:uppercase;}
-.lot-row{background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:12px;margin-bottom:12px;display:flex;gap:15px;align-items:center;}
-.lot-preview-img{width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #444;flex-shrink:0;}
-.lot-content{flex-grow:1;}
-.lot-title{font-size:14px;font-weight:bold;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+.box-composer{background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:12px;margin-top:16px;}
+.box-title{font-size:15px;font-weight:bold;color:#ff4f8b;margin-bottom:10px;border-bottom:1px solid #222;padding-bottom:5px;text-transform:uppercase;}
+.lot-row{background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:8px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;}
+.lot-preview-img{width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid #444;flex-shrink:0;}
+.lot-content{flex-grow:1;min-width:0;}
+.lot-title{font-size:12px;font-weight:bold;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
 .selectors-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.lot-selects-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.lot-selects-row .chip-section{margin-bottom:0;}
+.lot-selects-row .select-custom{padding:8px 4px;font-size:11.5px;height:36px;}
+.lot-selects-row .chip-label{font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lot-selects-row .chip-price{display:block;margin-left:0;font-size:9px;}
+@media (max-width:380px){
+  .lot-selects-row{grid-template-columns:repeat(3,1fr);gap:4px;}
+  .lot-selects-row .select-custom{font-size:10.5px;padding:8px 2px;}
+}
+.chip-section{margin-bottom:8px;}
+.chip-label{font-size:10.5px;color:#999;font-weight:bold;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px;}
+.chip-price{color:#ff4f8b;font-weight:normal;text-transform:none;letter-spacing:0;margin-left:4px;}
+.chip-group{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{background:#000;border:1.5px solid #333;color:#ccc;font-size:11.5px;font-weight:bold;padding:5px 10px;border-radius:16px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:.15s;white-space:nowrap;line-height:1.3;}
+.chip:active{transform:scale(0.96);}
+.chip.selected{background:#ff4f8b;border-color:#ff4f8b;color:#fff;box-shadow:0 2px 8px rgba(255,79,139,0.35);}
+.progress-tracker{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 20px;flex-wrap:wrap;}
+.progress-step{display:flex;align-items:center;gap:6px;font-size:11px;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;}
+.progress-dot{width:22px;height:22px;border-radius:50%;background:#222;border:1.5px solid #333;color:#666;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.progress-step.step-active{color:#ff4f8b;}
+.progress-step.step-active .progress-dot{border-color:#ff4f8b;color:#ff4f8b;}
+.progress-step.step-done{color:#25D366;}
+.progress-step.step-done .progress-dot{background:#25D366;border-color:#25D366;color:#fff;}
+.progress-line{width:24px;height:1.5px;background:#333;}
+.box-subtotal{color:#ff4f8b;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0;}
+.lot-badge{color:#25D366;font-size:13px;}
+.lot-row.lot-configured{border-color:#25D366;}
+.lot-row{display:none;}
+.lot-row.lot-active{display:flex;}
+.lot-tabs{display:flex;gap:6px;margin-bottom:10px;}
+.lot-tab{flex:1;background:#000;border:1.5px solid #333;color:#aaa;font-size:12px;font-weight:bold;padding:8px 6px;border-radius:8px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;transition:.15s;display:flex;align-items:center;justify-content:center;gap:4px;}
+.lot-tab.lot-tab-active{background:#ff4f8b;border-color:#ff4f8b;color:#fff;}
+.lot-tab .lot-tab-check{color:#25D366;font-size:12px;}
+.lot-tab.lot-tab-active .lot-tab-check{color:#fff;}
+@media (max-width:420px){
+  .lot-preview-img{width:48px;height:48px;}
+  .lot-tab{font-size:11px;padding:7px 4px;}
+}
 .select-custom{width:100%;padding:10px;background:#000;border:1px solid #444;border-radius:6px;color:white;font-size:13px;height:40px;box-sizing:border-box;}
 .select-custom:focus{border-color:#ff4f8b;outline:none;}
 .form-group{margin-bottom:15px;}
@@ -63,178 +104,38 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 .small{font-size:11px;opacity:0.8;text-align:center;margin-top:8px;line-height:15px;color:#ddd;}
 #toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#ff4f8b;color:white;padding:12px 25px;border-radius:30px;font-weight:bold;box-shadow:0 4px 15px rgba(255,79,139,0.4);transition:0.4s;opacity:0;z-index:9999;text-align:center;}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-
-/* ===== PAGE CONFIRMATION ===== */
-#confirmation-page {
-  display: none;
-  min-height: 100vh;
-  padding: 30px 20px 60px;
-  box-sizing: border-box;
-  background: #000;
-}
-.confirm-wrapper {
-  max-width: 600px;
-  margin: 0 auto;
-}
-.confirm-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-.confirm-header .check-icon {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #25D366, #1aa750);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-  font-size: 36px;
-  box-shadow: 0 0 30px rgba(37,211,102,0.4);
-  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-@keyframes popIn {
-  0% { transform: scale(0); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
-}
-.confirm-header h1 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 36px;
-  color: #fff;
-  margin: 0 0 8px;
-  letter-spacing: 2px;
-}
-.confirm-header p {
-  color: #aaa;
-  font-size: 14px;
-  margin: 0;
-}
-.confirm-card {
-  background: #111;
-  border: 1px solid #2a2a2a;
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-.confirm-card-header {
-  background: #1a1a1a;
-  padding: 14px 20px;
-  border-bottom: 1px solid #222;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px;
-  letter-spacing: 1px;
-  color: #ff4f8b;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.confirm-card-body {
-  padding: 20px;
-}
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 10px 0;
-  border-bottom: 1px solid #1e1e1e;
-  gap: 12px;
-}
-.info-row:last-child {
-  border-bottom: none;
-}
-.info-label {
-  color: #888;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  flex-shrink: 0;
-  padding-top: 2px;
-}
-.info-value {
-  color: #fff;
-  font-size: 14px;
-  font-weight: bold;
-  text-align: right;
-}
-.order-detail-box {
-  background: #0a0a0a;
-  border: 1px solid #222;
-  border-radius: 10px;
-  padding: 15px;
-  font-size: 13px;
-  line-height: 1.8;
-  color: #ccc;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-.total-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 20px;
-  background: #1a0d12;
-  border-top: 2px solid #ff4f8b;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 24px;
-  color: #ff4f8b;
-}
-.action-section {
-  margin-bottom: 20px;
-}
-.action-section h3 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  letter-spacing: 1px;
-  color: #fff;
-  margin: 0 0 12px;
-  border-left: none;
-  padding-left: 0;
-}
-.action-section p {
-  font-size: 13px;
-  color: #888;
-  margin: 0 0 14px;
-  line-height: 1.5;
-}
-.cancel-section {
-  text-align: center;
-  padding: 20px;
-  background: #111;
-  border-radius: 12px;
-  border: 1px solid #222;
-}
-.cancel-section h4 {
-  color: #aaa;
-  font-size: 14px;
-  margin: 0 0 12px;
-  font-weight: normal;
-}
-.cancel-links {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.cancel-link {
-  font-size: 13px;
-  padding: 8px 16px;
-  border-radius: 20px;
-  text-decoration: none;
-  font-weight: bold;
-}
+#confirmation-page{display:none;min-height:100vh;padding:30px 20px 60px;box-sizing:border-box;background:#000;}
+.confirm-wrapper{max-width:600px;margin:0 auto;}
+.confirm-header{text-align:center;margin-bottom:30px;}
+.confirm-header .check-icon{width:80px;height:80px;background:linear-gradient(135deg,#25D366,#1aa750);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;box-shadow:0 0 30px rgba(37,211,102,0.4);animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);}
+@keyframes popIn{0%{transform:scale(0);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.confirm-header h1{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#fff;margin:0 0 8px;letter-spacing:2px;}
+.confirm-header p{color:#aaa;font-size:14px;margin:0;}
+.confirm-card{background:#111;border:1px solid #2a2a2a;border-radius:16px;overflow:hidden;margin-bottom:20px;}
+.confirm-card-header{background:#1a1a1a;padding:14px 20px;border-bottom:1px solid #222;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#ff4f8b;display:flex;align-items:center;gap:8px;}
+.confirm-card-body{padding:20px;}
+.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid #1e1e1e;gap:12px;}
+.info-row:last-child{border-bottom:none;}
+.info-label{color:#888;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0;padding-top:2px;}
+.info-value{color:#fff;font-size:14px;font-weight:bold;text-align:right;}
+.order-detail-box{background:#0a0a0a;border:1px solid #222;border-radius:10px;padding:15px;font-size:13px;line-height:1.8;color:#ccc;white-space:pre-wrap;word-break:break-word;}
+.total-line{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#1a0d12;border-top:2px solid #ff4f8b;font-family:'Bebas Neue',sans-serif;font-size:24px;color:#ff4f8b;}
+.action-section{margin-bottom:20px;}
+.action-section h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:#fff;margin:0 0 12px;border-left:none;padding-left:0;}
+.action-section p{font-size:13px;color:#888;margin:0 0 14px;line-height:1.5;}
+.cancel-section{text-align:center;padding:20px;background:#111;border-radius:12px;border:1px solid #222;}
+.cancel-section h4{color:#aaa;font-size:14px;margin:0 0 12px;font-weight:normal;}
+.cancel-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.cancel-link{font-size:13px;padding:8px 16px;border-radius:20px;text-decoration:none;font-weight:bold;}
+.btn-nouvelle{background:none;border:1px solid #333;color:#555;font-size:12px;padding:10px 20px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:16px;display:block;width:100%;text-align:center;}
 </style>
 </head>
 <body>
-
 <div id="toast">📋 Action effectuée !</div>
 
-<!-- ========== PAGE PRINCIPALE ========== -->
+<!-- PAGE PRINCIPALE -->
 <div id="main-page">
-
-<div class="hero">
-  <img src="Images/Flyer4.jpg" alt="Oh! Mikaté Flyer">
-</div>
-
+<div class="hero"><img src="Images/Flyer4.jpg" alt="Oh! Mikaté Flyer"></div>
 <div style="background:#111;padding:15px;text-align:center;font-size:14px;margin:15px;border-radius:10px;border:1px solid #333;">
 ⭐ Préparation à la commande<br>📍 Retrait sur Reims
   <section style="margin:20px 15px;padding:20px;background:#222;border-radius:10px;border:1px solid #ff4f8b;">
@@ -254,6 +155,15 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 
 <div class="section">
 <h2>✨ Compose ta boîte de Mikatés</h2>
+<div id="progress-tracker" class="progress-tracker">
+  <div class="progress-step" id="step-1"><span class="progress-dot" data-num="1">1</span>Boîtes</div>
+  <div class="progress-line"></div>
+  <div class="progress-step" id="step-2"><span class="progress-dot" data-num="2">2</span>Personnalisation</div>
+  <div class="progress-line"></div>
+  <div class="progress-step" id="step-3"><span class="progress-dot" data-num="3">3</span>Coordonnées</div>
+</div>
+<div class="compose-layout">
+<div class="compose-col compose-col-left">
 <h3>1. Choisis ton format de boîte</h3>
 <span class="info-limite" style="color:#ccc;">Sélectionne une ou plusieurs boîtes pour personnaliser tes beignets.</span>
 <div class="grid">
@@ -276,24 +186,24 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
     </div>
   </div>
 </div>
-
+</div><!-- end compose-col-left -->
+<div class="compose-col compose-col-right">
 <div id="composition-zone"></div>
-
+</div><!-- end compose-col-right -->
+</div><!-- end compose-layout -->
 <div style="background:#222;padding:15px;border-radius:8px;margin:20px 0;border-left:4px solid #ff4f8b;">
   <h3 style="margin-top:0;color:#ff4f8b;font-size:18px;">⚠️ Informations Allergènes</h3>
   <p style="font-size:13px;line-height:1.5;color:#ccc;">Les Mikatés peuvent contenir ou être en contact avec : <strong>gluten (blé), arachides, fruits à coque, produits laitiers (lait) et soja</strong>. Merci de nous signaler toute allergie sévère dans la zone "Précisions" ci-dessous.</p>
 </div>
-
 <h3>3. Tes informations de retrait</h3>
 <span class="info-limite" style="color:#aaa;font-style:normal;">📍 L'adresse complète te sera transmise lors de la validation de ton créneau.</span>
-
 <div class="form-group">
   <label for="client-name">Ton Prénom : <span class="requis">*</span></label>
   <input type="text" id="client-name" placeholder="Ex: Marie Dupont" oninput="updateUI()">
 </div>
 <div class="form-group">
   <label for="client-phone">Ton Numéro de téléphone : <span class="requis">*</span></label>
-  <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="validatePhone(); updateUI();" onblur="validatePhone()">
+  <input type="tel" id="client-phone" placeholder="Ex: 06 12 34 56 78" oninput="validatePhone();updateUI();" onblur="validatePhone()">
   <div id="phone-msg" class="field-msg"></div>
 </div>
 <div class="form-group">
@@ -318,54 +228,23 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
     <div id="opt-especes" class="pay-opt" onclick="selectPayment('Espèces')">💵 Espèces (Appoint requis)</div>
   </div>
 </div>
-
-<!-- NEWSLETTER -->
-<div style="margin:0 15px 20px;padding:24px 20px;background:#111;border-radius:16px;border:2px solid #ff4f8b;text-align:center;">
-  <div style="font-size:28px;margin-bottom:8px;">📬</div>
-  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#ff4f8b;letter-spacing:2px;margin-bottom:6px;">Restez informé(e) !</h3>
-  <p style="font-size:13px;color:#aaa;margin-bottom:16px;line-height:1.6;">Nouveautés, offres spéciales, promos exclusives...<br>Inscrivez-vous à la newsletter Oh! Mikaté 🧇</p>
-  <div style="max-width:400px;margin:0 auto;overflow:hidden;border-radius:12px;">
-    <iframe
-      width="100%"
-      height="220"
-      src="https://9660c3d2.sibforms.com/v2/serve/MUIFAKYHEqjZkF5JA3RIhxG6g9B29m4qzGVxA5_G5ElTGqZjXWSPCGoX9eZA1JCtMX2OJmv0e9Fe5hV_wIODiufMB0XNoD6t5eHC4gpVTT09LCC-XjuQU7vJPTTAkzjquyluy7V4S2WvA2rnYtHXVMeSvEjX0Q82DBQV3o2XuwcvLB_QElcUozGH-GvBIlD5MLghU4XI3XJFl-jyXA=="
-      frameborder="0"
-      scrolling="auto"
-      allowfullscreen
-      style="display:block;border:none;background:#fff;border-radius:12px;">
-    </iframe>
-  </div>
-  <p style="font-size:11px;color:#555;margin-top:12px;">Pas de spam — désabonnement possible à tout moment.</p>
 </div>
 
 <div id="summary-bar" class="summary">
   <div class="summary-content">
     <div id="recap">Aucune sélection</div>
-    <div class="total">
-      <span>Total :</span>
-      <span><span id="total">0.00</span> €</span>
-    </div>
+    <div class="total"><span>Total :</span><span><span id="total">0.00</span> €</span></div>
     <button id="stripe-btn" class="btn" style="background:#635bff;display:none;margin-top:10px;" onclick="lancerPaiementStripe()">Payer en ligne 💳</button>
-    <!-- Case CGV paiement en ligne -->
     <div id="cgv-wrap" style="display:none;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;padding:12px;">
       <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#aaa;line-height:1.5;">
         <input type="checkbox" id="cgv-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#635bff;flex-shrink:0;margin-top:2px;">
         <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#635bff;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté.</span>
       </label>
     </div>
-    <!-- Case CGV espèces -->
     <div id="cgv-especes-wrap" style="display:none;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;padding:12px;">
       <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#aaa;line-height:1.5;">
         <input type="checkbox" id="cgv-especes-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#ff9500;flex-shrink:0;margin-top:2px;">
         <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#ff9500;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté.</span>
-      </label>
-    </div>
-    <button id="especes-btn" class="btn especes" style="display:none;" onclick="alertEspeces()">💵 Règlement en Espèces (Merci de prévoir l'appoint)</button>
-    <!-- Case CGV espèces -->
-    <div id="cgv-especes-wrap" style="display:none;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;padding:12px;">
-      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#aaa;line-height:1.5;">
-        <input type="checkbox" id="cgv-especes-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#ff4f8b;flex-shrink:0;margin-top:2px;">
-        <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#ff4f8b;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté.</span>
       </label>
     </div>
     <div id="online-notice" style="display:none;background:#1a1a2e;border:1px solid #635bff;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#a09af0;margin-top:8px;">
@@ -377,79 +256,44 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
     <div class="small">💡 Choisis tes boîtes, configure tes lots et remplis tes coordonnées (*) pour débloquer l'envoi.</div>
   </div>
 </div>
-
 </div><!-- end #main-page -->
 
-
-<!-- ========== PAGE CONFIRMATION CARTE ========== -->
+<!-- PAGE CONFIRMATION CARTE -->
 <div id="confirmation-page">
   <div class="confirm-wrapper">
-
     <div class="confirm-header">
       <div class="check-icon">✓</div>
       <h1>Paiement confirmé !</h1>
       <p>Votre paiement a bien été reçu. Suivez l'étape ci-dessous.</p>
     </div>
-
-    <!-- ALERTE IMPORTANTE -->
     <div style="background:#1a0d00;border:2px solid #ff9500;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
       <div style="font-size:24px;margin-bottom:8px;">⚠️</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#ff9500;letter-spacing:1px;margin-bottom:6px;">DERNIÈRE ÉTAPE OBLIGATOIRE</div>
       <div style="font-size:13px;color:#ccc;line-height:1.6;">Votre paiement est confirmé ✅<br>Pour finaliser et réserver votre créneau, <strong style="color:#fff;">envoyez votre récapitulatif ci-dessous</strong>.<br>Sans cet envoi, votre commande ne sera pas préparée.</div>
-      <div id="rappel-timer" style="margin-top:10px;font-size:12px;color:#ff9500;font-weight:bold;"></div>
     </div>
-
-    <!-- INFOS CLIENT -->
     <div class="confirm-card">
       <div class="confirm-card-header">👤 Informations de retrait</div>
       <div class="confirm-card-body">
-        <div class="info-row">
-          <span class="info-label">Prénom</span>
-          <span class="info-value" id="c-name">—</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Téléphone</span>
-          <span class="info-value" id="c-phone">—</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Date de retrait</span>
-          <span class="info-value" id="c-date">—</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Créneau horaire</span>
-          <span class="info-value" id="c-time">—</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Mode de paiement</span>
-          <span class="info-value" id="c-payment">—</span>
-        </div>
+        <div class="info-row"><span class="info-label">Prénom</span><span class="info-value" id="c-name">—</span></div>
+        <div class="info-row"><span class="info-label">Téléphone</span><span class="info-value" id="c-phone">—</span></div>
+        <div class="info-row"><span class="info-label">Date de retrait</span><span class="info-value" id="c-date">—</span></div>
+        <div class="info-row"><span class="info-label">Créneau horaire</span><span class="info-value" id="c-time">—</span></div>
+        <div class="info-row"><span class="info-label">Mode de paiement</span><span class="info-value" id="c-payment">—</span></div>
       </div>
     </div>
-
-    <!-- DÉTAIL COMMANDE -->
     <div class="confirm-card">
       <div class="confirm-card-header">🧾 Détail de la commande</div>
-      <div class="confirm-card-body">
-        <div id="c-order-detail" class="order-detail-box">—</div>
-      </div>
-      <div class="total-line">
-        <span>Total payé</span>
-        <span id="c-total">0,00 €</span>
-      </div>
+      <div class="confirm-card-body"><div id="c-order-detail" class="order-detail-box">—</div></div>
+      <div class="total-line"><span>Total payé</span><span id="c-total">0,00 €</span></div>
     </div>
-
-    <!-- BOUTONS ENVOI -->
     <div class="action-section">
       <h3>📨 Finaliser ma commande</h3>
-      <p>Envoyez votre récapitulatif pour confirmer votre créneau de retrait. Vous recevrez ensuite l'adresse complète.</p>
-
+      <p>Envoyez votre récapitulatif pour confirmer votre créneau. Vous recevrez ensuite l'adresse complète.</p>
       <div style="background:#111;border:1px solid #333;border-radius:10px;padding:12px;margin-bottom:14px;text-align:center;font-size:13px;color:#aaa;line-height:1.6;">
-        ⏳ Vous recevrez votre confirmation sous <strong style="color:#fff;">30 minutes maximum</strong> après envoi de votre récapitulatif.
+        ⏳ Vous recevrez votre confirmation sous <strong style="color:#fff;">30 minutes maximum</strong>.
       </div>
-
       <a id="confirm-whatsapp" class="btn whatsapp" href="#" style="margin-bottom:10px;font-size:18px;padding:16px;">📲 Envoyer sur WhatsApp</a>
       <a id="confirm-sms" class="btn smsbtn" href="#" style="font-size:18px;padding:16px;">💬 Envoyer par SMS</a>
-
       <div id="rappel-envoi" style="display:none;background:#1a1000;border:1px solid #ff9500;border-radius:10px;padding:12px;text-align:center;margin-top:12px;font-size:13px;color:#ff9500;">
         ⚠️ N'oubliez pas d'envoyer votre récapitulatif pour valider votre commande !
       </div>
@@ -457,143 +301,76 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
         ✅ Récapitulatif envoyé ! Vous recevrez votre confirmation sous 30 minutes.
       </div>
     </div>
-
-    <!-- ANNULATION -->
     <div class="cancel-section">
       <h4>Un empêchement ? Vous pouvez annuler votre commande :</h4>
       <div class="cancel-links">
-        <a id="cancel-whatsapp" href="#" class="cancel-link" onclick="apresAnnulCarte()" style="background:#ff4f8b22;color:#ff4f8b;border:1px solid #ff4f8b;">📲 Annuler via WhatsApp</a>
-        <a id="cancel-sms" href="#" class="cancel-link" onclick="apresAnnulCarte()" style="background:#007aff22;color:#007aff;border:1px solid #007aff;">💬 Annuler par SMS</a>
-        <a href="tel:0698213380" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
-      </div>
-      <!-- Confirmation annulation -->
-      <div id="carte-annul-confirme" style="display:none;margin-top:14px;background:#1a0a0a;border:1px solid #ff4f8b;border-radius:10px;padding:14px;text-align:center;">
-        <div style="font-size:22px;margin-bottom:6px;">✅</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ff4f8b;letter-spacing:1px;margin-bottom:6px;">Demande d'annulation transmise</div>
-        <div style="font-size:13px;color:#aaa;line-height:1.6;">Votre demande a bien été envoyée. Nous vous confirmerons l'annulation et le remboursement dans les plus brefs délais.</div>
+        <a id="cancel-whatsapp" href="#" class="cancel-link" style="background:#ff4f8b22;color:#ff4f8b;border:1px solid #ff4f8b;">📲 Annuler via WhatsApp</a>
+        <a id="cancel-sms" href="#" class="cancel-link" style="background:#007aff22;color:#007aff;border:1px solid #007aff;">💬 Annuler par SMS</a>
+        <a href="tel:0745915946" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
       </div>
     </div>
-
-    <!-- CONTACT -->
     <div style="text-align:center;margin-top:20px;padding:16px;background:#111;border-radius:12px;border:1px solid #222;">
-      <div style="font-size:13px;color:#888;margin-bottom:8px;">Une question ? Contactez-nous :</div>
+      <div style="font-size:13px;color:#888;margin-bottom:8px;">Une question ?</div>
       <a href="mailto:ohmikate51@gmail.com" style="color:#ff4f8b;text-decoration:none;font-weight:bold;font-size:14px;">📧 ohmikate51@gmail.com</a>
     </div>
-
+    <button class="btn-nouvelle" onclick="nouvelleCommande()">🔄 Passer une nouvelle commande</button>
   </div>
-</div><!-- end #confirmation-page -->
+</div>
 
-<!-- ========== PAGE CONFIRMATION ESPÈCES ========== -->
+<!-- PAGE CONFIRMATION ESPÈCES -->
 <div id="especes-page" style="display:none;">
   <div class="confirm-wrapper">
-
     <div class="confirm-header">
       <div class="check-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">📋</div>
       <h1>Commande envoyée !</h1>
       <p>Votre commande a bien été transmise. Conservez ce récapitulatif.</p>
     </div>
-
-    <!-- RÉCAPITULATIF -->
     <div class="confirm-card">
       <div class="confirm-card-header">🧾 Votre récapitulatif</div>
       <div class="confirm-card-body">
-        <div class="info-row">
-          <span class="info-label">Prénom</span>
-          <span class="info-value" id="e-name">—</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Date de retrait</span>
-          <span class="info-value" id="e-date">—</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Créneau</span>
-          <span class="info-value" id="e-time">—</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Règlement</span>
-          <span class="info-value" style="color:#ff9500;">💵 Espèces (appoint)</span>
-        </div>
+        <div class="info-row"><span class="info-label">Prénom</span><span class="info-value" id="e-name">—</span></div>
+        <div class="info-row"><span class="info-label">Date de retrait</span><span class="info-value" id="e-date">—</span></div>
+        <div class="info-row"><span class="info-label">Créneau</span><span class="info-value" id="e-time">—</span></div>
+        <div class="info-row"><span class="info-label">Règlement</span><span class="info-value" style="color:#ff9500;">💵 Espèces (appoint)</span></div>
       </div>
     </div>
-
     <div class="confirm-card">
       <div class="confirm-card-header">📦 Détail commande</div>
-      <div class="confirm-card-body">
-        <div id="e-order-detail" class="order-detail-box">—</div>
-      </div>
-      <div class="total-line">
-        <span>Total à prévoir</span>
-        <span id="e-total">0,00 €</span>
-      </div>
+      <div class="confirm-card-body"><div id="e-order-detail" class="order-detail-box">—</div></div>
+      <div class="total-line"><span>Total à prévoir</span><span id="e-total">0,00 €</span></div>
     </div>
-
-    <!-- INFO ATTENTE -->
     <div style="background:#111;border:1px solid #ff9500;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
       <div style="font-size:22px;margin-bottom:8px;">⏳</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ff9500;letter-spacing:1px;margin-bottom:8px;">CONFIRMATION SOUS 30 MINUTES</div>
-      <div style="font-size:13px;color:#aaa;line-height:1.7;">
-        Votre commande est en cours de validation.<br>
-        Vous recevrez très prochainement un message de confirmation avec l'adresse exacte de retrait.<br><br>
-        <strong style="color:#fff;">💡 Pensez à prévoir l'appoint exact !</strong>
-      </div>
+      <div style="font-size:13px;color:#aaa;line-height:1.7;">Votre commande est en cours de validation.<br>Vous recevrez très prochainement un message de confirmation avec l'adresse exacte de retrait.<br><br><strong style="color:#fff;">💡 Pensez à prévoir l'appoint exact !</strong></div>
     </div>
-
-    <!-- ANNULATION -->
     <div class="cancel-section">
       <h4>Un empêchement ? Vous pouvez annuler votre commande :</h4>
       <div class="cancel-links">
-        <a id="e-cancel-whatsapp" href="#" class="cancel-link" onclick="apresAnnulEspeces()" style="background:#ff4f8b22;color:#ff4f8b;border:1px solid #ff4f8b;">📲 Annuler via WhatsApp</a>
-        <a id="e-cancel-sms" href="#" class="cancel-link" onclick="apresAnnulEspeces()" style="background:#007aff22;color:#007aff;border:1px solid #007aff;">💬 Annuler par SMS</a>
-        <a href="tel:0698213380" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
-      </div>
-      <!-- Confirmation annulation -->
-      <div id="e-annul-confirme" style="display:none;margin-top:14px;background:#1a0a0a;border:1px solid #ff4f8b;border-radius:10px;padding:14px;text-align:center;">
-        <div style="font-size:22px;margin-bottom:6px;">✅</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ff4f8b;letter-spacing:1px;margin-bottom:6px;">Demande d'annulation transmise</div>
-        <div style="font-size:13px;color:#aaa;line-height:1.6;">Votre demande a bien été envoyée. Nous vous confirmerons l'annulation dans les plus brefs délais.</div>
+        <a id="e-cancel-whatsapp" href="#" class="cancel-link" style="background:#ff4f8b22;color:#ff4f8b;border:1px solid #ff4f8b;">📲 Annuler via WhatsApp</a>
+        <a id="e-cancel-sms" href="#" class="cancel-link" style="background:#007aff22;color:#007aff;border:1px solid #007aff;">💬 Annuler par SMS</a>
+        <a href="tel:0745915946" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
       </div>
     </div>
-
-    <!-- CONTACT -->
     <div style="text-align:center;margin-top:20px;padding:16px;background:#111;border-radius:12px;border:1px solid #222;">
-      <div style="font-size:13px;color:#888;margin-bottom:8px;">Une question ? Contactez-nous :</div>
+      <div style="font-size:13px;color:#888;margin-bottom:8px;">Une question ?</div>
       <a href="mailto:ohmikate51@gmail.com" style="color:#ff4f8b;text-decoration:none;font-weight:bold;font-size:14px;">📧 ohmikate51@gmail.com</a>
     </div>
-
+    <button class="btn-nouvelle" onclick="nouvelleCommande()">🔄 Passer une nouvelle commande</button>
   </div>
-</div><!-- end #especes-page -->
-
+</div>
 
 <script>
-/* ===== CONFIRMATION ANNULATION ===== */
-function apresAnnulCarte(){
-  setTimeout(()=>{
-    let el=document.getElementById("carte-annul-confirme");
-    if(el){
-      el.style.display="block";
-      el.scrollIntoView({behavior:"smooth"});
-    }
-  },800);
-}
-function apresAnnulEspeces(){
-  setTimeout(()=>{
-    let el=document.getElementById("e-annul-confirme");
-    if(el){
-      el.style.display="block";
-      el.scrollIntoView({behavior:"smooth"});
-    }
-  },800);
-}
-
 /* ===== VARIABLES GLOBALES ===== */
-let boxesSelected = {"9 beignets":0,"12 beignets":0};
-const boxPrices = {"9 beignets":5.0,"12 beignets":7.0};
-const supplementPricePerLot = 0.50;
-let selectedPaymentMode = "";
-const targetPhone = "0698213380";
-const baseHours = ["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
+let boxesSelected={"9 beignets":0,"12 beignets":0};
+const boxPrices={"9 beignets":5.0,"12 beignets":7.0};
+const supplementPricePerLot=0.50;
+let selectedPaymentMode="";
+const targetPhone="0745915946";
+const baseHours=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
+let espècesPageAffichée=false;
 
-/* ===== QUANTITÉS BOÎTES ===== */
+/* ===== QUANTITÉS ===== */
 function changeBoxQty(type,change){
   let input=type==="9 beignets"?document.getElementById("qty-9"):document.getElementById("qty-12");
   let newVal=Math.max(0,(parseInt(input.value)||0)+change);
@@ -607,95 +384,244 @@ function setBoxQty(type,value){
   generateCompositionForm();updateUI();
 }
 
-/* ===== FORMULAIRE COMPOSITION ===== */
+/* ===== COMPOSITION ===== */
 function generateCompositionForm(){
   const container=document.getElementById("composition-zone");
   if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0){container.innerHTML="";return;}
   let currentSelections={};
-  container.querySelectorAll("select").forEach(sel=>{currentSelections[sel.id]=sel.value;});
-  let html="<h3>2. Personnalise tes lots de 3 beignets</h3>";
-  html+='<span class="info-limite" style="color:#aaa;">Chaque ligne correspond à un lot de 3 beignets. Le bouton 📋 permet de copier les choix vers le lot suivant.</span>';
+  container.querySelectorAll(".lot-field").forEach(g=>{currentSelections[g.id]=g.tagName==="SELECT"?g.value:g.dataset.value;});
+  let html="<h3>2. Personnalise tes lots</h3>";
+  html+='<span class="info-limite" style="color:#aaa;">👉 Utilise les onglets <b style="color:#ff4f8b;">Lot 1 / Lot 2 / Lot 3</b> pour personnaliser chaque lot de ta boîte.</span>';
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
-    html+=`<div class="box-composer"><div class="box-title">📦 Boîte de 9 Beignets n°${b}</div>`;
-    for(let lot=1;lot<=3;lot++){
-      let pfx=`box9-${b}`;
-      html+=generateLotRowHtml(`${pfx}-lot${lot}`,`Lot de 3 beignets (${lot}/3)`,"Images/Beignet9.jpg",true,pfx,3);
-    }
+    let pfx9=`box9-${b}`;
+    html+=`<div class="box-composer" id="composer-${pfx9}" data-baseprice="${boxPrices["9 beignets"]}"><div class="box-title">📦 Boîte de 9 Beignets n°${b} <span class="box-subtotal" id="subtotal-${pfx9}"></span></div>`;
+    html+=generateLotTabsHtml(pfx9,3);
+    for(let lot=1;lot<=3;lot++){html+=generateLotRowHtml(`${pfx9}-lot${lot}`,`Lot de 3 beignets (${lot}/3)`,"Images/Beignet9.jpg",lot===1,pfx9,3);}
     html+=`</div>`;
   }
   for(let b=1;b<=boxesSelected["12 beignets"];b++){
-    html+=`<div class="box-composer"><div class="box-title">📦 Boîte de 12 Beignets n°${b}</div>`;
-    for(let lot=1;lot<=4;lot++){
-      let pfx=`box12-${b}`;
-      html+=generateLotRowHtml(`${pfx}-lot${lot}`,`Lot de 3 beignets (${lot}/4)`,"Images/Beignet9.jpg",true,pfx,4);
-    }
+    let pfx12=`box12-${b}`;
+    html+=`<div class="box-composer" id="composer-${pfx12}" data-baseprice="${boxPrices["12 beignets"]}"><div class="box-title">📦 Boîte de 12 Beignets n°${b} <span class="box-subtotal" id="subtotal-${pfx12}"></span></div>`;
+    html+=generateLotTabsHtml(pfx12,3);
+    for(let lot=1;lot<=3;lot++){html+=generateLotRowHtml(`${pfx12}-lot${lot}`,`Lot de 4 beignets (${lot}/3)`,"Images/Beignet9.jpg",lot===1,pfx12,3);}
     html+=`</div>`;
   }
   container.innerHTML=html;
-  container.querySelectorAll("select").forEach(sel=>{if(currentSelections[sel.id])sel.value=currentSelections[sel.id];});
+  container.querySelectorAll(".lot-field").forEach(g=>{
+    let m=g.id.match(/^(.*)-(base|nappage|garniture|pot)$/);
+    if(!m)return;
+    let val=currentSelections[g.id]||(g.tagName==="SELECT"?g.value:g.dataset.value);
+    setChipValue(m[1],m[2],val);
+  });
+  container.querySelectorAll(".lot-row").forEach(row=>{updateLotImage(row.dataset.prefix,row.dataset.defaultimg);});
 }
 
-function generateLotRowHtml(idPrefix,labelTitle,defaultImg,isFirst=false,boxPrefix="",totalLots=3){
-  // Bouton dupliquer vers le lot suivant (sauf dernier lot)
+function isLotConfigured(idPrefix){
+  return getLotValue(idPrefix,"base")!=="Nature"||getLotValue(idPrefix,"nappage")!=="Aucun"||getLotValue(idPrefix,"garniture")!=="Aucun"||getLotValue(idPrefix,"pot")!=="Aucun";
+}
+
+function lotSupplementTotal(idPrefix,potCounterObj,potCap){
+  let sup=0;
+  if(getLotValue(idPrefix,"nappage")!=="Aucun")sup+=supplementPricePerLot;
+  if(getLotValue(idPrefix,"garniture")!=="Aucun")sup+=supplementPricePerLot;
+  if(getLotValue(idPrefix,"pot")!=="Aucun"&&potCounterObj.count<potCap){sup+=0.50;potCounterObj.count++;}
+  return sup;
+}
+
+function refreshComposerUI(){
+  document.querySelectorAll(".box-composer").forEach(box=>{
+    let pfx=box.id.replace("composer-","");
+    let lots=box.querySelectorAll(".lot-row");
+    let base=parseFloat(box.dataset.baseprice)||0;
+    let total=base;
+    let potCounter={count:0};
+    lots.forEach(row=>{
+      let idPrefix=row.dataset.prefix;
+      total+=lotSupplementTotal(idPrefix,potCounter,lots.length);
+      let configured=isLotConfigured(idPrefix);
+      row.classList.toggle("lot-configured",configured);
+      let badge=row.querySelector(".lot-badge");
+      if(badge)badge.textContent=configured?"✅":"";
+      let tabCheck=document.getElementById(`tabcheck-${idPrefix}`);
+      if(tabCheck)tabCheck.textContent=configured?" ✅":"";
+    });
+    let subEl=document.getElementById(`subtotal-${pfx}`);
+    if(subEl)subEl.textContent=`— ${total.toFixed(2)}€`;
+  });
+}
+
+function saveDraftToStorage(){
+  try{
+    localStorage.setItem('ohMikateDraft',JSON.stringify({
+      name:document.getElementById("client-name")?.value||"",
+      phone:document.getElementById("client-phone")?.value||"",
+      notes:document.getElementById("client-notes")?.value||"",
+      savedAt:Date.now()
+    }));
+  }catch(e){}
+}
+
+function updateProgressTracker(){
+  const tracker=document.getElementById("progress-tracker");
+  if(!tracker)return;
+  let step1=(boxesSelected["9 beignets"]>0||boxesSelected["12 beignets"]>0);
+  let anyConfigured=Array.from(document.querySelectorAll(".lot-row")).some(r=>isLotConfigured(r.dataset.prefix));
+  let name=document.getElementById("client-name")?.value.trim();
+  let date=document.getElementById("client-date")?.value;
+  let time=document.getElementById("client-time")?.value;
+  let step3=!!(name&&date&&time&&selectedPaymentMode);
+  const setStep=(id,active,done)=>{
+    let el=document.getElementById(id);
+    if(!el)return;
+    el.classList.toggle("step-done",done);
+    el.classList.toggle("step-active",active&&!done);
+    let dot=el.querySelector(".progress-dot");
+    if(dot)dot.textContent=done?"✓":dot.dataset.num;
+  };
+  setStep("step-1",step1,step1);
+  setStep("step-2",step1,anyConfigured);
+  setStep("step-3",anyConfigured,step3);
+}
+
+function chipBtn(idPrefix,field,value,label){
+  return `<button type="button" class="chip" data-val="${value}" onclick="selectChip('${idPrefix}','${field}','${value}')">${label}</button>`;
+}
+
+function generateLotTabsHtml(boxPrefix,totalLots){
+  let html='<div class="lot-tabs" id="tabs-'+boxPrefix+'">';
+  for(let lot=1;lot<=totalLots;lot++){
+    let idPrefix=`${boxPrefix}-lot${lot}`;
+    html+=`<button type="button" class="lot-tab${lot===1?' lot-tab-active':''}" id="tab-${idPrefix}" onclick="switchLotTab('${boxPrefix}','${idPrefix}',${totalLots})">Lot ${lot}<span class="lot-tab-check" id="tabcheck-${idPrefix}"></span></button>`;
+  }
+  html+='</div>';
+  return html;
+}
+
+function switchLotTab(boxPrefix,idPrefix,totalLots){
+  for(let lot=1;lot<=totalLots;lot++){
+    let p=`${boxPrefix}-lot${lot}`;
+    let row=document.querySelector(`.lot-row[data-prefix="${p}"]`);
+    let tab=document.getElementById(`tab-${p}`);
+    let active=(p===idPrefix);
+    if(row)row.classList.toggle("lot-active",active);
+    if(tab)tab.classList.toggle("lot-tab-active",active);
+  }
+}
+
+function generateLotRowHtml(idPrefix,labelTitle,defaultImg,isFirst,boxPrefix,totalLots){
   let lotNum=parseInt(idPrefix.split("lot")[1]);
   let dupBtn="";
   if(lotNum<totalLots){
-    dupBtn=`<button type="button" onclick="dupliquerVersLotSuivant('${idPrefix}','${boxPrefix}',${lotNum+1},'${defaultImg}')" style="margin-top:8px;background:#1a1a2e;border:1px solid #635bff;color:#a09af0;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;width:100%;">
-      📋 Copier vers le lot ${lotNum+1}
-    </button>`;
+    dupBtn=`<button type="button" onclick="dupliquerVersLotSuivant('${idPrefix}','${boxPrefix}',${lotNum+1},'${defaultImg}')" style="margin-top:8px;background:#1a1a2e;border:1px solid #635bff;color:#a09af0;font-size:11px;padding:6px 12px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;width:100%;">📋 Copier vers le lot ${lotNum+1}</button>`;
   }
-
-  return `<div class="lot-row" data-prefix="${idPrefix}">
+  let sameTasteBtn="";
+  if(lotNum===1){
+    sameTasteBtn=`<button type="button" onclick="applyToAllLots('${boxPrefix}',${totalLots},'${defaultImg}')" style="margin-top:8px;background:#ff4f8b;border:none;color:#fff;font-size:11px;font-weight:bold;padding:8px 12px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;width:100%;">⚡ Même goût pour toute la boîte</button>`;
+  }
+  return `<div class="lot-row${isFirst?' lot-active':''}" data-prefix="${idPrefix}" data-defaultimg="${defaultImg}">
     <img id="${idPrefix}-img" src="${defaultImg}" class="lot-preview-img" alt="Aperçu lot">
     <div class="lot-content">
-      <div class="lot-title">✨ ${labelTitle}</div>
-      <div class="selectors-container">
-        <div><select id="${idPrefix}-base" class="select-custom" onchange="updateLotImage('${idPrefix}','${defaultImg}');updateUI();">
-          <option value="Nature">Enrobage : Aucun (Nature)</option>
-          <option value="Sucre">Sucre (+0€)</option>
-          <option value="Noix de coco">Noix de coco (+0€)</option>
-        </select></div>
-        <div><select id="${idPrefix}-nappage" class="select-custom" onchange="updateLotImage('${idPrefix}','${defaultImg}');updateUI();">
-          <option value="Aucun">🍫 Nappage : Aucun</option>
-          <option value="Chocolat">Chocolat (+0,50€)</option>
-          <option value="Caramel">Caramel (+0,50€)</option>
-        </select></div>
-        <div><select id="${idPrefix}-garniture" class="select-custom" onchange="updateLotImage('${idPrefix}','${defaultImg}');updateUI();">
-          <option value="Aucun">🥜 Garniture : Aucun</option>
-          <option value="Éclats M&M's">M&M's (+0,50€)</option>
-          <option value="Éclats Spéculoos">Spéculoos (+0,50€)</option>
-          <option value="Éclats Cacahuète">Cacahuètes (+0,50€)</option>
-        </select></div>
-        <div><select id="${idPrefix}-pot" class="select-custom" onchange="updateUI();">
-          <option value="Aucun">Pot : Aucun</option>
-          <option value="Pot Nutella">Pot Nutella (+0,50€)</option>
-          <option value="Pot Pâte d'arachide">Pot Pâte d'arachide (+0,50€)</option>
-        </select></div>
+      <div class="lot-title">✨ ${labelTitle} <span class="lot-badge"></span></div>
+      <div class="chip-section">
+        <div class="chip-label">Enrobage</div>
+        <div class="chip-group lot-field" id="${idPrefix}-base" data-value="Nature">
+          ${chipBtn(idPrefix,'base','Nature','Nature')}
+          ${chipBtn(idPrefix,'base','Sucre','🍚 Sucre')}
+          ${chipBtn(idPrefix,'base','Noix de coco','🥥 Coco')}
+        </div>
       </div>
+      <div class="lot-selects-row">
+        <div class="chip-section">
+          <div class="chip-label">🍫 Nappage<span class="chip-price">+0,50€</span></div>
+          <select class="select-custom lot-field" id="${idPrefix}-nappage" data-value="Aucun" onchange="selectChip('${idPrefix}','nappage',this.value)">
+            <option value="Aucun">Aucun</option>
+            <option value="Chocolat">🍫 Chocolat</option>
+            <option value="Caramel">🍮 Caramel</option>
+          </select>
+        </div>
+        <div class="chip-section">
+          <div class="chip-label">🥜 Garniture<span class="chip-price">+0,50€</span></div>
+          <select class="select-custom lot-field" id="${idPrefix}-garniture" data-value="Aucun" onchange="selectChip('${idPrefix}','garniture',this.value)">
+            <option value="Aucun">Aucun</option>
+            <option value="Éclats M&M's">🍬 M&M's</option>
+            <option value="Éclats Spéculoos">🍪 Spéculoos</option>
+            <option value="Éclats Cacahuète">🥜 Cacahuètes</option>
+          </select>
+        </div>
+        <div class="chip-section">
+          <div class="chip-label">🍯 Pot<span class="chip-price">+0,50€</span></div>
+          <select class="select-custom lot-field" id="${idPrefix}-pot" data-value="Aucun" onchange="selectChip('${idPrefix}','pot',this.value)">
+            <option value="Aucun">Aucun</option>
+            <option value="Pot Nutella">🍫 Nutella</option>
+            <option value="Pot Pâte d'arachide">🥜 Pâte d'arachide</option>
+          </select>
+        </div>
+      </div>
+      ${sameTasteBtn}
       ${dupBtn}
     </div>
   </div>`;
 }
 
-/* ===== DUPLIQUER VERS LOT SUIVANT ===== */
-function dupliquerVersLotSuivant(srcPrefix,boxPrefix,lotDest,defaultImg){
-  let base=document.getElementById(`${srcPrefix}-base`)?.value||"Nature";
-  let nappage=document.getElementById(`${srcPrefix}-nappage`)?.value||"Aucun";
-  let garniture=document.getElementById(`${srcPrefix}-garniture`)?.value||"Aucun";
-  let pot=document.getElementById(`${srcPrefix}-pot`)?.value||"Aucun";
-  let destPrefix=`${boxPrefix}-lot${lotDest}`;
-  let s=document.getElementById(`${destPrefix}-base`);if(s)s.value=base;
-  let sn=document.getElementById(`${destPrefix}-nappage`);if(sn)sn.value=nappage;
-  let sg=document.getElementById(`${destPrefix}-garniture`);if(sg)sg.value=garniture;
-  let sp=document.getElementById(`${destPrefix}-pot`);if(sp)sp.value=pot;
-  updateLotImage(destPrefix,defaultImg);
+function getLotValue(idPrefix,field){
+  let el=document.getElementById(`${idPrefix}-${field}`);
+  if(!el)return field==="base"?"Nature":"Aucun";
+  if(el.tagName==="SELECT")return el.value;
+  return el.dataset.value||(field==="base"?"Nature":"Aucun");
+}
+
+function setChipValue(idPrefix,field,value){
+  let el=document.getElementById(`${idPrefix}-${field}`);
+  if(!el)return;
+  if(el.tagName==="SELECT"){el.value=value;return;}
+  el.dataset.value=value;
+  el.querySelectorAll(".chip").forEach(c=>c.classList.toggle("selected",c.dataset.val===value));
+}
+
+function selectChip(idPrefix,field,value){
+  setChipValue(idPrefix,field,value);
+  let row=document.querySelector(`[data-prefix="${idPrefix}"]`);
+  let defaultImg=row?.dataset.defaultimg||"Images/Beignet9.jpg";
+  updateLotImage(idPrefix,defaultImg);
   updateUI();
+}
+
+function dupliquerVersLotSuivant(srcPrefix,boxPrefix,lotDest,defaultImg){
+  let base=getLotValue(srcPrefix,"base");
+  let nappage=getLotValue(srcPrefix,"nappage");
+  let garniture=getLotValue(srcPrefix,"garniture");
+  let pot=getLotValue(srcPrefix,"pot");
+  let destPrefix=`${boxPrefix}-lot${lotDest}`;
+  setChipValue(destPrefix,"base",base);
+  setChipValue(destPrefix,"nappage",nappage);
+  setChipValue(destPrefix,"garniture",garniture);
+  setChipValue(destPrefix,"pot",pot);
+  updateLotImage(destPrefix,defaultImg);updateUI();
+  switchLotTab(boxPrefix,destPrefix,3);
   showToast(`📋 Lot ${lotDest-1} copié vers le lot ${lotDest} !`);
 }
 
+function applyToAllLots(boxPrefix,totalLots,defaultImg){
+  let srcPrefix=`${boxPrefix}-lot1`;
+  let base=getLotValue(srcPrefix,"base");
+  let nappage=getLotValue(srcPrefix,"nappage");
+  let garniture=getLotValue(srcPrefix,"garniture");
+  let pot=getLotValue(srcPrefix,"pot");
+  for(let lot=1;lot<=totalLots;lot++){
+    let destPrefix=`${boxPrefix}-lot${lot}`;
+    setChipValue(destPrefix,"base",base);
+    setChipValue(destPrefix,"nappage",nappage);
+    setChipValue(destPrefix,"garniture",garniture);
+    setChipValue(destPrefix,"pot",pot);
+    updateLotImage(destPrefix,defaultImg);
+  }
+  updateUI();
+  showToast("⚡ Appliqué à toute la boîte !");
+}
+
 function updateLotImage(idPrefix,defaultImg){
-  const nappage=document.getElementById(`${idPrefix}-nappage`)?.value||"Aucun";
-  const garniture=document.getElementById(`${idPrefix}-garniture`)?.value||"Aucun";
+  const nappage=getLotValue(idPrefix,"nappage");
+  const garniture=getLotValue(idPrefix,"garniture");
   const imgEl=document.getElementById(`${idPrefix}-img`);
   if(!imgEl)return;
   if(nappage!=="Aucun"){imgEl.src=nappage==="Chocolat"?"Images/Chocolat.jpg":"Images/Caramel.jpg";}
@@ -718,13 +644,13 @@ function calculateTotalAndExtractStructure(){
     let potCount=0;
     for(let lot=1;lot<=3;lot++){
       let idPrefix=`box9-${b}-lot${lot}`;
-      let nappage=document.getElementById(`${idPrefix}-nappage`)?.value||"Aucun";
-      let garniture=document.getElementById(`${idPrefix}-garniture`)?.value||"Aucun";
-      let pot=document.getElementById(`${idPrefix}-pot`)?.value||"Aucun";
+      let nappage=getLotValue(idPrefix,"nappage");
+      let garniture=getLotValue(idPrefix,"garniture");
+      let pot=getLotValue(idPrefix,"pot");
       if(nappage!=="Aucun")total+=supplementPricePerLot;
       if(garniture!=="Aucun")total+=supplementPricePerLot;
       if(pot!=="Aucun"&&potCount<3){total+=0.50;potCount++;}
-      structuredOrderText+=`  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value||"Nature"}`;
+      structuredOrderText+=`  - Lot ${lot} : ${getLotValue(idPrefix,"base")}`;
       if(nappage!=="Aucun")structuredOrderText+=` + ${nappage}`;
       if(garniture!=="Aucun")structuredOrderText+=` + ${garniture}`;
       if(pot!=="Aucun"&&potCount<=3)structuredOrderText+=` + ${pot}`;
@@ -734,63 +660,52 @@ function calculateTotalAndExtractStructure(){
   for(let b=1;b<=boxesSelected["12 beignets"];b++){
     structuredOrderText+=`\n📦 BOÎTE DE 12 BEIGNETS n°${b} :\n`;
     let potCount=0;
-    for(let lot=1;lot<=4;lot++){
+    for(let lot=1;lot<=3;lot++){
       let idPrefix=`box12-${b}-lot${lot}`;
-      let nappage=document.getElementById(`${idPrefix}-nappage`)?.value||"Aucun";
-      let garniture=document.getElementById(`${idPrefix}-garniture`)?.value||"Aucun";
-      let pot=document.getElementById(`${idPrefix}-pot`)?.value||"Aucun";
+      let nappage=getLotValue(idPrefix,"nappage");
+      let garniture=getLotValue(idPrefix,"garniture");
+      let pot=getLotValue(idPrefix,"pot");
       if(nappage!=="Aucun")total+=supplementPricePerLot;
       if(garniture!=="Aucun")total+=supplementPricePerLot;
-      if(pot!=="Aucun"&&potCount<4){total+=0.50;potCount++;}
-      structuredOrderText+=`  - Lot ${lot} : ${document.getElementById(`${idPrefix}-base`)?.value||"Nature"}`;
+      if(pot!=="Aucun"&&potCount<3){total+=0.50;potCount++;}
+      structuredOrderText+=`  - Lot ${lot} : ${getLotValue(idPrefix,"base")}`;
       if(nappage!=="Aucun")structuredOrderText+=` + ${nappage}`;
       if(garniture!=="Aucun")structuredOrderText+=` + ${garniture}`;
-      if(pot!=="Aucun"&&potCount<=4)structuredOrderText+=` + ${pot}`;
+      if(pot!=="Aucun"&&potCount<=3)structuredOrderText+=` + ${pot}`;
       structuredOrderText+=`\n`;
     }
   }
   return{totalPrice:total,summaryShort:textSummaryList.join(" / "),detailsText:structuredOrderText};
 }
 
-/* ===== MISE À JOUR UI ===== */
+/* ===== UI ===== */
 function updateUI(){
   let orderInfo=calculateTotalAndExtractStructure();
   let total=orderInfo.totalPrice;
+  refreshComposerUI();
+  updateProgressTracker();
+  saveDraftToStorage();
   document.getElementById("recap").innerHTML=orderInfo.summaryShort?
     "<b>Sélection :</b><br>"+orderInfo.summaryShort+"<br><br><b>Détail :</b><br><small>"+orderInfo.detailsText.replace(/\n/g,"<br>")+"</small>"
     :"Aucune sélection";
   document.getElementById("total").innerText=total.toFixed(2);
   const summaryBar=document.getElementById("summary-bar");
   if(boxesSelected["9 beignets"]>0||boxesSelected["12 beignets"]>0)summaryBar.classList.add("show");else summaryBar.classList.remove("show");
-
-  // Bouton Stripe
   let stripeBtn=document.getElementById("stripe-btn");
-  let espBtn=document.getElementById("especes-btn");
   let onlineNotice=document.getElementById("online-notice");
   const btnsCommunication=[document.getElementById("whatsapp"),document.getElementById("sms-btn"),document.getElementById("phone-btn")];
-
   if(selectedPaymentMode==="Carte"){
-    // Paiement en ligne → bouton Stripe visible, CGV, WA/SMS/Tel cachés
     stripeBtn.style.display="block";
-    espBtn.style.display="none";
     onlineNotice.style.display="none";
     document.getElementById("cgv-wrap").style.display="block";
+    document.getElementById("cgv-especes-wrap").style.display="none";
     let cgvOk=document.getElementById("cgv-check").checked;
-    if(isFormValid()&&cgvOk){
-      stripeBtn.disabled=false;
-      stripeBtn.classList.remove("disabled");
-      stripeBtn.textContent="Payer en ligne 💳";
-    } else {
-      stripeBtn.disabled=true;
-      stripeBtn.classList.add("disabled");
-      stripeBtn.textContent=isFormValid()&&!cgvOk?"✅ Acceptez les CGV pour continuer":"Payer en ligne 💳";
-    }
+    if(isFormValid()&&cgvOk){stripeBtn.disabled=false;stripeBtn.classList.remove("disabled");stripeBtn.textContent="Payer en ligne 💳";}
+    else{stripeBtn.disabled=true;stripeBtn.classList.add("disabled");stripeBtn.textContent=isFormValid()&&!cgvOk?"✅ Acceptez les CGV pour continuer":"Payer en ligne 💳";}
     btnsCommunication.forEach(btn=>{btn.style.display="none";});
     document.querySelector(".small").style.display="none";
-
   }else if(selectedPaymentMode==="Espèces"){
     stripeBtn.style.display="none";
-    espBtn.style.display="none";
     onlineNotice.style.display="none";
     document.getElementById("cgv-wrap").style.display="none";
     document.getElementById("cgv-especes-wrap").style.display="block";
@@ -811,9 +726,7 @@ function updateUI(){
       return true;
     };
   }else{
-    // Aucun mode sélectionné
     stripeBtn.style.display="none";
-    espBtn.style.display="none";
     onlineNotice.style.display="none";
     document.getElementById("cgv-wrap").style.display="none";
     document.getElementById("cgv-especes-wrap").style.display="none";
@@ -823,7 +736,6 @@ function updateUI(){
   }
 }
 
-/* ===== VALIDATION FORMULAIRE ===== */
 function isFormValid(){
   if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0)return false;
   let name=document.getElementById("client-name").value.trim();
@@ -837,18 +749,15 @@ function isFormValid(){
   return true;
 }
 
-function checkForm(event, canal="WhatsApp"){
+function checkForm(event,canal="WhatsApp"){
   if(!isFormValid()){showToast("⚠️ Formulaire incomplet !");if(event)event.preventDefault();return false;}
   if(selectedPaymentMode==="Espèces"){
     let cgvOk=document.getElementById("cgv-especes-check")?.checked;
     if(!cgvOk){showToast("⚠️ Veuillez accepter les CGV !");if(event)event.preventDefault();return false;}
   }
-  // sendOrderToSheet est appelé uniquement dans afficherPageEspeces pour les espèces
-  // et dans window.onload pour la carte — pas ici pour éviter les doublons
   return true;
 }
 
-/* ===== SAUVEGARDE COMMANDE AVANT PAIEMENT ===== */
 function saveOrderToStorage(){
   let orderInfo=calculateTotalAndExtractStructure();
   let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
@@ -864,41 +773,24 @@ function saveOrderToStorage(){
     summaryShort:orderInfo.summaryShort,
     canal:"Carte bancaire",
     heure:now,
-    dateCommande:new Date().toLocaleDateString('fr-FR')
+    dateCommande:new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})
   };
-  localStorage.setItem('ohMikateCommande', JSON.stringify(data));
+  localStorage.setItem('ohMikateCommande',JSON.stringify(data));
 }
 
-/* ===== GÉNÈRE LE MESSAGE DE CONFIRMATION À ENVOYER AU CLIENT ===== */
-function getMessageConfirmationClient(name, phone, date, time, total, pourSMS=false){
-  let b=pourSMS?"":"*";
-  let msg=`Bonjour ${name} ! 😊\n\n`;
-  msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
-  msg+=`🗓️ Date : ${date}\n`;
-  msg+=`⏰ Créneau : ${time}\n`;
-  msg+=`💰 Total : ${total} €\n\n`;
-  msg+=`📍 ${b}Adresse de retrait :${b}\n`;
-  msg+=`Communiquée lors de la confirmation de votre commande.\n\n`;
-  msg+=`🔔 Une fois l'adresse reçue et arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — tu auras ta commande en mains propres ! 🍩\n`;
-  msg+=`\nÀ tout à l'heure ! 🧇\n— Oh! Mikaté`;
-  return pourSMS ? msg.normalize("NFD").replace(/[\u0300-\u036f]/g,"") : msg;
-}
-
-/* ===== TEXTE COMMANDE POUR WA / SMS ===== */
-function getOrderText(cleanForSms=false, canal="WhatsApp"){
+function getOrderText(cleanForSms=false,canal="WhatsApp"){
   let name=document.getElementById("client-name").value.trim();
-  let phoneField=document.getElementById("client-phone").value.trim();
-  let phoneNorm=normalizePhone(phoneField);
+  let phoneNorm=normalizePhone(document.getElementById("client-phone").value.trim());
   let date=document.getElementById("client-date").value;
   let time=document.getElementById("client-time").value;
   let noteField=document.getElementById("client-notes").value.trim();
   let payText=selectedPaymentMode==="Espèces"?"Espèces (Appoint à prévoir)":"Paiement en ligne effectué ✅";
   let orderInfo=calculateTotalAndExtractStructure();
   let b=cleanForSms?"":"*";
-  let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-
+  let now=new Date();
+  let nowStr=now.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+" à "+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   let text=`${b}COMMANDE OH MIKATE${b}\n`;
-  text+=`📅 Reçue le ${new Date().toLocaleDateString('fr-FR')} à ${now} via ${canal}\n`;
+  text+=`📅 Reçue le ${nowStr} via ${canal}\n`;
   text+=orderInfo.detailsText;
   text+=`\n${b}TOTAL : ${orderInfo.totalPrice.toFixed(2)} EUR${b}`;
   if(noteField)text+=`\n\nPRECISION CLIENT :\n"${noteField}"`;
@@ -906,8 +798,7 @@ function getOrderText(cleanForSms=false, canal="WhatsApp"){
   return cleanForSms?text.normalize("NFD").replace(/[\u0300-\u036f]/g,""):text;
 }
 
-/* ===== GÉNÈRE TEXTE DEPUIS STORAGE (message envoyé à Soni) ===== */
-function getConfirmOrderText(data, cleanForSms=false){
+function getConfirmOrderText(data,cleanForSms=false){
   let b=cleanForSms?"":"*";
   let now=new Date().toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
   let text=`${b}COMMANDE OH MIKATE${b}\n`;
@@ -915,16 +806,10 @@ function getConfirmOrderText(data, cleanForSms=false){
   text+=data.orderDetail;
   text+=`\n${b}TOTAL : ${data.total} EUR${b}`;
   if(data.notes)text+=`\n\nPRECISION CLIENT :\n"${data.notes}"`;
-  text+=`\n\n--- INFOS RETRAIT ---`;
-  text+=`\nNom : ${data.name}`;
-  text+=`\nTelephone : ${data.phone}`;
-  text+=`\nDate souhaitee : ${data.date}`;
-  text+=`\nTranche souhaitee : ${data.time}`;
-  text+=`\nReglement : Paiement en ligne (carte)`;
+  text+=`\n\n--- INFOS RETRAIT ---\nNom : ${data.name}\nTelephone : ${data.phone}\nDate souhaitee : ${data.date}\nTranche souhaitee : ${data.time}\nReglement : Paiement en ligne (carte)`;
   return cleanForSms?text.normalize("NFD").replace(/[\u0300-\u036f]/g,""):text;
 }
 
-/* ===== AUTRES FONCTIONS ===== */
 function triggerSMS(event){
   if(!checkForm(event,"SMS"))return;
   let smsBody=getOrderText(true,"SMS");
@@ -942,66 +827,40 @@ function triggerCall(event){
   setTimeout(()=>{window.location.href="tel:"+targetPhone;},500);
 }
 
-/* ===== PAGE CONFIRMATION ESPÈCES ===== */
-let espècesPageAffichée=false; // Verrou anti-doublon
 function afficherPageEspeces(canalEspeces="WhatsApp"){
-  if(espècesPageAffichée)return; // Bloque le double appel
+  if(espècesPageAffichée)return;
   espècesPageAffichée=true;
-
   let name=document.getElementById("client-name").value.trim();
   let date=document.getElementById("client-date").value;
   let time=document.getElementById("client-time").value;
   let phone=normalizePhone(document.getElementById("client-phone").value.trim());
   let orderInfo=calculateTotalAndExtractStructure();
-
   document.getElementById("main-page").style.display="none";
   document.getElementById("especes-page").style.display="block";
   document.body.style.paddingBottom="0";
-
-  // Envoi Google Sheet UNE SEULE FOIS pour les commandes espèces
   let now2=new Date();
   let heure2=now2.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  // Format date DD/MM/YYYY pour que l'admin puisse la parser correctement
   let dateStr=now2.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+" "+heure2+" via "+canalEspeces;
   fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
     method:"POST",mode:"no-cors",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      name,phone,
-      order:orderInfo.detailsText,
-      total:orderInfo.totalPrice.toFixed(2),
-      payment:"Espèces",
-      date:dateStr,
-      dateRetrait:date,
-      creneau:time,
-      canal:canalEspeces
-    })
+    body:JSON.stringify({name,phone,order:orderInfo.detailsText,total:orderInfo.totalPrice.toFixed(2),payment:"Espèces",date:dateStr,dateRetrait:date,creneau:time,canal:canalEspeces})
   });
-
   document.getElementById("e-name").textContent=name||"—";
   document.getElementById("e-date").textContent=date||"—";
   document.getElementById("e-time").textContent=time||"—";
   document.getElementById("e-order-detail").textContent=orderInfo.detailsText||"—";
   document.getElementById("e-total").textContent=orderInfo.totalPrice.toFixed(2)+" €";
-
-  // Liens annulation espèces (sans nom)
-  let msgAnnul=`Bonjour, je souhaite annuler ma commande :\n\n`+
-    `📅 Date souhaitée : ${date}\n`+
-    `⏰ Créneau : ${time}\n`+
-    `💰 Total : ${orderInfo.totalPrice.toFixed(2)} €\n\n`+
-    `📦 Détail :\n${orderInfo.detailsText}\n\n`+
-    `Merci de confirmer l'annulation.`;
+  let msgAnnul=`Bonjour, je souhaite annuler ma commande :\n\n📅 Date souhaitée : ${date}\n⏰ Créneau : ${time}\n💰 Total : ${orderInfo.totalPrice.toFixed(2)} €\n\n📦 Détail :\n${orderInfo.detailsText}\n\nMerci de confirmer l'annulation.`;
   let msgAnnulSMS=msgAnnul.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-  let phoneWA=phone.startsWith("0")?"33"+phone.substring(1):phone;
-
-  document.getElementById("e-cancel-whatsapp").href=
-    "https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnul);
+  document.getElementById("e-cancel-whatsapp").href="https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnul);
   document.getElementById("e-cancel-sms").addEventListener("click",function(e){
     e.preventDefault();
     let ua=navigator.userAgent.toLowerCase();
     window.location.href="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgAnnulSMS);
   });
 }
+
 function selectPayment(mode){
   selectedPaymentMode=mode;
   document.getElementById("opt-carte").classList.toggle("selected",mode==='Carte');
@@ -1010,60 +869,54 @@ function selectPayment(mode){
 }
 function alertEspeces(){showToast("💵 Merci de préparer l'appoint !");}
 
+function nouvelleCommande(){
+  localStorage.removeItem('ohMikateCommande');
+  localStorage.removeItem('ohMikateSheetSent');
+  window.location.href=window.location.pathname;
+}
+
 function initDates(){
   const dateSelect=document.getElementById("client-date");
   dateSelect.innerHTML='<option value="">-- Sélectionne une date --</option>';
   let now=new Date();
-  let startDate=new Date(2026,6,1); // 1er juillet 2026
-  // Si on est après le 1er juillet, on commence à aujourd'hui
-  if(now>startDate) startDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  let startDate=new Date(2026,6,1);
+  if(now>startDate)startDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   for(let i=0;i<14;i++){
-    let d=new Date(startDate);
-    d.setDate(startDate.getDate()+i);
+    let d=new Date(startDate);d.setDate(startDate.getDate()+i);
     let label=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
     label=label.charAt(0).toUpperCase()+label.slice(1);
-    let opt=document.createElement("option");
-    opt.value=opt.textContent=label;
+    let opt=document.createElement("option");opt.value=opt.textContent=label;
     dateSelect.appendChild(opt);
   }
 }
+
 function handleDateChange(){
   const dateSelect=document.getElementById("client-date");
   const timeSelect=document.getElementById("client-time");
   const warning=document.getElementById("time-warning");
   if(warning)warning.style.display="none";
   timeSelect.innerHTML='<option value="">-- Sélectionne une tranche horaire --</option>';
-
   let selectedDate=dateSelect.value;
   let now=new Date();
   let todayLabel=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   todayLabel=todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1);
   let isToday=(selectedDate===todayLabel);
   let currentMinutes=now.getHours()*60+now.getMinutes();
-
   baseHours.forEach(t=>{
-    // Extrait l'heure de début du créneau ex: "17h30 - 18h00" → 17*60+30=1050
     let match=t.match(/(\d{1,2})h(\d{2})/);
     let slotMinutes=match?(parseInt(match[1])*60+parseInt(match[2])):0;
-    // Bloque le créneau si aujourd'hui et moins de 30min avant
-    if(isToday && slotMinutes-currentMinutes<30){
-      let o=document.createElement("option");
-      o.value="COMPLET";o.textContent=t+" (indisponible)";
-      o.disabled=true;o.style.color="#555";
-      timeSelect.appendChild(o);
-    } else {
-      let o=document.createElement("option");
-      o.value=o.textContent=t;
-      timeSelect.appendChild(o);
+    if(isToday&&slotMinutes-currentMinutes<30){
+      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (indisponible)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
+    }else{
+      let o=document.createElement("option");o.value=o.textContent=t;timeSelect.appendChild(o);
     }
   });
-
   if(isToday&&warning)warning.style.display="block";
   updateUI();
 }
+
 function showToast(m){const t=document.getElementById("toast");t.innerHTML=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),5000);}
 
-/* ===== NORMALISE LE NUMÉRO (gère +33, 0033, espaces, tirets) ===== */
 function normalizePhone(raw){
   let phone=raw.replace(/[\s\.\-\(\)]+/g,'');
   if(phone.startsWith("+33"))phone="0"+phone.substring(3);
@@ -1071,204 +924,82 @@ function normalizePhone(raw){
   return phone;
 }
 
-/* ===== VALIDATION TÉLÉPHONE EN TEMPS RÉEL ===== */
 function validatePhone(){
   let input=document.getElementById("client-phone");
   let msg=document.getElementById("phone-msg");
   let raw=input.value.trim();
-
-  // Champ vide — pas de message
-  if(raw===""){
-    input.classList.remove("input-error","input-success");
-    msg.className="field-msg";msg.textContent="";
-    return false;
-  }
-
-  // Contient des lettres (sauf + autorisé pour +33)
-  if(/[a-zA-Z]/.test(raw)){
-    input.classList.add("input-error");input.classList.remove("input-success");
-    msg.className="field-msg error";
-    msg.textContent="❌ Un numéro de téléphone ne contient que des chiffres (ou +33 au début).";
-    return false;
-  }
-
+  if(raw===""){input.classList.remove("input-error","input-success");msg.className="field-msg";msg.textContent="";return false;}
+  if(/[a-zA-Z]/.test(raw)){input.classList.add("input-error");input.classList.remove("input-success");msg.className="field-msg error";msg.textContent="❌ Un numéro de téléphone ne contient que des chiffres (ou +33 au début).";return false;}
   let phone=normalizePhone(raw);
-
-  // Trop court
-  if(phone.length<10){
-    input.classList.add("input-error");input.classList.remove("input-success");
-    msg.className="field-msg error";
-    msg.textContent="❌ Numéro trop court — il faut 10 chiffres (ex: 06 12 34 56 78 ou +33 6 12 34 56 78).";
-    return false;
-  }
-
-  // Trop long
-  if(phone.length>10){
-    input.classList.add("input-error");input.classList.remove("input-success");
-    msg.className="field-msg error";
-    msg.textContent="❌ Numéro trop long — vérifiez qu'il n'y a pas de chiffres en trop.";
-    return false;
-  }
-
-  // Ne commence pas par un préfixe valide
-  if(!/^(06|07|01|02|03|04|05|08|09)/.test(phone)){
-    input.classList.add("input-error");input.classList.remove("input-success");
-    msg.className="field-msg error";
-    msg.textContent="❌ Numéro invalide — commencez par 06, 07, 01... ou +33 6, +33 7...";
-    return false;
-  }
-
-  // ✅ Valide
-  input.classList.add("input-success");input.classList.remove("input-error");
-  msg.className="field-msg success";
-  msg.textContent="✅ Numéro valide !";
-  return true;
+  if(phone.length<10){input.classList.add("input-error");input.classList.remove("input-success");msg.className="field-msg error";msg.textContent="❌ Numéro trop court — il faut 10 chiffres.";return false;}
+  if(phone.length>10){input.classList.add("input-error");input.classList.remove("input-success");msg.className="field-msg error";msg.textContent="❌ Numéro trop long — vérifiez qu'il n'y a pas de chiffres en trop.";return false;}
+  if(!/^(06|07|01|02|03|04|05|08|09)/.test(phone)){input.classList.add("input-error");input.classList.remove("input-success");msg.className="field-msg error";msg.textContent="❌ Numéro invalide — commencez par 06, 07, 01... ou +33 6, +33 7...";return false;}
+  input.classList.add("input-success");input.classList.remove("input-error");msg.className="field-msg success";msg.textContent="✅ Numéro valide !";return true;
 }
 
-/* ===== PAIEMENT STRIPE DYNAMIQUE ===== */
 async function lancerPaiementStripe(){
   if(!isFormValid()){showToast("⚠️ Formulaire incomplet !");return;}
-
   let orderInfo=calculateTotalAndExtractStructure();
-  let montantCentimes=Math.round(orderInfo.totalPrice*100);
-
-  // Sauvegarde avant redirection (Sheet envoyé uniquement sur ?success=true)
   saveOrderToStorage();
-
-  // Affichage chargement
   let btn=document.getElementById("stripe-btn");
-  btn.disabled=true;
-  btn.textContent="⏳ Connexion au paiement...";
-
-  try {
-    let response=await fetch("/.netlify/functions/create-checkout",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        amount: montantCentimes,
-        orderSummary: orderInfo.summaryShort
-      })
-    });
-
+  btn.disabled=true;btn.textContent="⏳ Connexion au paiement...";
+  try{
+    let response=await fetch("/.netlify/functions/create-checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({amount:Math.round(orderInfo.totalPrice*100),orderSummary:orderInfo.summaryShort})});
     let data=await response.json();
-
-    if(data.url){
-      window.location.href=data.url; // Redirection vers Stripe
-    } else {
-      showToast("❌ Erreur : "+( data.error||"Impossible de créer le paiement"));
-      btn.disabled=false;
-      btn.textContent="Payer en ligne 💳";
-    }
-  } catch(err){
-    showToast("❌ Erreur de connexion. Réessayez.");
-    btn.disabled=false;
-    btn.textContent="Payer en ligne 💳";
-  }
+    if(data.url){window.location.href=data.url;}
+    else{showToast("❌ Erreur : "+(data.error||"Impossible de créer le paiement"));btn.disabled=false;btn.textContent="Payer en ligne 💳";}
+  }catch(err){showToast("❌ Erreur de connexion. Réessayez.");btn.disabled=false;btn.textContent="Payer en ligne 💳";}
 }
 
-/* ===== INITIALISATION ===== */
 window.onload=function(){
   const isSuccess=window.location.search.includes('success');
   const savedData=localStorage.getItem('ohMikateCommande');
-
-  if(isSuccess && savedData){
+  if(isSuccess&&savedData){
     let data=JSON.parse(savedData);
-
-    // Envoi au Google Sheet UNE SEULE FOIS (paiement carte uniquement)
-    // On vérifie qu'on n'a pas déjà envoyé pour éviter les doublons
     if(!localStorage.getItem('ohMikateSheetSent')){
-      fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
-        method:"POST",mode:"no-cors",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          name:data.name,
-          phone:data.phone,
-          order:data.orderDetail,
-          total:data.total,
-          payment:"Paiement en ligne (carte)",
-          date:data.dateCommande+" "+data.heure+" via Carte bancaire",
-          dateRetrait:data.date,
-          creneau:data.time,
-          canal:"Carte bancaire"
-        })
-      });
+      fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:data.name,phone:data.phone,order:data.orderDetail,total:data.total,payment:"Paiement en ligne (carte)",date:data.dateCommande+" "+data.heure+" via Carte bancaire",dateRetrait:data.date,creneau:data.time,canal:"Carte bancaire"})});
       localStorage.setItem('ohMikateSheetSent','1');
     }
-
     document.getElementById("main-page").style.display="none";
     document.getElementById("confirmation-page").style.display="block";
     document.body.style.paddingBottom="0";
-
     document.getElementById("c-name").textContent=data.name||"—";
     document.getElementById("c-phone").textContent=data.phone||"—";
     document.getElementById("c-date").textContent=data.date||"—";
     document.getElementById("c-time").textContent=data.time||"—";
-    document.getElementById("c-payment").innerHTML='<span style="color:#25D366;">✅ '+data.payment+'</span>';
+    document.getElementById("c-payment").innerHTML='<span style="color:#25D366;">✅ Paiement en ligne confirmé</span>';
     document.getElementById("c-total").textContent=data.total+" €";
     document.getElementById("c-order-detail").textContent=data.orderDetail||"—";
-
-    // Rappel après 30 secondes si pas encore envoyé
     let envoiEffectue=false;
-    setTimeout(()=>{
-      if(!envoiEffectue){
-        document.getElementById("rappel-envoi").style.display="block";
-        document.getElementById("rappel-envoi").scrollIntoView({behavior:"smooth"});
-      }
-    },30000);
-
-    // Fonction après envoi - reste sur la page, affiche confirmation
+    setTimeout(()=>{if(!envoiEffectue){document.getElementById("rappel-envoi").style.display="block";document.getElementById("rappel-envoi").scrollIntoView({behavior:"smooth"});}},30000);
     function apresEnvoi(){
       envoiEffectue=true;
       document.getElementById("rappel-envoi").style.display="none";
       document.getElementById("envoi-confirme").style.display="block";
-      // Scroll vers le bas pour montrer le bloc annulation
-      setTimeout(()=>{
-        document.getElementById("envoi-confirme").scrollIntoView({behavior:"smooth"});
-      },300);
-      // PAS de redirection automatique — le client reste sur la page
-      // pour accéder au lien d'annulation si besoin
+      setTimeout(()=>{document.getElementById("envoi-confirme").scrollIntoView({behavior:"smooth"});},300);
     }
-
-    // Bouton WhatsApp
     let waText=encodeURIComponent(getConfirmOrderText(data,false));
     let waEl=document.getElementById("confirm-whatsapp");
     waEl.href="https://wa.me/33"+targetPhone.substring(1)+"?text="+waText;
-    waEl.addEventListener("click",function(){
-      setTimeout(apresEnvoi,800);
-    });
-
-    // Bouton SMS
+    waEl.addEventListener("click",function(){setTimeout(apresEnvoi,800);});
     document.getElementById("confirm-sms").addEventListener("click",function(e){
       e.preventDefault();
       let smsBody=getConfirmOrderText(data,true);
       let ua=navigator.userAgent.toLowerCase();
-      let url="sms:"+targetPhone+(ua.indexOf("iphone")>-1?"&body=":"?body=")+encodeURIComponent(smsBody);
-      window.location.href=url;
+      window.location.href="sms:"+targetPhone+(ua.indexOf("iphone")>-1?"&body=":"?body=")+encodeURIComponent(smsBody);
       setTimeout(apresEnvoi,800);
     });
-
-    // Liens annulation avec détail commande (sans nom car déjà identifié)
-    let msgAnnulation=`Bonjour, je souhaite annuler ma commande :\n\n`+
-      `📅 Date souhaitée : ${data.date}\n`+
-      `⏰ Créneau : ${data.time}\n`+
-      `💰 Total : ${data.total} €\n\n`+
-      `📦 Détail :\n${data.orderDetail}\n\n`+
-      `Merci de confirmer l'annulation.`;
+    let msgAnnulation=`Bonjour, je souhaite annuler ma commande :\n\n📅 Date souhaitée : ${data.date}\n⏰ Créneau : ${data.time}\n💰 Total : ${data.total} €\n\n📦 Détail :\n${data.orderDetail}\n\nMerci de confirmer l'annulation.`;
     let msgAnnulationSMS=msgAnnulation.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-
-    document.getElementById("cancel-whatsapp").href=
-      "https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnulation);
+    document.getElementById("cancel-whatsapp").href="https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnulation);
     document.getElementById("cancel-sms").addEventListener("click",function(e){
-      e.preventDefault();
-      let ua=navigator.userAgent.toLowerCase();
+      e.preventDefault();let ua=navigator.userAgent.toLowerCase();
       window.location.href="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgAnnulationSMS);
     });
-
-  } else {
+  }else{
     document.getElementById("confirmation-page").style.display="none";
     document.getElementById("especes-page").style.display="none";
     document.getElementById("main-page").style.display="block";
-    // Nettoyer localStorage si on revient à l'accueil
     localStorage.removeItem('ohMikateCommande');
     localStorage.removeItem('ohMikateSheetSent');
     initDates();
