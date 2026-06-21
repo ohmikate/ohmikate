@@ -24,6 +24,8 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .page-tabs{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;}
 .page-tab{flex:1;background:#111;border:2px solid #222;color:#888;font-size:13px;font-weight:bold;padding:11px 10px;border-radius:10px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;transition:.15s;}
 .page-tab.page-tab-active{background:#ff4f8b;border-color:#ff4f8b;color:#fff;}
+.page-tab-badge{display:inline-block;background:#ff9500;color:#fff;font-size:11px;font-weight:bold;padding:1px 7px;border-radius:10px;margin-left:6px;}
+.page-tab.page-tab-active .page-tab-badge{background:#fff;color:#ff4f8b;}
 .histo-jour{background:#111;border:2px solid #222;border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
 .histo-jour-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
 .histo-jour-titre{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#fff;}
@@ -98,6 +100,8 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .info-item .value{font-size:13px;font-weight:bold;color:#fff;}
 .info-item.full{grid-column:1/-1;}
 .detail-box{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:8px;padding:10px;font-size:12px;color:#aaa;line-height:1.7;white-space:pre-wrap;margin-top:4px;}
+.recap-boites{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.recap-boite-chip{background:#1a1410;border:1px solid #ff9500;color:#ff9500;font-size:12px;font-weight:bold;padding:5px 10px;border-radius:8px;}
 .total-row{display:flex;justify-content:space-between;padding:8px 12px;background:#1a0d12;border-radius:8px;margin:10px 0;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#ff4f8b;}
 .btn-wa{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#25D366;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
 .btn-sms{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#007aff;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
@@ -172,6 +176,7 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 
   <div class="page-tabs">
     <button class="page-tab page-tab-active" id="ptab-commandes" onclick="switchPageTab('commandes')">📋 Commandes</button>
+    <button class="page-tab" id="ptab-aprepare" onclick="switchPageTab('aprepare')">🍳 À préparer<span class="page-tab-badge" id="badge-aprepare" style="display:none;">0</span></button>
     <button class="page-tab" id="ptab-historique" onclick="switchPageTab('historique')">📊 Historique</button>
   </div>
 
@@ -196,6 +201,10 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
     </div>
 
     <div id="container"><div class="loading">⏳ Chargement...</div></div>
+  </div>
+
+  <div id="vue-aprepare" style="display:none;">
+    <div id="aprepare-container"><div class="loading">⏳ Chargement...</div></div>
   </div>
 
   <div id="vue-historique" style="display:none;">
@@ -331,7 +340,11 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
 
     afficher();
     updateStats();
+    let visiblePourBadge=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+    let nbAPreparer=visiblePourBadge.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id)).length;
+    updateBadgeAPreparer(nbAPreparer);
     if(document.getElementById("vue-historique").style.display!=="none")afficherHistorique();
+    if(document.getElementById("vue-aprepare").style.display!=="none")afficherAPreparer();
     let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
     document.getElementById("last-refresh").textContent="Mis à jour à "+now+" • Auto toutes les 60s";
   }catch(e){
@@ -413,10 +426,47 @@ function afficher(){
 /* ===== ONGLETS DE PAGE (Commandes / Historique) ===== */
 function switchPageTab(tab){
   document.getElementById("ptab-commandes").classList.toggle("page-tab-active",tab==="commandes");
+  document.getElementById("ptab-aprepare").classList.toggle("page-tab-active",tab==="aprepare");
   document.getElementById("ptab-historique").classList.toggle("page-tab-active",tab==="historique");
   document.getElementById("vue-commandes").style.display=tab==="commandes"?"block":"none";
+  document.getElementById("vue-aprepare").style.display=tab==="aprepare"?"block":"none";
   document.getElementById("vue-historique").style.display=tab==="historique"?"block":"none";
   if(tab==="historique")afficherHistorique();
+  if(tab==="aprepare")afficherAPreparer();
+}
+
+/* ===== VUE À PRÉPARER : confirmées mais pas encore prêtes ===== */
+function afficherAPreparer(){
+  let container=document.getElementById("aprepare-container");
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  let aPreparer=visible.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id));
+
+  updateBadgeAPreparer(aPreparer.length);
+
+  if(aPreparer.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">🎉</div><p>Rien à préparer pour le moment !</p></div>`;
+    return;
+  }
+
+  // Trie par date de retrait puis créneau, pour suivre l'ordre de préparation logique
+  aPreparer.sort((a,b)=>{
+    let da=parseDate(a.dateRetrait),db=parseDate(b.dateRetrait);
+    if(da&&db&&da.getTime()!==db.getTime())return da-db;
+    return(a.creneau||"").localeCompare(b.creneau||"");
+  });
+
+  container.innerHTML=aPreparer.map(c=>renderCommande(c)).join("");
+  document.getElementById("tout-select-wrap").style.display="none";
+}
+
+function updateBadgeAPreparer(n){
+  let badge=document.getElementById("badge-aprepare");
+  if(n>0){
+    badge.textContent=n;
+    badge.style.display="inline-block";
+  }else{
+    badge.style.display="none";
+  }
 }
 
 /* ===== VUE HISTORIQUE : cumul par date de retrait ===== */
@@ -587,6 +637,20 @@ function badgeCanal(canal){
   return`<span class="canal-badge ${cls}">${icon} ${canal}</span>`;
 }
 
+function extraireRecapBoites(orderText){
+  if(!orderText)return"—";
+  let regex=/BOÎTE DE (\d+) BEIGNETS/gi;
+  let counts={};
+  let m;
+  while((m=regex.exec(orderText))!==null){
+    let taille=m[1];
+    counts[taille]=(counts[taille]||0)+1;
+  }
+  let tailles=Object.keys(counts).sort((a,b)=>parseInt(a)-parseInt(b));
+  if(tailles.length===0)return"—";
+  return tailles.map(t=>`<span class="recap-boite-chip">${counts[t]}× Boîte ${t}</span>`).join("");
+}
+
 function renderCommande(c){
   let isConf=confirmees.includes(c.id);
   let isPrete=pretes.includes(c.id);
@@ -629,6 +693,7 @@ function renderCommande(c){
       <div class="info-item"><div class="label">💳 Règlement</div><div class="value">${c.payment||"—"}</div></div>
       <div class="info-item"><div class="label">🗓️ Retrait</div><div class="value">${formatDateRetrait(c.dateRetrait)}</div></div>
       <div class="info-item"><div class="label">⏰ Créneau</div><div class="value">${c.creneau||"—"}</div></div>
+      <div class="info-item full"><div class="label">🧺 Récap boîtes</div><div class="recap-boites">${extraireRecapBoites(c.order)}</div></div>
       <div class="info-item full"><div class="label">📦 Commande</div><div class="detail-box">${(c.order||"—").replace(/\\n/g,"\n")}</div></div>
     </div>
     <div class="total-row"><span>Total</span><span>${c.total||"—"} €</span></div>
@@ -729,6 +794,7 @@ function confirmerSelection(){
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
   deselectionnerTout();
   updateStats();
+  rafraichirVuesSecondaires();
   setTimeout(afficher,300);
   showToast(`✅ ${ids.length} commande${ids.length>1?"s":""} confirmée${ids.length>1?"s":""} !`);
 }
@@ -747,8 +813,17 @@ function supprimerSelection(){
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
   deselectionnerTout();
   updateStats();
+  rafraichirVuesSecondaires();
   setTimeout(afficher,300);
   showToast(`🗑️ ${ids.length} commande${ids.length>1?"s":""} supprimée${ids.length>1?"s":""}`);
+}
+
+function rafraichirVuesSecondaires(){
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  let nbAPreparer=visible.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id)).length;
+  updateBadgeAPreparer(nbAPreparer);
+  if(document.getElementById("vue-historique").style.display!=="none")afficherHistorique();
+  if(document.getElementById("vue-aprepare").style.display!=="none")afficherAPreparer();
 }
 
 function marquer(id){
@@ -756,6 +831,7 @@ function marquer(id){
     confirmees.push(id);
     localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
     updateStats();
+    rafraichirVuesSecondaires();
     setTimeout(afficher,400);
   }
 }
@@ -764,6 +840,7 @@ function annulerConfirmation(id){
   confirmees=confirmees.filter(c=>c!==id);
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
   updateStats();
+  rafraichirVuesSecondaires();
   setTimeout(afficher,300);
   showToast("↩️ Confirmation annulée");
 }
@@ -773,6 +850,7 @@ function marquerPrete(id){
     pretes.push(id);
     localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
     updateStats();
+    rafraichirVuesSecondaires();
     setTimeout(afficher,400);
   }
 }
@@ -781,6 +859,7 @@ function annulerPrete(id){
   pretes=pretes.filter(p=>p!==id);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
   updateStats();
+  rafraichirVuesSecondaires();
   setTimeout(afficher,300);
   showToast("↩️ Statut \"prête\" annulé");
 }
@@ -797,6 +876,7 @@ function confirmerSuppression(){
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
   fermerPopup();
   updateStats();
+  rafraichirVuesSecondaires();
   afficher();
   showToast("🗑️ Commande supprimée");
 }
@@ -846,3 +926,4 @@ function showToast(m){
 </script>
 </body>
 </html>
+
