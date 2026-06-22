@@ -76,6 +76,7 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
 @keyframes highlight-flash{0%{box-shadow:0 0 0 0 rgba(255,79,139,0);border-color:inherit;}25%{box-shadow:0 0 0 5px rgba(255,79,139,0.7);border-color:#ff4f8b;}75%{box-shadow:0 0 0 3px rgba(255,79,139,0.3);border-color:#ff4f8b;}100%{box-shadow:0 0 0 0 rgba(255,79,139,0);border-color:inherit;}}
 .commande-highlight{animation:highlight-flash 2s ease-out;}
+.commande-highlight-secondary{border-color:#ff4f8b44!important;box-shadow:0 0 0 2px rgba(255,79,139,0.15);}
 
 /* CARTE COMMANDE */
 .commande-card{background:#111;border:1px solid #222;border-radius:14px;padding:16px;margin-bottom:10px;}
@@ -422,7 +423,8 @@ function afficher(){
   });
 
   container.innerHTML=html;
-  // Afficher la case "Tout sélectionner" s'il y a des commandes
+  // Réinitialise les index de navigation des créneaux après rechargement
+  Object.keys(creneauNavIndex).forEach(k=>delete creneauNavIndex[k]);
   document.getElementById("tout-select-wrap").style.display=filtered.length>0?"flex":"none";
 }
 
@@ -583,15 +585,26 @@ function formatDateRetrait(str){
 }
 
 function analyserCreneaux(cmds){
-  // Regroupe par date de retrait réelle (et non par le groupe d'affichage,
-  // qui peut mélanger plusieurs dates de retrait différentes le même jour)
-  let parDateRetrait={};
+  // Normalise chaque dateRetrait en clé canonique "YYYY-MM-DD" via parseDate,
+  // pour éviter que le même jour en formats différents crée deux groupes séparés
+  function cleDate(dateRetrait){
+    let d=parseDate(dateRetrait||"");
+    if(!d)return dateRetrait||"inconnue";
+    let mm=String(d.getMonth()+1).padStart(2,"0");
+    let dd=String(d.getDate()).padStart(2,"0");
+    return`${d.getFullYear()}-${mm}-${dd}`;
+  }
+
+  let parDateRetrait={};   // clé canonique -> {cmds, dateRetraitOrig}
   let ordreDate=[];
   cmds.forEach(c=>{
     if(!c.creneau)return;
-    let key=c.dateRetrait||"Date inconnue";
-    if(!parDateRetrait[key]){parDateRetrait[key]=[];ordreDate.push(key);}
-    parDateRetrait[key].push(c);
+    let key=cleDate(c.dateRetrait);
+    if(!parDateRetrait[key]){
+      parDateRetrait[key]={cmds:[],dateRetraitOrig:c.dateRetrait||""};
+      ordreDate.push(key);
+    }
+    parDateRetrait[key].cmds.push(c);
   });
 
   let plusieursDates=ordreDate.length>1;
@@ -600,9 +613,9 @@ function analyserCreneaux(cmds){
   let today=new Date();
 
   let html="";
-  ordreDate.forEach(dateKey=>{
-    let groupeCmds=parDateRetrait[dateKey];
-    let dRetrait=parseDate(dateKey);
+  ordreDate.forEach(key=>{
+    let {cmds:groupeCmds, dateRetraitOrig}=parDateRetrait[key];
+    let dRetrait=parseDate(dateRetraitOrig);
     let isToday=dRetrait&&
       dRetrait.getDate()===today.getDate()&&
       dRetrait.getMonth()===today.getMonth()&&
@@ -620,12 +633,12 @@ function analyserCreneaux(cmds){
       let cls="creneau-libre",icon="✅";
       if(isToday&&diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
       else if(n>=2){cls="creneau-charge";icon="⚠️";}
-      badges+=`<span class="creneau-badge ${cls}" onclick="scrollVersCreneau('${cr.replace(/'/g,"\\'")}','${dateKey.replace(/'/g,"\\'")}')">${icon} ${cr} (${n})</span>`;
+      badges+=`<span class="creneau-badge ${cls}" onclick="scrollVersCreneau('${cr.replace(/'/g,"\\'")}','${key}')">${icon} ${cr} (${n})</span>`;
     });
     if(!badges)return;
 
     if(plusieursDates){
-      html+=`<div class="creneaux-date-label">🗓️ Retrait : ${formatDateRetrait(dateKey)}</div>`;
+      html+=`<div class="creneaux-date-label">🗓️ Retrait : ${formatDateRetrait(dateRetraitOrig)}</div>`;
     }
     html+=`<div class="creneaux-bar">${badges}</div>`;
   });
@@ -640,28 +653,42 @@ function badgeCanal(canal){
   return`<span class="canal-badge ${cls}">${icon} ${canal}</span>`;
 }
 
-function scrollVersCreneau(creneau, dateRetrait){
-  // Cherche toutes les cartes qui correspondent au créneau ET à la date de retrait
+// Mémorise l'index de navigation par créneau (clé = creneau+datecle)
+const creneauNavIndex={};
+
+function scrollVersCreneau(creneau, cleCanonique){
   let cartes=Array.from(document.querySelectorAll(".commande-card")).filter(el=>{
-    let crMatch=el.dataset.creneau===creneau;
-    let dateMatch=!dateRetrait||el.dataset.dateretrait===dateRetrait;
-    return crMatch&&dateMatch;
+    return el.dataset.creneau===creneau&&el.dataset.datecle===cleCanonique;
   });
   if(cartes.length===0)return;
 
-  // Scroll vers la première carte
-  cartes[0].scrollIntoView({behavior:"smooth",block:"start"});
+  // Clé unique pour ce créneau+date
+  let navKey=creneau+"||"+cleCanonique;
 
-  // Surbrillance sur toutes les cartes correspondantes, légèrement décalée
+  // Avance à la suivante (ou revient à 0 si on est au bout)
+  if(creneauNavIndex[navKey]===undefined)creneauNavIndex[navKey]=0;
+  else creneauNavIndex[navKey]=(creneauNavIndex[navKey]+1)%cartes.length;
+
+  let idx=creneauNavIndex[navKey];
+  let cible=cartes[idx];
+
+  // Scroll vers la carte ciblée
+  cible.scrollIntoView({behavior:"smooth",block:"start"});
+
+  // Retire toute surbrillance existante sur toutes les cartes du créneau
+  cartes.forEach(el=>{
+    el.classList.remove("commande-highlight","commande-highlight-secondary");
+    void el.offsetWidth;
+  });
+
+  // Surbrillance forte sur la carte ciblée, discrète sur les autres
   setTimeout(()=>{
-    cartes.forEach(el=>{
-      el.classList.remove("commande-highlight");
-      void el.offsetWidth; // force reflow pour relancer l'animation si déjà active
-      el.classList.add("commande-highlight");
-    });
-    // Retire la classe après la fin de l'animation
-    setTimeout(()=>cartes.forEach(el=>el.classList.remove("commande-highlight")),2200);
-  },400);
+    cible.classList.add("commande-highlight");
+    cartes.filter((_,i)=>i!==idx).forEach(el=>el.classList.add("commande-highlight-secondary"));
+    setTimeout(()=>cartes.forEach(el=>{
+      el.classList.remove("commande-highlight","commande-highlight-secondary");
+    }),2200);
+  },300);
 }
 
 function extraireRecapBoites(orderText){
@@ -698,7 +725,8 @@ function renderCommande(c){
   let badgeCls=isPrete?"badge-prete":isConf?"badge-ok":isUrgent?"badge-urgent":"badge-new";
   let badgeTxt=isPrete?"📦 PRÊTE":isConf?"✅ CONFIRMÉE":isUrgent?"⚡ URGENT":"🆕 NOUVELLE";
 
-  return`<div class="commande-card ${cardCls}" id="card-${c.id}" data-creneau="${(c.creneau||"").replace(/"/g,"&quot;")}" data-dateretrait="${(c.dateRetrait||"").replace(/"/g,"&quot;")}">
+  function cleDate(dr){let d=parseDate(dr||"");if(!d)return dr||"";let mm=String(d.getMonth()+1).padStart(2,"0");let dd=String(d.getDate()).padStart(2,"0");return`${d.getFullYear()}-${mm}-${dd}`;}
+  return`<div class="commande-card ${cardCls}" id="card-${c.id}" data-creneau="${(c.creneau||"").replace(/"/g,"&quot;")}" data-datecle="${cleDate(c.dateRetrait)}">
     <div class="checkbox-wrap">
       <input type="checkbox" class="cmd-checkbox" id="chk-${c.id}" onchange="onCheckChange()">
       <span class="badge ${badgeCls}">${badgeTxt}</span>
