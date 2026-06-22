@@ -258,6 +258,7 @@ let toutesCommandes=[];
 let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
 let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
 let pretes=JSON.parse(localStorage.getItem('ohMikatePretes')||'[]');
+let annulees=JSON.parse(localStorage.getItem('ohMikateAnnulees')||'[]'); // {id, phone, name, date}
 let idASupp=null;
 
 /* LOGIN */
@@ -602,17 +603,23 @@ function afficherHistoClients(){
     return;
   }
 
-  // Regroupe par nom client (insensible à la casse)
+  // Regroupe par numéro de téléphone (un même numéro = un même client, même si le nom diffère)
   let clients={};
   visible.forEach(c=>{
+    let phone=normalizePhone(c.phone)||"sans-tel";
     let nom=(c.name||"Inconnu").trim();
-    let key=nom.toLowerCase();
-    if(!clients[key])clients[key]={nom,cmds:[]};
-    clients[key].cmds.push(c);
+    if(!clients[phone])clients[phone]={phone,noms:{},cmds:[]};
+    clients[phone].noms[nom]=(clients[phone].noms[nom]||0)+1;
+    clients[phone].cmds.push(c);
   });
 
-  // Filtre par recherche
-  let keys=Object.keys(clients).filter(k=>!recherche||k.includes(recherche));
+  // Filtre par recherche (sur le nom le plus fréquent OU sur le numéro)
+  let keys=Object.keys(clients).filter(k=>{
+    if(!recherche)return true;
+    let {phone,noms}=clients[k];
+    let nomsStr=Object.keys(noms).join(" ").toLowerCase();
+    return phone.includes(recherche)||nomsStr.includes(recherche);
+  });
 
   // Tri : les plus fidèles (nb commandes) en premier
   keys.sort((a,b)=>clients[b].cmds.length-clients[a].cmds.length||a.localeCompare(b));
@@ -623,11 +630,15 @@ function afficherHistoClients(){
   }
 
   let html="";
-  keys.forEach((key,idx)=>{
-    let {nom,cmds}=clients[key];
+  keys.forEach((phone,idx)=>{
+    let {noms,cmds}=clients[phone];
+    // Nom le plus fréquemment utilisé par ce numéro (affiché en titre)
+    let nomPrincipal=Object.keys(noms).sort((a,b)=>noms[b]-noms[a])[0];
+    let autresNoms=Object.keys(noms).filter(n=>n!==nomPrincipal);
     let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
     let nb=cmds.length;
     let fidele=nb>=3;
+    let nbAnnul=nbAnnulationsPourTel(phone);
     let safeId="client-"+idx;
 
     // Habitudes : boîtes les plus commandées
@@ -648,8 +659,9 @@ function afficherHistoClients(){
     html+=`<div class="client-card">
       <div class="client-card-header" onclick="toggleClientDetail('${safeId}')">
         <div>
-          <div class="client-nom">${nom}${fidele?`<span class="client-badge-fidele">⭐ FIDÈLE</span>`:""}</div>
-          <div class="histo-jour-nb">${nb} commande${nb>1?"s":""} • Dernière : ${formatDateRetrait(derniereCmd?.dateRetrait||"")}</div>
+          <div class="client-nom">${nomPrincipal}${fidele?`<span class="client-badge-fidele">⭐ FIDÈLE</span>`:""}${nbAnnul>=2?`<span class="client-badge-fidele" style="background:#ff444422;border-color:#ff4444;color:#ff4444;">⚠️ ${nbAnnul} ANNUL.</span>`:""}</div>
+          <div class="histo-jour-nb">📞 ${phone} • ${nb} commande${nb>1?"s":""} • Dernière : ${formatDateRetrait(derniereCmd?.dateRetrait||"")}</div>
+          ${autresNoms.length>0?`<div class="histo-jour-nb" style="color:#666;">Autres noms utilisés : ${autresNoms.join(", ")}</div>`:""}
         </div>
         <div class="client-stats">
           <div class="client-ca">${ca.toFixed(2)} €</div>
@@ -657,10 +669,11 @@ function afficherHistoClients(){
         </div>
       </div>
       <div class="client-detail" id="detail-${safeId}">
+        ${nbAnnul>=2?`<div style="background:#2a0a0a;border:1px solid #ff4444;border-radius:8px;padding:8px 10px;margin-bottom:10px;color:#ff6b6b;font-size:12px;font-weight:bold;text-align:center;">⚠️ Ce client a déjà annulé ${nbAnnul} fois. Sois vigilante avant de préparer une nouvelle commande.</div>`:""}
         ${habitude?`<div style="font-size:12px;color:#ff9500;margin-bottom:10px;">📦 Habitudes : ${habitude}</div>`:""}
         ${cmds.map(c=>`<div class="histo-ligne">
           <div>
-            <div class="histo-ligne-meta">🗓️ ${formatDateRetrait(c.dateRetrait)} • ⏰ ${c.creneau||"—"}</div>
+            <div class="histo-ligne-meta">🗓️ ${formatDateRetrait(c.dateRetrait)} • ⏰ ${c.creneau||"—"} • ${c.name||"—"}</div>
             <div class="histo-ligne-boites">📦 ${extraireRecapBoitesTexte(c.order)||"—"}</div>
           </div>
           <div class="histo-ligne-prix">${c.total||"—"} €</div>
@@ -868,6 +881,14 @@ function renderCommande(c){
   let msgSMSPret=genMsgPret(c,true);
   let lienWAPret="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWAPret);
   let lienSMSPret="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMSPret);
+  let msgWAAnnulToi=genMsgAnnulationParToi(c,false);
+  let msgSMSAnnulToi=genMsgAnnulationParToi(c,true);
+  let lienWAAnnulToi="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWAAnnulToi);
+  let lienSMSAnnulToi="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMSAnnulToi);
+  let estPaiementCarte=(c.payment||"").toLowerCase().includes("carte");
+
+  let nbAnnul=nbAnnulationsPourTel(c.phone);
+  let alerteBlacklist=nbAnnul>=2?`<div style="background:#2a0a0a;border:2px solid #ff4444;border-radius:10px;padding:10px 12px;margin-bottom:10px;text-align:center;color:#ff6b6b;font-size:12px;font-weight:bold;">⚠️ ATTENTION : ce numéro a déjà annulé ${nbAnnul} fois. Vérifie avant de préparer la commande !</div>`:"";
 
   let cardCls=isPrete?"prete":isConf?"confirmee":isUrgent?"urgente":"nouvelle";
   let badgeCls=isPrete?"badge-prete":isConf?"badge-ok":isUrgent?"badge-urgent":"badge-new";
@@ -879,9 +900,10 @@ function renderCommande(c){
       <input type="checkbox" class="cmd-checkbox" id="chk-${c.id}" onchange="onCheckChange()">
       <span class="badge ${badgeCls}">${badgeTxt}</span>
     </div>
+    ${alerteBlacklist}
     <div class="commande-header">
       <div>
-        <div class="client-name">${c.name||"—"}</div>
+        <div class="client-name">${c.name||"—"}${nbAnnul>0?`<span style="font-size:11px;color:#ff6b6b;font-weight:bold;margin-left:6px;">⚠️ ${nbAnnul} annul.</span>`:""}</div>
         <div class="commande-meta">
           🕐 ${c.heure||"—"} &nbsp;|&nbsp; ${badgeCanal(c.canal||"—")}
         </div>
@@ -913,6 +935,12 @@ function renderCommande(c){
         <button class="btn-marquer" onclick="marquer(${c.id})">✅ Marquer confirmée</button>
         <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
       </div>
+      <button onclick="marquerAnnuleeParClient(${c.id})" style="margin-top:8px;width:100%;background:#2a0a0a;border:1px solid #ff4444;color:#ff6b6b;font-size:12px;font-weight:bold;padding:9px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;">❌ Le client a annulé</button>
+      ${estPaiementCarte?`<div style="background:#1a0d00;border:1px solid #ff9500;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:11px;color:#ff9500;text-align:center;font-weight:bold;">💳 Paiement carte : pense à rembourser sur ton dashboard Stripe avant d'envoyer le message.</div>`:""}
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <a class="btn-wa" href="${lienWAAnnulToi}" target="_blank" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">📲 Annuler (toi) WhatsApp</a>
+        <a class="btn-sms" href="${lienSMSAnnulToi}" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">💬 Annuler (toi) SMS</a>
+      </div>
     `:`
       <div style="text-align:center;color:#25D366;font-size:12px;padding:6px;">✅ Confirmée</div>
       <a class="btn-prete" href="${lienWAPret}" target="_blank" onclick="marquerPrete(${c.id})">📦 Commande prête (WhatsApp)</a>
@@ -920,6 +948,12 @@ function renderCommande(c){
       <div class="actions-sec" style="margin-top:8px;">
         <button class="btn-marquer" onclick="annulerConfirmation(${c.id})" style="border-color:#ff9500;color:#ff9500;">↩️ Annuler la confirmation</button>
         <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
+      </div>
+      <button onclick="marquerAnnuleeParClient(${c.id})" style="margin-top:8px;width:100%;background:#2a0a0a;border:1px solid #ff4444;color:#ff6b6b;font-size:12px;font-weight:bold;padding:9px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;">❌ Le client a annulé</button>
+      ${estPaiementCarte?`<div style="background:#1a0d00;border:1px solid #ff9500;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:11px;color:#ff9500;text-align:center;font-weight:bold;">💳 Paiement carte : pense à rembourser sur ton dashboard Stripe avant d'envoyer le message.</div>`:""}
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <a class="btn-wa" href="${lienWAAnnulToi}" target="_blank" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">📲 Annuler (toi) WhatsApp</a>
+        <a class="btn-sms" href="${lienSMSAnnulToi}" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">💬 Annuler (toi) SMS</a>
       </div>
     `}
   </div>`;
@@ -949,6 +983,21 @@ function genMsgPret(c,pourSMS=false){
   msg+=`📦 ${b}Ta commande Oh! Mikaté est prête, tu peux venir la récupérer dès maintenant.${b}\n\n`;
   msg+=`━━━━━━━━━━━━━━━\n`;
   msg+=`À tout de suite ! 🧇\n— Oh! Mikaté`;
+  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
+}
+
+function genMsgAnnulationParToi(c,pourSMS=false){
+  let b=pourSMS?"":"*";
+  let dateRetrait=formatDateRetrait(c.dateRetrait);
+  let estCarte=(c.payment||"").toLowerCase().includes("carte");
+  let msg=`Bonjour ${c.name||""},\n\n`;
+  msg+=`😔 Je suis vraiment désolée, mais je suis dans l'obligation d'annuler ta commande prévue le ${dateRetrait} (créneau ${c.creneau||"—"}).\n\n`;
+  if(estCarte){
+    msg+=`${b}Ton paiement de ${c.total||"—"} € va être intégralement remboursé sur ta carte${b} (délai généralement de 5 à 10 jours ouvrés selon ta banque).\n\n`;
+  }else{
+    msg+=`${b}Aucun montant ne te sera demandé${b}, et j'espère pouvoir te régaler une prochaine fois ! 🧇\n\n`;
+  }
+  msg+=`Encore désolée pour la gêne occasionnée.\n— Oh! Mikaté`;
   return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
 }
 
@@ -1068,6 +1117,32 @@ function annulerPrete(id){
 }
 
 function demanderSupp(id){idASupp=id;document.getElementById("popup-supp").classList.add("show");}
+
+/* ===== ANNULATIONS CLIENT (pour blacklist) ===== */
+function nbAnnulationsPourTel(phone){
+  let p=normalizePhone(phone);
+  if(!p)return 0;
+  return annulees.filter(a=>normalizePhone(a.phone)===p).length;
+}
+
+function marquerAnnuleeParClient(id){
+  let c=toutesCommandes.find(cmd=>cmd.id===id);
+  if(!c)return;
+  if(!confirm(`Confirmer que ${c.name||"ce client"} a annulé cette commande ?\n\nCela sera compté dans son historique d'annulations.`))return;
+  annulees.push({id:c.id,phone:normalizePhone(c.phone),name:c.name||"—",date:new Date().toLocaleDateString('fr-FR')});
+  localStorage.setItem('ohMikateAnnulees',JSON.stringify(annulees));
+  supprimees.push(id);
+  localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
+  confirmees=confirmees.filter(cid=>cid!==id);
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  pretes=pretes.filter(pid=>pid!==id);
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  updateStats();
+  rafraichirVuesSecondaires();
+  afficher();
+  let nbTotal=nbAnnulationsPourTel(c.phone);
+  showToast(nbTotal>=2?`⚠️ Annulation enregistrée — ${nbTotal}e annulation pour ce numéro !`:"📋 Annulation enregistrée");
+}
 function fermerPopup(){idASupp=null;document.getElementById("popup-supp").classList.remove("show");}
 function confirmerSuppression(){
   if(idASupp===null)return;
