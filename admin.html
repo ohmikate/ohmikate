@@ -132,6 +132,59 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .btn-supp{flex:1;background:none;border:1px solid #ff444433;color:#ff6666;font-size:11px;padding:8px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:0.2s;}
 .btn-marquer:hover{border-color:#25D366;color:#25D366;}
 .btn-supp:hover{background:#ff444422;}
+/* ===== RÉCAP MENSUEL ===== */
+.recap-month-selector{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;align-items:center;}
+.recap-month-select{flex:1;padding:10px;background:#111;border:2px solid #222;border-radius:10px;color:#fff;font-size:14px;font-family:'Montserrat',sans-serif;}
+.recap-month-select:focus{border-color:#ff4f8b;outline:none;}
+.btn-print{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:10px 18px;font-size:14px;cursor:pointer;letter-spacing:1px;white-space:nowrap;}
+.recap-doc{max-width:600px;margin:0 auto;background:#111;border:2px solid #333;border-radius:14px;overflow:hidden;}
+.recap-doc-header{background:#1a0d14;border-bottom:2px solid #ff4f8b;padding:20px 24px;}
+.recap-doc-brand{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#ff4f8b;letter-spacing:3px;}
+.recap-doc-siret{font-size:11px;color:#888;margin-top:4px;letter-spacing:0.5px;}
+.recap-doc-title{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;letter-spacing:2px;margin-top:14px;}
+.recap-doc-period{font-size:13px;color:#aaa;margin-top:2px;}
+.recap-doc-body{padding:20px 24px;}
+.recap-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:20px;}
+.recap-table th{font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:#888;border-bottom:1px solid #333;padding:6px 8px;text-align:left;}
+.recap-table td{padding:8px 8px;border-bottom:1px solid #1e1e1e;color:#ccc;vertical-align:top;}
+.recap-table tr:last-child td{border-bottom:none;}
+.recap-table .td-montant{color:#ff4f8b;font-weight:bold;white-space:nowrap;text-align:right;}
+.recap-table .td-mode{font-size:10px;color:#888;}
+.recap-totaux{background:#1a1a1a;border-radius:10px;padding:14px 16px;margin-bottom:16px;}
+.recap-total-line{display:flex;justify-content:space-between;padding:5px 0;font-size:13px;color:#ccc;border-bottom:1px solid #222;}
+.recap-total-line:last-child{border-bottom:none;color:#ff4f8b;font-weight:bold;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;padding-top:10px;}
+.recap-ventilation{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.recap-vent-box{background:#1a1a1a;border-radius:8px;padding:10px 12px;text-align:center;}
+.recap-vent-num{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;}
+.recap-vent-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
+.recap-footer{border-top:1px solid #333;padding-top:14px;font-size:11px;color:#666;line-height:1.7;}
+.recap-empty{text-align:center;padding:40px;color:#555;font-size:14px;}
+
+/* ===== IMPRESSION ===== */
+@media print{
+  body{background:#fff!important;color:#000!important;padding:0!important;}
+  #login-screen,#admin-screen .header,.stats-bar,.page-tabs,.recap-month-selector,#toast,.popup,#popup-supp{display:none!important;}
+  #vue-recap{display:block!important;}
+  .recap-doc{border:none;border-radius:0;background:#fff;max-width:100%;}
+  .recap-doc-header{background:#fff!important;border-bottom:2px solid #000;padding:20px 0;}
+  .recap-doc-brand{color:#000!important;font-size:32px;}
+  .recap-doc-siret{color:#444!important;}
+  .recap-doc-title{color:#000!important;}
+  .recap-doc-period{color:#444!important;}
+  .recap-doc-body{padding:20px 0;}
+  .recap-table th{color:#000;border-bottom:1.5px solid #000;}
+  .recap-table td{color:#000;border-bottom:1px solid #ddd;}
+  .recap-table .td-montant{color:#000;}
+  .recap-table .td-mode{color:#555;}
+  .recap-totaux{background:#f5f5f5;border:1px solid #ddd;}
+  .recap-total-line{color:#000;border-bottom:1px solid #ddd;}
+  .recap-total-line:last-child{color:#000!important;}
+  .recap-vent-box{background:#f5f5f5;border:1px solid #ddd;}
+  .recap-vent-num{color:#000!important;}
+  .recap-vent-lbl{color:#555!important;}
+  .recap-footer{color:#444;border-top:1px solid #ddd;}
+  .btn-print{display:none!important;}
+}
 .checkbox-wrap{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .cmd-checkbox{width:20px;height:20px;accent-color:#ff4f8b;cursor:pointer;flex-shrink:0;}
 .selection-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#111;border-top:2px solid #ff4f8b;padding:12px 16px;max-width:600px;margin:0 auto;border-radius:16px 16px 0 0;z-index:100;}
@@ -199,6 +252,7 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
     <button class="page-tab page-tab-active" id="ptab-commandes" onclick="switchPageTab('commandes')">📋 Commandes</button>
     <button class="page-tab" id="ptab-aprepare" onclick="switchPageTab('aprepare')">🍳 À préparer<span class="page-tab-badge" id="badge-aprepare" style="display:none;">0</span></button>
     <button class="page-tab" id="ptab-historique" onclick="switchPageTab('historique')">📊 Historique</button>
+    <button class="page-tab" id="ptab-recap" onclick="switchPageTab('recap')">📄 Récap mensuel</button>
   </div>
 
   <div id="vue-commandes">
@@ -235,6 +289,16 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
     </div>
     <input class="histo-search" id="histo-search" type="text" placeholder="🔍 Rechercher un client..." oninput="filtrerHisto()" style="display:none;">
     <div id="histo-container"><div class="loading">⏳ Chargement...</div></div>
+  </div>
+
+  <div id="vue-recap" style="display:none;">
+    <div class="recap-month-selector">
+      <select class="recap-month-select" id="recap-month-select" onchange="afficherRecapMensuel()">
+        <option value="">-- Sélectionne un mois --</option>
+      </select>
+      <button class="btn-print" onclick="window.print()">🖨️ Imprimer</button>
+    </div>
+    <div id="recap-container"><div class="recap-empty">📅 Sélectionne un mois pour afficher le récapitulatif.</div></div>
   </div>
 
   <!-- Barre d'actions groupées -->
@@ -456,11 +520,14 @@ function switchPageTab(tab){
   document.getElementById("ptab-commandes").classList.toggle("page-tab-active",tab==="commandes");
   document.getElementById("ptab-aprepare").classList.toggle("page-tab-active",tab==="aprepare");
   document.getElementById("ptab-historique").classList.toggle("page-tab-active",tab==="historique");
+  document.getElementById("ptab-recap").classList.toggle("page-tab-active",tab==="recap");
   document.getElementById("vue-commandes").style.display=tab==="commandes"?"block":"none";
   document.getElementById("vue-aprepare").style.display=tab==="aprepare"?"block":"none";
   document.getElementById("vue-historique").style.display=tab==="historique"?"block":"none";
+  document.getElementById("vue-recap").style.display=tab==="recap"?"block":"none";
   if(tab==="historique")afficherHistorique();
   if(tab==="aprepare")afficherAPreparer();
+  if(tab==="recap"){populerSelectMois();afficherRecapMensuel();}
 }
 
 /* ===== VUE À PRÉPARER : confirmées mais pas encore prêtes ===== */
@@ -541,11 +608,36 @@ function afficherHistoJours(){
 
   let caGlobal=visible.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
 
+  // Regroupe également par mois pour le récap mensuel imprimable
+  let moisGroupes={};
+  visible.forEach(c=>{
+    let d=parseDate(c.dateRetrait);
+    if(!d)return;
+    let key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+    if(!moisGroupes[key]){
+      let label=d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+      moisGroupes[key]={cmds:[],label:label.charAt(0).toUpperCase()+label.slice(1)};
+    }
+    moisGroupes[key].cmds.push(c);
+  });
+  let moisKeys=Object.keys(moisGroupes).sort((a,b)=>b.localeCompare(a));
+  window._moisGroupesCache=moisGroupes;
+
   let html=`<div class="histo-totaux-globaux">
     <div class="histo-total-item"><div class="histo-total-num">${visible.length}</div><div class="histo-total-lbl">Commandes</div></div>
     <div class="histo-total-item"><div class="histo-total-num">${jours.length}</div><div class="histo-total-lbl">Jours</div></div>
     <div class="histo-total-item"><div class="histo-total-num">${caGlobal.toFixed(2)}€</div><div class="histo-total-lbl">CA total</div></div>
   </div>`;
+
+  if(moisKeys.length>0){
+    html+=`<div style="max-width:600px;margin:0 auto 16px;background:#111;border:2px solid #25D366;border-radius:12px;padding:14px 16px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:#25D366;letter-spacing:1px;margin-bottom:10px;">🖨️ RÉCAP MENSUEL (pour contrôle / compta)</div>
+      <select id="mois-select" class="filter-select" style="width:100%;margin-bottom:10px;">
+        ${moisKeys.map(k=>`<option value="${k}">${moisGroupes[k].label} (${moisGroupes[k].cmds.length} commandes)</option>`).join("")}
+      </select>
+      <button class="histo-copy-btn" style="margin-top:0;background:#0a2a12;border-color:#25D366;color:#7fe3a0;" onclick="imprimerRecapMensuelDepuisSelect()">🖨️ Imprimer le récap du mois sélectionné</button>
+    </div>`;
+  }
 
   jours.forEach((key,idx)=>{
     let {cmds,label}=groupes[key];
@@ -584,7 +676,10 @@ function afficherHistoJours(){
       </div>
       <div class="histo-jour-detail" id="detail-${safeId}">
         ${lignes}
-        <button class="histo-copy-btn" onclick="copierRecapJour(\`${txtRecap.replace(/`/g,"\\`")}\`)">📋 Copier le récap du jour</button>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="histo-copy-btn" style="margin-top:0;flex:1;" onclick="copierRecapJour(\`${txtRecap.replace(/`/g,"\\`")}\`)">📋 Copier</button>
+          <button class="histo-copy-btn" style="margin-top:0;flex:1;background:#1a2e1a;border-color:#25D366;color:#7fe3a0;" onclick='imprimerRecapJour(${JSON.stringify(label)}, ${JSON.stringify(cmds.map(c=>({name:c.name,creneau:c.creneau,payment:c.payment,total:c.total,order:c.order})))})'>🖨️ Imprimer</button>
+        </div>
       </div>
     </div>`;
   });
@@ -708,6 +803,155 @@ function copierRecapJour(txt){
     document.execCommand("copy");document.body.removeChild(el);
     showToast("📋 Récap copié !");
   });
+}
+
+function imprimerRecapJour(label,cmds){
+  let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+  let lignesHtml=cmds.map(c=>{
+    let recap=extraireRecapBoitesTexte(c.order)||"—";
+    return`<tr>
+      <td>${(c.name||"—").replace(/</g,"&lt;")}</td>
+      <td>${(recap||"—").replace(/</g,"&lt;")}</td>
+      <td>${(c.creneau||"—").replace(/</g,"&lt;")}</td>
+      <td>${(c.payment||"—").replace(/</g,"&lt;")}</td>
+      <td style="text-align:right;font-weight:bold;">${c.total||"—"} €</td>
+    </tr>`;
+  }).join("");
+
+  let html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Récap ${label}</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:30px;max-width:800px;margin:auto;}
+    h1{font-size:22px;border-bottom:3px solid #ff4f8b;padding-bottom:10px;margin-bottom:4px;}
+    .sous-titre{color:#888;font-size:13px;margin-bottom:20px;}
+    table{width:100%;border-collapse:collapse;margin-top:10px;}
+    th{background:#ff4f8b;color:#fff;text-align:left;padding:8px 10px;font-size:13px;}
+    td{padding:8px 10px;border-bottom:1px solid #eee;font-size:13px;}
+    tr:nth-child(even){background:#fafafa;}
+    .total-final{display:flex;justify-content:space-between;margin-top:18px;padding:14px 16px;background:#1a0d12;color:#fff;border-radius:8px;font-size:18px;font-weight:bold;}
+    .total-final span:last-child{color:#ff4f8b;}
+    .footer{margin-top:30px;font-size:11px;color:#999;text-align:center;}
+    @media print{ body{padding:10px;} }
+  </style>
+  </head><body>
+    <h1>🧇 Oh! Mikaté — Récapitulatif journalier</h1>
+    <div class="sous-titre">🗓️ ${label} • ${cmds.length} commande${cmds.length>1?"s":""} confirmée${cmds.length>1?"s":""}</div>
+    <table>
+      <thead><tr><th>Client</th><th>Commande</th><th>Créneau</th><th>Règlement</th><th>Total</th></tr></thead>
+      <tbody>${lignesHtml}</tbody>
+    </table>
+    <div class="total-final"><span>TOTAL DU JOUR</span><span>${ca.toFixed(2)} €</span></div>
+    <div class="footer">Document généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})} — Oh! Mikaté</div>
+  </body></html>`;
+
+  let w=window.open('','_blank');
+  if(!w){showToast("⚠️ Autorise les pop-ups pour imprimer.");return;}
+  w.document.write(html);
+  w.document.close();
+  w.onload=function(){w.print();};
+}
+
+function imprimerRecapMensuelDepuisSelect(){
+  let key=document.getElementById("mois-select")?.value;
+  if(!key||!window._moisGroupesCache||!window._moisGroupesCache[key]){
+    showToast("⚠️ Aucun mois sélectionné.");
+    return;
+  }
+  let {label,cmds}=window._moisGroupesCache[key];
+  imprimerRecapMensuel(label,cmds);
+}
+
+function imprimerRecapMensuel(label,cmds){
+  // Regroupe les commandes du mois par jour de retrait
+  function cleJour(dr){let d=parseDate(dr||"");if(!d)return dr||"?";return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+  let jours={};
+  cmds.forEach(c=>{
+    let k=cleJour(c.dateRetrait);
+    if(!jours[k])jours[k]={cmds:[],label:formatDateRetrait(c.dateRetrait)};
+    jours[k].cmds.push(c);
+  });
+  let joursKeys=Object.keys(jours).sort();
+
+  let caTotalMois=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+  let nbCarte=cmds.filter(c=>(c.payment||"").toLowerCase().includes("carte")).length;
+  let nbEspeces=cmds.filter(c=>(c.payment||"").toLowerCase().includes("espèces")||(c.payment||"").toLowerCase().includes("especes")).length;
+  let caCarte=cmds.filter(c=>(c.payment||"").toLowerCase().includes("carte")).reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+  let caEspeces=cmds.filter(c=>(c.payment||"").toLowerCase().includes("espèces")||(c.payment||"").toLowerCase().includes("especes")).reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+
+  let joursHtml=joursKeys.map(k=>{
+    let {cmds:cmdsJour,label:labelJour}=jours[k];
+    let caJour=cmdsJour.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+    let lignes=cmdsJour.map(c=>{
+      let recap=extraireRecapBoitesTexte(c.order)||"—";
+      return`<tr>
+        <td>${(c.name||"—").replace(/</g,"&lt;")}</td>
+        <td>${recap.replace(/</g,"&lt;")}</td>
+        <td>${(c.creneau||"—").replace(/</g,"&lt;")}</td>
+        <td>${(c.payment||"—").replace(/</g,"&lt;")}</td>
+        <td style="text-align:right;font-weight:bold;">${c.total||"—"} €</td>
+      </tr>`;
+    }).join("");
+    return`<div class="jour-bloc">
+      <div class="jour-bloc-titre">🗓️ ${labelJour} — ${cmdsJour.length} commande${cmdsJour.length>1?"s":""} — <span style="color:#ff4f8b;">${caJour.toFixed(2)} €</span></div>
+      <table>
+        <thead><tr><th>Client</th><th>Commande</th><th>Créneau</th><th>Règlement</th><th>Total</th></tr></thead>
+        <tbody>${lignes}</tbody>
+      </table>
+    </div>`;
+  }).join("");
+
+  let dateGeneration=new Date().toLocaleDateString('fr-FR')+" à "+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+
+  let html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Récap mensuel ${label}</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:0;max-width:850px;margin:auto;}
+    .entete{background:#ff4f8b;color:#fff;padding:24px 30px;}
+    .entete h1{font-size:24px;margin:0 0 4px;letter-spacing:1px;}
+    .entete .soustitre{font-size:13px;opacity:0.9;}
+    .entete .infos-entreprise{font-size:11px;opacity:0.85;margin-top:10px;line-height:1.5;}
+    .corps{padding:25px 30px;}
+    .periode{font-size:18px;font-weight:bold;margin-bottom:4px;}
+    .periode-sub{color:#888;font-size:12px;margin-bottom:20px;}
+    .stats-mois{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;}
+    .stat-mois-box{flex:1;min-width:120px;background:#f7f7f7;border:1px solid #eee;border-radius:8px;padding:12px;text-align:center;}
+    .stat-mois-box .num{font-size:20px;font-weight:bold;color:#ff4f8b;}
+    .stat-mois-box .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+    .jour-bloc{margin-bottom:22px;}
+    .jour-bloc-titre{font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #ff4f8b;padding-left:10px;}
+    table{width:100%;border-collapse:collapse;margin-bottom:4px;}
+    th{background:#1a1a1a;color:#fff;text-align:left;padding:7px 10px;font-size:11.5px;}
+    td{padding:7px 10px;border-bottom:1px solid #eee;font-size:12.5px;}
+    tr:nth-child(even){background:#fafafa;}
+    .total-final{display:flex;justify-content:space-between;margin-top:20px;padding:16px 18px;background:#1a0d12;color:#fff;border-radius:8px;font-size:20px;font-weight:bold;}
+    .total-final span:last-child{color:#ff4f8b;}
+    .footer{margin-top:30px;font-size:10.5px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:14px;}
+    @media print{ .entete{padding:18px 24px;} .corps{padding:18px 24px;} }
+  </style>
+  </head><body>
+    <div class="entete">
+      <h1>🧇 OH! MIKATÉ</h1>
+      <div class="soustitre">Beignets congolais artisanaux — Reims</div>
+      <div class="infos-entreprise">📍 Reims, France &nbsp;|&nbsp; 📞 0745915946 &nbsp;|&nbsp; 📧 ohmikate51@gmail.com</div>
+    </div>
+    <div class="corps">
+      <div class="periode">Récapitulatif mensuel des ventes — ${label}</div>
+      <div class="periode-sub">Document généré le ${dateGeneration} — uniquement les commandes confirmées</div>
+      <div class="stats-mois">
+        <div class="stat-mois-box"><div class="num">${cmds.length}</div><div class="lbl">Commandes</div></div>
+        <div class="stat-mois-box"><div class="num">${joursKeys.length}</div><div class="lbl">Jours d'activité</div></div>
+        <div class="stat-mois-box"><div class="num">${nbCarte}</div><div class="lbl">Paiements carte (${caCarte.toFixed(2)}€)</div></div>
+        <div class="stat-mois-box"><div class="num">${nbEspeces}</div><div class="lbl">Paiements espèces (${caEspeces.toFixed(2)}€)</div></div>
+      </div>
+      ${joursHtml}
+      <div class="total-final"><span>TOTAL DU MOIS</span><span>${caTotalMois.toFixed(2)} €</span></div>
+      <div class="footer">Oh! Mikaté — Document à conserver à titre de justificatif comptable. Généré automatiquement depuis l'interface de gestion des commandes.</div>
+    </div>
+  </body></html>`;
+
+  let w2=window.open('','_blank');
+  if(!w2){showToast("⚠️ Autorise les pop-ups pour imprimer.");return;}
+  w2.document.write(html);
+  w2.document.close();
+  w2.onload=function(){w2.print();};
 }
 
 function parseDate(str){
@@ -1200,6 +1444,141 @@ function showToast(m){
   let t=document.getElementById("toast");
   t.textContent=m;t.classList.add("show");
   setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+/* ===== RÉCAP MENSUEL ===== */
+const MOIS_FR=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+const SIRET="102 955 168 00012";
+const NOM_ENTREPRISE="Oh! Mikaté";
+const ADRESSE="36 rue du Chanoine Lallement, 51100 Reims";
+
+function populerSelectMois(){
+  let select=document.getElementById("recap-month-select");
+  // Trouver tous les mois/années présents dans les commandes
+  let moisDispo=new Set();
+  toutesCommandes.forEach(c=>{
+    let d=parseDate(c.datePropre||c.dateRecu);
+    if(d){
+      let key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      moisDispo.add(key);
+    }
+  });
+  // Trier décroissant
+  let sorted=[...moisDispo].sort().reverse();
+  // Conserver la sélection actuelle
+  let current=select.value;
+  select.innerHTML='<option value="">-- Sélectionne un mois --</option>';
+  sorted.forEach(key=>{
+    let [annee,mois]=key.split('-');
+    let label=MOIS_FR[parseInt(mois)-1]+" "+annee;
+    let opt=document.createElement("option");
+    opt.value=key;opt.textContent=label;
+    if(key===current)opt.selected=true;
+    select.appendChild(opt);
+  });
+  // Si aucune sélection, pré-sélectionner le mois le plus récent
+  if(!current&&sorted.length>0){select.value=sorted[0];afficherRecapMensuel();}
+}
+
+function afficherRecapMensuel(){
+  let key=document.getElementById("recap-month-select").value;
+  let container=document.getElementById("recap-container");
+  if(!key){container.innerHTML='<div class="recap-empty">📅 Sélectionne un mois pour afficher le récapitulatif.</div>';return;}
+  let [anneeStr,moisStr]=key.split('-');
+  let annee=parseInt(anneeStr),mois=parseInt(moisStr);
+  let moisLabel=MOIS_FR[mois-1]+" "+annee;
+  // Filtrer les commandes du mois
+  let cmds=toutesCommandes.filter(c=>{
+    if(supprimees.includes(c.id))return false;
+    let d=parseDate(c.datePropre||c.dateRecu);
+    if(!d)return false;
+    return d.getFullYear()===annee&&(d.getMonth()+1)===mois;
+  });
+  if(cmds.length===0){
+    container.innerHTML='<div class="recap-empty">🍩 Aucune commande pour '+moisLabel+'.</div>';return;
+  }
+  // Trier par date
+  cmds.sort((a,b)=>{
+    let da=parseDate(a.datePropre||a.dateRecu),db=parseDate(b.datePropre||b.dateRecu);
+    return(da||0)-(db||0);
+  });
+  // Calculs
+  let totalCA=0,totalCarte=0,totalEspeces=0,nbCarte=0,nbEspeces=0;
+  cmds.forEach(c=>{
+    let v=parseFloat(String(c.total).replace(',','.'));
+    if(!isNaN(v)){
+      totalCA+=v;
+      let isCarte=(c.payment||"").toLowerCase().includes("carte")||(c.canal||"").toLowerCase().includes("carte");
+      if(isCarte){totalCarte+=v;nbCarte++;}else{totalEspeces+=v;nbEspeces++;}
+    }
+  });
+  // Date d'édition
+  let now=new Date();
+  let dateEdition=now.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  // Lignes du tableau
+  let lignes=cmds.map((c,i)=>{
+    let d=parseDate(c.datePropre||c.dateRecu);
+    let dateAff=d?d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}):c.datePropre||"—";
+    let v=parseFloat(String(c.total).replace(',','.'));
+    let montantAff=isNaN(v)?"—":v.toFixed(2)+" €";
+    let isCarte=(c.payment||"").toLowerCase().includes("carte")||(c.canal||"").toLowerCase().includes("carte");
+    let modeAff=isCarte?"💳 Carte":"💵 Espèces/CB";
+    return `<tr>
+      <td style="color:#888;width:28px;">${i+1}</td>
+      <td>${dateAff}${c.heure?' <span style="color:#555;font-size:10px;">'+c.heure+'</span>':''}</td>
+      <td style="font-weight:bold;color:#fff;">${c.name||"—"}</td>
+      <td class="td-mode">${modeAff}</td>
+      <td class="td-montant">${montantAff}</td>
+    </tr>`;
+  }).join('');
+  container.innerHTML=`
+  <div class="recap-doc">
+    <div class="recap-doc-header">
+      <div class="recap-doc-brand">🧇 ${NOM_ENTREPRISE}</div>
+      <div class="recap-doc-siret">SIRET : ${SIRET} — ${ADRESSE}</div>
+      <div class="recap-doc-title">RÉCAPITULATIF MENSUEL DES VENTES</div>
+      <div class="recap-doc-period">Période : ${moisLabel} &nbsp;|&nbsp; Édité le ${dateEdition}</div>
+    </div>
+    <div class="recap-doc-body">
+      <table class="recap-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Client</th>
+            <th>Règlement</th>
+            <th style="text-align:right;">Montant</th>
+          </tr>
+        </thead>
+        <tbody>${lignes}</tbody>
+      </table>
+      <div class="recap-ventilation">
+        <div class="recap-vent-box">
+          <div class="recap-vent-num">${nbCarte}</div>
+          <div class="recap-vent-lbl">💳 Paiements carte</div>
+          <div style="font-size:13px;color:#a09af0;margin-top:4px;font-weight:bold;">${totalCarte.toFixed(2)} €</div>
+        </div>
+        <div class="recap-vent-box">
+          <div class="recap-vent-num">${nbEspeces}</div>
+          <div class="recap-vent-lbl">💵 Espèces / CB sur place</div>
+          <div style="font-size:13px;color:#ff9500;margin-top:4px;font-weight:bold;">${totalEspeces.toFixed(2)} €</div>
+        </div>
+      </div>
+      <div class="recap-totaux">
+        <div class="recap-total-line"><span>Nombre de commandes</span><span>${cmds.length}</span></div>
+        <div class="recap-total-line"><span>Dont paiements carte</span><span>${totalCarte.toFixed(2)} €</span></div>
+        <div class="recap-total-line"><span>Dont espèces / CB sur place</span><span>${totalEspeces.toFixed(2)} €</span></div>
+        <div class="recap-total-line"><span>CHIFFRE D'AFFAIRES ${moisLabel.toUpperCase()}</span><span>${totalCA.toFixed(2)} €</span></div>
+      </div>
+      <div class="recap-footer">
+        <strong>${NOM_ENTREPRISE}</strong> — Auto-entrepreneur<br>
+        SIRET : ${SIRET}<br>
+        ${ADRESSE}<br><br>
+        Document édité le ${dateEdition} — Usage interne / contrôle fiscal<br>
+        Les montants incluent la TVA non applicable (franchise en base de TVA — Art. 293 B du CGI).
+      </div>
+    </div>
+  </div>`;
 }
 </script>
 </body>
