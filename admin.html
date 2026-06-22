@@ -315,6 +315,7 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 <script>
 const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
 const SHEET_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec";
 const MOT_DE_PASSE="Ronciat";
 const TARGET="0745915946";
 const CRENEAUX=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
@@ -360,6 +361,9 @@ async function charger(){
       let dateRetrait=row.c[6]?String(row.c[6].v):"";
 let creneau=row.c[7]?String(row.c[7].v):"";
 let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
+      // Colonne K (index 10) : flag suppression synchronisée
+      let flagSupprime=row.c[10]?String(row.c[10].v):"";
+      if(flagSupprime==="SUPPRIMÉ")return; // Ignorée définitivement
 // Traitement et formatage de l'heure
       let heureRaw = row.c[9] ? String(row.c[9].v) : "";
       let heure = heureRaw;
@@ -1303,6 +1307,8 @@ function supprimerSelection(){
     if(!supprimees.includes(id))supprimees.push(id);
     confirmees=confirmees.filter(c=>c!==id);
     pretes=pretes.filter(p=>p!==id);
+    let cmd=toutesCommandes.find(c=>c.id===id);
+    if(cmd)supprimerDansSheet(cmd.id);
   });
   localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
@@ -1390,17 +1396,29 @@ function marquerAnnuleeParClient(id){
 function fermerPopup(){idASupp=null;document.getElementById("popup-supp").classList.remove("show");}
 function confirmerSuppression(){
   if(idASupp===null)return;
+  let cmd=toutesCommandes.find(c=>c.id===idASupp);
   supprimees.push(idASupp);
   localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
   confirmees=confirmees.filter(id=>id!==idASupp);
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
   pretes=pretes.filter(id=>id!==idASupp);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  if(cmd)supprimerDansSheet(cmd.id);
   fermerPopup();
   updateStats();
   rafraichirVuesSecondaires();
   afficher();
   showToast("🗑️ Commande supprimée");
+}
+
+async function supprimerDansSheet(rowIndex){
+  try{
+    await fetch(SCRIPT_URL,{
+      method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({action:"supprimer",rowIndex:rowIndex+2})
+    });
+  }catch(e){}
 }
 
 function updateStats(){
