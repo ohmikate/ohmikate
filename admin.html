@@ -36,15 +36,32 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .histo-jour-chevron.open{transform:rotate(180deg);}
 .histo-jour-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #222;}
 .histo-jour-detail.open{display:block;}
-.histo-ligne{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1a1a1a;font-size:13px;}
+.histo-ligne{display:flex;justify-content:space-between;align-items:start;padding:10px 0;border-bottom:1px solid #1a1a1a;font-size:13px;gap:8px;}
 .histo-ligne:last-child{border-bottom:none;}
 .histo-ligne-nom{color:#fff;font-weight:bold;}
-.histo-ligne-meta{color:#777;font-size:11px;margin-top:2px;}
-.histo-ligne-prix{color:#ff4f8b;font-weight:bold;}
+.histo-ligne-meta{color:#777;font-size:11px;margin-top:3px;}
+.histo-ligne-boites{font-size:11px;color:#ff9500;margin-top:3px;}
+.histo-ligne-prix{color:#ff4f8b;font-weight:bold;white-space:nowrap;}
 .histo-totaux-globaux{display:flex;justify-content:space-around;max-width:600px;margin:0 auto 16px;background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:14px;}
 .histo-total-item{text-align:center;}
 .histo-total-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;}
 .histo-total-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
+.histo-copy-btn{display:block;width:100%;margin-top:12px;background:#1a1a2e;border:1px solid #635bff;color:#a09af0;font-size:12px;font-weight:bold;padding:8px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;}
+.histo-copy-btn:hover{background:#25244a;}
+.histo-tabs{display:flex;gap:8px;max-width:600px;margin:0 auto 14px;}
+.histo-tab{flex:1;background:#111;border:1.5px solid #222;color:#888;font-size:12px;font-weight:bold;padding:9px 8px;border-radius:8px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;}
+.histo-tab.active{background:#ff4f8b;border-color:#ff4f8b;color:#fff;}
+.histo-search{width:100%;background:#111;border:1.5px solid #333;color:#fff;font-size:13px;padding:10px 14px;border-radius:10px;font-family:'Montserrat',sans-serif;box-sizing:border-box;margin-bottom:14px;max-width:600px;display:block;margin-left:auto;margin-right:auto;}
+.histo-search:focus{border-color:#ff4f8b;outline:none;}
+.client-card{background:#111;border:2px solid #222;border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
+.client-card-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.client-nom{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;letter-spacing:1px;}
+.client-stats{text-align:right;}
+.client-ca{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;}
+.client-nb{font-size:11px;color:#888;}
+.client-badge-fidele{display:inline-block;background:#ff4f8b22;border:1px solid #ff4f8b;color:#ff4f8b;font-size:10px;font-weight:bold;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;}
+.client-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #222;}
+.client-detail.open{display:block;}
 .refresh-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;white-space:nowrap;}
 .filter-select{flex:1;min-width:120px;padding:10px;background:#111;border:2px solid #222;border-radius:10px;color:#fff;font-size:13px;font-family:'Montserrat',sans-serif;}
 .filter-select:focus{border-color:#ff4f8b;outline:none;}
@@ -212,6 +229,11 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
   </div>
 
   <div id="vue-historique" style="display:none;">
+    <div class="histo-tabs">
+      <button class="histo-tab active" id="htab-jours" onclick="switchHistoTab('jours')">🗓️ Par jour</button>
+      <button class="histo-tab" id="htab-clients" onclick="switchHistoTab('clients')">👤 Par client</button>
+    </div>
+    <input class="histo-search" id="histo-search" type="text" placeholder="🔍 Rechercher un client..." oninput="filtrerHisto()" style="display:none;">
     <div id="histo-container"><div class="loading">⏳ Chargement...</div></div>
   </div>
 
@@ -474,32 +496,47 @@ function updateBadgeAPreparer(n){
   }
 }
 
-/* ===== VUE HISTORIQUE : cumul par date de retrait ===== */
+let histoTabActif="jours";
+
+function switchHistoTab(tab){
+  histoTabActif=tab;
+  document.getElementById("htab-jours").classList.toggle("active",tab==="jours");
+  document.getElementById("htab-clients").classList.toggle("active",tab==="clients");
+  document.getElementById("histo-search").style.display=tab==="clients"?"block":"none";
+  document.getElementById("histo-search").value="";
+  afficherHistorique();
+}
+
+function filtrerHisto(){
+  afficherHistorique();
+}
+
 function afficherHistorique(){
+  if(histoTabActif==="clients")afficherHistoClients();
+  else afficherHistoJours();
+}
+
+/* ===== VUE HISTORIQUE PAR JOUR ===== */
+function afficherHistoJours(){
   let container=document.getElementById("histo-container");
-  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  // Uniquement les commandes confirmées
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&confirmees.includes(c.id));
 
   if(visible.length===0){
-    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📊</div><p>Aucune commande.</p></div>`;
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📊</div><p>Aucune commande confirmée.</p></div>`;
     return;
   }
 
-  // Regroupe par date de retrait réelle
+  // Regroupe par date de retrait, clé canonique
+  function cleDate(dr){let d=parseDate(dr||"");if(!d)return dr||"?";let mm=String(d.getMonth()+1).padStart(2,"0");let dd=String(d.getDate()).padStart(2,"0");return`${d.getFullYear()}-${mm}-${dd}`;}
   let groupes={};
   visible.forEach(c=>{
-    let key=c.dateRetrait?formatDateRetrait(c.dateRetrait):"Date de retrait inconnue";
-    if(!groupes[key])groupes[key]={cmds:[],dateObj:parseDate(c.dateRetrait)};
+    let key=cleDate(c.dateRetrait);
+    if(!groupes[key])groupes[key]={cmds:[],dateObj:parseDate(c.dateRetrait),label:formatDateRetrait(c.dateRetrait)};
     groupes[key].cmds.push(c);
   });
 
-  // Tri chronologique décroissant (le plus récent en premier)
-  let jours=Object.keys(groupes).sort((a,b)=>{
-    let da=groupes[a].dateObj,db=groupes[b].dateObj;
-    if(!da&&!db)return 0;
-    if(!da)return 1;
-    if(!db)return -1;
-    return db-da;
-  });
+  let jours=Object.keys(groupes).sort((a,b)=>b.localeCompare(a));
 
   let caGlobal=visible.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
 
@@ -509,13 +546,33 @@ function afficherHistorique(){
     <div class="histo-total-item"><div class="histo-total-num">${caGlobal.toFixed(2)}€</div><div class="histo-total-lbl">CA total</div></div>
   </div>`;
 
-  jours.forEach((jour,idx)=>{
-    let cmds=groupes[jour].cmds;
+  jours.forEach((key,idx)=>{
+    let {cmds,label}=groupes[key];
     let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
     let safeId="histo-"+idx;
+    let lignes=cmds.map(c=>{
+      let recap=extraireRecapBoitesTexte(c.order);
+      return`<div class="histo-ligne">
+        <div>
+          <div class="histo-ligne-nom">✅ ${c.name||"—"}</div>
+          <div class="histo-ligne-meta">⏰ ${c.creneau||"—"} • ${c.payment||"—"}</div>
+          ${recap?`<div class="histo-ligne-boites">📦 ${recap}</div>`:""}
+        </div>
+        <div class="histo-ligne-prix">${c.total||"—"} €</div>
+      </div>`;
+    }).join("");
+
+    // Texte à copier pour le récap du jour
+    let txtRecap=`📋 Récap ${label}\n${"─".repeat(28)}\n`;
+    cmds.forEach(c=>{
+      let recap=extraireRecapBoitesTexte(c.order);
+      txtRecap+=`• ${c.name||"—"} — ${recap||"?"} — ${c.total||"—"}€ (${c.payment||"—"})\n`;
+    });
+    txtRecap+=`${"─".repeat(28)}\n✅ ${cmds.length} commande${cmds.length>1?"s":""} — Total : ${ca.toFixed(2)}€`;
+
     html+=`<div class="histo-jour">
       <div class="histo-jour-header" onclick="toggleHistoJour('${safeId}')">
-        <div class="histo-jour-titre">🗓️ ${jour}</div>
+        <div class="histo-jour-titre">🗓️ ${label}</div>
         <div class="histo-jour-stats">
           <div>
             <div class="histo-jour-ca">${ca.toFixed(2)} €</div>
@@ -525,18 +582,8 @@ function afficherHistorique(){
         </div>
       </div>
       <div class="histo-jour-detail" id="detail-${safeId}">
-        ${cmds.map(c=>{
-          let isConf=confirmees.includes(c.id);
-          let isPrete=pretes.includes(c.id);
-          let statutIcon=isPrete?"📦":isConf?"✅":"🆕";
-          return `<div class="histo-ligne">
-            <div>
-              <div class="histo-ligne-nom">${statutIcon} ${c.name||"—"}</div>
-              <div class="histo-ligne-meta">⏰ ${c.creneau||"—"} • ${badgeCanal(c.canal||"—")}</div>
-            </div>
-            <div class="histo-ligne-prix">${c.total||"—"} €</div>
-          </div>`;
-        }).join("")}
+        ${lignes}
+        <button class="histo-copy-btn" onclick="copierRecapJour(\`${txtRecap.replace(/`/g,"\\`")}\`)">📋 Copier le récap du jour</button>
       </div>
     </div>`;
   });
@@ -544,9 +591,110 @@ function afficherHistorique(){
   container.innerHTML=html;
 }
 
+/* ===== VUE HISTORIQUE PAR CLIENT ===== */
+function afficherHistoClients(){
+  let container=document.getElementById("histo-container");
+  let recherche=(document.getElementById("histo-search")?.value||"").toLowerCase().trim();
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&confirmees.includes(c.id));
+
+  if(visible.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">👤</div><p>Aucune commande confirmée.</p></div>`;
+    return;
+  }
+
+  // Regroupe par nom client (insensible à la casse)
+  let clients={};
+  visible.forEach(c=>{
+    let nom=(c.name||"Inconnu").trim();
+    let key=nom.toLowerCase();
+    if(!clients[key])clients[key]={nom,cmds:[]};
+    clients[key].cmds.push(c);
+  });
+
+  // Filtre par recherche
+  let keys=Object.keys(clients).filter(k=>!recherche||k.includes(recherche));
+
+  // Tri : les plus fidèles (nb commandes) en premier
+  keys.sort((a,b)=>clients[b].cmds.length-clients[a].cmds.length||a.localeCompare(b));
+
+  if(keys.length===0){
+    container.innerHTML=`<div class="empty-state"><p>Aucun client trouvé pour "${recherche}".</p></div>`;
+    return;
+  }
+
+  let html="";
+  keys.forEach((key,idx)=>{
+    let {nom,cmds}=clients[key];
+    let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+    let nb=cmds.length;
+    let fidele=nb>=3;
+    let safeId="client-"+idx;
+
+    // Habitudes : boîtes les plus commandées
+    let allBoites={};
+    cmds.forEach(c=>{
+      let regex=/BOÎTE DE (\d+) BEIGNETS/gi,m;
+      while((m=regex.exec(c.order||""))!==null){
+        allBoites[m[1]]=(allBoites[m[1]]||0)+1;
+      }
+    });
+    let habitude=Object.keys(allBoites).map(t=>`${allBoites[t]}× Boîte ${t}`).join(", ");
+
+    let derniereCmd=cmds.sort((a,b)=>{
+      let da=parseDate(a.dateRetrait),db=parseDate(b.dateRetrait);
+      return(db||0)-(da||0);
+    })[0];
+
+    html+=`<div class="client-card">
+      <div class="client-card-header" onclick="toggleClientDetail('${safeId}')">
+        <div>
+          <div class="client-nom">${nom}${fidele?`<span class="client-badge-fidele">⭐ FIDÈLE</span>`:""}</div>
+          <div class="histo-jour-nb">${nb} commande${nb>1?"s":""} • Dernière : ${formatDateRetrait(derniereCmd?.dateRetrait||"")}</div>
+        </div>
+        <div class="client-stats">
+          <div class="client-ca">${ca.toFixed(2)} €</div>
+          <div class="client-nb">dépensé au total</div>
+        </div>
+      </div>
+      <div class="client-detail" id="detail-${safeId}">
+        ${habitude?`<div style="font-size:12px;color:#ff9500;margin-bottom:10px;">📦 Habitudes : ${habitude}</div>`:""}
+        ${cmds.map(c=>`<div class="histo-ligne">
+          <div>
+            <div class="histo-ligne-meta">🗓️ ${formatDateRetrait(c.dateRetrait)} • ⏰ ${c.creneau||"—"}</div>
+            <div class="histo-ligne-boites">📦 ${extraireRecapBoitesTexte(c.order)||"—"}</div>
+          </div>
+          <div class="histo-ligne-prix">${c.total||"—"} €</div>
+        </div>`).join("")}
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML=html;
+}
+
+function toggleClientDetail(safeId){
+  document.getElementById("detail-"+safeId).classList.toggle("open");
+}
+
 function toggleHistoJour(safeId){
   document.getElementById("detail-"+safeId).classList.toggle("open");
   document.getElementById("chevron-"+safeId).classList.toggle("open");
+}
+
+function extraireRecapBoitesTexte(orderText){
+  if(!orderText)return"";
+  let regex=/BOÎTE DE (\d+) BEIGNETS/gi,counts={},m;
+  while((m=regex.exec(orderText))!==null)counts[m[1]]=(counts[m[1]]||0)+1;
+  return Object.keys(counts).sort((a,b)=>parseInt(a)-parseInt(b)).map(t=>`${counts[t]}× Boîte ${t}`).join(" + ");
+}
+
+function copierRecapJour(txt){
+  navigator.clipboard.writeText(txt).then(()=>showToast("📋 Récap copié !")).catch(()=>{
+    let el=document.createElement("textarea");
+    el.value=txt;document.body.appendChild(el);el.select();
+    document.execCommand("copy");document.body.removeChild(el);
+    showToast("📋 Récap copié !");
+  });
 }
 
 function parseDate(str){
