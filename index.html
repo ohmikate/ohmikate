@@ -277,6 +277,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 <div class="form-group">
   <label for="client-time">Choisis ta tranche horaire de passage : <span class="requis">*</span></label>
   <span id="time-warning" class="info-limite" style="display:none;margin-bottom:5px;">⚠️ Pour aujourd'hui, commande requise au moins 30 min à l'avance.</span>
+  <span class="info-limite" style="color:#aaa;font-style:normal;font-size:11px;">🕐 5 commandes max par créneau de 30 min, pour garantir des Mikatés tout chauds.</span>
   <select id="client-time" onchange="updateUI()">
     <option value="">-- Sélectionne une tranche horaire --</option>
   </select>
@@ -456,6 +457,35 @@ let selectedPaymentMode="";
 const targetPhone="0745915946";
 const baseHours=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
 let espècesPageAffichée=false;
+
+/* ===== COMPTAGE DES CRÉNEAUX (lecture seule Google Sheets) ===== */
+const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
+const SHEET_URL_READONLY=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
+const MAX_COMMANDES_PAR_CRENEAU=5;
+let orderCounts={}; // { "Lundi 1 juillet": { "17h00 - 17h30": 3, ... }, ... }
+
+async function chargerComptesCreneaux(){
+  try{
+    let res=await fetch(SHEET_URL_READONLY+"&t="+Date.now());
+    let text=await res.text();
+    let json=JSON.parse(text.substring(47,text.length-2));
+    let rows=json.table.rows||[];
+    let counts={};
+    rows.forEach(row=>{
+      if(!row.c)return;
+      let dateRetrait=row.c[6]?String(row.c[6].v):"";
+      let creneau=row.c[7]?String(row.c[7].v):"";
+      let flagSupprime=row.c[10]?String(row.c[10].v):"";
+      if(flagSupprime==="SUPPRIMÉ")return;
+      if(!dateRetrait||!creneau)return;
+      counts[dateRetrait]=counts[dateRetrait]||{};
+      counts[dateRetrait][creneau]=(counts[dateRetrait][creneau]||0)+1;
+    });
+    orderCounts=counts;
+  }catch(e){
+    orderCounts={}; // en cas d'erreur réseau, on n'affiche aucun créneau complet plutôt que de bloquer la commande
+  }
+}
 
 /* ===== QUANTITÉS ===== */
 const MAX_BOXES_TOTAL=10;
@@ -1104,6 +1134,10 @@ function initDates(){
   let now=new Date();
   let startDate=new Date(2026,6,1);
   if(now>startDate)startDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  // Après 15h, le jour-même n'est plus proposé : on passe directement au lendemain.
+  if(now.getHours()>=15){
+    startDate.setDate(startDate.getDate()+1);
+  }
   for(let i=0;i<14;i++){
     let d=new Date(startDate);d.setDate(startDate.getDate()+i);
     let label=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
@@ -1125,11 +1159,16 @@ function handleDateChange(){
   todayLabel=todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1);
   let isToday=(selectedDate===todayLabel);
   let currentMinutes=now.getHours()*60+now.getMinutes();
+  let comptesDuJour=orderCounts[selectedDate]||{};
   baseHours.forEach(t=>{
     let match=t.match(/(\d{1,2})h(\d{2})/);
     let slotMinutes=match?(parseInt(match[1])*60+parseInt(match[2])):0;
+    let nbCommandes=comptesDuJour[t]||0;
+    let estComplet=nbCommandes>=MAX_COMMANDES_PAR_CRENEAU;
     if(isToday&&slotMinutes-currentMinutes<30){
       let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (indisponible)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
+    }else if(estComplet){
+      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (complet ⛔)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
     }else{
       let o=document.createElement("option");o.value=o.textContent=t;timeSelect.appendChild(o);
     }
@@ -1255,6 +1294,7 @@ window.onload=function(){
     localStorage.removeItem('ohMikateSheetSent');
     initDates();
     handleDateChange();
+    chargerComptesCreneaux().then(()=>{handleDateChange();});
   }
 };
 </script>
