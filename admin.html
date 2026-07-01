@@ -367,9 +367,6 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
     }
     localStorage.setItem('ohMikateIdsConnus',JSON.stringify(toutesCommandes.map(c=>c.id)));
 
-    // DEBUG temporaire
-    document.getElementById("last-refresh").textContent=`✅ ${totalLignes} lignes lues, ${lignesIgnorees} ignorées, ${toutesCommandes.length} commandes chargées`;
-
     afficher();
     updateStats();
     let visiblePourBadge=toutesCommandes.filter(c=>!supprimees.includes(c.id));
@@ -784,10 +781,13 @@ function analyserCreneaux(cmds){
       let m=cr.match(/(\d{1,2})h(\d{2})/);
       let slotMins=m?(parseInt(m[1])*60+parseInt(m[2])):999;
       let diff=slotMins-nowMins;
-      let cls="creneau-libre",icon="✅";
-      if(isToday&&diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
+      let cls,icon;
+      if(n>=5){cls="creneau-plein";icon="⛔";}
+      else if(isToday&&diff>0&&diff<=30){cls="creneau-urgent";icon="🔴";}
+      else if(isToday&&diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
       else if(n>=2){cls="creneau-charge";icon="⚠️";}
-      badges+=`<span class="creneau-badge ${cls}" onclick="scrollVersCreneau('${cr.replace(/'/g,"\\'")}','${key}')">${icon} ${cr} (${n})</span>`;
+      else{cls="creneau-libre";icon="✅";}
+      badges+=`<span class="creneau-badge ${cls}" onclick="scrollVersCreneau('${cr.replace(/'/g,"\\'")}','${key}')">${icon} ${cr} (${n}/5)</span>`;
     });
     if(!badges)return;
 
@@ -903,7 +903,7 @@ function renderCommande(c){
           🕐 ${c.heure||"—"} &nbsp;|&nbsp; ${badgeCanal(c.canal||"—")}
         </div>
         <div class="commande-meta" style="margin-top:3px;font-size:11px;color:#666;">
-          📅 Reçue le ${c.dateRecu||"—"}
+          📅 Reçue le ${c.datePropre||c.dateRecu||"—"}
         </div>
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;">${c.total||"—"} €</div>
