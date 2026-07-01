@@ -432,13 +432,13 @@ const MAX_COMMANDES_PAR_CRENEAU=5;
 let orderCounts={};
 
 async function chargerComptesCreneaux(){
+async function chargerComptesCreneaux(){
   try{
     let res=await fetch(SHEET_URL_READONLY+"&t="+Date.now());
     let text=await res.text();
     let json=JSON.parse(text.substring(47,text.length-2));
     let rows=json.table.rows||[];
     let counts={};
-    let debugInfo=[];
     rows.forEach(row=>{
       if(!row.c)return;
       let hasData=row.c.some(cell=>cell&&cell.v!==null&&cell.v!=="");
@@ -447,17 +447,13 @@ async function chargerComptesCreneaux(){
       let creneau=row.c[7]?String(row.c[7].v):"";
       if(!dateRetraitRaw||!creneau)return;
       let cleDate=normaliserDateEnCle(dateRetraitRaw);
-      debugInfo.push(`"${dateRetraitRaw}"→"${cleDate}"|"${creneau}"`);
       if(!cleDate)return;
       counts[cleDate]=counts[cleDate]||{};
       counts[cleDate][creneau]=(counts[cleDate][creneau]||0)+1;
     });
     orderCounts=counts;
-    // DEBUG TEMPORAIRE
-    showToast("🔍 "+debugInfo.slice(0,2).join(" / ")+" | counts:"+JSON.stringify(counts).substring(0,80));
   }catch(e){
     orderCounts={};
-    showToast("❌ Erreur: "+e.message);
   }
 }
 
