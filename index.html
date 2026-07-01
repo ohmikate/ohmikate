@@ -425,14 +425,19 @@ const targetPhone="0745915946";
 const baseHours=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
 let espècesPageAffichée=false;
 
-/* ===== COMPTAGE DES CRÉNEAUX (lecture seule Google Sheets) ===== */
+/* ===== COMPTAGE ET BLOCAGES (lecture seule Google Sheets) ===== */
 const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
 const SHEET_URL_READONLY=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
+// Lien vers le nouvel onglet pour les fermetures manuelles
+const SHEET_URL_BLOCAGES=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Fermetures`;
+
 const MAX_COMMANDES_PAR_CRENEAU=5;
 let orderCounts={};
+let manuelsBlocages={}; // Stockera les fermetures définies par vos soins
 
 async function chargerComptesCreneaux(){
   try{
+    // 1. Chargement des comptes de commandes existants
     let res=await fetch(SHEET_URL_READONLY+"&t="+Date.now());
     let text=await res.text();
     let json=JSON.parse(text.substring(47,text.length-2));
@@ -454,20 +459,46 @@ async function chargerComptesCreneaux(){
   }catch(e){
     orderCounts={};
   }
+
+  try{
+    // 2. Chargement de vos blocages manuels depuis l'onglet "Fermetures"
+    let resB=await fetch(SHEET_URL_BLOCAGES+"&t="+Date.now());
+    let textB=await resB.text();
+    let jsonB=JSON.parse(textB.substring(47,textB.length-2));
+    let rowsB=jsonB.table.rows||[];
+    let blocages={};
+    rowsB.forEach(row=>{
+      if(!row.c || row.c.length < 2) return;
+      let dateText = row.c[0] ? String(row.c[0].v).trim() : "";
+      let creneauText = row.c[1] ? String(row.c[1].v).trim() : "";
+      if(!dateText || !creneauText) return;
+      
+      if(creneauText.toUpperCase() === "TOUT"){
+        blocages[dateText] = "TOUT";
+      } else {
+        if(!Array.isArray(blocages[dateText])) {
+          if(blocages[dateText] !== "TOUT") blocages[dateText] = [];
+        }
+        if(Array.isArray(blocages[dateText])) {
+          blocages[dateText].push(creneauText);
+        }
+      }
+    });
+    manuelsBlocages=blocages;
+  }catch(e){
+    manuelsBlocages={};
+  }
 }
 
 function normaliserDateEnCle(str){
   if(!str)return null;
-  // Format Date(YYYY,M,D) de Google Sheets — mois 0-indexé
   let m=str.match(/Date\((\d{4}),(\d+),(\d+)/);
   if(m){
     let y=parseInt(m[1]),mo=parseInt(m[2]),d=parseInt(m[3]);
     return`${y}-${String(mo+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
   }
-  // Format DD/MM/YYYY
   let m2=str.match(/(\d{2})\/(\d{2})\/(\d{4})/);
   if(m2)return`${m2[3]}-${m2[2]}-${m2[1]}`;
-  // Format texte lisible (ex: "Mercredi 1 juillet 2026")
   let moisFr={"janvier":"01","février":"02","mars":"03","avril":"04","mai":"05","juin":"06","juillet":"07","août":"08","septembre":"09","octobre":"10","novembre":"11","décembre":"12"};
   let m3=str.toLowerCase().match(/(\d{1,2})\s+([a-zéûî]+)\s+(\d{4})/);
   if(m3&&moisFr[m3[2]]){
@@ -1096,14 +1127,41 @@ function handleDateChange(){
   const dateSelect=document.getElementById("client-date");
   const timeSelect=document.getElementById("client-time");
   timeSelect.innerHTML='<option value="">-- Sélectionne une tranche horaire --</option>';
+  
   let selectedDate=dateSelect.value;
+  if(!selectedDate) return;
+
+  let now=new Date();
+  let todayLabel=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  todayLabel=todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1);
+
+  // Blocage automatique jour J après 15h
+  let estApresLimiteJourJ=(selectedDate===todayLabel && now.getHours()>=15);
+
+  // Récupération des blocages configurés à distance sur Sheets pour ce jour sélectionné
+  let blocageManuelJour = manuelsBlocages[selectedDate];
+
   let comptesDuJour=orderCounts[normaliserDateEnCle(selectedDate)||selectedDate]||{};
+  
   baseHours.forEach(t=>{
     let nbCommandes=comptesDuJour[t]||0;
     let estComplet=nbCommandes>=MAX_COMMANDES_PAR_CRENEAU;
-    if(estComplet){
+    
+    // Test si le créneau ou le jour entier est marqué fermé sur votre Google Sheets
+    let estBloqueManuellement = false;
+    if(blocageManuelJour === "TOUT") {
+      estBloqueManuellement = true;
+    } else if(Array.isArray(blocageManuelJour) && blocageManuelJour.includes(t)) {
+      estBloqueManuellement = true;
+    }
+
+    if(estApresLimiteJourJ){
+      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (Indisponible ⏰)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
+    } else if(estBloqueManuellement) {
+      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (Fermé ❌)";o.disabled=true;o.style.color="#777";timeSelect.appendChild(o);
+    } else if(estComplet){
       let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (complet ⛔)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
-    }else{
+    } else {
       let dispo=MAX_COMMANDES_PAR_CRENEAU-nbCommandes;
       let o=document.createElement("option");
       o.value=o.textContent=t;
