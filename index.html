@@ -621,7 +621,11 @@ function generateCompositionForm(){
   let lotsDetails=[];
   if(boxesSelected["9 beignets"]>0)lotsDetails.push("la <b>boîte de 9</b> = 3 lots de 3 beignets");
   if(boxesSelected["12 beignets"]>0)lotsDetails.push("la <b>boîte de 12</b> = 3 lots de 4 beignets");
-  html+=`<div class="lots-info-box">📦 Chaque boîte est divisée en <b>3 lots égaux</b>, que tu peux personnaliser séparément (enrobage, nappage, garniture, pot) : ${lotsDetails.join(" et ")}.<span class="lots-info-tip">👉 Utilise les onglets <b style="color:#ff4f8b;">Lot 1 / Lot 2 / Lot 3</b> pour passer de l'un à l'autre.</span></div>`;
+  
+  // AJOUT DE LA PRÉCISION SUR LA FACTURATION UNIQUE ICI
+  html+=`<div class="lots-info-box">📦 Chaque boîte est divisée en <b>3 lots égaux</b>, que tu peux personnaliser séparément (enrobage, nappage, garniture, pot) : ${lotsDetails.join(" et ")}.<br>
+  💡 <b>Bon à savoir :</b> Le nappage, la garniture et les boîtes seront <u>facturés une seule fois</u> si la garniture reste identique sur toute la boîte.<span class="lots-info-tip">👉 Utilise les onglets <b style="color:#ff4f8b;">Lot 1 / Lot 2 / Lot 3</b> pour passer de l'un à l'autre.</span></div>`;
+  
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
     let pfx9=`box9-${b}`;
     html+=`<div class="box-composer" id="composer-${pfx9}" data-baseprice="${boxPrices["9 beignets"]}"><div class="box-title"><span>📦 Boîte de 9 Beignets n°${b} <span class="box-subtotal" id="subtotal-${pfx9}"></span></span><button type="button" class="box-remove-btn" onclick="removeBox('9 beignets',${b})">🗑️ Supprimer</button></div>`;
