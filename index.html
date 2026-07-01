@@ -437,7 +437,7 @@ let manuelsBlocages={}; // Stockera les fermetures définies par vos soins
 
 async function chargerComptesCreneaux(){
   try{
-    // 1. Chargement des commandes existantes pour calculer les quotas
+    // 1. Chargement des comptes de commandes existants
     let res=await fetch(SHEET_URL_READONLY+"&t="+Date.now());
     let text=await res.text();
     let json=JSON.parse(text.substring(47,text.length-2));
@@ -461,31 +461,27 @@ async function chargerComptesCreneaux(){
   }
 
   try{
-    // 2. Chargement des fermetures et des motifs depuis la colonne C de l'onglet Fermetures
+    // 2. Chargement de vos blocages manuels depuis l'onglet "Fermetures"
     let resB=await fetch(SHEET_URL_BLOCAGES+"&t="+Date.now());
     let textB=await resB.text();
     let jsonB=JSON.parse(textB.substring(47,textB.length-2));
     let rowsB=jsonB.table.rows||[];
     let blocages={};
-    
     rowsB.forEach(row=>{
       if(!row.c || row.c.length < 2) return;
       let dateText = row.c[0] ? String(row.c[0].v).trim() : "";
       let creneauText = row.c[1] ? String(row.c[1].v).trim() : "";
-      // Si la colonne C est vide, on utilise "Fermé" par défaut, sans émoji
-      let motifText = row.c[2] && row.c[2].v ? String(row.c[2].v).trim() : "Fermé";
-      
       if(!dateText || !creneauText) return;
       
-      if(!blocages[dateText]) {
-        blocages[dateText] = { type: "PARTIEL", liste: {}, motifGlobal: "" };
-      }
-      
       if(creneauText.toUpperCase() === "TOUT"){
-        blocages[dateText].type = "TOUT";
-        blocages[dateText].motifGlobal = motifText;
+        blocages[dateText] = "TOUT";
       } else {
-        blocages[dateText].liste[creneauText] = motifText;
+        if(!Array.isArray(blocages[dateText])) {
+          if(blocages[dateText] !== "TOUT") blocages[dateText] = [];
+        }
+        if(Array.isArray(blocages[dateText])) {
+          blocages[dateText].push(creneauText);
+        }
       }
     });
     manuelsBlocages=blocages;
@@ -494,59 +490,6 @@ async function chargerComptesCreneaux(){
   }
 }
 
-function handleDateChange(){
-  const dateSelect=document.getElementById("client-date");
-  const timeSelect=document.getElementById("client-time");
-  timeSelect.innerHTML='<option value="">-- Sélectionne une tranche horaire --</option>';
-  
-  let selectedDate=dateSelect.value;
-  if(!selectedDate) return;
-
-  let now=new Date();
-  let todayLabel=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  todayLabel=todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1);
-
-  // Blocage automatique du jour J après 15h
-  let estApresLimiteJourJ=(selectedDate===todayLabel && now.getHours()>=15);
-
-  // Récupération de la configuration de blocage pour ce jour
-  let configurationBlocage = manuelsBlocages[selectedDate];
-  let comptesDuJour=orderCounts[normaliserDateEnCle(selectedDate)||selectedDate]||{};
-  
-  baseHours.forEach(t=>{
-    let nbCommandes=comptesDuJour[t]||0;
-    let estComplet=nbCommandes>=MAX_COMMANDES_PAR_CRENEAU;
-    
-    let estBloqueManuellement = false;
-    let motifPersonnalise = "Fermé"; 
-
-    // Si une règle manuelle existe dans Sheets pour ce jour
-    if(configurationBlocage) {
-      if(configurationBlocage.type === "TOUT") {
-        estBloqueManuellement = true;
-        motifPersonnalise = configurationBlocage.motifGlobal;
-      } else if(configurationBlocage.liste && configurationBlocage.liste[t]) {
-        estBloqueManuellement = true;
-        motifPersonnalise = configurationBlocage.liste[t];
-      }
-    }
-
-    if(estApresLimiteJourJ){
-      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (Indisponible)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
-    } else if(estBloqueManuellement) {
-      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" ("+motifPersonnalise+")";o.disabled=true;o.style.color="#777";timeSelect.appendChild(o);
-    } else if(estComplet){
-      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (Complet)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
-    } else {
-      let dispo=MAX_COMMANDES_PAR_CRENEAU-nbCommandes;
-      let o=document.createElement("option");
-      o.value=o.textContent=t;
-      if(dispo<=2)o.textContent=t+` (${dispo} place${dispo>1?"s":""} restante${dispo>1?"s":""})`;
-      timeSelect.appendChild(o);
-    }
-  });
-  updateUI();
-}
 function normaliserDateEnCle(str){
   if(!str)return null;
   let m=str.match(/Date\((\d{4}),(\d+),(\d+)/);
@@ -1346,4 +1289,3 @@ window.onload=function(){
 </script>
 </body>
 </html>
-
