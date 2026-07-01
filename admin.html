@@ -281,13 +281,13 @@ async function charger(){
     let text=await res.text();
     let json=JSON.parse(text.replace("/*O_o*/\ngoogle.visualization.Query.setResponse(","").replace(");",""));
     toutesCommandes=[];
-    let ancienTotal=toutesCommandes.length;
-    let nouvellesTotales=0;
+    let totalLignes=(json.table.rows||[]).length;
+    let lignesIgnorees=0;
     (json.table.rows||[]).forEach((row,i)=>{
-      if(!row.c)return;
+      if(!row.c){lignesIgnorees++;return;}
       let hasData=row.c.some(cell=>cell&&cell.v!==null&&cell.v!=="");
-      if(!hasData)return;
-      if(!row.c[1]||!row.c[1].v)return;
+      if(!hasData){lignesIgnorees++;return;}
+      if(!row.c[1]||!row.c[1].v){lignesIgnorees++;return;}
       let dateRecu=row.c[0]?String(row.c[0].v):"";
       let name=row.c[1]?row.c[1].v:"";
       let phone=row.c[2]?String(row.c[2].v):"";
@@ -366,6 +366,9 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
       showToast(`🆕 ${nouveaux.length} nouvelle${nouveaux.length>1?"s":""} commande${nouveaux.length>1?"s":""} !`);
     }
     localStorage.setItem('ohMikateIdsConnus',JSON.stringify(toutesCommandes.map(c=>c.id)));
+
+    // DEBUG temporaire
+    document.getElementById("last-refresh").textContent=`✅ ${totalLignes} lignes lues, ${lignesIgnorees} ignorées, ${toutesCommandes.length} commandes chargées`;
 
     afficher();
     updateStats();
