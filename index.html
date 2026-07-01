@@ -111,6 +111,16 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 .summary.expanded .summary-expanded{max-height:75vh;overflow-y:auto;border-top:1px solid #222;}
 .summary-expanded-inner{padding:15px;}
 #recap{font-size:13px;max-height:120px;overflow-y:auto;margin-bottom:10px;color:#ccc;padding-right:5px;}
+.recap-full-box{margin-top:16px;position:sticky;top:12px;}
+#recap-full{font-size:13px;max-height:none;color:#ccc;line-height:1.6;}
+#recap-full small{color:#999;}
+.recap-full-total{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #333;margin-top:10px;padding-top:10px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:#fff;}
+.recap-full-total span:last-child{color:#ff4f8b;}
+@media (min-width:700px){
+  .retrait-layout{flex-direction:row;align-items:flex-start;gap:20px;}
+  .retrait-layout .compose-col-left{flex:0 0 300px;}
+  .retrait-layout .compose-col-right{flex:1 1 auto;}
+}
 @media (max-width:360px){
   .summary-mini-total{font-size:18px;}
   .summary-toggle-btn{font-size:11px;padding:8px 11px;}
@@ -237,6 +247,15 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
   <p style="font-size:13px;line-height:1.5;color:#ccc;">Les Mikatés peuvent contenir ou être en contact avec : <strong>gluten (blé), arachides, fruits à coque, produits laitiers (lait) et soja</strong>. Merci de nous signaler toute allergie sévère dans la zone "Précisions" ci-dessous.</p>
 </div>
 <h3>3. Tes informations de retrait</h3>
+<div class="compose-layout retrait-layout">
+<div class="compose-col compose-col-left">
+  <div class="box-composer recap-full-box">
+    <div class="box-title">🧾 Récapitulatif de ta commande</div>
+    <div id="recap-full">Aucune sélection</div>
+    <div class="recap-full-total"><span>Total :</span><span><span id="recap-full-total-value">0.00</span> €</span></div>
+  </div>
+</div><!-- end compose-col-left -->
+<div class="compose-col compose-col-right">
 <span class="info-limite" style="color:#aaa;font-style:normal;">📍 L'adresse complète te sera transmise lors de la validation de ton créneau.</span>
 <div class="form-group">
   <label for="client-name">Ton Prénom : <span class="requis">*</span></label>
@@ -268,6 +287,8 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
     <div id="opt-especes" class="pay-opt" onclick="selectPayment('Espèces')">💵 Espèces (Appoint requis)</div>
   </div>
 </div>
+</div><!-- end compose-col-right -->
+</div><!-- end retrait-layout -->
 </div>
 
 <div id="summary-backdrop" class="summary-backdrop" onclick="toggleSummary(false)"></div>
@@ -629,12 +650,23 @@ function isLotConfigured(idPrefix){
   return getLotValue(idPrefix,"base")!=="Nature"||getLotValue(idPrefix,"nappage")!=="Aucun"||getLotValue(idPrefix,"garniture")!=="Aucun"||getLotValue(idPrefix,"pot")!=="Aucun";
 }
 
-function lotSupplementTotal(idPrefix,potCounterObj,potCap){
+function computeBoxSupplements(lotPrefixes){
   let sup=0;
-  if(getLotValue(idPrefix,"nappage")!=="Aucun")sup+=supplementPricePerLot;
-  if(getLotValue(idPrefix,"garniture")!=="Aucun")sup+=supplementPricePerLot;
-  if(getLotValue(idPrefix,"pot")!=="Aucun"&&potCounterObj.count<potCap){sup+=0.50;potCounterObj.count++;}
-  return sup;
+  let flags={nappage:false,garniture:false,pot:false};
+  const fields=[["nappage",supplementPricePerLot],["garniture",supplementPricePerLot],["pot",0.50]];
+  fields.forEach(([field,price])=>{
+    let values=lotPrefixes.map(p=>getLotValue(p,field));
+    let nonAucunCount=values.filter(v=>v!=="Aucun").length;
+    if(nonAucunCount===0)return;
+    let allSame=values.every(v=>v===values[0])&&values[0]!=="Aucun";
+    if(allSame&&lotPrefixes.length>1){
+      sup+=price;
+      flags[field]=true;
+    }else{
+      sup+=nonAucunCount*price;
+    }
+  });
+  return{total:sup,flags};
 }
 
 function refreshComposerUI(){
@@ -642,11 +674,11 @@ function refreshComposerUI(){
     let pfx=box.id.replace("composer-","");
     let lots=box.querySelectorAll(".lot-row");
     let base=parseFloat(box.dataset.baseprice)||0;
-    let total=base;
-    let potCounter={count:0};
+    let lotPrefixes=Array.from(lots).map(row=>row.dataset.prefix);
+    let{total:supTotal}=computeBoxSupplements(lotPrefixes);
+    let total=base+supTotal;
     lots.forEach(row=>{
       let idPrefix=row.dataset.prefix;
-      total+=lotSupplementTotal(idPrefix,potCounter,lots.length);
       let configured=isLotConfigured(idPrefix);
       row.classList.toggle("lot-configured",configured);
       let badge=row.querySelector(".lot-badge");
@@ -850,39 +882,43 @@ function calculateTotalAndExtractStructure(){
   if(boxesSelected["12 beignets"]>0)textSummaryList.push(`${boxesSelected["12 beignets"]}x Boîte de 12`);
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
     structuredOrderText+=`\n📦 BOÎTE DE 9 BEIGNETS n°${b} :\n`;
-    let potCount=0;
-    for(let lot=1;lot<=3;lot++){
-      let idPrefix=`box9-${b}-lot${lot}`;
+    let lotPrefixes=[1,2,3].map(lot=>`box9-${b}-lot${lot}`);
+    let{total:supTotal,flags}=computeBoxSupplements(lotPrefixes);
+    total+=supTotal;
+    lotPrefixes.forEach((idPrefix,i)=>{
+      let lot=i+1;
       let nappage=getLotValue(idPrefix,"nappage");
       let garniture=getLotValue(idPrefix,"garniture");
       let pot=getLotValue(idPrefix,"pot");
-      if(nappage!=="Aucun")total+=supplementPricePerLot;
-      if(garniture!=="Aucun")total+=supplementPricePerLot;
-      if(pot!=="Aucun"&&potCount<3){total+=0.50;potCount++;}
       structuredOrderText+=`  - Lot ${lot} : ${getLotValue(idPrefix,"base")}`;
       if(nappage!=="Aucun")structuredOrderText+=` + ${nappage}`;
       if(garniture!=="Aucun")structuredOrderText+=` + ${garniture}`;
-      if(pot!=="Aucun"&&potCount<=3)structuredOrderText+=` + ${pot}`;
+      if(pot!=="Aucun")structuredOrderText+=` + ${pot}`;
       structuredOrderText+=`\n`;
-    }
+    });
+    if(flags.nappage)structuredOrderText+=`  💡 Même nappage sur toute la boîte → facturé 1 seule fois\n`;
+    if(flags.garniture)structuredOrderText+=`  💡 Même garniture sur toute la boîte → facturée 1 seule fois\n`;
+    if(flags.pot)structuredOrderText+=`  💡 Même pot sur toute la boîte → facturé 1 seule fois\n`;
   }
   for(let b=1;b<=boxesSelected["12 beignets"];b++){
     structuredOrderText+=`\n📦 BOÎTE DE 12 BEIGNETS n°${b} :\n`;
-    let potCount=0;
-    for(let lot=1;lot<=3;lot++){
-      let idPrefix=`box12-${b}-lot${lot}`;
+    let lotPrefixes=[1,2,3].map(lot=>`box12-${b}-lot${lot}`);
+    let{total:supTotal,flags}=computeBoxSupplements(lotPrefixes);
+    total+=supTotal;
+    lotPrefixes.forEach((idPrefix,i)=>{
+      let lot=i+1;
       let nappage=getLotValue(idPrefix,"nappage");
       let garniture=getLotValue(idPrefix,"garniture");
       let pot=getLotValue(idPrefix,"pot");
-      if(nappage!=="Aucun")total+=supplementPricePerLot;
-      if(garniture!=="Aucun")total+=supplementPricePerLot;
-      if(pot!=="Aucun"&&potCount<3){total+=0.50;potCount++;}
       structuredOrderText+=`  - Lot ${lot} : ${getLotValue(idPrefix,"base")}`;
       if(nappage!=="Aucun")structuredOrderText+=` + ${nappage}`;
       if(garniture!=="Aucun")structuredOrderText+=` + ${garniture}`;
-      if(pot!=="Aucun"&&potCount<=3)structuredOrderText+=` + ${pot}`;
+      if(pot!=="Aucun")structuredOrderText+=` + ${pot}`;
       structuredOrderText+=`\n`;
-    }
+    });
+    if(flags.nappage)structuredOrderText+=`  💡 Même nappage sur toute la boîte → facturé 1 seule fois\n`;
+    if(flags.garniture)structuredOrderText+=`  💡 Même garniture sur toute la boîte → facturée 1 seule fois\n`;
+    if(flags.pot)structuredOrderText+=`  💡 Même pot sur toute la boîte → facturé 1 seule fois\n`;
   }
   return{totalPrice:total,summaryShort:textSummaryList.join(" / "),detailsText:structuredOrderText};
 }
@@ -894,11 +930,14 @@ function updateUI(){
   refreshComposerUI();
   updateProgressTracker();
   saveDraftToStorage();
-  document.getElementById("recap").innerHTML=orderInfo.summaryShort?
+  let recapHTML=orderInfo.summaryShort?
     "<b>Sélection :</b><br>"+orderInfo.summaryShort+"<br><br><b>Détail :</b><br><small>"+orderInfo.detailsText.replace(/\n/g,"<br>")+"</small>"
     :"Aucune sélection";
+  document.getElementById("recap").innerHTML=recapHTML;
+  document.getElementById("recap-full").innerHTML=recapHTML;
   document.getElementById("total").innerText=total.toFixed(2);
   document.getElementById("mini-total").innerText=total.toFixed(2);
+  document.getElementById("recap-full-total-value").innerText=total.toFixed(2);
   let nbBoxes=(boxesSelected["9 beignets"]||0)+(boxesSelected["12 beignets"]||0);
   document.getElementById("summary-mini-count").textContent=nbBoxes>0?(nbBoxes+(nbBoxes>1?" boîtes":" boîte")):"";
   const summaryBar=document.getElementById("summary-bar");
