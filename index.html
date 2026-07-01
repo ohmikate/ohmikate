@@ -15,14 +15,6 @@ body{margin:0;font-family:'Montserrat',sans-serif;background:#000;color:#fff;pad
 .compose-layout{display:flex;flex-direction:column;gap:10px;}
 .compose-col-left{flex:0 0 auto;}
 .compose-col-right{flex:1 1 auto;min-width:0;}
-.retrait-recap-layout{display:flex;flex-direction:column;gap:10px;}
-.retrait-col-left{flex:1 1 auto;min-width:0;}
-.retrait-col-right{flex:1 1 auto;min-width:0;}
-@media (min-width:768px){
-  .retrait-recap-layout{flex-direction:row;align-items:flex-start;}
-  .retrait-col-left{flex:1 1 50%;}
-  .retrait-col-right{flex:1 1 50%;position:sticky;top:16px;}
-}
 h2{font-family:'Bebas Neue',sans-serif;text-align:center;color:#ff4f8b;margin:25px 0;font-size:32px;letter-spacing:2px;text-transform:uppercase;}
 h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-left:10px;margin-top:30px;font-size:22px;margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
 .info-limite{color:#ff4f8b;font-size:13px;font-style:italic;margin-bottom:15px;display:block;}
@@ -39,8 +31,8 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 .qty-input{font-size:15px;font-weight:bold;width:40px;height:35px;background:transparent;border:none;color:white;text-align:center;-moz-appearance:textfield;}
 .qty-input::-webkit-outer-spin-button,.qty-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 .card.has-qty{border-color:#ff4f8b;}
-.box-composer{background:#111;border:2px solid #333;border-radius:12px;padding:12px;margin-top:16px;}
-.box-title{font-size:15px;font-weight:bold;color:#f4a261;margin-bottom:10px;border-bottom:1px solid #222;padding-bottom:5px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.box-composer{background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:12px;margin-top:16px;}
+.box-title{font-size:15px;font-weight:bold;color:#ff4f8b;margin-bottom:10px;border-bottom:1px solid #222;padding-bottom:5px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .box-remove-btn{background:transparent;border:1.5px solid #442222;color:#ff6b6b;font-size:12px;font-weight:bold;padding:7px 11px;border-radius:8px;cursor:pointer;flex-shrink:0;font-family:'Montserrat',sans-serif;text-transform:none;letter-spacing:0;transition:.15s;white-space:nowrap;}
 .box-remove-btn:hover{background:#2a0a0a;border-color:#ff4444;}
 .box-remove-btn:active{transform:scale(0.95);}
@@ -60,11 +52,11 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 }
 .chip-section{margin-bottom:8px;}
 .chip-label{font-size:10.5px;color:#999;font-weight:bold;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px;}
-.chip-price{color:#f4a261;font-weight:normal;text-transform:none;letter-spacing:0;margin-left:4px;}
+.chip-price{color:#ff4f8b;font-weight:normal;text-transform:none;letter-spacing:0;margin-left:4px;}
 .chip-group{display:flex;flex-wrap:wrap;gap:5px;}
 .chip{background:#000;border:1.5px solid #333;color:#ccc;font-size:11.5px;font-weight:bold;padding:5px 10px;border-radius:16px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:.15s;white-space:nowrap;line-height:1.3;}
 .chip:active{transform:scale(0.96);}
-.chip.selected{background:#f4a261;border-color:#f4a261;color:#1a1208;box-shadow:0 2px 8px rgba(244,162,97,0.35);}
+.chip.selected{background:#ff4f8b;border-color:#ff4f8b;color:#fff;box-shadow:0 2px 8px rgba(255,79,139,0.35);}
 .progress-tracker{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 20px;flex-wrap:wrap;}
 .progress-step{display:flex;align-items:center;gap:6px;font-size:11px;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;}
 .progress-dot{width:22px;height:22px;border-radius:50%;background:#222;border:1.5px solid #333;color:#666;display:flex;align-items:center;justify-content:center;font-size:11px;}
@@ -73,7 +65,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 .progress-step.step-done{color:#25D366;}
 .progress-step.step-done .progress-dot{background:#25D366;border-color:#25D366;color:#fff;}
 .progress-line{width:24px;height:1.5px;background:#333;}
-.box-subtotal{color:#f4a261;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0;}
+.box-subtotal{color:#ff4f8b;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0;}
 .lot-badge{color:#25D366;font-size:13px;}
 .lot-row.lot-configured{border-color:#25D366;}
 .lot-row{display:none;}
@@ -103,7 +95,6 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 .payment-selector{display:flex;gap:10px;margin-top:5px;}
 .pay-opt{flex:1;background:#111;border:2px solid #222;padding:12px;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer;text-align:center;font-size:14px;}
 .pay-opt.selected{border-color:#ff4f8b;background:#201217;}
-.pay-opt.pay-disabled{opacity:0.4;cursor:not-allowed;}
 .summary{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:2px solid #ff4f8b;z-index:1000;box-shadow:0 -5px 20px rgba(0,0,0,0.5);}
 .summary-content{max-width:900px;margin:auto;}
 .summary-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;}
@@ -117,9 +108,9 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 .summary-toggle-btn .chevron{display:inline-block;transition:transform .25s;font-size:10px;}
 .summary.expanded .summary-toggle-btn .chevron{transform:rotate(180deg);}
 .summary-expanded{max-height:0;overflow:hidden;transition:max-height .3s ease;}
-.summary.expanded .summary-expanded{max-height:85vh;overflow-y:auto;border-top:1px solid #222;}
+.summary.expanded .summary-expanded{max-height:75vh;overflow-y:auto;border-top:1px solid #222;}
 .summary-expanded-inner{padding:15px;}
-#recap{font-size:13px;max-height:260px;overflow-y:auto;margin-bottom:10px;color:#ccc;padding-right:5px;}
+#recap{font-size:13px;max-height:120px;overflow-y:auto;margin-bottom:10px;color:#ccc;padding-right:5px;}
 @media (max-width:360px){
   .summary-mini-total{font-size:18px;}
   .summary-toggle-btn{font-size:11px;padding:8px 11px;}
@@ -183,39 +174,28 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
   </div>
 </div>
 
-<div id="lots-explain-modal-backdrop" class="confirm-modal-backdrop">
-  <div class="confirm-modal" style="border-color:#ff4f8b;max-width:380px;">
-    <div style="font-size:36px;margin-bottom:6px;">✨✨</div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;letter-spacing:1px;margin-bottom:10px;">3 LOTS, 100% LIBRES</div>
-    <div class="confirm-modal-text" style="font-size:14px;">Chaque boîte est divisée en lots égaux, pour que tu <b style="color:#ff4f8b;">panaches selon tes envies</b>.<br><br>👉 Personnalise chaque lot séparément, ou clique sur <b style="color:#ff4f8b;">"Même goût pour toute la boîte"</b> si tu préfères qu'ils soient identiques.</div>
-    <div class="confirm-modal-actions">
-      <button type="button" class="confirm-modal-btn confirm" style="background:#ff4f8b;color:#fff;flex:1;" id="lots-explain-modal-close">C'est compris 👍</button>
-    </div>
-  </div>
-</div>
-
 <!-- PAGE PRINCIPALE -->
 <div id="main-page">
 <div class="hero"><img src="Images/Flyer4.jpg" alt="Oh! Mikaté Flyer"></div>
 <div style="background:#111;padding:15px;text-align:center;font-size:14px;margin:15px;border-radius:10px;border:1px solid #333;">
 ⭐ Préparation à la commande<br>📍 Retrait sur Reims
   <section style="margin:20px 15px;padding:20px;background:#222;border-radius:10px;border:1px solid #ff4f8b;">
-    <h2 style="color:#ff4f8b;text-align:center;margin-top:0;">Oh! Mikaté : Authentiques beignets congolais</h2>
-    <p style="line-height:1.6;color:#ccc;text-align:center;">Envie d'une pause gourmande? Découvrez les <strong>Mikatés</strong>, préparés avec passion. Une expérience gustative à petits prix : des <strong>beignets</strong> bien moelleux, déclinables avec les nappages et garnitures proposés.</p>
-    <p style="line-height:1.6;color:#ccc;text-align:center;margin-bottom:0;">Idéal pour vos événements, vos goûters ou pour le plaisir. Commandez vos boîtes en ligne puis venez les récupérer sur place.</p>
+    <h2 style="color:#ff4f8b;text-align:center;margin-top:0;">Oh! Mikaté : Authentiques beignets congolais à Reims</h2>
+    <p style="line-height:1.6;color:#ccc;text-align:center;">Envie d'une pause gourmande ? Découvrez les <strong>Mikatés</strong>, préparés avec passion à <strong>Reims</strong>. Je vous propose une expérience gustative à petits prix: des <strong>beignets</strong> bien moelleux, déclinables avec les nappages et garnitures proposés.</p>
+    <p style="line-height:1.6;color:#ccc;text-align:center;margin-bottom:0;">Idéal pour vos événements ou vos pauses gourmandes, commandez vos boîtes en ligne et venez les récupérer sur place.</p>
     <div style="text-align:center;margin-top:20px;border-top:1px solid #444;padding-top:15px;">
       <h3 style="font-size:16px;color:#ff4f8b;margin-bottom:10px;">Rejoignez Oh! Mikaté</h3>
       <div style="display:flex;justify-content:center;gap:15px;margin-bottom:10px;">
         <a href="https://www.snapchat.com/add/ohmikate" target="_blank" style="text-decoration:none;font-size:14px;background:#FFFC00;color:#000;padding:6px 12px;border-radius:20px;font-weight:bold;">👻 Snapchat</a>
         <a href="https://www.instagram.com/oh_mikate" target="_blank" style="text-decoration:none;font-size:14px;background:#E1306C;color:#fff;padding:6px 12px;border-radius:20px;font-weight:bold;">📸 Instagram</a>
       </div>
-      <p style="font-size:11px;color:#aaa;font-style:italic;line-height:1.3;margin-top:10px;"><strong>✨STOCK EN TEMPS REÉL, PROMOS, NOUVEAUTÉS ET OFFRES SPÉCIALES !✨</strong></p>
+      <p style="font-size:11px;color:#aaa;font-style:italic;line-height:1.3;margin-top:10px;"><strong>Stock en temps réel, promos, nouveautés et offres spéciales !</strong></p>
     </div>
   </section>
 </div>
 
 <div class="section">
-<h2>✨ Compose ta boîte de Mikatés ✨</h2>
+<h2>✨ Compose ta boîte de Mikatés</h2>
 <div id="progress-tracker" class="progress-tracker">
   <div class="progress-step" id="step-1"><span class="progress-dot" data-num="1">1</span>Boîtes</div>
   <div class="progress-line"></div>
@@ -227,10 +207,9 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 <div class="compose-col compose-col-left">
 <h3>1. Choisis ton format de boîte</h3>
 <span class="info-limite" style="color:#ccc;">Sélectionne une ou plusieurs boîtes pour personnaliser tes beignets.</span>
-<span class="info-limite" style="color:#aaa;font-style:normal;font-size:11px;">📦 Maximum 10 boîtes par commande. Besoin de plus (gros événement) ? Contacte-nous au 0745915946.</span>
 <div class="grid">
   <div class="card product-card" data-name="9 beignets" data-price="5">
-    <img src="Images/Beignet6.jpg">
+    <img src="Images/Beignet9.jpg">
     <p>Boîte de 9 beignets — 5€</p>
     <div class="qty-controls">
       <button class="qty-btn minus" onclick="changeBoxQty('9 beignets',-1)">-</button>
@@ -257,8 +236,6 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
   <h3 style="margin-top:0;color:#ff4f8b;font-size:18px;">⚠️ Informations Allergènes</h3>
   <p style="font-size:13px;line-height:1.5;color:#ccc;">Les Mikatés peuvent contenir ou être en contact avec : <strong>gluten (blé), arachides, fruits à coque, produits laitiers (lait) et soja</strong>. Merci de nous signaler toute allergie sévère dans la zone "Précisions" ci-dessous.</p>
 </div>
-<div class="retrait-recap-layout">
-<div class="retrait-col-left">
 <h3>3. Tes informations de retrait</h3>
 <span class="info-limite" style="color:#aaa;font-style:normal;">📍 L'adresse complète te sera transmise lors de la validation de ton créneau.</span>
 <div class="form-group">
@@ -277,7 +254,6 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 <div class="form-group">
   <label for="client-time">Choisis ta tranche horaire de passage : <span class="requis">*</span></label>
   <span id="time-warning" class="info-limite" style="display:none;margin-bottom:5px;">⚠️ Pour aujourd'hui, commande requise au moins 30 min à l'avance.</span>
-  <span class="info-limite" style="color:#aaa;font-style:normal;font-size:11px;">🕐 5 commandes max par créneau de 30 min, pour garantir des Mikatés tout chauds.</span>
   <select id="client-time" onchange="updateUI()">
     <option value="">-- Sélectionne une tranche horaire --</option>
   </select>
@@ -290,18 +266,9 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
   <label>Choisis ton mode de règlement : <span class="requis">*</span></label>
   <div class="payment-selector">
     <div id="opt-carte" class="pay-opt" onclick="selectPayment('Carte')">💳 En ligne</div>
-    <div id="opt-especes" class="pay-opt" onclick="selectPayment('Espèces')">💵 Espèces ou CB (sur place)</div>
+    <div id="opt-especes" class="pay-opt" onclick="selectPayment('Espèces')">💵 Espèces (Appoint requis)</div>
   </div>
 </div>
-</div><!-- end retrait-col-left -->
-
-<div class="retrait-col-right">
-<div id="recap-inline-box" style="display:none;background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:16px;">
-  <h3 style="margin-top:0;border-left:4px solid #ff4f8b;padding-left:10px;font-size:18px;">🧾 Récapitulatif de ta commande</h3>
-  <div id="recap-inline" style="font-size:13px;color:#ccc;line-height:1.6;"></div>
-</div>
-</div><!-- end retrait-col-right -->
-</div><!-- end retrait-recap-layout -->
 </div>
 
 <div id="summary-backdrop" class="summary-backdrop" onclick="toggleSummary(false)"></div>
@@ -314,11 +281,12 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
         <span id="summary-mini-count" class="summary-mini-count"></span>
       </div>
       <button type="button" class="summary-toggle-btn" id="summary-toggle-btn" onclick="event.stopPropagation();toggleSummary();">
-        <span id="summary-toggle-label">Finaliser ma commande</span><span class="chevron">▲</span>
+        <span id="summary-toggle-label">Voir ma commande</span><span class="chevron">▲</span>
       </button>
     </div>
     <div id="summary-expanded" class="summary-expanded">
       <div class="summary-expanded-inner">
+        <div id="recap">Aucune sélection</div>
         <div class="total"><span>Total :</span><span><span id="total">0.00</span> €</span></div>
         <button id="stripe-btn" class="btn" style="background:#635bff;display:none;margin-top:10px;" onclick="lancerPaiementStripe()">Payer en ligne 💳</button>
         <div id="cgv-wrap" style="display:none;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;padding:12px;">
@@ -462,7 +430,7 @@ let espècesPageAffichée=false;
 const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
 const SHEET_URL_READONLY=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
 const MAX_COMMANDES_PAR_CRENEAU=5;
-let orderCounts={}; // { "Lundi 1 juillet": { "17h00 - 17h30": 3, ... }, ... }
+let orderCounts={};
 
 async function chargerComptesCreneaux(){
   try{
@@ -473,52 +441,32 @@ async function chargerComptesCreneaux(){
     let counts={};
     rows.forEach(row=>{
       if(!row.c)return;
+      let hasData=row.c.some(cell=>cell&&cell.v!==null&&cell.v!=="");
+      if(!hasData)return;
       let dateRetrait=row.c[6]?String(row.c[6].v):"";
       let creneau=row.c[7]?String(row.c[7].v):"";
-      let flagSupprime=row.c[10]?String(row.c[10].v):"";
-      if(flagSupprime==="SUPPRIMÉ")return;
       if(!dateRetrait||!creneau)return;
       counts[dateRetrait]=counts[dateRetrait]||{};
       counts[dateRetrait][creneau]=(counts[dateRetrait][creneau]||0)+1;
     });
     orderCounts=counts;
   }catch(e){
-    orderCounts={}; // en cas d'erreur réseau, on n'affiche aucun créneau complet plutôt que de bloquer la commande
+    orderCounts={};
   }
 }
 
 /* ===== QUANTITÉS ===== */
-const MAX_BOXES_TOTAL=10;
 function changeBoxQty(type,change){
   let input=type==="9 beignets"?document.getElementById("qty-9"):document.getElementById("qty-12");
   let newVal=Math.max(0,(parseInt(input.value)||0)+change);
-  let otherType=type==="9 beignets"?"12 beignets":"9 beignets";
-  let otherVal=boxesSelected[otherType]||0;
-  if(change>0&&(newVal+otherVal)>MAX_BOXES_TOTAL){
-    showToast("⚠️ Maximum "+MAX_BOXES_TOTAL+" boîtes par commande. Pour un évènement, contacte-nous au 0745915946.");
-    newVal=Math.max(0,MAX_BOXES_TOTAL-otherVal);
-  }
   input.value=newVal;setBoxQty(type,newVal);
 }
 function setBoxQty(type,value){
   let val=Math.max(0,parseInt(value)||0);
-  let otherType=type==="9 beignets"?"12 beignets":"9 beignets";
-  let otherVal=boxesSelected[otherType]||0;
-  if((val+otherVal)>MAX_BOXES_TOTAL){
-    showToast("⚠️ Maximum "+MAX_BOXES_TOTAL+" boîtes par commande. Pour un évènement, contacte-nous au 0745915946.");
-    val=Math.max(0,MAX_BOXES_TOTAL-otherVal);
-    let input=type==="9 beignets"?document.getElementById("qty-9"):document.getElementById("qty-12");
-    input.value=val;
-  }
-  let totalBefore=(boxesSelected["9 beignets"]||0)+(boxesSelected["12 beignets"]||0);
   boxesSelected[type]=val;
-  let totalAfter=(boxesSelected["9 beignets"]||0)+(boxesSelected["12 beignets"]||0);
   let card=document.querySelector(`[data-name="${type}"]`);
   if(val>0)card.classList.add("has-qty");else card.classList.remove("has-qty");
   generateCompositionForm();updateUI();
-  if(totalBefore===0&&totalAfter>0){
-    document.getElementById("lots-explain-modal-backdrop").classList.add("show");
-  }
 }
 
 /* Supprime UNE boîte précise (et pas forcément la dernière) en décalant
@@ -600,12 +548,12 @@ function generateCompositionForm(){
   let lotsDetails=[];
   if(boxesSelected["9 beignets"]>0)lotsDetails.push("la <b>boîte de 9</b> = 3 lots de 3 beignets");
   if(boxesSelected["12 beignets"]>0)lotsDetails.push("la <b>boîte de 12</b> = 3 lots de 4 beignets");
-  html+=`<div class="lots-info-box" style="display:flex;align-items:center;gap:8px;padding:8px 12px;"><span style="font-size:15px;">✨✨</span><span style="font-size:12px;">${lotsDetails.join(" et ")} — panache comme tu veux.</span></div>`;
+  html+=`<div class="lots-info-box">📦 Chaque boîte est divisée en <b>3 lots égaux</b>, que tu peux personnaliser séparément (enrobage, nappage, garniture, pot) : ${lotsDetails.join(" et ")}.<span class="lots-info-tip">👉 Utilise les onglets <b style="color:#ff4f8b;">Lot 1 / Lot 2 / Lot 3</b> pour passer de l'un à l'autre.</span></div>`;
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
     let pfx9=`box9-${b}`;
     html+=`<div class="box-composer" id="composer-${pfx9}" data-baseprice="${boxPrices["9 beignets"]}"><div class="box-title"><span>📦 Boîte de 9 Beignets n°${b} <span class="box-subtotal" id="subtotal-${pfx9}"></span></span><button type="button" class="box-remove-btn" onclick="removeBox('9 beignets',${b})">🗑️ Supprimer</button></div>`;
     html+=generateLotTabsHtml(pfx9,3);
-    for(let lot=1;lot<=3;lot++){html+=generateLotRowHtml(`${pfx9}-lot${lot}`,`Lot de 3 beignets (${lot}/3)`,"Images/Beignet6.jpg",lot===1,pfx9,3);}
+    for(let lot=1;lot<=3;lot++){html+=generateLotRowHtml(`${pfx9}-lot${lot}`,`Lot de 3 beignets (${lot}/3)`,"Images/Beignet9.jpg",lot===1,pfx9,3);}
     html+=`</div>`;
   }
   for(let b=1;b<=boxesSelected["12 beignets"];b++){
@@ -894,16 +842,9 @@ function updateUI(){
   refreshComposerUI();
   updateProgressTracker();
   saveDraftToStorage();
-  let formOkExceptPayment=isFormValidExceptPayment();
-  document.getElementById("opt-carte").classList.toggle("pay-disabled",!formOkExceptPayment);
-  document.getElementById("opt-especes").classList.toggle("pay-disabled",!formOkExceptPayment);
-  const recapInlineBox=document.getElementById("recap-inline-box");
-  if(orderInfo.summaryShort){
-    recapInlineBox.style.display="block";
-    document.getElementById("recap-inline").innerHTML="<b>"+orderInfo.summaryShort+"</b><br><br>"+orderInfo.detailsText.replace(/\n/g,"<br>")+"<br><br><b style='color:#ff4f8b;font-size:15px;'>Total : "+total.toFixed(2)+" €</b>";
-  }else{
-    recapInlineBox.style.display="none";
-  }
+  document.getElementById("recap").innerHTML=orderInfo.summaryShort?
+    "<b>Sélection :</b><br>"+orderInfo.summaryShort+"<br><br><b>Détail :</b><br><small>"+orderInfo.detailsText.replace(/\n/g,"<br>")+"</small>"
+    :"Aucune sélection";
   document.getElementById("total").innerText=total.toFixed(2);
   document.getElementById("mini-total").innerText=total.toFixed(2);
   let nbBoxes=(boxesSelected["9 beignets"]||0)+(boxesSelected["12 beignets"]||0);
@@ -962,7 +903,7 @@ function toggleSummary(forceOpen){
   const willExpand=typeof forceOpen==="boolean"?forceOpen:!bar.classList.contains("expanded");
   bar.classList.toggle("expanded",willExpand);
   backdrop.classList.toggle("show",willExpand);
-  document.getElementById("summary-toggle-label").textContent=willExpand?"Réduire":"Finaliser ma commande";
+  document.getElementById("summary-toggle-label").textContent=willExpand?"Réduire":"Voir ma commande";
 }
 
 function syncSummaryPadding(){
@@ -979,19 +920,6 @@ function isFormValid(){
   let date=document.getElementById("client-date").value;
   let time=document.getElementById("client-time").value;
   if(!name||!raw||!date||!time||time==="COMPLET"||!selectedPaymentMode)return false;
-  if(!/^\d{10}$/.test(phone))return false;
-  if(!/^(06|07|01|02|03|04|05|08|09)/.test(phone))return false;
-  return true;
-}
-
-function isFormValidExceptPayment(){
-  if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0)return false;
-  let name=document.getElementById("client-name").value.trim();
-  let raw=document.getElementById("client-phone").value.trim();
-  let phone=normalizePhone(raw);
-  let date=document.getElementById("client-date").value;
-  let time=document.getElementById("client-time").value;
-  if(!name||!raw||!date||!time||time==="COMPLET")return false;
   if(!/^\d{10}$/.test(phone))return false;
   if(!/^(06|07|01|02|03|04|05|08|09)/.test(phone))return false;
   return true;
@@ -1110,10 +1038,6 @@ function afficherPageEspeces(canalEspeces="WhatsApp"){
 }
 
 function selectPayment(mode){
-  if(!isFormValidExceptPayment()){
-    showToast("⚠️ Merci de compléter tous les champs avant de choisir le paiement.");
-    return;
-  }
   selectedPaymentMode=mode;
   document.getElementById("opt-carte").classList.toggle("selected",mode==='Carte');
   document.getElementById("opt-especes").classList.toggle("selected",mode==='Espèces');
@@ -1134,10 +1058,6 @@ function initDates(){
   let now=new Date();
   let startDate=new Date(2026,6,1);
   if(now>startDate)startDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  // Après 15h, le jour-même n'est plus proposé : on passe directement au lendemain.
-  if(now.getHours()>=15){
-    startDate.setDate(startDate.getDate()+1);
-  }
   for(let i=0;i<14;i++){
     let d=new Date(startDate);d.setDate(startDate.getDate()+i);
     let label=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
@@ -1170,7 +1090,11 @@ function handleDateChange(){
     }else if(estComplet){
       let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (complet ⛔)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
     }else{
-      let o=document.createElement("option");o.value=o.textContent=t;timeSelect.appendChild(o);
+      let dispo=MAX_COMMANDES_PAR_CRENEAU-nbCommandes;
+      let o=document.createElement("option");
+      o.value=o.textContent=t;
+      if(dispo<=2)o.textContent=t+` (${dispo} place${dispo>1?"s":""} restante${dispo>1?"s":""})`;
+      timeSelect.appendChild(o);
     }
   });
   if(isToday&&warning)warning.style.display="block";
@@ -1199,12 +1123,6 @@ document.getElementById("confirm-modal-confirm").addEventListener("click",functi
 });
 document.getElementById("confirm-modal-backdrop").addEventListener("click",function(e){
   if(e.target===this)hideConfirmModal();
-});
-document.getElementById("lots-explain-modal-close").addEventListener("click",function(){
-  document.getElementById("lots-explain-modal-backdrop").classList.remove("show");
-});
-document.getElementById("lots-explain-modal-backdrop").addEventListener("click",function(e){
-  if(e.target===this)this.classList.remove("show");
 });
 
 function normalizePhone(raw){
