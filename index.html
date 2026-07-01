@@ -253,7 +253,6 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 </div>
 <div class="form-group">
   <label for="client-time">Choisis ta tranche horaire de passage : <span class="requis">*</span></label>
-  <span id="time-warning" class="info-limite" style="display:none;margin-bottom:5px;">⚠️ Pour aujourd'hui, commande requise au moins 30 min à l'avance.</span>
   <select id="client-time" onchange="updateUI()">
     <option value="">-- Sélectionne une tranche horaire --</option>
   </select>
@@ -443,16 +442,39 @@ async function chargerComptesCreneaux(){
       if(!row.c)return;
       let hasData=row.c.some(cell=>cell&&cell.v!==null&&cell.v!=="");
       if(!hasData)return;
-      let dateRetrait=row.c[6]?String(row.c[6].v):"";
+      let dateRetraitRaw=row.c[6]?String(row.c[6].v):"";
       let creneau=row.c[7]?String(row.c[7].v):"";
-      if(!dateRetrait||!creneau)return;
-      counts[dateRetrait]=counts[dateRetrait]||{};
-      counts[dateRetrait][creneau]=(counts[dateRetrait][creneau]||0)+1;
+      if(!dateRetraitRaw||!creneau)return;
+      // Normaliser la date en clé YYYY-MM-DD
+      let cleDate=normaliserDateEnCle(dateRetraitRaw);
+      if(!cleDate)return;
+      counts[cleDate]=counts[cleDate]||{};
+      counts[cleDate][creneau]=(counts[cleDate][creneau]||0)+1;
     });
     orderCounts=counts;
   }catch(e){
     orderCounts={};
   }
+}
+
+function normaliserDateEnCle(str){
+  if(!str)return null;
+  // Format Date(YYYY,M,D) de Google Sheets — mois 0-indexé
+  let m=str.match(/Date\((\d{4}),(\d+),(\d+)/);
+  if(m){
+    let y=parseInt(m[1]),mo=parseInt(m[2]),d=parseInt(m[3]);
+    return`${y}-${String(mo+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+  }
+  // Format DD/MM/YYYY
+  let m2=str.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if(m2)return`${m2[3]}-${m2[2]}-${m2[1]}`;
+  // Format texte lisible (ex: "Mercredi 1 juillet 2026")
+  let moisFr={"janvier":"01","février":"02","mars":"03","avril":"04","mai":"05","juin":"06","juillet":"07","août":"08","septembre":"09","octobre":"10","novembre":"11","décembre":"12"};
+  let m3=str.toLowerCase().match(/(\d{1,2})\s+([a-zéûî]+)\s+(\d{4})/);
+  if(m3&&moisFr[m3[2]]){
+    return`${m3[3]}-${moisFr[m3[2]]}-${String(parseInt(m3[1])).padStart(2,"0")}`;
+  }
+  return null;
 }
 
 /* ===== QUANTITÉS ===== */
@@ -1058,6 +1080,10 @@ function initDates(){
   let now=new Date();
   let startDate=new Date(2026,6,1);
   if(now>startDate)startDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  // Si 15h passées, on commence dès demain
+  if(now.getHours()>=15){
+    startDate.setDate(startDate.getDate()+1);
+  }
   for(let i=0;i<14;i++){
     let d=new Date(startDate);d.setDate(startDate.getDate()+i);
     let label=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
@@ -1070,24 +1096,13 @@ function initDates(){
 function handleDateChange(){
   const dateSelect=document.getElementById("client-date");
   const timeSelect=document.getElementById("client-time");
-  const warning=document.getElementById("time-warning");
-  if(warning)warning.style.display="none";
   timeSelect.innerHTML='<option value="">-- Sélectionne une tranche horaire --</option>';
   let selectedDate=dateSelect.value;
-  let now=new Date();
-  let todayLabel=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  todayLabel=todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1);
-  let isToday=(selectedDate===todayLabel);
-  let currentMinutes=now.getHours()*60+now.getMinutes();
-  let comptesDuJour=orderCounts[selectedDate]||{};
+  let comptesDuJour=orderCounts[normaliserDateEnCle(selectedDate)||selectedDate]||{};
   baseHours.forEach(t=>{
-    let match=t.match(/(\d{1,2})h(\d{2})/);
-    let slotMinutes=match?(parseInt(match[1])*60+parseInt(match[2])):0;
     let nbCommandes=comptesDuJour[t]||0;
     let estComplet=nbCommandes>=MAX_COMMANDES_PAR_CRENEAU;
-    if(isToday&&slotMinutes-currentMinutes<30){
-      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (indisponible)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
-    }else if(estComplet){
+    if(estComplet){
       let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (complet ⛔)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
     }else{
       let dispo=MAX_COMMANDES_PAR_CRENEAU-nbCommandes;
@@ -1097,7 +1112,6 @@ function handleDateChange(){
       timeSelect.appendChild(o);
     }
   });
-  if(isToday&&warning)warning.style.display="block";
   updateUI();
 }
 
