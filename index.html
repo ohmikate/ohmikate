@@ -461,33 +461,97 @@ async function chargerComptesCreneaux(){
   }
 
   try{
-    // 2. Chargement de vos blocages manuels depuis l'onglet "Fermetures"
+    // 2. Chargement des blocages et des motifs depuis l'onglet "Fermetures"
     let resB=await fetch(SHEET_URL_BLOCAGES+"&t="+Date.now());
     let textB=await resB.text();
     let jsonB=JSON.parse(textB.substring(47,textB.length-2));
     let rowsB=jsonB.table.rows||[];
     let blocages={};
+    
     rowsB.forEach(row=>{
       if(!row.c || row.c.length < 2) return;
       let dateText = row.c[0] ? String(row.c[0].v).trim() : "";
       let creneauText = row.c[1] ? String(row.c[1].v).trim() : "";
+      // Lecture de la colonne C (Motif), si vide on met "Fermé" par défaut
+      let motifText = row.c[2] && row.c[2].v ? String(row.c[2].v).trim() : "Fermé";
+      
       if(!dateText || !creneauText) return;
       
+      if(!blocages[dateText]) {
+        blocages[dateText] = { type: "PARTIEL", liste: {}, motifGlobal: "" };
+      }
+      
       if(creneauText.toUpperCase() === "TOUT"){
-        blocages[dateText] = "TOUT";
+        blocages[dateText].type = "TOUT";
+        blocages[dateText].motifGlobal = motifText;
       } else {
-        if(!Array.isArray(blocages[dateText])) {
-          if(blocages[dateText] !== "TOUT") blocages[dateText] = [];
-        }
-        if(Array.isArray(blocages[dateText])) {
-          blocages[dateText].push(creneauText);
-        }
+        blocages[dateText].liste[creneauText] = motifText;
       }
     });
     manuelsBlocages=blocages;
   }catch(e){
     manuelsBlocages={};
   }
+}
+
+function handleDateChange(){
+  const dateSelect=document.getElementById("client-date");
+  const timeSelect=document.getElementById("client-time");
+  timeSelect.innerHTML='<option value="">-- Sélectionne une tranche horaire --</option>';
+  
+  let selectedDate=dateSelect.value;
+  if(!selectedDate) return;
+
+  let now=new Date();
+  let todayLabel=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  todayLabel=todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1);
+
+  // Blocage automatique jour J après 15h
+  let estApresLimiteJourJ=(selectedDate===todayLabel && now.getHours()>=15);
+
+  // Récupération de la configuration de blocage pour ce jour
+  let configurationBlocage = manuelsBlocages[selectedDate];
+
+  let comptesDuJour=orderCounts[normaliserDateEnCle(selectedDate)||selectedDate]||{};
+  
+  baseHours.forEach(t=>{
+    let nbCommandes=comptesDuJour[t]||0;
+    let estComplet=nbCommandes>=MAX_COMMANDES_PAR_CRENEAU;
+    
+    // Vérification du blocage manuel et récupération du motif personnalisé
+    let estBloqueManuellement = false;
+    let motifPersonnalise = "Fermé ❌"; // Valeur par défaut si non spécifié
+
+    if(configurationBlocage) {
+      if(configurationBlocage.type === "TOUT") {
+        estBloqueManuellement = true;
+        let m = configurationBlocage.motifGlobal;
+        // Ajout de petits émojis automatiques selon le mot écrit pour faire joli
+        if(m.toLowerCase() === "plein" || m.toLowerCase() === "complet") motifPersonnalise = m + " ⛔";
+        else motifPersonnalise = m + " ❌";
+      } else if(configurationBlocage.liste && configurationBlocage.liste[t]) {
+        estBloqueManuellement = true;
+        let m = configurationBlocage.liste[t];
+        if(m.toLowerCase() === "plein" || m.toLowerCase() === "complet") motifPersonnalise = m + " ⛔";
+        else motifPersonnalise = m + " ❌";
+      }
+    }
+
+    if(estApresLimiteJourJ){
+      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (Indisponible ⏰)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
+    } else if(estBloqueManuellement) {
+      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" ("+motifPersonnalise+")";o.disabled=true;o.style.color="#777";timeSelect.appendChild(o);
+    } else if(estComplet){
+      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (complet ⛔)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
+    } else {
+      let dispo=MAX_COMMANDES_PAR_CRENEAU-nbCommandes;
+      let o=document.createElement("option");
+      o.value=o.textContent=t;
+      if(dispo<=2)o.textContent=t+` (${dispo} place${dispo>1?"s":""} restante${dispo>1?"s":""})`;
+      timeSelect.appendChild(o);
+    }
+  });
+  updateUI();
 }
 
 function normaliserDateEnCle(str){
