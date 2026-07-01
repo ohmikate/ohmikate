@@ -21,6 +21,47 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#ff4f8b;letter-spacing:2px;}
 .header p{font-size:11px;color:#888;margin-top:4px;}
 .toolbar{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;align-items:center;flex-wrap:wrap;}
+.page-tabs{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;}
+.page-tab{flex:1;background:#111;border:2px solid #222;color:#888;font-size:13px;font-weight:bold;padding:11px 10px;border-radius:10px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;transition:.15s;}
+.page-tab.page-tab-active{background:#ff4f8b;border-color:#ff4f8b;color:#fff;}
+.page-tab-badge{display:inline-block;background:#ff9500;color:#fff;font-size:11px;font-weight:bold;padding:1px 7px;border-radius:10px;margin-left:6px;}
+.page-tab.page-tab-active .page-tab-badge{background:#fff;color:#ff4f8b;}
+.histo-jour{background:#111;border:2px solid #222;border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
+.histo-jour-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.histo-jour-titre{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#fff;}
+.histo-jour-stats{display:flex;gap:14px;align-items:center;}
+.histo-jour-nb{font-size:12px;color:#888;}
+.histo-jour-ca{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;}
+.histo-jour-chevron{color:#666;font-size:13px;margin-left:8px;transition:transform .2s;}
+.histo-jour-chevron.open{transform:rotate(180deg);}
+.histo-jour-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #222;}
+.histo-jour-detail.open{display:block;}
+.histo-ligne{display:flex;justify-content:space-between;align-items:start;padding:10px 0;border-bottom:1px solid #1a1a1a;font-size:13px;gap:8px;}
+.histo-ligne:last-child{border-bottom:none;}
+.histo-ligne-nom{color:#fff;font-weight:bold;}
+.histo-ligne-meta{color:#777;font-size:11px;margin-top:3px;}
+.histo-ligne-boites{font-size:11px;color:#ff9500;margin-top:3px;}
+.histo-ligne-prix{color:#ff4f8b;font-weight:bold;white-space:nowrap;}
+.histo-totaux-globaux{display:flex;justify-content:space-around;max-width:600px;margin:0 auto 16px;background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:14px;}
+.histo-total-item{text-align:center;}
+.histo-total-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;}
+.histo-total-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
+.histo-copy-btn{display:block;width:100%;margin-top:12px;background:#1a1a2e;border:1px solid #635bff;color:#a09af0;font-size:12px;font-weight:bold;padding:8px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;}
+.histo-copy-btn:hover{background:#25244a;}
+.histo-tabs{display:flex;gap:8px;max-width:600px;margin:0 auto 14px;}
+.histo-tab{flex:1;background:#111;border:1.5px solid #222;color:#888;font-size:12px;font-weight:bold;padding:9px 8px;border-radius:8px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;}
+.histo-tab.active{background:#ff4f8b;border-color:#ff4f8b;color:#fff;}
+.histo-search{width:100%;background:#111;border:1.5px solid #333;color:#fff;font-size:13px;padding:10px 14px;border-radius:10px;font-family:'Montserrat',sans-serif;box-sizing:border-box;margin-bottom:14px;max-width:600px;display:block;margin-left:auto;margin-right:auto;}
+.histo-search:focus{border-color:#ff4f8b;outline:none;}
+.client-card{background:#111;border:2px solid #222;border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
+.client-card-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.client-nom{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;letter-spacing:1px;}
+.client-stats{text-align:right;}
+.client-ca{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;}
+.client-nb{font-size:11px;color:#888;}
+.client-badge-fidele{display:inline-block;background:#ff4f8b22;border:1px solid #ff4f8b;color:#ff4f8b;font-size:10px;font-weight:bold;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;}
+.client-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #222;}
+.client-detail.open{display:block;}
 .refresh-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;white-space:nowrap;}
 .filter-select{flex:1;min-width:120px;padding:10px;background:#111;border:2px solid #222;border-radius:10px;color:#fff;font-size:13px;font-family:'Montserrat',sans-serif;}
 .filter-select:focus{border-color:#ff4f8b;outline:none;}
@@ -42,26 +83,30 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 
 /* CRÉNEAUX */
 .creneaux-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:0 4px;}
-.creneau-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:bold;}
+.creneaux-date-label{font-size:11px;color:#888;font-weight:bold;padding:0 4px;margin:8px 0 4px;}
+.creneau-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:bold;cursor:pointer;transition:filter .15s;}
+.creneau-badge:hover{filter:brightness(1.3);}
 .creneau-libre{background:#0a2a12;color:#25D366;border:1px solid #25D36644;}
 .creneau-charge{background:#2a1a00;color:#ff9500;border:1px solid #ff950044;}
 .creneau-plein{background:#2a0a0a;color:#ff4444;border:1px solid #ff444444;}
 .creneau-urgent{background:#ff4444;color:#fff;animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+@keyframes highlight-flash{0%{box-shadow:0 0 0 0 rgba(255,79,139,0);border-color:inherit;}25%{box-shadow:0 0 0 5px rgba(255,79,139,0.7);border-color:#ff4f8b;}75%{box-shadow:0 0 0 3px rgba(255,79,139,0.3);border-color:#ff4f8b;}100%{box-shadow:0 0 0 0 rgba(255,79,139,0);border-color:inherit;}}
+.commande-highlight{animation:highlight-flash 2s ease-out;}
+.commande-highlight-secondary{border-color:#ff4f8b44!important;box-shadow:0 0 0 2px rgba(255,79,139,0.15);}
 
 /* CARTE COMMANDE */
 .commande-card{background:#111;border:1px solid #222;border-radius:14px;padding:16px;margin-bottom:10px;}
 .commande-card.nouvelle{border-color:#ff4f8b;box-shadow:0 0 10px rgba(255,79,139,0.1);}
 .commande-card.confirmee{border-color:#25D366;opacity:0.8;}
-.commande-card.prete{border-color:#ff9500;opacity:0.85;}
 .commande-card.urgente{border-color:#ff9500;box-shadow:0 0 10px rgba(255,149,0,0.2);}
+.commande-card.prete{border-color:#007aff;opacity:0.85;}
 .badge{display:inline-block;font-size:10px;font-weight:bold;padding:3px 8px;border-radius:20px;margin-bottom:8px;letter-spacing:1px;}
 .badge-new{background:#ff4f8b;color:#fff;}
 .badge-ok{background:#25D366;color:#fff;}
-.badge-prete{background:#ff9500;color:#fff;}
 .badge-urgent{background:#ff9500;color:#fff;animation:pulse 1s infinite;}
-.resume-boites{background:#1a0d12;border:1px solid #ff4f8b44;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:bold;color:#ff4f8b;margin-bottom:10px;text-align:center;}
-.btn-prete{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;background:#ff9500;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.badge-prete{background:#007aff;color:#fff;}
+.btn-prete{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#007aff;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
 .btn-prete:hover{filter:brightness(1.15);}
 .commande-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
 .client-name{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;}
@@ -76,6 +121,8 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .info-item .value{font-size:13px;font-weight:bold;color:#fff;}
 .info-item.full{grid-column:1/-1;}
 .detail-box{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:8px;padding:10px;font-size:12px;color:#aaa;line-height:1.7;white-space:pre-wrap;margin-top:4px;}
+.recap-boites{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.recap-boite-chip{background:#1a1410;border:1px solid #ff9500;color:#ff9500;font-size:12px;font-weight:bold;padding:5px 10px;border-radius:8px;}
 .total-row{display:flex;justify-content:space-between;padding:8px 12px;background:#1a0d12;border-radius:8px;margin:10px 0;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#ff4f8b;}
 .btn-wa{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#25D366;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
 .btn-sms{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#007aff;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
@@ -108,32 +155,6 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .popup-btns button{flex:1;padding:12px;border-radius:20px;font-family:'Bebas Neue',sans-serif;font-size:15px;cursor:pointer;border:none;letter-spacing:1px;}
 .btn-ok-supp{background:#ff4444;color:#fff;}
 .btn-cancel{background:#222;color:#aaa;}
-
-/* IMPRESSION RÉCAP MENSUEL */
-@media print{
-  body *{visibility:hidden;}
-  #recap-print, #recap-print *{visibility:visible;}
-  #recap-print{display:block!important;position:absolute;left:0;top:0;width:100%;}
-}
-.recap-doc{background:#fff;color:#111;font-family:'Montserrat',sans-serif;max-width:800px;margin:0 auto;padding:30px;}
-.recap-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #ff4f8b;padding-bottom:16px;margin-bottom:24px;}
-.recap-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#ff4f8b;letter-spacing:1px;}
-.recap-logo-sub{font-size:11px;color:#666;margin-top:4px;}
-.recap-info-right{text-align:right;font-size:12px;color:#333;line-height:1.6;}
-.recap-titre{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#111;text-align:center;margin-bottom:4px;letter-spacing:1px;}
-.recap-sous-titre{text-align:center;font-size:13px;color:#666;margin-bottom:24px;}
-.recap-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
-.recap-summary-box{background:#f5f5f5;border:1px solid #ddd;border-radius:8px;padding:14px;text-align:center;}
-.recap-summary-box .val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#ff4f8b;}
-.recap-summary-box .lbl{font-size:10px;color:#666;text-transform:uppercase;margin-top:4px;}
-.recap-table{width:100%;border-collapse:collapse;margin-bottom:24px;font-size:12px;}
-.recap-table th{background:#1a1a1a;color:#fff;padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase;}
-.recap-table td{padding:7px 10px;border-bottom:1px solid #eee;}
-.recap-table tr:nth-child(even){background:#fafafa;}
-.recap-table .total-row{font-weight:bold;background:#fff0f5!important;}
-.recap-footer{margin-top:30px;padding-top:16px;border-top:1px solid #ccc;font-size:10px;color:#888;text-align:center;line-height:1.6;}
-.recap-print-btn{display:block;width:100%;max-width:300px;margin:20px auto;font-family:'Bebas Neue',sans-serif;background:#635bff;color:#fff;border:none;border-radius:30px;padding:14px;font-size:16px;cursor:pointer;letter-spacing:1px;}
-@media print{.recap-print-btn{display:none;}}
 </style>
 </head>
 <body>
@@ -173,38 +194,48 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
     <div class="stat-box"><div class="num green" id="stat-done">0</div><div class="lbl">Confirmées</div></div>
     <div class="stat-box"><div class="num orange" id="stat-ca">0€</div><div class="lbl">CA total</div></div>
   </div>
-  <div class="stats-bar" style="grid-template-columns:1fr;margin-top:8px;">
-    <div class="stat-box" style="display:flex;align-items:center;justify-content:center;gap:10px;">
-      <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff9500;" id="stat-pretes">0</span>
-      <span class="lbl" style="font-size:11px;">📦 commande(s) prête(s) en attente de retrait</span>
+
+  <div class="page-tabs">
+    <button class="page-tab page-tab-active" id="ptab-commandes" onclick="switchPageTab('commandes')">📋 Commandes</button>
+    <button class="page-tab" id="ptab-aprepare" onclick="switchPageTab('aprepare')">🍳 À préparer<span class="page-tab-badge" id="badge-aprepare" style="display:none;">0</span></button>
+    <button class="page-tab" id="ptab-historique" onclick="switchPageTab('historique')">📊 Historique</button>
+  </div>
+
+  <div id="vue-commandes">
+    <div class="toolbar">
+      <select class="filter-select" id="filter-vue" onchange="afficher()">
+        <option value="jour">Par jour</option>
+        <option value="semaine">Par semaine</option>
+      </select>
+      <select class="filter-select" id="filter-statut" onchange="afficher()">
+        <option value="toutes">Toutes</option>
+        <option value="nouvelles">🆕 Nouvelles</option>
+        <option value="confirmees">✅ Confirmées</option>
+      </select>
+      <button class="refresh-btn" onclick="charger()">🔄</button>
     </div>
+
+    <div class="tout-select-wrap" id="tout-select-wrap" style="display:none;">
+      <input type="checkbox" id="tout-select" class="cmd-checkbox" onchange="toutSelectionner(this.checked)">
+      <label for="tout-select">Tout sélectionner</label>
+      <span id="sel-info" style="font-size:12px;color:#555;margin-left:8px;"></span>
+    </div>
+
+    <div id="container"><div class="loading">⏳ Chargement...</div></div>
   </div>
 
-  <div class="toolbar">
-    <select class="filter-select" id="filter-vue" onchange="afficher()">
-      <option value="jour">Par jour</option>
-      <option value="semaine">Par semaine</option>
-    </select>
-    <select class="filter-select" id="filter-statut" onchange="afficher()">
-      <option value="toutes">Toutes</option>
-      <option value="nouvelles">🆕 Nouvelles</option>
-      <option value="confirmees">✅ Confirmées</option>
-      <option value="pretes">📦 Prêtes</option>
-    </select>
-    <button class="refresh-btn" onclick="charger()">🔄</button>
+  <div id="vue-aprepare" style="display:none;">
+    <div id="aprepare-container"><div class="loading">⏳ Chargement...</div></div>
   </div>
 
-  <div style="max-width:600px;margin:0 auto 16px;">
-    <button class="refresh-btn" style="width:100%;background:#1a1a2e;border:1px solid #635bff;color:#a09af0;" onclick="ouvrirRecapMensuel()">🧾 Récapitulatif mensuel (comptabilité)</button>
+  <div id="vue-historique" style="display:none;">
+    <div class="histo-tabs">
+      <button class="histo-tab active" id="htab-jours" onclick="switchHistoTab('jours')">🗓️ Par jour</button>
+      <button class="histo-tab" id="htab-clients" onclick="switchHistoTab('clients')">👤 Par client</button>
+    </div>
+    <input class="histo-search" id="histo-search" type="text" placeholder="🔍 Rechercher un client..." oninput="filtrerHisto()" style="display:none;">
+    <div id="histo-container"><div class="loading">⏳ Chargement...</div></div>
   </div>
-
-  <div class="tout-select-wrap" id="tout-select-wrap" style="display:none;">
-    <input type="checkbox" id="tout-select" class="cmd-checkbox" onchange="toutSelectionner(this.checked)">
-    <label for="tout-select">Tout sélectionner</label>
-    <span id="sel-info" style="font-size:12px;color:#555;margin-left:8px;"></span>
-  </div>
-
-  <div id="container"><div class="loading">⏳ Chargement...</div></div>
 
   <!-- Barre d'actions groupées -->
   <div class="selection-bar" id="selection-bar">
@@ -217,24 +248,6 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
   </div>
 </div>
 
-<!-- MODALE RÉCAP MENSUEL -->
-<div class="popup" id="popup-recap">
-  <div class="popup-box" style="max-width:380px;text-align:left;">
-    <h3 style="color:#a09af0;margin-bottom:16px;text-align:center;">🧾 Récapitulatif mensuel</h3>
-    <div style="margin-bottom:16px;">
-      <label style="font-size:12px;color:#888;display:block;margin-bottom:6px;">Choisir le mois</label>
-      <input type="month" id="recap-mois" style="width:100%;padding:10px;background:#111;border:1px solid #333;border-radius:8px;color:#fff;font-size:14px;">
-    </div>
-    <div class="popup-btns">
-      <button class="btn-cancel" onclick="fermerPopupRecap()">Annuler</button>
-      <button class="btn-ok-supp" style="background:#635bff;" onclick="genererRecapMensuel()">Générer</button>
-    </div>
-  </div>
-</div>
-
-<!-- PAGE IMPRESSION RÉCAP (cachée, générée dynamiquement) -->
-<div id="recap-print" style="display:none;"></div>
-
 <script>
 const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
 const SHEET_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
@@ -245,6 +258,7 @@ let toutesCommandes=[];
 let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
 let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
 let pretes=JSON.parse(localStorage.getItem('ohMikatePretes')||'[]');
+let annulees=JSON.parse(localStorage.getItem('ohMikateAnnulees')||'[]'); // {id, phone, name, date}
 let idASupp=null;
 
 /* LOGIN */
@@ -271,7 +285,12 @@ async function charger(){
     let ancienTotal=toutesCommandes.length;
     let nouvellesTotales=0;
     (json.table.rows||[]).forEach((row,i)=>{
-      if(!row.c||!row.c[1]||!row.c[1].v)return;
+      if(!row.c)return;
+      // Ignorer les lignes complètement vides
+      let hasData=row.c.some(cell=>cell&&cell.v!==null&&cell.v!=="");
+      if(!hasData)return;
+      // Ignorer si pas de nom (colonne B)
+      if(!row.c[1]||!row.c[1].v)return;
       let dateRecu=row.c[0]?String(row.c[0].v):"";
       let name=row.c[1]?row.c[1].v:"";
       let phone=row.c[2]?String(row.c[2].v):"";
@@ -282,8 +301,32 @@ async function charger(){
       let dateRetrait=row.c[6]?String(row.c[6].v):"";
 let creneau=row.c[7]?String(row.c[7].v):"";
 let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
-let heure=row.c[9]?String(row.c[9].v):"";  // Lit la colonne J (Heure)
-let datePropre=row.c[0]?String(row.c[0].v):""; // Lit la colonne A (Date propre)
+// Traitement et formatage de l'heure
+      let heureRaw = row.c[9] ? String(row.c[9].v) : "";
+      let heure = heureRaw;
+      if (heureRaw.includes("Date(")) {
+        let hm = heureRaw.match(/Date\(\d+,\d+,\d+,(\d+),(\d+)/);
+        if (hm) heure = hm[1].padStart(2, '0') + ":" + hm[2].padStart(2, '0');
+      }
+
+      // Traitement et formatage de la date de réception
+      let dateRaw = row.c[0] ? String(row.c[0].v) : "";
+      let datePropre = dateRaw;
+      if (dateRaw.includes("Date(")) {
+        let dm = dateRaw.match(/Date\((\d+),(\d+),(\d+)/);
+        if (dm) {
+          // dm[1] = Année, dm[2] = Mois (informatique), dm[3] = Jour
+          let annee = parseInt(dm[1]);
+          let mois = parseInt(dm[2]);
+          let jour = parseInt(dm[3]);
+          
+          // Formatage en JJ/MM/AAAA (en ajoutant les 0 si nécessaire)
+          let jourStr = String(jour).padStart(2, '0');
+          let moisStr = String(mois + 1).padStart(2, '0'); // On ajoute 1 car les mois commencent à 0 en JS
+          
+          datePropre = jourStr + "/" + moisStr + "/" + annee;
+        }
+      }
 
       // Normaliser le canal
       if(!canal&&payment){
@@ -294,17 +337,24 @@ let datePropre=row.c[0]?String(row.c[0].v):""; // Lit la colonne A (Date propre)
 
       // Normaliser payment (supprimer PayPal)
       if(payment.toLowerCase().includes("paypal"))payment="Paiement en ligne (carte)";
-      // Vérifier si créneau urgent (< 2h)
+      // Vérifier si créneau urgent (aujourd'hui ET dans moins de 2h)
       let urgent=false;
       if(dateRetrait&&creneau){
-        let now=new Date();
-        let cm2=creneau.match(/(\d{1,2})h(\d{2})/);
-        if(cm2){
-          // Approx : si aujourd'hui et créneau dans moins de 2h
-          let slotH=parseInt(cm2[1]),slotM=parseInt(cm2[2]);
-          let slotMins=slotH*60+slotM;
-          let nowMins=now.getHours()*60+now.getMinutes();
-          if(slotMins-nowMins>0&&slotMins-nowMins<=120)urgent=true;
+        let dRetrait=parseDate(dateRetrait);
+        let today=new Date();
+        let isRetraitAujourdhui=dRetrait&&
+          dRetrait.getDate()===today.getDate()&&
+          dRetrait.getMonth()===today.getMonth()&&
+          dRetrait.getFullYear()===today.getFullYear();
+        if(isRetraitAujourdhui){
+          let now=new Date();
+          let cm2=creneau.match(/(\d{1,2})h(\d{2})/);
+          if(cm2){
+            let slotH=parseInt(cm2[1]),slotM=parseInt(cm2[2]);
+            let slotMins=slotH*60+slotM;
+            let nowMins=now.getHours()*60+now.getMinutes();
+            if(slotMins-nowMins>0&&slotMins-nowMins<=120)urgent=true;
+          }
         }
       }
       toutesCommandes.push({id:i,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
@@ -322,6 +372,11 @@ let datePropre=row.c[0]?String(row.c[0].v):""; // Lit la colonne A (Date propre)
 
     afficher();
     updateStats();
+    let visiblePourBadge=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+    let nbAPreparer=visiblePourBadge.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id)).length;
+    updateBadgeAPreparer(nbAPreparer);
+    if(document.getElementById("vue-historique").style.display!=="none")afficherHistorique();
+    if(document.getElementById("vue-aprepare").style.display!=="none")afficherAPreparer();
     let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
     document.getElementById("last-refresh").textContent="Mis à jour à "+now+" • Auto toutes les 60s";
   }catch(e){
@@ -339,8 +394,7 @@ function afficher(){
   let filtered=toutesCommandes.filter(c=>{
     if(supprimees.includes(c.id))return false;
     if(statut==="nouvelles")return!confirmees.includes(c.id);
-    if(statut==="confirmees")return confirmees.includes(c.id)&&!pretes.includes(c.id);
-    if(statut==="pretes")return pretes.includes(c.id);
+    if(statut==="confirmees")return confirmees.includes(c.id);
     return true;
   });
 
@@ -381,9 +435,7 @@ function afficher(){
       return s+(isNaN(v)?0:v);
     },0);
     let nouvelles=cmds.filter(c=>!confirmees.includes(c.id)).length;
-    // Récupère la date du premier commit pour l'analyse créneaux
-    let jourDate=parseDate(cmds[0]?.dateRecu||"");
-    let creneauxHtml=analyserCreneaux(cmds,jourDate);
+    let creneauxHtml=analyserCreneaux(cmds);
 
     html+=`<div class="jour-group">
       <div class="jour-header">
@@ -399,8 +451,456 @@ function afficher(){
   });
 
   container.innerHTML=html;
-  // Afficher la case "Tout sélectionner" s'il y a des commandes
+  // Réinitialise les index de navigation des créneaux après rechargement
+  Object.keys(creneauNavIndex).forEach(k=>delete creneauNavIndex[k]);
   document.getElementById("tout-select-wrap").style.display=filtered.length>0?"flex":"none";
+}
+
+/* ===== ONGLETS DE PAGE (Commandes / Historique) ===== */
+function switchPageTab(tab){
+  document.getElementById("ptab-commandes").classList.toggle("page-tab-active",tab==="commandes");
+  document.getElementById("ptab-aprepare").classList.toggle("page-tab-active",tab==="aprepare");
+  document.getElementById("ptab-historique").classList.toggle("page-tab-active",tab==="historique");
+  document.getElementById("vue-commandes").style.display=tab==="commandes"?"block":"none";
+  document.getElementById("vue-aprepare").style.display=tab==="aprepare"?"block":"none";
+  document.getElementById("vue-historique").style.display=tab==="historique"?"block":"none";
+  if(tab==="historique")afficherHistorique();
+  if(tab==="aprepare")afficherAPreparer();
+}
+
+/* ===== VUE À PRÉPARER : confirmées mais pas encore prêtes ===== */
+function afficherAPreparer(){
+  let container=document.getElementById("aprepare-container");
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  let aPreparer=visible.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id));
+
+  updateBadgeAPreparer(aPreparer.length);
+
+  if(aPreparer.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">🎉</div><p>Rien à préparer pour le moment !</p></div>`;
+    return;
+  }
+
+  // Trie par date de retrait puis créneau, pour suivre l'ordre de préparation logique
+  aPreparer.sort((a,b)=>{
+    let da=parseDate(a.dateRetrait),db=parseDate(b.dateRetrait);
+    if(da&&db&&da.getTime()!==db.getTime())return da-db;
+    return(a.creneau||"").localeCompare(b.creneau||"");
+  });
+
+  container.innerHTML=aPreparer.map(c=>renderCommande(c)).join("");
+  document.getElementById("tout-select-wrap").style.display="none";
+}
+
+function updateBadgeAPreparer(n){
+  let badge=document.getElementById("badge-aprepare");
+  if(n>0){
+    badge.textContent=n;
+    badge.style.display="inline-block";
+  }else{
+    badge.style.display="none";
+  }
+}
+
+let histoTabActif="jours";
+
+function switchHistoTab(tab){
+  histoTabActif=tab;
+  document.getElementById("htab-jours").classList.toggle("active",tab==="jours");
+  document.getElementById("htab-clients").classList.toggle("active",tab==="clients");
+  document.getElementById("histo-search").style.display=tab==="clients"?"block":"none";
+  document.getElementById("histo-search").value="";
+  afficherHistorique();
+}
+
+function filtrerHisto(){
+  afficherHistorique();
+}
+
+function afficherHistorique(){
+  if(histoTabActif==="clients")afficherHistoClients();
+  else afficherHistoJours();
+}
+
+/* ===== VUE HISTORIQUE PAR JOUR ===== */
+function afficherHistoJours(){
+  let container=document.getElementById("histo-container");
+  // Uniquement les commandes confirmées
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&confirmees.includes(c.id));
+
+  if(visible.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📊</div><p>Aucune commande confirmée.</p></div>`;
+    return;
+  }
+
+  // Regroupe par date de retrait, clé canonique
+  function cleDate(dr){let d=parseDate(dr||"");if(!d)return dr||"?";let mm=String(d.getMonth()+1).padStart(2,"0");let dd=String(d.getDate()).padStart(2,"0");return`${d.getFullYear()}-${mm}-${dd}`;}
+  let groupes={};
+  visible.forEach(c=>{
+    let key=cleDate(c.dateRetrait);
+    if(!groupes[key])groupes[key]={cmds:[],dateObj:parseDate(c.dateRetrait),label:formatDateRetrait(c.dateRetrait)};
+    groupes[key].cmds.push(c);
+  });
+
+  let jours=Object.keys(groupes).sort((a,b)=>b.localeCompare(a));
+
+  let caGlobal=visible.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+
+  // Regroupe également par mois pour le récap mensuel imprimable
+  let moisGroupes={};
+  visible.forEach(c=>{
+    let d=parseDate(c.dateRetrait);
+    if(!d)return;
+    let key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+    if(!moisGroupes[key]){
+      let label=d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+      moisGroupes[key]={cmds:[],label:label.charAt(0).toUpperCase()+label.slice(1)};
+    }
+    moisGroupes[key].cmds.push(c);
+  });
+  let moisKeys=Object.keys(moisGroupes).sort((a,b)=>b.localeCompare(a));
+  window._moisGroupesCache=moisGroupes;
+
+  let html=`<div class="histo-totaux-globaux">
+    <div class="histo-total-item"><div class="histo-total-num">${visible.length}</div><div class="histo-total-lbl">Commandes</div></div>
+    <div class="histo-total-item"><div class="histo-total-num">${jours.length}</div><div class="histo-total-lbl">Jours</div></div>
+    <div class="histo-total-item"><div class="histo-total-num">${caGlobal.toFixed(2)}€</div><div class="histo-total-lbl">CA total</div></div>
+  </div>`;
+
+  if(moisKeys.length>0){
+    html+=`<div style="max-width:600px;margin:0 auto 16px;background:#111;border:2px solid #25D366;border-radius:12px;padding:14px 16px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:#25D366;letter-spacing:1px;margin-bottom:10px;">🖨️ RÉCAP MENSUEL (pour contrôle / compta)</div>
+      <select id="mois-select" class="filter-select" style="width:100%;margin-bottom:10px;">
+        ${moisKeys.map(k=>`<option value="${k}">${moisGroupes[k].label} (${moisGroupes[k].cmds.length} commandes)</option>`).join("")}
+      </select>
+      <button class="histo-copy-btn" style="margin-top:0;background:#0a2a12;border-color:#25D366;color:#7fe3a0;" onclick="imprimerRecapMensuelDepuisSelect()">🖨️ Imprimer le récap du mois sélectionné</button>
+    </div>`;
+  }
+
+  jours.forEach((key,idx)=>{
+    let {cmds,label}=groupes[key];
+    let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+    let safeId="histo-"+idx;
+    let lignes=cmds.map(c=>{
+      let recap=extraireRecapBoitesTexte(c.order);
+      return`<div class="histo-ligne">
+        <div>
+          <div class="histo-ligne-nom">✅ ${c.name||"—"}</div>
+          <div class="histo-ligne-meta">⏰ ${c.creneau||"—"} • ${c.payment||"—"}</div>
+          ${recap?`<div class="histo-ligne-boites">📦 ${recap}</div>`:""}
+        </div>
+        <div class="histo-ligne-prix">${c.total||"—"} €</div>
+      </div>`;
+    }).join("");
+
+    // Texte à copier pour le récap du jour
+    let txtRecap=`📋 Récap ${label}\n${"─".repeat(28)}\n`;
+    cmds.forEach(c=>{
+      let recap=extraireRecapBoitesTexte(c.order);
+      txtRecap+=`• ${c.name||"—"} — ${recap||"?"} — ${c.total||"—"}€ (${c.payment||"—"})\n`;
+    });
+    txtRecap+=`${"─".repeat(28)}\n✅ ${cmds.length} commande${cmds.length>1?"s":""} — Total : ${ca.toFixed(2)}€`;
+
+    html+=`<div class="histo-jour">
+      <div class="histo-jour-header" onclick="toggleHistoJour('${safeId}')">
+        <div class="histo-jour-titre">🗓️ ${label}</div>
+        <div class="histo-jour-stats">
+          <div>
+            <div class="histo-jour-ca">${ca.toFixed(2)} €</div>
+            <div class="histo-jour-nb">${cmds.length} commande${cmds.length>1?"s":""}</div>
+          </div>
+          <span class="histo-jour-chevron" id="chevron-${safeId}">▼</span>
+        </div>
+      </div>
+      <div class="histo-jour-detail" id="detail-${safeId}">
+        ${lignes}
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="histo-copy-btn" style="margin-top:0;flex:1;" onclick="copierRecapJour(\`${txtRecap.replace(/`/g,"\\`")}\`)">📋 Copier</button>
+          <button class="histo-copy-btn" style="margin-top:0;flex:1;background:#1a2e1a;border-color:#25D366;color:#7fe3a0;" onclick='imprimerRecapJour(${JSON.stringify(label)}, ${JSON.stringify(cmds.map(c=>({name:c.name,creneau:c.creneau,payment:c.payment,total:c.total,order:c.order})))})'>🖨️ Imprimer</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML=html;
+}
+
+/* ===== VUE HISTORIQUE PAR CLIENT ===== */
+function afficherHistoClients(){
+  let container=document.getElementById("histo-container");
+  let recherche=(document.getElementById("histo-search")?.value||"").toLowerCase().trim();
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&confirmees.includes(c.id));
+
+  if(visible.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">👤</div><p>Aucune commande confirmée.</p></div>`;
+    return;
+  }
+
+  // Regroupe par numéro de téléphone (un même numéro = un même client, même si le nom diffère)
+  let clients={};
+  visible.forEach(c=>{
+    let phone=normalizePhone(c.phone)||"sans-tel";
+    let nom=(c.name||"Inconnu").trim();
+    if(!clients[phone])clients[phone]={phone,noms:{},cmds:[]};
+    clients[phone].noms[nom]=(clients[phone].noms[nom]||0)+1;
+    clients[phone].cmds.push(c);
+  });
+
+  // Filtre par recherche (sur le nom le plus fréquent OU sur le numéro)
+  let keys=Object.keys(clients).filter(k=>{
+    if(!recherche)return true;
+    let {phone,noms}=clients[k];
+    let nomsStr=Object.keys(noms).join(" ").toLowerCase();
+    return phone.includes(recherche)||nomsStr.includes(recherche);
+  });
+
+  // Tri : les plus fidèles (nb commandes) en premier
+  keys.sort((a,b)=>clients[b].cmds.length-clients[a].cmds.length||a.localeCompare(b));
+
+  if(keys.length===0){
+    container.innerHTML=`<div class="empty-state"><p>Aucun client trouvé pour "${recherche}".</p></div>`;
+    return;
+  }
+
+  let html="";
+  keys.forEach((phone,idx)=>{
+    let {noms,cmds}=clients[phone];
+    // Nom le plus fréquemment utilisé par ce numéro (affiché en titre)
+    let nomPrincipal=Object.keys(noms).sort((a,b)=>noms[b]-noms[a])[0];
+    let autresNoms=Object.keys(noms).filter(n=>n!==nomPrincipal);
+    let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+    let nb=cmds.length;
+    let fidele=nb>=3;
+    let nbAnnul=nbAnnulationsPourTel(phone);
+    let safeId="client-"+idx;
+
+    // Habitudes : boîtes les plus commandées
+    let allBoites={};
+    cmds.forEach(c=>{
+      let regex=/BOÎTE DE (\d+) BEIGNETS/gi,m;
+      while((m=regex.exec(c.order||""))!==null){
+        allBoites[m[1]]=(allBoites[m[1]]||0)+1;
+      }
+    });
+    let habitude=Object.keys(allBoites).map(t=>`${allBoites[t]}× Boîte ${t}`).join(", ");
+
+    let derniereCmd=cmds.sort((a,b)=>{
+      let da=parseDate(a.dateRetrait),db=parseDate(b.dateRetrait);
+      return(db||0)-(da||0);
+    })[0];
+
+    html+=`<div class="client-card">
+      <div class="client-card-header" onclick="toggleClientDetail('${safeId}')">
+        <div>
+          <div class="client-nom">${nomPrincipal}${fidele?`<span class="client-badge-fidele">⭐ FIDÈLE</span>`:""}${nbAnnul>=2?`<span class="client-badge-fidele" style="background:#ff444422;border-color:#ff4444;color:#ff4444;">⚠️ ${nbAnnul} ANNUL.</span>`:""}</div>
+          <div class="histo-jour-nb">📞 ${phone} • ${nb} commande${nb>1?"s":""} • Dernière : ${formatDateRetrait(derniereCmd?.dateRetrait||"")}</div>
+          ${autresNoms.length>0?`<div class="histo-jour-nb" style="color:#666;">Autres noms utilisés : ${autresNoms.join(", ")}</div>`:""}
+        </div>
+        <div class="client-stats">
+          <div class="client-ca">${ca.toFixed(2)} €</div>
+          <div class="client-nb">dépensé au total</div>
+        </div>
+      </div>
+      <div class="client-detail" id="detail-${safeId}">
+        ${nbAnnul>=2?`<div style="background:#2a0a0a;border:1px solid #ff4444;border-radius:8px;padding:8px 10px;margin-bottom:10px;color:#ff6b6b;font-size:12px;font-weight:bold;text-align:center;">⚠️ Ce client a déjà annulé ${nbAnnul} fois. Sois vigilante avant de préparer une nouvelle commande.</div>`:""}
+        ${habitude?`<div style="font-size:12px;color:#ff9500;margin-bottom:10px;">📦 Habitudes : ${habitude}</div>`:""}
+        ${cmds.map(c=>`<div class="histo-ligne">
+          <div>
+            <div class="histo-ligne-meta">🗓️ ${formatDateRetrait(c.dateRetrait)} • ⏰ ${c.creneau||"—"} • ${c.name||"—"}</div>
+            <div class="histo-ligne-boites">📦 ${extraireRecapBoitesTexte(c.order)||"—"}</div>
+          </div>
+          <div class="histo-ligne-prix">${c.total||"—"} €</div>
+        </div>`).join("")}
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML=html;
+}
+
+function toggleClientDetail(safeId){
+  document.getElementById("detail-"+safeId).classList.toggle("open");
+}
+
+function toggleHistoJour(safeId){
+  document.getElementById("detail-"+safeId).classList.toggle("open");
+  document.getElementById("chevron-"+safeId).classList.toggle("open");
+}
+
+function extraireRecapBoitesTexte(orderText){
+  if(!orderText)return"";
+  let regex=/BOÎTE DE (\d+) BEIGNETS/gi,counts={},m;
+  while((m=regex.exec(orderText))!==null)counts[m[1]]=(counts[m[1]]||0)+1;
+  return Object.keys(counts).sort((a,b)=>parseInt(a)-parseInt(b)).map(t=>`${counts[t]}× Boîte ${t}`).join(" + ");
+}
+
+function copierRecapJour(txt){
+  navigator.clipboard.writeText(txt).then(()=>showToast("📋 Récap copié !")).catch(()=>{
+    let el=document.createElement("textarea");
+    el.value=txt;document.body.appendChild(el);el.select();
+    document.execCommand("copy");document.body.removeChild(el);
+    showToast("📋 Récap copié !");
+  });
+}
+
+function imprimerRecapJour(label,cmds){
+  let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+  let lignesHtml=cmds.map(c=>{
+    let recap=extraireRecapBoitesTexte(c.order)||"—";
+    return`<tr>
+      <td>${(c.name||"—").replace(/</g,"&lt;")}</td>
+      <td>${(recap||"—").replace(/</g,"&lt;")}</td>
+      <td>${(c.creneau||"—").replace(/</g,"&lt;")}</td>
+      <td>${(c.payment||"—").replace(/</g,"&lt;")}</td>
+      <td style="text-align:right;font-weight:bold;">${c.total||"—"} €</td>
+    </tr>`;
+  }).join("");
+
+  let html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Récap ${label}</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:0;max-width:800px;margin:auto;}
+    .entete{background:#ff4f8b;color:#fff;padding:22px 28px;}
+    .entete h1{font-size:22px;margin:0 0 4px;letter-spacing:1px;}
+    .entete .soustitre{font-size:13px;opacity:0.9;}
+    .entete .infos-entreprise{font-size:11px;opacity:0.85;margin-top:10px;line-height:1.5;}
+    .corps{padding:25px 28px;}
+    .sous-titre{color:#888;font-size:13px;margin-bottom:18px;}
+    table{width:100%;border-collapse:collapse;margin-top:10px;}
+    th{background:#1a1a1a;color:#fff;text-align:left;padding:8px 10px;font-size:13px;}
+    td{padding:8px 10px;border-bottom:1px solid #eee;font-size:13px;}
+    tr:nth-child(even){background:#fafafa;}
+    .total-final{display:flex;justify-content:space-between;margin-top:18px;padding:14px 16px;background:#1a0d12;color:#fff;border-radius:8px;font-size:18px;font-weight:bold;}
+    .total-final span:last-child{color:#ff4f8b;}
+    .footer{margin-top:30px;font-size:10.5px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:14px;}
+    @media print{ .entete{padding:16px 22px;} .corps{padding:16px 22px;} }
+  </style>
+  </head><body>
+    <div class="entete">
+      <h1>🧇 OH! MIKATÉ</h1>
+      <div class="soustitre">Beignets congolais artisanaux — Reims</div>
+      <div class="infos-entreprise">📍 Reims, France &nbsp;|&nbsp; 📞 0745915946 &nbsp;|&nbsp; 📧 ohmikate51@gmail.com &nbsp;|&nbsp; SIRET : 102 955 168 00012</div>
+    </div>
+    <div class="corps">
+      <div class="sous-titre" style="font-size:16px;font-weight:bold;color:#222;margin-bottom:4px;">Récapitulatif journalier</div>
+      <div class="sous-titre">🗓️ ${label} • ${cmds.length} commande${cmds.length>1?"s":""} confirmée${cmds.length>1?"s":""}</div>
+      <table>
+        <thead><tr><th>Client</th><th>Commande</th><th>Créneau</th><th>Règlement</th><th>Total</th></tr></thead>
+        <tbody>${lignesHtml}</tbody>
+      </table>
+      <div class="total-final"><span>TOTAL DU JOUR</span><span>${ca.toFixed(2)} €</span></div>
+      <div class="footer">Oh! Mikaté — SIRET 102 955 168 00012 — Document généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div>
+    </div>
+  </body></html>`;
+
+  let w=window.open('','_blank');
+  if(!w){showToast("⚠️ Autorise les pop-ups pour imprimer.");return;}
+  w.document.write(html);
+  w.document.close();
+  w.onload=function(){w.print();};
+}
+
+function imprimerRecapMensuelDepuisSelect(){
+  let key=document.getElementById("mois-select")?.value;
+  if(!key||!window._moisGroupesCache||!window._moisGroupesCache[key]){
+    showToast("⚠️ Aucun mois sélectionné.");
+    return;
+  }
+  let {label,cmds}=window._moisGroupesCache[key];
+  imprimerRecapMensuel(label,cmds);
+}
+
+function imprimerRecapMensuel(label,cmds){
+  // Regroupe les commandes du mois par jour de retrait
+  function cleJour(dr){let d=parseDate(dr||"");if(!d)return dr||"?";return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+  let jours={};
+  cmds.forEach(c=>{
+    let k=cleJour(c.dateRetrait);
+    if(!jours[k])jours[k]={cmds:[],label:formatDateRetrait(c.dateRetrait)};
+    jours[k].cmds.push(c);
+  });
+  let joursKeys=Object.keys(jours).sort();
+
+  let caTotalMois=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+  let nbCarte=cmds.filter(c=>(c.payment||"").toLowerCase().includes("carte")).length;
+  let nbEspeces=cmds.filter(c=>(c.payment||"").toLowerCase().includes("espèces")||(c.payment||"").toLowerCase().includes("especes")).length;
+  let caCarte=cmds.filter(c=>(c.payment||"").toLowerCase().includes("carte")).reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+  let caEspeces=cmds.filter(c=>(c.payment||"").toLowerCase().includes("espèces")||(c.payment||"").toLowerCase().includes("especes")).reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+
+  let joursHtml=joursKeys.map(k=>{
+    let {cmds:cmdsJour,label:labelJour}=jours[k];
+    let caJour=cmdsJour.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+    let lignes=cmdsJour.map(c=>{
+      let recap=extraireRecapBoitesTexte(c.order)||"—";
+      return`<tr>
+        <td>${(c.name||"—").replace(/</g,"&lt;")}</td>
+        <td>${recap.replace(/</g,"&lt;")}</td>
+        <td>${(c.creneau||"—").replace(/</g,"&lt;")}</td>
+        <td>${(c.payment||"—").replace(/</g,"&lt;")}</td>
+        <td style="text-align:right;font-weight:bold;">${c.total||"—"} €</td>
+      </tr>`;
+    }).join("");
+    return`<div class="jour-bloc">
+      <div class="jour-bloc-titre">🗓️ ${labelJour} — ${cmdsJour.length} commande${cmdsJour.length>1?"s":""} — <span style="color:#ff4f8b;">${caJour.toFixed(2)} €</span></div>
+      <table>
+        <thead><tr><th>Client</th><th>Commande</th><th>Créneau</th><th>Règlement</th><th>Total</th></tr></thead>
+        <tbody>${lignes}</tbody>
+      </table>
+    </div>`;
+  }).join("");
+
+  let dateGeneration=new Date().toLocaleDateString('fr-FR')+" à "+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+
+  let html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Récap mensuel ${label}</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:0;max-width:850px;margin:auto;}
+    .entete{background:#ff4f8b;color:#fff;padding:24px 30px;}
+    .entete h1{font-size:24px;margin:0 0 4px;letter-spacing:1px;}
+    .entete .soustitre{font-size:13px;opacity:0.9;}
+    .entete .infos-entreprise{font-size:11px;opacity:0.85;margin-top:10px;line-height:1.5;}
+    .corps{padding:25px 30px;}
+    .periode{font-size:18px;font-weight:bold;margin-bottom:4px;}
+    .periode-sub{color:#888;font-size:12px;margin-bottom:20px;}
+    .stats-mois{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;}
+    .stat-mois-box{flex:1;min-width:120px;background:#f7f7f7;border:1px solid #eee;border-radius:8px;padding:12px;text-align:center;}
+    .stat-mois-box .num{font-size:20px;font-weight:bold;color:#ff4f8b;}
+    .stat-mois-box .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+    .jour-bloc{margin-bottom:22px;}
+    .jour-bloc-titre{font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #ff4f8b;padding-left:10px;}
+    table{width:100%;border-collapse:collapse;margin-bottom:4px;}
+    th{background:#1a1a1a;color:#fff;text-align:left;padding:7px 10px;font-size:11.5px;}
+    td{padding:7px 10px;border-bottom:1px solid #eee;font-size:12.5px;}
+    tr:nth-child(even){background:#fafafa;}
+    .total-final{display:flex;justify-content:space-between;margin-top:20px;padding:16px 18px;background:#1a0d12;color:#fff;border-radius:8px;font-size:20px;font-weight:bold;}
+    .total-final span:last-child{color:#ff4f8b;}
+    .footer{margin-top:30px;font-size:10.5px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:14px;}
+    @media print{ .entete{padding:18px 24px;} .corps{padding:18px 24px;} }
+  </style>
+  </head><body>
+    <div class="entete">
+      <h1>🧇 OH! MIKATÉ</h1>
+      <div class="soustitre">Beignets congolais artisanaux — Reims</div>
+      <div class="infos-entreprise">📍 Reims, France &nbsp;|&nbsp; 📞 0745915946 &nbsp;|&nbsp; 📧 ohmikate51@gmail.com &nbsp;|&nbsp; SIRET : 102 955 168 00012</div>
+    </div>
+    <div class="corps">
+      <div class="periode">Récapitulatif mensuel des ventes — ${label}</div>
+      <div class="periode-sub">Document généré le ${dateGeneration} — uniquement les commandes confirmées</div>
+      <div class="stats-mois">
+        <div class="stat-mois-box"><div class="num">${cmds.length}</div><div class="lbl">Commandes</div></div>
+        <div class="stat-mois-box"><div class="num">${joursKeys.length}</div><div class="lbl">Jours d'activité</div></div>
+        <div class="stat-mois-box"><div class="num">${nbCarte}</div><div class="lbl">Paiements carte (${caCarte.toFixed(2)}€)</div></div>
+        <div class="stat-mois-box"><div class="num">${nbEspeces}</div><div class="lbl">Paiements espèces (${caEspeces.toFixed(2)}€)</div></div>
+      </div>
+      ${joursHtml}
+      <div class="total-final"><span>TOTAL DU MOIS</span><span>${caTotalMois.toFixed(2)} €</span></div>
+      <div class="footer">Oh! Mikaté — SIRET 102 955 168 00012 — Document à conserver à titre de justificatif comptable. Généré automatiquement depuis l'interface de gestion des commandes.</div>
+    </div>
+  </body></html>`;
+
+  let w2=window.open('','_blank');
+  if(!w2){showToast("⚠️ Autorise les pop-ups pour imprimer.");return;}
+  w2.document.write(html);
+  w2.document.close();
+  w2.onload=function(){w2.print();};
 }
 
 function parseDate(str){
@@ -415,6 +915,15 @@ function parseDate(str){
   // Format YYYY-MM-DD
   let m3=str.match(/(\d{4})-(\d{2})-(\d{2})/);
   if(m3)return new Date(parseInt(m3[1]),parseInt(m3[2])-1,parseInt(m3[3]));
+  // Format texte français (ex: "Mercredi 1 juillet 2026" ou "1 juillet 2026")
+  const MOIS_FR={janvier:0,février:1,fevrier:1,mars:2,avril:3,mai:4,juin:5,juillet:6,août:7,aout:7,septembre:8,octobre:9,novembre:10,décembre:11,decembre:11};
+  let strNorm=str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  let m4=strNorm.match(/(\d{1,2})\s+([a-zéû]+)\s+(\d{4})/);
+  if(m4){
+    let moisNom=m4[2].normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    let moisIdx=MOIS_FR[moisNom]??MOIS_FR[m4[2]];
+    if(moisIdx!==undefined)return new Date(parseInt(m4[3]),moisIdx,parseInt(m4[1]));
+  }
   return null;
 }
 
@@ -429,34 +938,64 @@ function formatDateRetrait(str){
   return label.charAt(0).toUpperCase()+label.slice(1);
 }
 
-function analyserCreneaux(cmds, jourDate){
-  let counts={};
-  CRENEAUX.forEach(c=>counts[c]=0);
-  cmds.forEach(c=>{if(c.creneau&&counts[c.creneau]!==undefined)counts[c.creneau]++;});
+function analyserCreneaux(cmds){
+  // Normalise chaque dateRetrait en clé canonique "YYYY-MM-DD" via parseDate,
+  // pour éviter que le même jour en formats différents crée deux groupes séparés
+  function cleDate(dateRetrait){
+    let d=parseDate(dateRetrait||"");
+    if(!d)return dateRetrait||"inconnue";
+    let mm=String(d.getMonth()+1).padStart(2,"0");
+    let dd=String(d.getDate()).padStart(2,"0");
+    return`${d.getFullYear()}-${mm}-${dd}`;
+  }
+
+  let parDateRetrait={};   // clé canonique -> {cmds, dateRetraitOrig}
+  let ordreDate=[];
+  cmds.forEach(c=>{
+    if(!c.creneau)return;
+    let key=cleDate(c.dateRetrait);
+    if(!parDateRetrait[key]){
+      parDateRetrait[key]={cmds:[],dateRetraitOrig:c.dateRetrait||""};
+      ordreDate.push(key);
+    }
+    parDateRetrait[key].cmds.push(c);
+  });
+
+  let plusieursDates=ordreDate.length>1;
   let now=new Date();
   let nowMins=now.getHours()*60+now.getMinutes();
-  // Vérifie si le groupe correspond à aujourd'hui
-  let isToday=false;
-  if(jourDate){
-    let today=new Date();
-    isToday=(jourDate.getDate()===today.getDate()&&
-             jourDate.getMonth()===today.getMonth()&&
-             jourDate.getFullYear()===today.getFullYear());
-  }
-  let html='<div class="creneaux-bar">';
-  CRENEAUX.forEach(cr=>{
-    let n=counts[cr];
-    if(n===0)return;
-    let m=cr.match(/(\d{1,2})h(\d{2})/);
-    let slotMins=m?(parseInt(m[1])*60+parseInt(m[2])):999;
-    let diff=slotMins-nowMins;
-    let cls="creneau-libre",icon="✅";
-    // Urgence seulement si c'est aujourd'hui ET dans moins de 2h
-    if(isToday&&diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
-    else if(n>=2){cls="creneau-charge";icon="⚠️";}
-    html+=`<span class="creneau-badge ${cls}">${icon} ${cr} (${n})</span>`;
+  let today=new Date();
+
+  let html="";
+  ordreDate.forEach(key=>{
+    let {cmds:groupeCmds, dateRetraitOrig}=parDateRetrait[key];
+    let dRetrait=parseDate(dateRetraitOrig);
+    let isToday=dRetrait&&
+      dRetrait.getDate()===today.getDate()&&
+      dRetrait.getMonth()===today.getMonth()&&
+      dRetrait.getFullYear()===today.getFullYear();
+    let counts={};
+    groupeCmds.forEach(c=>{counts[c.creneau]=(counts[c.creneau]||0)+1;});
+
+    let badges="";
+    CRENEAUX.forEach(cr=>{
+      let n=counts[cr];
+      if(!n)return;
+      let m=cr.match(/(\d{1,2})h(\d{2})/);
+      let slotMins=m?(parseInt(m[1])*60+parseInt(m[2])):999;
+      let diff=slotMins-nowMins;
+      let cls="creneau-libre",icon="✅";
+      if(isToday&&diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
+      else if(n>=2){cls="creneau-charge";icon="⚠️";}
+      badges+=`<span class="creneau-badge ${cls}" onclick="scrollVersCreneau('${cr.replace(/'/g,"\\'")}','${key}')">${icon} ${cr} (${n})</span>`;
+    });
+    if(!badges)return;
+
+    if(plusieursDates){
+      html+=`<div class="creneaux-date-label">🗓️ Retrait : ${formatDateRetrait(dateRetraitOrig)}</div>`;
+    }
+    html+=`<div class="creneaux-bar">${badges}</div>`;
   });
-  html+='</div>';
   return html;
 }
 
@@ -468,18 +1007,56 @@ function badgeCanal(canal){
   return`<span class="canal-badge ${cls}">${icon} ${canal}</span>`;
 }
 
-/* ===== RÉSUMÉ BOÎTES (pour préparation rapide) ===== */
-function resumeBoites(order){
-  if(!order)return"";
+// Mémorise l'index de navigation par créneau (clé = creneau+datecle)
+const creneauNavIndex={};
+
+function scrollVersCreneau(creneau, cleCanonique){
+  let cartes=Array.from(document.querySelectorAll(".commande-card")).filter(el=>{
+    return el.dataset.creneau===creneau&&el.dataset.datecle===cleCanonique;
+  });
+  if(cartes.length===0)return;
+
+  // Clé unique pour ce créneau+date
+  let navKey=creneau+"||"+cleCanonique;
+
+  // Avance à la suivante (ou revient à 0 si on est au bout)
+  if(creneauNavIndex[navKey]===undefined)creneauNavIndex[navKey]=0;
+  else creneauNavIndex[navKey]=(creneauNavIndex[navKey]+1)%cartes.length;
+
+  let idx=creneauNavIndex[navKey];
+  let cible=cartes[idx];
+
+  // Scroll vers la carte ciblée
+  cible.scrollIntoView({behavior:"smooth",block:"start"});
+
+  // Retire toute surbrillance existante sur toutes les cartes du créneau
+  cartes.forEach(el=>{
+    el.classList.remove("commande-highlight","commande-highlight-secondary");
+    void el.offsetWidth;
+  });
+
+  // Surbrillance forte sur la carte ciblée, discrète sur les autres
+  setTimeout(()=>{
+    cible.classList.add("commande-highlight");
+    cartes.filter((_,i)=>i!==idx).forEach(el=>el.classList.add("commande-highlight-secondary"));
+    setTimeout(()=>cartes.forEach(el=>{
+      el.classList.remove("commande-highlight","commande-highlight-secondary");
+    }),2200);
+  },300);
+}
+
+function extraireRecapBoites(orderText){
+  if(!orderText)return"—";
+  let regex=/BOÎTE DE (\d+) BEIGNETS/gi;
   let counts={};
-  let regex=/BOÎTE DE (\d+) BEIGNETS/g;
   let m;
-  while((m=regex.exec(order))!==null){
-    let n=m[1];
-    counts[n]=(counts[n]||0)+1;
+  while((m=regex.exec(orderText))!==null){
+    let taille=m[1];
+    counts[taille]=(counts[taille]||0)+1;
   }
-  let parts=Object.keys(counts).sort((a,b)=>a-b).map(n=>`${counts[n]}x Boîte ${n}`);
-  return parts.join(" + ");
+  let tailles=Object.keys(counts).sort((a,b)=>parseInt(a)-parseInt(b));
+  if(tailles.length===0)return"—";
+  return tailles.map(t=>`<span class="recap-boite-chip">${counts[t]}× Boîte ${t}</span>`).join("");
 }
 
 function renderCommande(c){
@@ -493,16 +1070,33 @@ function renderCommande(c){
   let lienWA="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWA);
   let ua=navigator.userAgent.toLowerCase();
   let lienSMS="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMS);
-  let resume=resumeBoites(c.order);
+  let msgWAPret=genMsgPret(c,false);
+  let msgSMSPret=genMsgPret(c,true);
+  let lienWAPret="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWAPret);
+  let lienSMSPret="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMSPret);
+  let msgWAAnnulToi=genMsgAnnulationParToi(c,false);
+  let msgSMSAnnulToi=genMsgAnnulationParToi(c,true);
+  let lienWAAnnulToi="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWAAnnulToi);
+  let lienSMSAnnulToi="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMSAnnulToi);
+  let estPaiementCarte=(c.payment||"").toLowerCase().includes("carte");
 
-  return`<div class="commande-card ${isPrete?"prete":isConf?"confirmee":isUrgent?"urgente":"nouvelle"}" id="card-${c.id}">
+  let nbAnnul=nbAnnulationsPourTel(c.phone);
+  let alerteBlacklist=nbAnnul>=2?`<div style="background:#2a0a0a;border:2px solid #ff4444;border-radius:10px;padding:10px 12px;margin-bottom:10px;text-align:center;color:#ff6b6b;font-size:12px;font-weight:bold;">⚠️ ATTENTION : ce numéro a déjà annulé ${nbAnnul} fois. Vérifie avant de préparer la commande !</div>`:"";
+
+  let cardCls=isPrete?"prete":isConf?"confirmee":isUrgent?"urgente":"nouvelle";
+  let badgeCls=isPrete?"badge-prete":isConf?"badge-ok":isUrgent?"badge-urgent":"badge-new";
+  let badgeTxt=isPrete?"📦 PRÊTE":isConf?"✅ CONFIRMÉE":isUrgent?"⚡ URGENT":"🆕 NOUVELLE";
+
+  function cleDate(dr){let d=parseDate(dr||"");if(!d)return dr||"";let mm=String(d.getMonth()+1).padStart(2,"0");let dd=String(d.getDate()).padStart(2,"0");return`${d.getFullYear()}-${mm}-${dd}`;}
+  return`<div class="commande-card ${cardCls}" id="card-${c.id}" data-creneau="${(c.creneau||"").replace(/"/g,"&quot;")}" data-datecle="${cleDate(c.dateRetrait)}">
     <div class="checkbox-wrap">
       <input type="checkbox" class="cmd-checkbox" id="chk-${c.id}" onchange="onCheckChange()">
-      <span class="badge ${isPrete?"badge-prete":isConf?"badge-ok":isUrgent?"badge-urgent":"badge-new"}">${isPrete?"📦 PRÊTE":isConf?"✅ CONFIRMÉE":isUrgent?"⚡ URGENT":"🆕 NOUVELLE"}</span>
+      <span class="badge ${badgeCls}">${badgeTxt}</span>
     </div>
+    ${alerteBlacklist}
     <div class="commande-header">
       <div>
-        <div class="client-name">${c.name||"—"}</div>
+        <div class="client-name">${c.name||"—"}${nbAnnul>0?`<span style="font-size:11px;color:#ff6b6b;font-weight:bold;margin-left:6px;">⚠️ ${nbAnnul} annul.</span>`:""}</div>
         <div class="commande-meta">
           🕐 ${c.heure||"—"} &nbsp;|&nbsp; ${badgeCanal(c.canal||"—")}
         </div>
@@ -512,34 +1106,47 @@ function renderCommande(c){
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;">${c.total||"—"} €</div>
     </div>
-    ${resume?`<div class="resume-boites">📦 ${resume}</div>`:""}
     <div class="info-grid">
       <div class="info-item"><div class="label">📞 Tél</div><div class="value">${c.phone||"—"}</div></div>
       <div class="info-item"><div class="label">💳 Règlement</div><div class="value">${c.payment||"—"}</div></div>
       <div class="info-item"><div class="label">🗓️ Retrait</div><div class="value">${formatDateRetrait(c.dateRetrait)}</div></div>
       <div class="info-item"><div class="label">⏰ Créneau</div><div class="value">${c.creneau||"—"}</div></div>
+      <div class="info-item full"><div class="label">🧺 Récap boîtes</div><div class="recap-boites">${extraireRecapBoites(c.order)}</div></div>
       <div class="info-item full"><div class="label">📦 Commande</div><div class="detail-box">${(c.order||"—").replace(/\\n/g,"\n")}</div></div>
     </div>
     <div class="total-row"><span>Total</span><span>${c.total||"—"} €</span></div>
-    ${!isConf?`
+    ${isPrete?`
+      <div style="text-align:center;color:#007aff;font-size:12px;padding:6px;">📦 Commande prête — client prévenu</div>
+      <div class="actions-sec" style="margin-top:8px;">
+        <button class="btn-marquer" onclick="annulerPrete(${c.id})" style="border-color:#ff9500;color:#ff9500;">↩️ Annuler "prête"</button>
+        <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
+      </div>
+    `:!isConf?`
       <a class="btn-wa" href="${lienWA}" target="_blank" onclick="marquer(${c.id})">📲 Confirmer par WhatsApp</a>
       <a class="btn-sms" href="${lienSMS}" onclick="marquer(${c.id})">💬 Confirmer par SMS</a>
       <div class="actions-sec">
         <button class="btn-marquer" onclick="marquer(${c.id})">✅ Marquer confirmée</button>
         <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
       </div>
-    `:isPrete?`
-      <div style="text-align:center;color:#ff9500;font-size:12px;padding:6px;">📦 Commande prête — en attente de retrait</div>
-      <div class="actions-sec" style="margin-top:8px;">
-        <button class="btn-marquer" onclick="annulerPrete(${c.id})" style="border-color:#888;color:#888;">↩️ Pas encore prête</button>
-        <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
+      <button onclick="marquerAnnuleeParClient(${c.id})" style="margin-top:8px;width:100%;background:#2a0a0a;border:1px solid #ff4444;color:#ff6b6b;font-size:12px;font-weight:bold;padding:9px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;">❌ Le client a annulé</button>
+      ${estPaiementCarte?`<div style="background:#1a0d00;border:1px solid #ff9500;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:11px;color:#ff9500;text-align:center;font-weight:bold;">💳 Paiement carte : pense à rembourser sur ton dashboard Stripe avant d'envoyer le message.</div>`:""}
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <a class="btn-wa" href="${lienWAAnnulToi}" target="_blank" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">📲 Annuler (toi) WhatsApp</a>
+        <a class="btn-sms" href="${lienSMSAnnulToi}" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">💬 Annuler (toi) SMS</a>
       </div>
     `:`
       <div style="text-align:center;color:#25D366;font-size:12px;padding:6px;">✅ Confirmée</div>
-      <button class="btn-prete" onclick="marquerPrete(${c.id})">📦 Commande prête</button>
+      <a class="btn-prete" href="${lienWAPret}" target="_blank" onclick="marquerPrete(${c.id})">📦 Commande prête (WhatsApp)</a>
+      <a class="btn-sms" href="${lienSMSPret}" onclick="marquerPrete(${c.id})">💬 Commande prête (SMS)</a>
       <div class="actions-sec" style="margin-top:8px;">
         <button class="btn-marquer" onclick="annulerConfirmation(${c.id})" style="border-color:#ff9500;color:#ff9500;">↩️ Annuler la confirmation</button>
         <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
+      </div>
+      <button onclick="marquerAnnuleeParClient(${c.id})" style="margin-top:8px;width:100%;background:#2a0a0a;border:1px solid #ff4444;color:#ff6b6b;font-size:12px;font-weight:bold;padding:9px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;">❌ Le client a annulé</button>
+      ${estPaiementCarte?`<div style="background:#1a0d00;border:1px solid #ff9500;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:11px;color:#ff9500;text-align:center;font-weight:bold;">💳 Paiement carte : pense à rembourser sur ton dashboard Stripe avant d'envoyer le message.</div>`:""}
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <a class="btn-wa" href="${lienWAAnnulToi}" target="_blank" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">📲 Annuler (toi) WhatsApp</a>
+        <a class="btn-sms" href="${lienSMSAnnulToi}" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">💬 Annuler (toi) SMS</a>
       </div>
     `}
   </div>`;
@@ -560,6 +1167,30 @@ function genMsg(c,pourSMS=false){
   msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — tu auras ta commande en mains propres ! 🍩\n\n`;
   msg+=`━━━━━━━━━━━━━━━\n`;
   msg+=`À tout à l'heure ! 🧇\n— Oh! Mikaté`;
+  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
+}
+
+function genMsgPret(c,pourSMS=false){
+  let b=pourSMS?"":"*";
+  let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
+  msg+=`📦 ${b}Ta commande Oh! Mikaté est prête, tu peux venir la récupérer dès maintenant.${b}\n\n`;
+  msg+=`━━━━━━━━━━━━━━━\n`;
+  msg+=`À tout de suite ! 🧇\n— Oh! Mikaté`;
+  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
+}
+
+function genMsgAnnulationParToi(c,pourSMS=false){
+  let b=pourSMS?"":"*";
+  let dateRetrait=formatDateRetrait(c.dateRetrait);
+  let estCarte=(c.payment||"").toLowerCase().includes("carte");
+  let msg=`Bonjour ${c.name||""},\n\n`;
+  msg+=`😔 Je suis vraiment désolée, mais je suis dans l'obligation d'annuler ta commande prévue le ${dateRetrait} (créneau ${c.creneau||"—"}).\n\n`;
+  if(estCarte){
+    msg+=`${b}Ton paiement de ${c.total||"—"} € va être intégralement remboursé sur ta carte${b} (délai généralement de 5 à 10 jours ouvrés selon ta banque).\n\n`;
+  }else{
+    msg+=`${b}Aucun montant ne te sera demandé${b}, et j'espère pouvoir te régaler une prochaine fois ! 🧇\n\n`;
+  }
+  msg+=`Encore désolée pour la gêne occasionnée.\n— Oh! Mikaté`;
   return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
 }
 
@@ -608,6 +1239,7 @@ function confirmerSelection(){
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
   deselectionnerTout();
   updateStats();
+  rafraichirVuesSecondaires();
   setTimeout(afficher,300);
   showToast(`✅ ${ids.length} commande${ids.length>1?"s":""} confirmée${ids.length>1?"s":""} !`);
 }
@@ -619,15 +1251,24 @@ function supprimerSelection(){
   ids.forEach(id=>{
     if(!supprimees.includes(id))supprimees.push(id);
     confirmees=confirmees.filter(c=>c!==id);
-    pretes=pretes.filter(c=>c!==id);
+    pretes=pretes.filter(p=>p!==id);
   });
   localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
   deselectionnerTout();
   updateStats();
+  rafraichirVuesSecondaires();
   setTimeout(afficher,300);
   showToast(`🗑️ ${ids.length} commande${ids.length>1?"s":""} supprimée${ids.length>1?"s":""}`);
+}
+
+function rafraichirVuesSecondaires(){
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  let nbAPreparer=visible.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id)).length;
+  updateBadgeAPreparer(nbAPreparer);
+  if(document.getElementById("vue-historique").style.display!=="none")afficherHistorique();
+  if(document.getElementById("vue-aprepare").style.display!=="none")afficherAPreparer();
 }
 
 function marquer(id){
@@ -635,16 +1276,16 @@ function marquer(id){
     confirmees.push(id);
     localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
     updateStats();
+    rafraichirVuesSecondaires();
     setTimeout(afficher,400);
   }
 }
 
 function annulerConfirmation(id){
   confirmees=confirmees.filter(c=>c!==id);
-  pretes=pretes.filter(c=>c!==id);
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
-  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
   updateStats();
+  rafraichirVuesSecondaires();
   setTimeout(afficher,300);
   showToast("↩️ Confirmation annulée");
 }
@@ -654,31 +1295,59 @@ function marquerPrete(id){
     pretes.push(id);
     localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
     updateStats();
-    setTimeout(afficher,300);
-    showToast("📦 Commande marquée prête !");
+    rafraichirVuesSecondaires();
+    setTimeout(afficher,400);
   }
 }
 
 function annulerPrete(id){
-  pretes=pretes.filter(c=>c!==id);
+  pretes=pretes.filter(p=>p!==id);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
   updateStats();
+  rafraichirVuesSecondaires();
   setTimeout(afficher,300);
-  showToast("↩️ Remise en préparation");
+  showToast("↩️ Statut \"prête\" annulé");
 }
 
 function demanderSupp(id){idASupp=id;document.getElementById("popup-supp").classList.add("show");}
+
+/* ===== ANNULATIONS CLIENT (pour blacklist) ===== */
+function nbAnnulationsPourTel(phone){
+  let p=normalizePhone(phone);
+  if(!p)return 0;
+  return annulees.filter(a=>normalizePhone(a.phone)===p).length;
+}
+
+function marquerAnnuleeParClient(id){
+  let c=toutesCommandes.find(cmd=>cmd.id===id);
+  if(!c)return;
+  if(!confirm(`Confirmer que ${c.name||"ce client"} a annulé cette commande ?\n\nCela sera compté dans son historique d'annulations.`))return;
+  annulees.push({id:c.id,phone:normalizePhone(c.phone),name:c.name||"—",date:new Date().toLocaleDateString('fr-FR')});
+  localStorage.setItem('ohMikateAnnulees',JSON.stringify(annulees));
+  supprimees.push(id);
+  localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
+  confirmees=confirmees.filter(cid=>cid!==id);
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  pretes=pretes.filter(pid=>pid!==id);
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  updateStats();
+  rafraichirVuesSecondaires();
+  afficher();
+  let nbTotal=nbAnnulationsPourTel(c.phone);
+  showToast(nbTotal>=2?`⚠️ Annulation enregistrée — ${nbTotal}e annulation pour ce numéro !`:"📋 Annulation enregistrée");
+}
 function fermerPopup(){idASupp=null;document.getElementById("popup-supp").classList.remove("show");}
 function confirmerSuppression(){
   if(idASupp===null)return;
   supprimees.push(idASupp);
   localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
   confirmees=confirmees.filter(id=>id!==idASupp);
-  pretes=pretes.filter(id=>id!==idASupp);
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  pretes=pretes.filter(id=>id!==idASupp);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
   fermerPopup();
   updateStats();
+  rafraichirVuesSecondaires();
   afficher();
   showToast("🗑️ Commande supprimée");
 }
@@ -687,13 +1356,11 @@ function updateStats(){
   let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
   let conf=visible.filter(c=>confirmees.includes(c.id));
   let nouv=visible.filter(c=>!confirmees.includes(c.id));
-  let pretesVisibles=visible.filter(c=>pretes.includes(c.id));
   let ca=visible.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
   document.getElementById("stat-total").textContent=visible.length;
   document.getElementById("stat-new").textContent=nouv.length;
   document.getElementById("stat-done").textContent=conf.length;
   document.getElementById("stat-ca").textContent=ca.toFixed(0)+"€";
-  document.getElementById("stat-pretes").textContent=pretesVisibles.length;
 }
 
 function normalizePhone(raw){
@@ -726,130 +1393,6 @@ function showToast(m){
   let t=document.getElementById("toast");
   t.textContent=m;t.classList.add("show");
   setTimeout(()=>t.classList.remove("show"),3000);
-}
-
-/* ===== RÉCAPITULATIF MENSUEL (COMPTABILITÉ) ===== */
-function ouvrirRecapMensuel(){
-  // Pré-remplit avec le mois en cours
-  let now=new Date();
-  let moisActuel=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,'0');
-  document.getElementById("recap-mois").value=moisActuel;
-  document.getElementById("popup-recap").classList.add("show");
-}
-function fermerPopupRecap(){
-  document.getElementById("popup-recap").classList.remove("show");
-}
-
-function genererRecapMensuel(){
-  let moisVal=document.getElementById("recap-mois").value; // format "2026-07"
-  if(!moisVal){showToast("⚠️ Sélectionnez un mois");return;}
-  let [annee,mois]=moisVal.split("-").map(Number);
-
-  // Filtrer uniquement les commandes CONFIRMÉES du mois sélectionné
-  let visibles=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&confirmees.includes(c.id));
-  let duMois=visibles.filter(c=>{
-    let d=parseDate(c.dateRecu);
-    if(!d)return false;
-    return d.getFullYear()===annee&&(d.getMonth()+1)===mois;
-  });
-
-  if(duMois.length===0){
-    showToast("ℹ️ Aucune commande confirmée ce mois-ci");
-  }
-
-  // Tri chronologique
-  duMois.sort((a,b)=>{
-    let da=parseDate(a.dateRecu),db=parseDate(b.dateRecu);
-    return (da?da.getTime():0)-(db?db.getTime():0);
-  });
-
-  // Totaux globaux
-  let totalCA=duMois.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
-  let totalCarte=duMois.filter(c=>(c.payment||"").toLowerCase().includes("carte")||(c.payment||"").toLowerCase().includes("ligne"));
-  let totalEspeces=duMois.filter(c=>(c.payment||"").toLowerCase().includes("esp"));
-  let caCarte=totalCarte.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
-  let caEspeces=totalEspeces.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
-
-  // Détail par jour
-  let parJour={};
-  duMois.forEach(c=>{
-    let d=parseDate(c.dateRecu);
-    let key=d?d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}):"—";
-    if(!parJour[key])parJour[key]={count:0,ca:0,carte:0,especes:0};
-    let v=parseFloat(String(c.total).replace(",","."))||0;
-    parJour[key].count++;
-    parJour[key].ca+=v;
-    if((c.payment||"").toLowerCase().includes("carte")||(c.payment||"").toLowerCase().includes("ligne"))parJour[key].carte+=v;
-    else if((c.payment||"").toLowerCase().includes("esp"))parJour[key].especes+=v;
-  });
-
-  let nomMois=new Date(annee,mois-1,1).toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
-  nomMois=nomMois.charAt(0).toUpperCase()+nomMois.slice(1);
-
-  let dateGeneration=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+" à "+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-
-  let html=`<div class="recap-doc">
-    <div class="recap-header">
-      <div>
-        <div class="recap-logo">🧇 Oh! Mikaté</div>
-        <div class="recap-logo-sub">Vente de beignets artisanaux — Reims</div>
-      </div>
-      <div class="recap-info-right">
-        <strong>SIRET :</strong> 102 955 168 00012<br>
-        <strong>Document généré le :</strong> ${dateGeneration}
-      </div>
-    </div>
-
-    <div class="recap-titre">Récapitulatif des ventes</div>
-    <div class="recap-sous-titre">${nomMois} — Document à usage comptable</div>
-
-    <div class="recap-summary">
-      <div class="recap-summary-box"><div class="val">${duMois.length}</div><div class="lbl">Commandes confirmées</div></div>
-      <div class="recap-summary-box"><div class="val">${totalCA.toFixed(2)} €</div><div class="lbl">Chiffre d'affaires</div></div>
-      <div class="recap-summary-box"><div class="val">${(totalCA/(duMois.length||1)).toFixed(2)} €</div><div class="lbl">Panier moyen</div></div>
-    </div>
-
-    <div class="recap-summary" style="grid-template-columns:1fr 1fr;">
-      <div class="recap-summary-box"><div class="val" style="color:#635bff;">${caCarte.toFixed(2)} €</div><div class="lbl">💳 Paiements en ligne (${totalCarte.length})</div></div>
-      <div class="recap-summary-box"><div class="val" style="color:#ff9500;">${caEspeces.toFixed(2)} €</div><div class="lbl">💵 Paiements espèces (${totalEspeces.length})</div></div>
-    </div>
-
-    <table class="recap-table">
-      <thead><tr><th>Date</th><th>Nb commandes</th><th>CA Carte</th><th>CA Espèces</th><th>Total jour</th></tr></thead>
-      <tbody>
-        ${Object.keys(parJour).map(j=>{
-          let d=parJour[j];
-          return `<tr><td>${j}</td><td>${d.count}</td><td>${d.carte.toFixed(2)} €</td><td>${d.especes.toFixed(2)} €</td><td><strong>${d.ca.toFixed(2)} €</strong></td></tr>`;
-        }).join("")}
-        <tr class="total-row"><td>TOTAL</td><td>${duMois.length}</td><td>${caCarte.toFixed(2)} €</td><td>${caEspeces.toFixed(2)} €</td><td>${totalCA.toFixed(2)} €</td></tr>
-      </tbody>
-    </table>
-
-    <table class="recap-table">
-      <thead><tr><th>Date</th><th>Client</th><th>Montant</th><th>Règlement</th></tr></thead>
-      <tbody>
-        ${duMois.map(c=>{
-          let d=parseDate(c.dateRecu);
-          let dateStr=d?d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}):"—";
-          return `<tr><td>${dateStr}</td><td>${c.name||"—"}</td><td>${c.total||"—"} €</td><td>${c.payment||"—"}</td></tr>`;
-        }).join("")}
-      </tbody>
-    </table>
-
-    <div class="recap-footer">
-      Document généré automatiquement depuis le système de gestion de commandes Oh! Mikaté.<br>
-      Ce récapitulatif liste uniquement les commandes confirmées (ventes effectives) du mois sélectionné.<br>
-      Auto-entreprise — NGUFULU Soni Ursule — SIRET 102 955 168 00012
-    </div>
-  </div>
-  <button class="recap-print-btn" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>`;
-
-  document.getElementById("recap-print").innerHTML=html;
-  document.getElementById("recap-print").style.display="block";
-  fermerPopupRecap();
-
-  // Scroll vers le récap généré
-  setTimeout(()=>{document.getElementById("recap-print").scrollIntoView({behavior:"smooth"});},200);
 }
 </script>
 </body>
