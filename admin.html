@@ -258,7 +258,6 @@ let toutesCommandes=[];
 let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
 let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
 let pretes=JSON.parse(localStorage.getItem('ohMikatePretes')||'[]');
-let annulees=JSON.parse(localStorage.getItem('ohMikateAnnulees')||'[]'); // {id, phone, name, date}
 let idASupp=null;
 
 /* LOGIN */
@@ -286,10 +285,8 @@ async function charger(){
     let nouvellesTotales=0;
     (json.table.rows||[]).forEach((row,i)=>{
       if(!row.c)return;
-      // Ignorer les lignes complètement vides
       let hasData=row.c.some(cell=>cell&&cell.v!==null&&cell.v!=="");
       if(!hasData)return;
-      // Ignorer si pas de nom (colonne B)
       if(!row.c[1]||!row.c[1].v)return;
       let dateRecu=row.c[0]?String(row.c[0].v):"";
       let name=row.c[1]?row.c[1].v:"";
@@ -546,36 +543,11 @@ function afficherHistoJours(){
 
   let caGlobal=visible.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
 
-  // Regroupe également par mois pour le récap mensuel imprimable
-  let moisGroupes={};
-  visible.forEach(c=>{
-    let d=parseDate(c.dateRetrait);
-    if(!d)return;
-    let key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
-    if(!moisGroupes[key]){
-      let label=d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
-      moisGroupes[key]={cmds:[],label:label.charAt(0).toUpperCase()+label.slice(1)};
-    }
-    moisGroupes[key].cmds.push(c);
-  });
-  let moisKeys=Object.keys(moisGroupes).sort((a,b)=>b.localeCompare(a));
-  window._moisGroupesCache=moisGroupes;
-
   let html=`<div class="histo-totaux-globaux">
     <div class="histo-total-item"><div class="histo-total-num">${visible.length}</div><div class="histo-total-lbl">Commandes</div></div>
     <div class="histo-total-item"><div class="histo-total-num">${jours.length}</div><div class="histo-total-lbl">Jours</div></div>
     <div class="histo-total-item"><div class="histo-total-num">${caGlobal.toFixed(2)}€</div><div class="histo-total-lbl">CA total</div></div>
   </div>`;
-
-  if(moisKeys.length>0){
-    html+=`<div style="max-width:600px;margin:0 auto 16px;background:#111;border:2px solid #25D366;border-radius:12px;padding:14px 16px;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:#25D366;letter-spacing:1px;margin-bottom:10px;">🖨️ RÉCAP MENSUEL (pour contrôle / compta)</div>
-      <select id="mois-select" class="filter-select" style="width:100%;margin-bottom:10px;">
-        ${moisKeys.map(k=>`<option value="${k}">${moisGroupes[k].label} (${moisGroupes[k].cmds.length} commandes)</option>`).join("")}
-      </select>
-      <button class="histo-copy-btn" style="margin-top:0;background:#0a2a12;border-color:#25D366;color:#7fe3a0;" onclick="imprimerRecapMensuelDepuisSelect()">🖨️ Imprimer le récap du mois sélectionné</button>
-    </div>`;
-  }
 
   jours.forEach((key,idx)=>{
     let {cmds,label}=groupes[key];
@@ -614,10 +586,7 @@ function afficherHistoJours(){
       </div>
       <div class="histo-jour-detail" id="detail-${safeId}">
         ${lignes}
-        <div style="display:flex;gap:8px;margin-top:12px;">
-          <button class="histo-copy-btn" style="margin-top:0;flex:1;" onclick="copierRecapJour(\`${txtRecap.replace(/`/g,"\\`")}\`)">📋 Copier</button>
-          <button class="histo-copy-btn" style="margin-top:0;flex:1;background:#1a2e1a;border-color:#25D366;color:#7fe3a0;" onclick='imprimerRecapJour(${JSON.stringify(label)}, ${JSON.stringify(cmds.map(c=>({name:c.name,creneau:c.creneau,payment:c.payment,total:c.total,order:c.order})))})'>🖨️ Imprimer</button>
-        </div>
+        <button class="histo-copy-btn" onclick="copierRecapJour(\`${txtRecap.replace(/`/g,"\\`")}\`)">📋 Copier le récap du jour</button>
       </div>
     </div>`;
   });
@@ -636,23 +605,17 @@ function afficherHistoClients(){
     return;
   }
 
-  // Regroupe par numéro de téléphone (un même numéro = un même client, même si le nom diffère)
+  // Regroupe par nom client (insensible à la casse)
   let clients={};
   visible.forEach(c=>{
-    let phone=normalizePhone(c.phone)||"sans-tel";
     let nom=(c.name||"Inconnu").trim();
-    if(!clients[phone])clients[phone]={phone,noms:{},cmds:[]};
-    clients[phone].noms[nom]=(clients[phone].noms[nom]||0)+1;
-    clients[phone].cmds.push(c);
+    let key=nom.toLowerCase();
+    if(!clients[key])clients[key]={nom,cmds:[]};
+    clients[key].cmds.push(c);
   });
 
-  // Filtre par recherche (sur le nom le plus fréquent OU sur le numéro)
-  let keys=Object.keys(clients).filter(k=>{
-    if(!recherche)return true;
-    let {phone,noms}=clients[k];
-    let nomsStr=Object.keys(noms).join(" ").toLowerCase();
-    return phone.includes(recherche)||nomsStr.includes(recherche);
-  });
+  // Filtre par recherche
+  let keys=Object.keys(clients).filter(k=>!recherche||k.includes(recherche));
 
   // Tri : les plus fidèles (nb commandes) en premier
   keys.sort((a,b)=>clients[b].cmds.length-clients[a].cmds.length||a.localeCompare(b));
@@ -663,15 +626,11 @@ function afficherHistoClients(){
   }
 
   let html="";
-  keys.forEach((phone,idx)=>{
-    let {noms,cmds}=clients[phone];
-    // Nom le plus fréquemment utilisé par ce numéro (affiché en titre)
-    let nomPrincipal=Object.keys(noms).sort((a,b)=>noms[b]-noms[a])[0];
-    let autresNoms=Object.keys(noms).filter(n=>n!==nomPrincipal);
+  keys.forEach((key,idx)=>{
+    let {nom,cmds}=clients[key];
     let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
     let nb=cmds.length;
     let fidele=nb>=3;
-    let nbAnnul=nbAnnulationsPourTel(phone);
     let safeId="client-"+idx;
 
     // Habitudes : boîtes les plus commandées
@@ -692,9 +651,8 @@ function afficherHistoClients(){
     html+=`<div class="client-card">
       <div class="client-card-header" onclick="toggleClientDetail('${safeId}')">
         <div>
-          <div class="client-nom">${nomPrincipal}${fidele?`<span class="client-badge-fidele">⭐ FIDÈLE</span>`:""}${nbAnnul>=2?`<span class="client-badge-fidele" style="background:#ff444422;border-color:#ff4444;color:#ff4444;">⚠️ ${nbAnnul} ANNUL.</span>`:""}</div>
-          <div class="histo-jour-nb">📞 ${phone} • ${nb} commande${nb>1?"s":""} • Dernière : ${formatDateRetrait(derniereCmd?.dateRetrait||"")}</div>
-          ${autresNoms.length>0?`<div class="histo-jour-nb" style="color:#666;">Autres noms utilisés : ${autresNoms.join(", ")}</div>`:""}
+          <div class="client-nom">${nom}${fidele?`<span class="client-badge-fidele">⭐ FIDÈLE</span>`:""}</div>
+          <div class="histo-jour-nb">${nb} commande${nb>1?"s":""} • Dernière : ${formatDateRetrait(derniereCmd?.dateRetrait||"")}</div>
         </div>
         <div class="client-stats">
           <div class="client-ca">${ca.toFixed(2)} €</div>
@@ -702,11 +660,10 @@ function afficherHistoClients(){
         </div>
       </div>
       <div class="client-detail" id="detail-${safeId}">
-        ${nbAnnul>=2?`<div style="background:#2a0a0a;border:1px solid #ff4444;border-radius:8px;padding:8px 10px;margin-bottom:10px;color:#ff6b6b;font-size:12px;font-weight:bold;text-align:center;">⚠️ Ce client a déjà annulé ${nbAnnul} fois. Sois vigilante avant de préparer une nouvelle commande.</div>`:""}
         ${habitude?`<div style="font-size:12px;color:#ff9500;margin-bottom:10px;">📦 Habitudes : ${habitude}</div>`:""}
         ${cmds.map(c=>`<div class="histo-ligne">
           <div>
-            <div class="histo-ligne-meta">🗓️ ${formatDateRetrait(c.dateRetrait)} • ⏰ ${c.creneau||"—"} • ${c.name||"—"}</div>
+            <div class="histo-ligne-meta">🗓️ ${formatDateRetrait(c.dateRetrait)} • ⏰ ${c.creneau||"—"}</div>
             <div class="histo-ligne-boites">📦 ${extraireRecapBoitesTexte(c.order)||"—"}</div>
           </div>
           <div class="histo-ligne-prix">${c.total||"—"} €</div>
@@ -741,166 +698,6 @@ function copierRecapJour(txt){
     document.execCommand("copy");document.body.removeChild(el);
     showToast("📋 Récap copié !");
   });
-}
-
-function imprimerRecapJour(label,cmds){
-  let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
-  let lignesHtml=cmds.map(c=>{
-    let recap=extraireRecapBoitesTexte(c.order)||"—";
-    return`<tr>
-      <td>${(c.name||"—").replace(/</g,"&lt;")}</td>
-      <td>${(recap||"—").replace(/</g,"&lt;")}</td>
-      <td>${(c.creneau||"—").replace(/</g,"&lt;")}</td>
-      <td>${(c.payment||"—").replace(/</g,"&lt;")}</td>
-      <td style="text-align:right;font-weight:bold;">${c.total||"—"} €</td>
-    </tr>`;
-  }).join("");
-
-  let html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Récap ${label}</title>
-  <style>
-    body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:0;max-width:800px;margin:auto;}
-    .entete{background:#ff4f8b;color:#fff;padding:22px 28px;}
-    .entete h1{font-size:22px;margin:0 0 4px;letter-spacing:1px;}
-    .entete .soustitre{font-size:13px;opacity:0.9;}
-    .entete .infos-entreprise{font-size:11px;opacity:0.85;margin-top:10px;line-height:1.5;}
-    .corps{padding:25px 28px;}
-    .sous-titre{color:#888;font-size:13px;margin-bottom:18px;}
-    table{width:100%;border-collapse:collapse;margin-top:10px;}
-    th{background:#1a1a1a;color:#fff;text-align:left;padding:8px 10px;font-size:13px;}
-    td{padding:8px 10px;border-bottom:1px solid #eee;font-size:13px;}
-    tr:nth-child(even){background:#fafafa;}
-    .total-final{display:flex;justify-content:space-between;margin-top:18px;padding:14px 16px;background:#1a0d12;color:#fff;border-radius:8px;font-size:18px;font-weight:bold;}
-    .total-final span:last-child{color:#ff4f8b;}
-    .footer{margin-top:30px;font-size:10.5px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:14px;}
-    @media print{ .entete{padding:16px 22px;} .corps{padding:16px 22px;} }
-  </style>
-  </head><body>
-    <div class="entete">
-      <h1>🧇 OH! MIKATÉ</h1>
-      <div class="soustitre">Beignets congolais artisanaux — Reims</div>
-      <div class="infos-entreprise">📍 Reims, France &nbsp;|&nbsp; 📞 0745915946 &nbsp;|&nbsp; 📧 ohmikate51@gmail.com &nbsp;|&nbsp; SIRET : 102 955 168 00012</div>
-    </div>
-    <div class="corps">
-      <div class="sous-titre" style="font-size:16px;font-weight:bold;color:#222;margin-bottom:4px;">Récapitulatif journalier</div>
-      <div class="sous-titre">🗓️ ${label} • ${cmds.length} commande${cmds.length>1?"s":""} confirmée${cmds.length>1?"s":""}</div>
-      <table>
-        <thead><tr><th>Client</th><th>Commande</th><th>Créneau</th><th>Règlement</th><th>Total</th></tr></thead>
-        <tbody>${lignesHtml}</tbody>
-      </table>
-      <div class="total-final"><span>TOTAL DU JOUR</span><span>${ca.toFixed(2)} €</span></div>
-      <div class="footer">Oh! Mikaté — SIRET 102 955 168 00012 — Document généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div>
-    </div>
-  </body></html>`;
-
-  let w=window.open('','_blank');
-  if(!w){showToast("⚠️ Autorise les pop-ups pour imprimer.");return;}
-  w.document.write(html);
-  w.document.close();
-  w.onload=function(){w.print();};
-}
-
-function imprimerRecapMensuelDepuisSelect(){
-  let key=document.getElementById("mois-select")?.value;
-  if(!key||!window._moisGroupesCache||!window._moisGroupesCache[key]){
-    showToast("⚠️ Aucun mois sélectionné.");
-    return;
-  }
-  let {label,cmds}=window._moisGroupesCache[key];
-  imprimerRecapMensuel(label,cmds);
-}
-
-function imprimerRecapMensuel(label,cmds){
-  // Regroupe les commandes du mois par jour de retrait
-  function cleJour(dr){let d=parseDate(dr||"");if(!d)return dr||"?";return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
-  let jours={};
-  cmds.forEach(c=>{
-    let k=cleJour(c.dateRetrait);
-    if(!jours[k])jours[k]={cmds:[],label:formatDateRetrait(c.dateRetrait)};
-    jours[k].cmds.push(c);
-  });
-  let joursKeys=Object.keys(jours).sort();
-
-  let caTotalMois=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
-  let nbCarte=cmds.filter(c=>(c.payment||"").toLowerCase().includes("carte")).length;
-  let nbEspeces=cmds.filter(c=>(c.payment||"").toLowerCase().includes("espèces")||(c.payment||"").toLowerCase().includes("especes")).length;
-  let caCarte=cmds.filter(c=>(c.payment||"").toLowerCase().includes("carte")).reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
-  let caEspeces=cmds.filter(c=>(c.payment||"").toLowerCase().includes("espèces")||(c.payment||"").toLowerCase().includes("especes")).reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
-
-  let joursHtml=joursKeys.map(k=>{
-    let {cmds:cmdsJour,label:labelJour}=jours[k];
-    let caJour=cmdsJour.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
-    let lignes=cmdsJour.map(c=>{
-      let recap=extraireRecapBoitesTexte(c.order)||"—";
-      return`<tr>
-        <td>${(c.name||"—").replace(/</g,"&lt;")}</td>
-        <td>${recap.replace(/</g,"&lt;")}</td>
-        <td>${(c.creneau||"—").replace(/</g,"&lt;")}</td>
-        <td>${(c.payment||"—").replace(/</g,"&lt;")}</td>
-        <td style="text-align:right;font-weight:bold;">${c.total||"—"} €</td>
-      </tr>`;
-    }).join("");
-    return`<div class="jour-bloc">
-      <div class="jour-bloc-titre">🗓️ ${labelJour} — ${cmdsJour.length} commande${cmdsJour.length>1?"s":""} — <span style="color:#ff4f8b;">${caJour.toFixed(2)} €</span></div>
-      <table>
-        <thead><tr><th>Client</th><th>Commande</th><th>Créneau</th><th>Règlement</th><th>Total</th></tr></thead>
-        <tbody>${lignes}</tbody>
-      </table>
-    </div>`;
-  }).join("");
-
-  let dateGeneration=new Date().toLocaleDateString('fr-FR')+" à "+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-
-  let html=`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Récap mensuel ${label}</title>
-  <style>
-    body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:0;max-width:850px;margin:auto;}
-    .entete{background:#ff4f8b;color:#fff;padding:24px 30px;}
-    .entete h1{font-size:24px;margin:0 0 4px;letter-spacing:1px;}
-    .entete .soustitre{font-size:13px;opacity:0.9;}
-    .entete .infos-entreprise{font-size:11px;opacity:0.85;margin-top:10px;line-height:1.5;}
-    .corps{padding:25px 30px;}
-    .periode{font-size:18px;font-weight:bold;margin-bottom:4px;}
-    .periode-sub{color:#888;font-size:12px;margin-bottom:20px;}
-    .stats-mois{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;}
-    .stat-mois-box{flex:1;min-width:120px;background:#f7f7f7;border:1px solid #eee;border-radius:8px;padding:12px;text-align:center;}
-    .stat-mois-box .num{font-size:20px;font-weight:bold;color:#ff4f8b;}
-    .stat-mois-box .lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
-    .jour-bloc{margin-bottom:22px;}
-    .jour-bloc-titre{font-weight:bold;font-size:14px;margin-bottom:8px;border-left:4px solid #ff4f8b;padding-left:10px;}
-    table{width:100%;border-collapse:collapse;margin-bottom:4px;}
-    th{background:#1a1a1a;color:#fff;text-align:left;padding:7px 10px;font-size:11.5px;}
-    td{padding:7px 10px;border-bottom:1px solid #eee;font-size:12.5px;}
-    tr:nth-child(even){background:#fafafa;}
-    .total-final{display:flex;justify-content:space-between;margin-top:20px;padding:16px 18px;background:#1a0d12;color:#fff;border-radius:8px;font-size:20px;font-weight:bold;}
-    .total-final span:last-child{color:#ff4f8b;}
-    .footer{margin-top:30px;font-size:10.5px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:14px;}
-    @media print{ .entete{padding:18px 24px;} .corps{padding:18px 24px;} }
-  </style>
-  </head><body>
-    <div class="entete">
-      <h1>🧇 OH! MIKATÉ</h1>
-      <div class="soustitre">Beignets congolais artisanaux — Reims</div>
-      <div class="infos-entreprise">📍 Reims, France &nbsp;|&nbsp; 📞 0745915946 &nbsp;|&nbsp; 📧 ohmikate51@gmail.com &nbsp;|&nbsp; SIRET : 102 955 168 00012</div>
-    </div>
-    <div class="corps">
-      <div class="periode">Récapitulatif mensuel des ventes — ${label}</div>
-      <div class="periode-sub">Document généré le ${dateGeneration} — uniquement les commandes confirmées</div>
-      <div class="stats-mois">
-        <div class="stat-mois-box"><div class="num">${cmds.length}</div><div class="lbl">Commandes</div></div>
-        <div class="stat-mois-box"><div class="num">${joursKeys.length}</div><div class="lbl">Jours d'activité</div></div>
-        <div class="stat-mois-box"><div class="num">${nbCarte}</div><div class="lbl">Paiements carte (${caCarte.toFixed(2)}€)</div></div>
-        <div class="stat-mois-box"><div class="num">${nbEspeces}</div><div class="lbl">Paiements espèces (${caEspeces.toFixed(2)}€)</div></div>
-      </div>
-      ${joursHtml}
-      <div class="total-final"><span>TOTAL DU MOIS</span><span>${caTotalMois.toFixed(2)} €</span></div>
-      <div class="footer">Oh! Mikaté — SIRET 102 955 168 00012 — Document à conserver à titre de justificatif comptable. Généré automatiquement depuis l'interface de gestion des commandes.</div>
-    </div>
-  </body></html>`;
-
-  let w2=window.open('','_blank');
-  if(!w2){showToast("⚠️ Autorise les pop-ups pour imprimer.");return;}
-  w2.document.write(html);
-  w2.document.close();
-  w2.onload=function(){w2.print();};
 }
 
 function parseDate(str){
@@ -1074,14 +871,16 @@ function renderCommande(c){
   let msgSMSPret=genMsgPret(c,true);
   let lienWAPret="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWAPret);
   let lienSMSPret="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMSPret);
-  let msgWAAnnulToi=genMsgAnnulationParToi(c,false);
-  let msgSMSAnnulToi=genMsgAnnulationParToi(c,true);
-  let lienWAAnnulToi="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWAAnnulToi);
-  let lienSMSAnnulToi="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMSAnnulToi);
-  let estPaiementCarte=(c.payment||"").toLowerCase().includes("carte");
-
+  let msgWAAnnul=genMsgAnnulationParToi(c,false);
+  let msgSMSAnnul=genMsgAnnulationParToi(c,true);
+  let lienWAAnnul="https://wa.me/"+phoneWA+"?text="+encodeURIComponent(msgWAAnnul);
+  let lienSMSAnnul="sms:"+phoneNorm+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgSMSAnnul);
+  let estCarte=(c.payment||"").toLowerCase().includes("carte");
   let nbAnnul=nbAnnulationsPourTel(c.phone);
-  let alerteBlacklist=nbAnnul>=2?`<div style="background:#2a0a0a;border:2px solid #ff4444;border-radius:10px;padding:10px 12px;margin-bottom:10px;text-align:center;color:#ff6b6b;font-size:12px;font-weight:bold;">⚠️ ATTENTION : ce numéro a déjà annulé ${nbAnnul} fois. Vérifie avant de préparer la commande !</div>`:"";
+  let alerteBlacklist=nbAnnul>=2?`<div style="background:#2a0a0a;border:2px solid #ff4444;border-radius:10px;padding:10px;margin-bottom:10px;text-align:center;color:#ff6b6b;font-size:12px;font-weight:bold;">⚠️ ATTENTION : ce numéro a déjà annulé ${nbAnnul} fois !</div>`:"";
+  let btnAnnulClient=`<button onclick="marquerAnnuleeParClient(${c.id})" style="margin-top:8px;width:100%;background:#2a0a0a;border:1px solid #ff4444;color:#ff6b6b;font-size:12px;font-weight:bold;padding:9px;border-radius:20px;cursor:pointer;font-family:Montserrat,sans-serif;">❌ Le client a annulé</button>`;
+  let rappelCarte=estCarte?`<div style="background:#1a0d00;border:1px solid #ff9500;border-radius:8px;padding:8px;margin-top:6px;font-size:11px;color:#ff9500;text-align:center;font-weight:bold;">💳 Rembourse sur Stripe avant d'envoyer</div>`:"";
+  let btnsAnnulToi=rappelCarte+`<div style="display:flex;gap:6px;margin-top:6px;"><a class="btn-wa" href="${lienWAAnnul}" target="_blank" style="background:#555;font-size:11px;padding:8px;margin-bottom:0;flex:1;text-align:center;">📲 Annuler (toi) WA</a><a class="btn-sms" href="${lienSMSAnnul}" style="background:#555;font-size:11px;padding:8px;margin-bottom:0;flex:1;text-align:center;">💬 Annuler (toi) SMS</a></div>`;
 
   let cardCls=isPrete?"prete":isConf?"confirmee":isUrgent?"urgente":"nouvelle";
   let badgeCls=isPrete?"badge-prete":isConf?"badge-ok":isUrgent?"badge-urgent":"badge-new";
@@ -1096,7 +895,7 @@ function renderCommande(c){
     ${alerteBlacklist}
     <div class="commande-header">
       <div>
-        <div class="client-name">${c.name||"—"}${nbAnnul>0?`<span style="font-size:11px;color:#ff6b6b;font-weight:bold;margin-left:6px;">⚠️ ${nbAnnul} annul.</span>`:""}</div>
+        <div class="client-name">${c.name||"—"}</div>
         <div class="commande-meta">
           🕐 ${c.heure||"—"} &nbsp;|&nbsp; ${badgeCanal(c.canal||"—")}
         </div>
@@ -1121,6 +920,7 @@ function renderCommande(c){
         <button class="btn-marquer" onclick="annulerPrete(${c.id})" style="border-color:#ff9500;color:#ff9500;">↩️ Annuler "prête"</button>
         <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
       </div>
+      ${btnAnnulClient}${btnsAnnulToi}
     `:!isConf?`
       <a class="btn-wa" href="${lienWA}" target="_blank" onclick="marquer(${c.id})">📲 Confirmer par WhatsApp</a>
       <a class="btn-sms" href="${lienSMS}" onclick="marquer(${c.id})">💬 Confirmer par SMS</a>
@@ -1128,12 +928,7 @@ function renderCommande(c){
         <button class="btn-marquer" onclick="marquer(${c.id})">✅ Marquer confirmée</button>
         <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
       </div>
-      <button onclick="marquerAnnuleeParClient(${c.id})" style="margin-top:8px;width:100%;background:#2a0a0a;border:1px solid #ff4444;color:#ff6b6b;font-size:12px;font-weight:bold;padding:9px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;">❌ Le client a annulé</button>
-      ${estPaiementCarte?`<div style="background:#1a0d00;border:1px solid #ff9500;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:11px;color:#ff9500;text-align:center;font-weight:bold;">💳 Paiement carte : pense à rembourser sur ton dashboard Stripe avant d'envoyer le message.</div>`:""}
-      <div style="display:flex;gap:6px;margin-top:6px;">
-        <a class="btn-wa" href="${lienWAAnnulToi}" target="_blank" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">📲 Annuler (toi) WhatsApp</a>
-        <a class="btn-sms" href="${lienSMSAnnulToi}" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">💬 Annuler (toi) SMS</a>
-      </div>
+      ${btnAnnulClient}${btnsAnnulToi}
     `:`
       <div style="text-align:center;color:#25D366;font-size:12px;padding:6px;">✅ Confirmée</div>
       <a class="btn-prete" href="${lienWAPret}" target="_blank" onclick="marquerPrete(${c.id})">📦 Commande prête (WhatsApp)</a>
@@ -1142,12 +937,7 @@ function renderCommande(c){
         <button class="btn-marquer" onclick="annulerConfirmation(${c.id})" style="border-color:#ff9500;color:#ff9500;">↩️ Annuler la confirmation</button>
         <button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Supprimer</button>
       </div>
-      <button onclick="marquerAnnuleeParClient(${c.id})" style="margin-top:8px;width:100%;background:#2a0a0a;border:1px solid #ff4444;color:#ff6b6b;font-size:12px;font-weight:bold;padding:9px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;">❌ Le client a annulé</button>
-      ${estPaiementCarte?`<div style="background:#1a0d00;border:1px solid #ff9500;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:11px;color:#ff9500;text-align:center;font-weight:bold;">💳 Paiement carte : pense à rembourser sur ton dashboard Stripe avant d'envoyer le message.</div>`:""}
-      <div style="display:flex;gap:6px;margin-top:6px;">
-        <a class="btn-wa" href="${lienWAAnnulToi}" target="_blank" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">📲 Annuler (toi) WhatsApp</a>
-        <a class="btn-sms" href="${lienSMSAnnulToi}" style="background:#444;font-size:11px;padding:8px;margin-bottom:0;">💬 Annuler (toi) SMS</a>
-      </div>
+      ${btnAnnulClient}${btnsAnnulToi}
     `}
   </div>`;
 }
@@ -1176,21 +966,6 @@ function genMsgPret(c,pourSMS=false){
   msg+=`📦 ${b}Ta commande Oh! Mikaté est prête, tu peux venir la récupérer dès maintenant.${b}\n\n`;
   msg+=`━━━━━━━━━━━━━━━\n`;
   msg+=`À tout de suite ! 🧇\n— Oh! Mikaté`;
-  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
-}
-
-function genMsgAnnulationParToi(c,pourSMS=false){
-  let b=pourSMS?"":"*";
-  let dateRetrait=formatDateRetrait(c.dateRetrait);
-  let estCarte=(c.payment||"").toLowerCase().includes("carte");
-  let msg=`Bonjour ${c.name||""},\n\n`;
-  msg+=`😔 Je suis vraiment désolée, mais je suis dans l'obligation d'annuler ta commande prévue le ${dateRetrait} (créneau ${c.creneau||"—"}).\n\n`;
-  if(estCarte){
-    msg+=`${b}Ton paiement de ${c.total||"—"} € va être intégralement remboursé sur ta carte${b} (délai généralement de 5 à 10 jours ouvrés selon ta banque).\n\n`;
-  }else{
-    msg+=`${b}Aucun montant ne te sera demandé${b}, et j'espère pouvoir te régaler une prochaine fois ! 🧇\n\n`;
-  }
-  msg+=`Encore désolée pour la gêne occasionnée.\n— Oh! Mikaté`;
   return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
 }
 
@@ -1311,7 +1086,9 @@ function annulerPrete(id){
 
 function demanderSupp(id){idASupp=id;document.getElementById("popup-supp").classList.add("show");}
 
-/* ===== ANNULATIONS CLIENT (pour blacklist) ===== */
+/* ===== ANNULATIONS CLIENT (blacklist) ===== */
+let annulees=JSON.parse(localStorage.getItem('ohMikateAnnulees')||'[]');
+
 function nbAnnulationsPourTel(phone){
   let p=normalizePhone(phone);
   if(!p)return 0;
@@ -1321,7 +1098,7 @@ function nbAnnulationsPourTel(phone){
 function marquerAnnuleeParClient(id){
   let c=toutesCommandes.find(cmd=>cmd.id===id);
   if(!c)return;
-  if(!confirm(`Confirmer que ${c.name||"ce client"} a annulé cette commande ?\n\nCela sera compté dans son historique d'annulations.`))return;
+  if(!confirm(`Confirmer que ${c.name||"ce client"} a annulé cette commande ?`))return;
   annulees.push({id:c.id,phone:normalizePhone(c.phone),name:c.name||"—",date:new Date().toLocaleDateString('fr-FR')});
   localStorage.setItem('ohMikateAnnulees',JSON.stringify(annulees));
   supprimees.push(id);
@@ -1330,11 +1107,24 @@ function marquerAnnuleeParClient(id){
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
   pretes=pretes.filter(pid=>pid!==id);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
-  updateStats();
-  rafraichirVuesSecondaires();
-  afficher();
-  let nbTotal=nbAnnulationsPourTel(c.phone);
-  showToast(nbTotal>=2?`⚠️ Annulation enregistrée — ${nbTotal}e annulation pour ce numéro !`:"📋 Annulation enregistrée");
+  updateStats();afficher();
+  let nb=nbAnnulationsPourTel(c.phone);
+  showToast(nb>=2?`⚠️ ${nb}e annulation pour ce numéro !`:"📋 Annulation enregistrée");
+}
+
+function genMsgAnnulationParToi(c,pourSMS=false){
+  let b=pourSMS?"":"*";
+  let dateRetrait=formatDateRetrait(c.dateRetrait);
+  let estCarte=(c.payment||"").toLowerCase().includes("carte");
+  let msg=`Bonjour ${c.name||""},\n\n`;
+  msg+=`😔 Je suis vraiment désolée, mais je suis dans l'obligation d'annuler ta commande prévue le ${dateRetrait} (créneau ${c.creneau||"—"}).\n\n`;
+  if(estCarte){
+    msg+=`${b}Ton paiement de ${c.total||"—"} € va être intégralement remboursé sur ta carte${b} (délai généralement de 5 à 10 jours ouvrés selon ta banque).\n\n`;
+  }else{
+    msg+=`${b}Aucun montant ne te sera demandé${b}, et j'espère pouvoir te régaler une prochaine fois ! 🧇\n\n`;
+  }
+  msg+=`Encore désolée pour la gêne occasionnée.\n— Oh! Mikaté`;
+  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
 }
 function fermerPopup(){idASupp=null;document.getElementById("popup-supp").classList.remove("show");}
 function confirmerSuppression(){
