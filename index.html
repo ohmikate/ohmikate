@@ -438,7 +438,6 @@ async function chargerComptesCreneaux(){
     let json=JSON.parse(text.substring(47,text.length-2));
     let rows=json.table.rows||[];
     let counts={};
-    let debugInfo=[];
     rows.forEach(row=>{
       if(!row.c)return;
       let hasData=row.c.some(cell=>cell&&cell.v!==null&&cell.v!=="");
@@ -447,17 +446,13 @@ async function chargerComptesCreneaux(){
       let creneau=row.c[7]?String(row.c[7].v):"";
       if(!dateRetraitRaw||!creneau)return;
       let cleDate=normaliserDateEnCle(dateRetraitRaw);
-      debugInfo.push(`"${dateRetraitRaw}"→"${cleDate}"|"${creneau}"`);
       if(!cleDate)return;
       counts[cleDate]=counts[cleDate]||{};
       counts[cleDate][creneau]=(counts[cleDate][creneau]||0)+1;
     });
     orderCounts=counts;
-    // DEBUG TEMPORAIRE
-    showToast("🔍 "+debugInfo.slice(0,2).join(" / ")+" | counts:"+JSON.stringify(counts).substring(0,80));
   }catch(e){
     orderCounts={};
-    showToast("❌ Erreur: "+e.message);
   }
 }
 
@@ -1084,7 +1079,7 @@ function initDates(){
   let now=new Date();
   let startDate=new Date(2026,6,1);
   if(now>startDate)startDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  // Si 15h passées, on commence dès demain
+  // Si 15h passées, on commence dès demain (le jour même n'est plus proposé)
   if(now.getHours()>=15){
     startDate.setDate(startDate.getDate()+1);
   }
