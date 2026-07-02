@@ -622,9 +622,9 @@ function generateCompositionForm(){
   if(boxesSelected["9 beignets"]>0)lotsDetails.push("la <b>boîte de 9</b> = 3 lots de 3 beignets");
   if(boxesSelected["12 beignets"]>0)lotsDetails.push("la <b>boîte de 12</b> = 3 lots de 4 beignets");
   
-  // AJOUT DE LA PRÉCISION SUR LA FACTURATION UNIQUE ICI
+  // PRÉCISION MISE À JOUR : facturation au forfait par boîte, quel que soit le nombre de lots concernés
   html+=`<div class="lots-info-box">📦 Chaque boîte est divisée en <b>3 lots égaux</b>, que tu peux personnaliser séparément (enrobage, nappage, garniture, pot) : ${lotsDetails.join(" et ")}.<br>
-  💡 <b>Bon à savoir :</b> Le nappage, la garniture et les boîtes seront <u>facturés une seule fois</u> si la garniture reste identique sur toute la boîte.<span class="lots-info-tip">👉 Utilise les onglets <b style="color:#ff4f8b;">Lot 1 / Lot 2 / Lot 3</b> pour passer de l'un à l'autre.</span></div>`;
+  💡 <b>Bon à savoir :</b> Le nappage, la garniture et le pot sont <u>facturés une seule fois par boîte</u> (0,50€ chacun), quel que soit le nombre de lots concernés.<span class="lots-info-tip">👉 Utilise les onglets <b style="color:#ff4f8b;">Lot 1 / Lot 2 / Lot 3</b> pour passer de l'un à l'autre.</span></div>`;
   
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
     let pfx9=`box9-${b}`;
@@ -654,20 +654,17 @@ function isLotConfigured(idPrefix){
   return getLotValue(idPrefix,"base")!=="Nature"||getLotValue(idPrefix,"nappage")!=="Aucun"||getLotValue(idPrefix,"garniture")!=="Aucun"||getLotValue(idPrefix,"pot")!=="Aucun";
 }
 
+/* ===== SUPPLÉMENTS PAR BOÎTE (forfait unique par catégorie, quel que soit le nombre de lots concernés) ===== */
 function computeBoxSupplements(lotPrefixes){
   let sup=0;
   let flags={nappage:false,garniture:false,pot:false};
   const fields=[["nappage",supplementPricePerLot],["garniture",supplementPricePerLot],["pot",0.50]];
   fields.forEach(([field,price])=>{
     let values=lotPrefixes.map(p=>getLotValue(p,field));
-    let nonAucunCount=values.filter(v=>v!=="Aucun").length;
-    if(nonAucunCount===0)return;
-    let allSame=values.every(v=>v===values[0])&&values[0]!=="Aucun";
-    if(allSame&&lotPrefixes.length>1){
+    let hasAny=values.some(v=>v!=="Aucun");
+    if(hasAny){
       sup+=price;
       flags[field]=true;
-    }else{
-      sup+=nonAucunCount*price;
     }
   });
   return{total:sup,flags};
@@ -761,7 +758,7 @@ function generateLotRowHtml(idPrefix,labelTitle,defaultImg,isFirst,boxPrefix,tot
   }
   let sameTasteBtn="";
   if(lotNum===1){
-    sameTasteBtn=`<button type="button" onclick="applyToAllLots('${boxPrefix}',${totalLots},'${defaultImg}')" style="margin-top:8px;background:#ff4f8b;border:none;color:#fff;font-size:11px;font-weight:bold;padding:8px 12px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;width:100%;">⚡ Même goût pour toute la boîte</button>`;
+    sameTasteBtn=`<button type="button" onclick="applyToAllLots('${boxPrefix}',${totalLots},'${defaultImg}')" style="margin-top:8px;background:#ff4f8b;border:none;color:#fff;font-size:11px;font-weight:bold;padding:8px 12px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;width:100%;">⚡ Appliquer ce goût à toute la boîte</button>`;
   }
   return `<div class="lot-row${isFirst?' lot-active':''}" data-prefix="${idPrefix}" data-defaultimg="${defaultImg}">
     <img id="${idPrefix}-img" src="${defaultImg}" class="lot-preview-img" alt="Aperçu lot">
@@ -777,7 +774,7 @@ function generateLotRowHtml(idPrefix,labelTitle,defaultImg,isFirst,boxPrefix,tot
       </div>
       <div class="lot-selects-row">
         <div class="chip-section">
-          <div class="chip-label">🍫 Nappage<span class="chip-price">+0,50€</span></div>
+          <div class="chip-label">🍫 Nappage<span class="chip-price">+0,50€/boîte</span></div>
           <select class="select-custom lot-field" id="${idPrefix}-nappage" data-value="Aucun" onchange="selectChip('${idPrefix}','nappage',this.value)">
             <option value="Aucun">Aucun</option>
             <option value="Chocolat">🍫 Chocolat</option>
@@ -785,7 +782,7 @@ function generateLotRowHtml(idPrefix,labelTitle,defaultImg,isFirst,boxPrefix,tot
           </select>
         </div>
         <div class="chip-section">
-          <div class="chip-label">🥜 Garniture<span class="chip-price">+0,50€</span></div>
+          <div class="chip-label">🥜 Garniture<span class="chip-price">+0,50€/boîte</span></div>
           <select class="select-custom lot-field" id="${idPrefix}-garniture" data-value="Aucun" onchange="selectChip('${idPrefix}','garniture',this.value)">
             <option value="Aucun">Aucun</option>
             <option value="Éclats M&M's">🍬 M&M's</option>
@@ -794,7 +791,7 @@ function generateLotRowHtml(idPrefix,labelTitle,defaultImg,isFirst,boxPrefix,tot
           </select>
         </div>
         <div class="chip-section">
-          <div class="chip-label">🍯 Pot<span class="chip-price">+0,50€</span></div>
+          <div class="chip-label">🍯 Pot<span class="chip-price">+0,50€/boîte</span></div>
           <select class="select-custom lot-field" id="${idPrefix}-pot" data-value="Aucun" onchange="selectChip('${idPrefix}','pot',this.value)">
             <option value="Aucun">Aucun</option>
             <option value="Pot Nutella">🍫 Nutella</option>
@@ -900,9 +897,6 @@ function calculateTotalAndExtractStructure(){
       if(pot!=="Aucun")structuredOrderText+=` + ${pot}`;
       structuredOrderText+=`\n`;
     });
-    if(flags.nappage)structuredOrderText+=`  💡 Même nappage sur toute la boîte → facturé 1 seule fois\n`;
-    if(flags.garniture)structuredOrderText+=`  💡 Même garniture sur toute la boîte → facturée 1 seule fois\n`;
-    if(flags.pot)structuredOrderText+=`  💡 Même pot sur toute la boîte → facturé 1 seule fois\n`;
   }
   for(let b=1;b<=boxesSelected["12 beignets"];b++){
     structuredOrderText+=`\n📦 BOÎTE DE 12 BEIGNETS n°${b} :\n`;
@@ -920,9 +914,6 @@ function calculateTotalAndExtractStructure(){
       if(pot!=="Aucun")structuredOrderText+=` + ${pot}`;
       structuredOrderText+=`\n`;
     });
-    if(flags.nappage)structuredOrderText+=`  💡 Même nappage sur toute la boîte → facturé 1 seule fois\n`;
-    if(flags.garniture)structuredOrderText+=`  💡 Même garniture sur toute la boîte → facturée 1 seule fois\n`;
-    if(flags.pot)structuredOrderText+=`  💡 Même pot sur toute la boîte → facturé 1 seule fois\n`;
   }
   return{totalPrice:total,summaryShort:textSummaryList.join(" / "),detailsText:structuredOrderText};
 }
