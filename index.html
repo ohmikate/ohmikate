@@ -997,7 +997,38 @@ function syncSummaryPadding(){
   if(row)document.body.style.paddingBottom=(row.offsetHeight+6)+"px";
 }
 window.addEventListener("resize",syncSummaryPadding);
+// À insérer juste en dessous de la ligne 999 (le resize)
+document.addEventListener("DOMContentLoaded", () => {
+    const dateInput = document.getElementById("client-date");
+    if (!dateInput) return;
 
+    dateInput.addEventListener("input", function() {
+        const dateChoisieStr = this.value; // Format "YYYY-MM-DD"
+        if (!dateChoisieStr) return;
+        
+        const dateChoisie = new Date(dateChoisieStr);
+        
+        // 1. TES IMPRÉVUS : Ajoute tes dates bloquées manuellement ici (format AAAA-MM-JJ)
+        const datesBloqueesManuelles = [
+            "2026-07-22", // Exemple d'un imprévu futur
+            "2026-07-25"  // Autre exemple
+        ];
+
+        // 2. TES VACANCES AUTOMATIQUES : Du 4 au 17 juillet 2026
+        const debutAbsence = new Date(2026, 6, 4);  // 6 = Juillet en JavaScript
+        const finAbsence = new Date(2026, 6, 17);
+        const estEnVacances = (dateChoisie >= debutAbsence && dateChoisie <= finAbsence);
+
+        // Vérifications au moment du choix
+        if (estEnVacances) {
+            showToast("⚠️ Fermeture estivale : Nous sommes absents du 4 au 17 juillet inclus.");
+            this.value = ""; // Réinitialise le champ date
+        } else if (datesBloqueesManuelles.includes(dateChoisieStr)) {
+            showToast("⚠️ Ce créneau n'est exceptionnellement pas disponible.");
+            this.value = ""; // Réinitialise le champ date
+        }
+    });
+});
 function isFormValid(){
   if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0)return false;
   let name=document.getElementById("client-name").value.trim();
@@ -1294,8 +1325,8 @@ window.onload=function(){
     let waText=encodeURIComponent(getConfirmOrderText(data,false));
     let waEl=document.getElementById("confirm-whatsapp");
     waEl.href="https://wa.me/33"+targetPhone.substring(1)+"?text="+waText;
-    waEl.addEventListener("click",function(){setTimeout(apresEnvoi,800);});
-    document.getElementById("confirm-sms").addEventListener("click",function(e){
+    waEl.("click",function(){setTimeout(apresEnvoi,800);});
+    document.getElementById("confirm-sms").("click",function(e){
       e.preventDefault();
       let smsBody=getConfirmOrderText(data,true);
       let ua=navigator.userAgent.toLowerCase();
@@ -1305,7 +1336,7 @@ window.onload=function(){
     let msgAnnulation=`Bonjour, je souhaite annuler ma commande :\n\n📅 Date souhaitée : ${data.date}\n⏰ Créneau : ${data.time}\n💰 Total : ${data.total} €\n\n📦 Détail :\n${data.orderDetail}\n\nMerci de confirmer l'annulation.`;
     let msgAnnulationSMS=msgAnnulation.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
     document.getElementById("cancel-whatsapp").href="https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnulation);
-    document.getElementById("cancel-sms").addEventListener("click",function(e){
+    document.getElementById("cancel-sms").("click",function(e){
       e.preventDefault();let ua=navigator.userAgent.toLowerCase();
       window.location.href="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgAnnulationSMS);
     });
