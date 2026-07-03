@@ -456,80 +456,6 @@ const MAX_COMMANDES_PAR_CRENEAU=5;
 let orderCounts={};
 let manuelsBlocages={}; // Stockera les fermetures définies par vos soins
 
-const MOIS_FR_NUM={"janvier":1,"février":2,"fevrier":2,"mars":3,"avril":4,"mai":5,"juin":6,"juillet":7,"août":8,"aout":8,"septembre":9,"octobre":10,"novembre":11,"décembre":12,"decembre":12};
-
-/* Transforme une date JS en libellé identique à celui généré par initDates()
-   (ex: "Vendredi 3 juillet"), pour pouvoir comparer avec la valeur du menu déroulant. */
-function labelFromDate(d){
-  let label=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  return label.charAt(0).toUpperCase()+label.slice(1);
-}
-
-function expandDateRange(start,end){
-  let dates=[];
-  let cur=new Date(start.getFullYear(),start.getMonth(),start.getDate());
-  let last=new Date(end.getFullYear(),end.getMonth(),end.getDate());
-  // sécurité : on ne génère jamais plus de 120 jours d'un coup (erreur de saisie probable)
-  let garde=0;
-  while(cur<=last&&garde<120){
-    dates.push(new Date(cur));
-    cur.setDate(cur.getDate()+1);
-    garde++;
-  }
-  return dates;
-}
-
-/* Détecte une période dans le texte de la colonne A de l'onglet "Fermetures"
-   (ex: "Du 4 juillet au 16 juillet", "Du 4 au 16 juillet 2026", "Du 04/07 au 16/07").
-   Retourne un tableau de libellés de dates si une période est détectée, sinon null
-   (dans ce cas on garde l'ancien comportement : la cellule contient déjà une date unique). */
-function parseFermetureRange(str){
-  if(!str)return null;
-  let s=str.trim().toLowerCase();
-  let now=new Date();
-  let defaultYear=now.getFullYear();
-
-  // "du 4 juillet au 16 juillet [2026]" ou "du 4 au 16 juillet [2026]" (mois sous-entendu identique)
-  let reMoisCourt=/du\s+(\d{1,2})\s+au\s+(\d{1,2})\s+([a-zéûîàâ]+)(?:\s+(\d{4}))?/i;
-  let reMoisComplet=/du\s+(\d{1,2})\s+([a-zéûîàâ]+)(?:\s+(\d{4}))?\s+au\s+(\d{1,2})\s+([a-zéûîàâ]+)(?:\s+(\d{4}))?/i;
-  let reNum=/du\s+(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?\s+au\s+(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/i;
-
-  let start=null,end=null;
-
-  let m=s.match(reMoisComplet);
-  if(m){
-    let mo1=MOIS_FR_NUM[m[2]],mo2=MOIS_FR_NUM[m[5]];
-    if(mo1&&mo2){
-      let y1=m[3]?parseInt(m[3]):defaultYear;
-      let y2=m[6]?parseInt(m[6]):y1;
-      start=new Date(y1,mo1-1,parseInt(m[1]));
-      end=new Date(y2,mo2-1,parseInt(m[4]));
-    }
-  }
-  if(!start){
-    let m2=s.match(reMoisCourt);
-    if(m2){
-      let mo=MOIS_FR_NUM[m2[3]];
-      if(mo){
-        let y=m2[4]?parseInt(m2[4]):defaultYear;
-        start=new Date(y,mo-1,parseInt(m2[1]));
-        end=new Date(y,mo-1,parseInt(m2[2]));
-      }
-    }
-  }
-  if(!start){
-    let m3=s.match(reNum);
-    if(m3){
-      let y1=m3[3]?parseInt(m3[3]):defaultYear;
-      let y2=m3[6]?parseInt(m3[6]):y1;
-      start=new Date(y1,parseInt(m3[2])-1,parseInt(m3[1]));
-      end=new Date(y2,parseInt(m3[5])-1,parseInt(m3[4]));
-    }
-  }
-  if(!start||!end||isNaN(start)||isNaN(end)||end<start)return null;
-  return expandDateRange(start,end).map(labelFromDate);
-}
-
 async function chargerComptesCreneaux(){
   try{
     // 1. Chargement des comptes de commandes existants
@@ -563,27 +489,21 @@ async function chargerComptesCreneaux(){
     let rowsB=jsonB.table.rows||[];
     let blocages={};
     rowsB.forEach(row=>{
-      if(!row.c || row.c.length < 1) return;
+      if(!row.c || row.c.length < 2) return;
       let dateText = row.c[0] ? String(row.c[0].v).trim() : "";
       let creneauText = row.c[1] ? String(row.c[1].v).trim() : "";
-      if(!dateText) return;
-
-      // Si la colonne A contient une période ("Du ... au ..."), on l'étale sur tous les jours concernés.
-      // Sinon on garde le comportement existant : une seule date par ligne.
-      let joursConcernes = parseFermetureRange(dateText) || [dateText];
-
-      joursConcernes.forEach(dateLabel=>{
-        if(!creneauText || creneauText.toUpperCase() === "TOUT"){
-          blocages[dateLabel] = "TOUT";
-        } else {
-          if(!Array.isArray(blocages[dateLabel])) {
-            if(blocages[dateLabel] !== "TOUT") blocages[dateLabel] = [];
-          }
-          if(Array.isArray(blocages[dateLabel])) {
-            blocages[dateLabel].push(creneauText);
-          }
+      if(!dateText || !creneauText) return;
+      
+      if(creneauText.toUpperCase() === "TOUT"){
+        blocages[dateText] = "TOUT";
+      } else {
+        if(!Array.isArray(blocages[dateText])) {
+          if(blocages[dateText] !== "TOUT") blocages[dateText] = [];
         }
-      });
+        if(Array.isArray(blocages[dateText])) {
+          blocages[dateText].push(creneauText);
+        }
+      }
     });
     manuelsBlocages=blocages;
   }catch(e){
@@ -1402,4 +1322,4 @@ window.onload=function(){
 };
 </script>
 </body>
-</html>
+                                             </html>
