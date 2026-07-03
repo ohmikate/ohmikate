@@ -258,6 +258,7 @@ let toutesCommandes=[];
 let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
 let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
 let pretes=JSON.parse(localStorage.getItem('ohMikatePretes')||'[]');
+let derniersGroupesHisto={};
 let idASupp=null;
 
 /* LOGIN */
@@ -547,7 +548,8 @@ function afficherHistoJours(){
     <div class="histo-total-item"><div class="histo-total-num">${visible.length}</div><div class="histo-total-lbl">Commandes</div></div>
     <div class="histo-total-item"><div class="histo-total-num">${jours.length}</div><div class="histo-total-lbl">Jours</div></div>
     <div class="histo-total-item"><div class="histo-total-num">${caGlobal.toFixed(2)}€</div><div class="histo-total-lbl">CA total</div></div>
-  </div>`;
+  </div>
+  <button class="histo-copy-btn" style="max-width:600px;margin:0 auto 16px;background:#12241a;border-color:#25D366;color:#25D366;display:block;" onclick="imprimerRecapComplet()">🖨️ Imprimer le récapitulatif comptable complet</button>`;
 
   jours.forEach((key,idx)=>{
     let {cmds,label}=groupes[key];
@@ -587,10 +589,12 @@ function afficherHistoJours(){
       <div class="histo-jour-detail" id="detail-${safeId}">
         ${lignes}
         <button class="histo-copy-btn" onclick="copierRecapJour(\`${txtRecap.replace(/`/g,"\\`")}\`)">📋 Copier le récap du jour</button>
+        <button class="histo-copy-btn" style="background:#12241a;border-color:#25D366;color:#25D366;margin-top:6px;" onclick="imprimerRecapJour('${key}')">🖨️ Imprimer le récap du jour</button>
       </div>
     </div>`;
   });
 
+  derniersGroupesHisto=groupes;
   container.innerHTML=html;
 }
 
@@ -929,9 +933,8 @@ function renderCommande(c){
   let targetPhone = normalizePhone(c.phone);
   if(targetPhone){
     let txtWA = prt ? genMsgPret(c, false) : genMsg(c, false);
-    let txtSMS = prt ? genMsgPret(c, true) : genMsg(c, true);
     html += `<a class="btn-wa" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" href="https://wa.me/33${targetPhone.substring(1)}?text=${encodeURIComponent(txtWA)}" target="_blank">📲 WhatsApp</a>`;
-    html += `<button class="btn-sms" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" onclick="window.location.href='sms:${targetPhone}?body='+encodeURIComponent('${txtSMS.replace(/'/g, "\\'")}')">💬 SMS</button>`;
+    html += `<button class="btn-sms" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" onclick="envoyerSMS(${c.id}, ${prt})">💬 SMS</button>`;
   }
   
   // Bouton d'impression sécurisé
@@ -943,6 +946,15 @@ function renderCommande(c){
   </div>`;
   
   return html;
+}
+
+function envoyerSMS(id, pret){
+  let c = toutesCommandes.find(x=>x.id===id);
+  if(!c){showToast("⚠️ Commande introuvable");return;}
+  let targetPhone = normalizePhone(c.phone);
+  if(!targetPhone){showToast("⚠️ Pas de numéro de téléphone");return;}
+  let txtSMS = pret ? genMsgPret(c, true) : genMsg(c, true);
+  window.location.href = 'sms:'+targetPhone+'?body='+encodeURIComponent(txtSMS);
 }
 
 function genMsg(c,pourSMS=false){
@@ -1187,6 +1199,108 @@ function showToast(m){
   t.textContent=m;t.classList.add("show");
   setTimeout(()=>t.classList.remove("show"),3000);
 }
+function formatMontant(v){
+  let n=parseFloat(String(v).replace(",","."));
+  return isNaN(n)?"0,00 €":n.toFixed(2).replace(".",",")+" €";
+}
+
+function genererImpressionComptable(titre, joursData){
+  let toutesCmds = joursData.flatMap(j=>j.cmds);
+  let totalGlobal = toutesCmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+
+  // Répartition par mode de règlement (utile pour le rapprochement comptable)
+  let parPaiement={};
+  toutesCmds.forEach(c=>{
+    let mode=(c.payment||"Non spécifié").trim();
+    let v=parseFloat(String(c.total).replace(",","."));
+    if(!parPaiement[mode])parPaiement[mode]={nb:0,total:0};
+    parPaiement[mode].nb++;
+    parPaiement[mode].total+=isNaN(v)?0:v;
+  });
+
+  let sectionsHtml = joursData.map(j=>{
+    let caJour=j.cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+    let rows=j.cmds.map(c=>`
+      <tr>
+        <td style="padding:6px; border-bottom:1px solid #eee;">${c.name||"—"}</td>
+        <td style="padding:6px; border-bottom:1px solid #eee;">${c.creneau||"—"}</td>
+        <td style="padding:6px; border-bottom:1px solid #eee;">${extraireRecapBoitesTexte(c.order)||"—"}</td>
+        <td style="padding:6px; border-bottom:1px solid #eee;">${c.payment||"—"}</td>
+        <td style="padding:6px; border-bottom:1px solid #eee; text-align:right;">${formatMontant(c.total)}</td>
+      </tr>`).join("");
+    return `
+      <h3 style="margin-top:24px; border-bottom:2px solid #333; padding-bottom:5px;">🗓️ ${j.label}</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
+        <thead>
+          <tr style="background:#eee;">
+            <th style="text-align:left; padding:6px;">Client</th>
+            <th style="text-align:left; padding:6px;">Créneau</th>
+            <th style="text-align:left; padding:6px;">Détail</th>
+            <th style="text-align:left; padding:6px;">Règlement</th>
+            <th style="text-align:right; padding:6px;">Montant</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="text-align:right; font-weight:bold; margin-top:6px; font-size:14px;">Sous-total ${j.label} : ${formatMontant(caJour)} — ${j.cmds.length} commande${j.cmds.length>1?"s":""}</div>
+    `;
+  }).join("");
+
+  let paiementRows = Object.keys(parPaiement).map(mode=>`
+    <tr>
+      <td style="padding:6px; border-bottom:1px solid #eee;">${mode}</td>
+      <td style="padding:6px; border-bottom:1px solid #eee; text-align:center;">${parPaiement[mode].nb}</td>
+      <td style="padding:6px; border-bottom:1px solid #eee; text-align:right;">${formatMontant(parPaiement[mode].total)}</td>
+    </tr>`).join("");
+
+  let fenetre = window.open("", "_blank", "width=850,height=700");
+  fenetre.document.write(`
+    <html>
+    <head>
+      <title>${titre}</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 25px; color: #222; }
+        .header { text-align: center; margin-bottom: 10px; }
+        .header p { color:#777; font-size:12px; }
+        table { width: 100%; border-collapse: collapse; }
+        .total-global { text-align: right; font-size: 20px; font-weight: bold; margin-top: 24px; padding-top:12px; border-top:2px solid #333; }
+        .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #777; border-top: 1px solid #ddd; padding-top: 10px; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h2>${titre}</h2>
+        <p><b>Oh! Mikaté</b> — SIRET : 98418057200019</p>
+        <p>Édité le ${new Date().toLocaleDateString("fr-FR")}</p>
+      </div>
+      ${sectionsHtml}
+      <h3 style="margin-top:28px; border-bottom:2px solid #333; padding-bottom:5px;">💳 Répartition par mode de règlement</h3>
+      <table style="width:60%; margin-top:8px; font-size:13px;">
+        <thead><tr style="background:#eee;"><th style="text-align:left; padding:6px;">Mode</th><th style="padding:6px;">Nb</th><th style="text-align:right; padding:6px;">Total</th></tr></thead>
+        <tbody>${paiementRows}</tbody>
+      </table>
+      <div class="total-global">TOTAL GÉNÉRAL : ${formatMontant(totalGlobal)} — ${toutesCmds.length} commande${toutesCmds.length>1?"s":""}</div>
+      <div class="footer"><p>Document généré automatiquement — usage comptable interne.</p></div>
+    </body>
+    </html>
+  `);
+  fenetre.document.close();
+  fenetre.print();
+}
+
+function imprimerRecapJour(key){
+  let g = derniersGroupesHisto[key];
+  if(!g){showToast("⚠️ Introuvable");return;}
+  genererImpressionComptable(`Récapitulatif comptable — ${g.label}`, [{label:g.label, cmds:g.cmds}]);
+}
+
+function imprimerRecapComplet(){
+  let jours=Object.keys(derniersGroupesHisto).sort((a,b)=>b.localeCompare(a));
+  if(jours.length===0){showToast("⚠️ Aucune donnée à imprimer");return;}
+  let joursData = jours.map(k=>({label:derniersGroupesHisto[k].label, cmds:derniersGroupesHisto[k].cmds}));
+  genererImpressionComptable("Récapitulatif comptable — Période complète", joursData);
+}
+
 function imprimerFacture(c) {
   let tableRows = "";
   // Extraction basique pour le tableau d'impression
