@@ -863,67 +863,82 @@ function renderCommande(c){
   let conf = confirmees.includes(c.id);
   let prt = pretes.includes(c.id);
   
-  // Correction ici : On extrait proprement le prix avec 2 décimales pour l'affichage
+  // Extraction propre du prix
   let prixBrut = parseFloat(String(c.total).replace(",", "."));
   let prixAffiche = isNaN(prixBrut) ? "0,00 €" : prixBrut.toFixed(2).replace(".", ",") + " €";
   
   let dateText = formatDateRetrait(c.dateRetrait);
   let statusBadge = "";
   if(prt) statusBadge = `<span class="badge badge-prete">🍳 Prête</span>`;
-  else if(conf) statusBadge = `<span class="badge badge-confirmee">✅ Validée</span>`;
-  else statusBadge = `<span class="badge badge-nouvelle">🆕 Nouvelle</span>`;
+  else if(conf) statusBadge = `<span class="badge badge-ok">✅ Validée</span>`;
+  else statusBadge = `<span class="badge badge-new">🆕 Nouvelle</span>`;
   
-  let nbAnnul = nbAnnulationsPourTel(c.tel);
+  let nbAnnul = nbAnnulationsPourTel(c.phone);
   let alerteBlacklist = "";
   if(nbAnnul >= 2){
     alerteBlacklist = `<div style="background:#742a2a; color:#fff; padding:6px; border-radius:5px; font-size:11px; margin-bottom:10px; font-weight:bold;">⚠️ ATTENTION : Ce client a déjà annulé ${nbAnnul} commandes !</div>`;
   }
   
-  let checkedStr = selectionnees.includes(c.id) ? "checked" : "";
-  let infoBoitesHtml = extraireRecapBoites(c.orderText);
+  // Correction ici : Utilisation des fonctions de sélection existantes pour éviter le crash
+  let checkedStr = getSelected().includes(c.id) ? "checked" : "";
+  let infoBoitesHtml = extraireRecapBoites(c.order);
   
-  let html = `<div class="card ${conf ? 'card-confirmee' : ''} ${prt ? 'card-prete' : ''}" id="card-${c.id}">
-    <div class="card-header">
+  let html = `<div class="commande-card ${conf ? 'confirmee' : ''} ${prt ? 'prete' : ''} ${c.urgent ? 'urgente' : ''}" id="card-${c.id}" data-creneau="${c.creneau}" data-datecle="${c.dateRetrait}">
+    <div class="commande-header">
       <div style="display:flex; align-items:center; gap:10px;">
-        <input type="checkbox" class="commande-checkbox" data-id="${c.id}" ${checkedStr} onchange="onCheckChange()">
-        <span class="client-name">${c.nom}</span>
+        <input type="checkbox" id="chk-${c.id}" class="cmd-checkbox" ${checkedStr} onchange="onCheckChange()">
+        <span class="client-name">${c.name || 'Inconnu'}</span>
         ${statusBadge}
       </div>
-      <span class="client-total">${prixAffiche}</span>
+      <span class="histo-jour-ca">${prixAffiche}</span>
     </div>
-    <div class="card-body">
+    <div>
       ${alerteBlacklist}
-      <div class="meta-row">📅 <b>Retrait :</b> ${dateText} à <b>${c.heure || 'Créneau non spécifié'}</b></div>
-      <div class="meta-row">📞 <b>Tél :</b> ${c.tel || 'Non renseigné'} (${c.canal || 'Site'})</div>
-      <div class="meta-row" style="font-size:11px; color:#888;">📝 Reçu le : ${c.dateCmd || 'N/A'}</div>
-      <div class="order-recap-tags">${infoBoitesHtml}</div>
-      <div class="raw-order-text">${c.orderText}</div>
-      <div style="font-size:12px; margin-top:5px; color:#aaa;">💳 Mode de règlement : <b>${c.reglement || 'Non spécifié'}</b></div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="label">📅 Retrait</div>
+          <div class="value">${dateText}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">⏰ Créneau</div>
+          <div class="value">${c.creneau || 'Non spécifié'}</div>
+        </div>
+        <div class="info-item full">
+          <div class="label">📞 Contact & Canal</div>
+          <div class="value">${c.phone || 'Non renseigné'} ${badgeCanal(c.canal)}</div>
+        </div>
+      </div>
+      
+      <div class="recap-boites">${infoBoitesHtml}</div>
+      <div class="detail-box">${c.order || ''}</div>
+      <div style="font-size:11px; color:#888; margin-top:8px;">💳 Règlement : <b>${c.payment || 'Non spécifié'}</b> • Recu le ${c.datePropre || ''} à ${c.heure || ''}</div>
     </div>
-    <div class="card-actions">`;
+    
+    <div class="actions-sec" style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">`;
   
   if(!conf && !prt){
-    html += `<button type="button" class="btn-action btn-valider" onclick="marquer('${c.id}')">✅ Valider</button>`;
+    html += `<button class="btn-prete" style="background:#25D366;" onclick="marquer(${c.id})">✅ Valider</button>`;
   } else if(conf && !prt){
-    html += `<button type="button" class="btn-action btn-prete" onclick="marquerPrete('${c.id}')">🍳 Prête</button>`;
-    html += `<button type="button" class="btn-action" style="background:#4a5568;" onclick="annulerConfirmation('${c.id}')">⬅️ Restaurer</button>`;
+    html += `<button class="btn-prete" onclick="marquerPrete(${c.id})">🍳 Prête</button>`;
+    html += `<button class="btn-marquer" onclick="annulerConfirmation(${c.id})">⬅️ Restaurer</button>`;
   } else if(prt){
-    html += `<button type="button" class="btn-action" style="background:#4a5568;" onclick="annulerPrete('${c.id}')">⬅️ Pas prête</button>`;
+    html += `<button class="btn-marquer" onclick="annulerPrete(${c.id})">⬅️ Pas prête</button>`;
   }
   
-  // Liens de contact
-  let targetPhone = normalizePhone(c.tel);
+  // Liens de contact WhatsApp / SMS
+  let targetPhone = normalizePhone(c.phone);
   if(targetPhone){
-    let txtWA = genMsg(c, false);
-    html += `<a class="btn-action btn-wa" href="https://wa.me/33${targetPhone.substring(1)}?text=${encodeURIComponent(txtWA)}" target="_blank">💬 WhatsApp</a>`;
-    html += `<button type="button" class="btn-action btn-sms" onclick="window.location.href='sms:${targetPhone}?body='+encodeURIComponent(genMsg('${c.id}', true))">📱 SMS</button>`;
+    let txtWA = prt ? genMsgPret(c, false) : genMsg(c, false);
+    let txtSMS = prt ? genMsgPret(c, true) : genMsg(c, true);
+    html += `<a class="btn-wa" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" href="https://wa.me/33${targetPhone.substring(1)}?text=${encodeURIComponent(txtWA)}" target="_blank">📲 WhatsApp</a>`;
+    html += `<button class="btn-sms" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" onclick="window.location.href='sms:${targetPhone}?body='+encodeURIComponent('${txtSMS.replace(/'/g, "\\'")}')">💬 SMS</button>`;
   }
   
-  // AJOUT DU BOUTON IMPRIMER & SÉCURISATION DU TEXTE
+  // Bouton d'impression sécurisé
   let cSafe = JSON.stringify(c).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  html += `<button type="button" class="btn-action btn-print" style="background:#6b46c1;" onclick="imprimerFacture(${cSafe})">🖨️ Imprimer</button>`;
+  html += `<button class="btn-marquer" style="border-color:#635bff; color:#a09af0;" onclick="imprimerFacture(${cSafe})">🖨️ Imprimer</button>`;
   
-  html += `<button type="button" class="btn-action btn-suppr" onclick="demanderSupp('${c.id}')">🗑️ Suppr.</button>
+  html += `<button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Suppr.</button>
     </div>
   </div>`;
   
