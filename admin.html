@@ -549,7 +549,8 @@ function afficherHistoJours(){
     <div class="histo-total-item"><div class="histo-total-num">${jours.length}</div><div class="histo-total-lbl">Jours</div></div>
     <div class="histo-total-item"><div class="histo-total-num">${caGlobal.toFixed(2)}€</div><div class="histo-total-lbl">CA total</div></div>
   </div>
-  <button class="histo-copy-btn" style="max-width:600px;margin:0 auto 16px;background:#12241a;border-color:#25D366;color:#25D366;display:block;" onclick="imprimerRecapComplet()">🖨️ Imprimer le récapitulatif comptable complet</button>`;
+  <button class="histo-copy-btn" style="max-width:600px;margin:0 auto 16px;background:#12241a;border-color:#25D366;color:#25D366;display:block;" onclick="imprimerRecapComplet()">🖨️ Imprimer le récapitulatif comptable complet</button>
+  <button class="histo-copy-btn" style="max-width:600px;margin:0 auto 16px;background:#1a1e2e;border-color:#635bff;color:#a09af0;display:block;" onclick="imprimerRecapMensuel()">🖨️ Imprimer le récapitulatif mensuel</button>`;
 
   jours.forEach((key,idx)=>{
     let {cmds,label}=groupes[key];
@@ -1288,6 +1289,27 @@ function genererImpressionComptable(titre, joursData){
   fenetre.print();
 }
 
+function capitalize(s){return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
+
+function imprimerRecapMensuel(){
+  let jours=Object.keys(derniersGroupesHisto);
+  if(jours.length===0){showToast("⚠️ Aucune donnée à imprimer");return;}
+
+  let mois={};
+  jours.forEach(key=>{
+    let g=derniersGroupesHisto[key];
+    let d=g.dateObj;
+    let mKey = d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}` : "inconnu";
+    let mLabel = d ? capitalize(d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})) : "Date inconnue";
+    if(!mois[mKey])mois[mKey]={label:mLabel, cmds:[]};
+    mois[mKey].cmds.push(...g.cmds);
+  });
+
+  let mKeys=Object.keys(mois).sort((a,b)=>b.localeCompare(a));
+  let joursData=mKeys.map(k=>({label:mois[k].label, cmds:mois[k].cmds}));
+  genererImpressionComptable("Récapitulatif comptable mensuel", joursData);
+}
+
 function imprimerRecapJour(key){
   let g = derniersGroupesHisto[key];
   if(!g){showToast("⚠️ Introuvable");return;}
@@ -1304,8 +1326,8 @@ function imprimerRecapComplet(){
 function imprimerFacture(c) {
   let tableRows = "";
   // Extraction basique pour le tableau d'impression
-  if (c.orderText) {
-    let lines = c.orderText.split("\n");
+  if (c.order) {
+    let lines = c.order.split("\n");
     lines.forEach(l => {
       if(l.trim() && !l.includes("Total payé")) {
         tableRows += `<tr><td style="padding:8px; border-bottom:1px solid #ddd;">${l}</td></tr>`;
@@ -1315,12 +1337,13 @@ function imprimerFacture(c) {
 
   let prixBrut = parseFloat(String(c.total).replace(",", "."));
   let prixAffiche = isNaN(prixBrut) ? "0,00 €" : prixBrut.toFixed(2).replace(".", ",") + " €";
+  let dateAffichee = formatDateRetrait(c.dateRetrait);
 
   let fenetre = window.open("", "_blank", "width=800,height=600");
   fenetre.document.write(`
     <html>
     <head>
-      <title>Facture - ${c.nom}</title>
+      <title>Facture - ${c.name || 'Client'}</title>
       <style>
         body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
         .header { text-align: center; margin-bottom: 30px; }
@@ -1336,14 +1359,14 @@ function imprimerFacture(c) {
         <p><b>Oh! Mikaté</b></p>
       </div>
       <div class="details">
-        <p><b>Client :</b> ${c.nom}</p>
-        <p><b>Téléphone :</b> ${c.tel || 'N/A'}</p>
-        <p><b>Date de retrait :</b> ${c.dateRetrait} à ${c.heure || 'N/A'}</p>
-        <p><b>Règlement :</b> ${c.reglement || 'Non spécifié'}</p>
+        <p><b>Client :</b> ${c.name || 'Inconnu'}</p>
+        <p><b>Téléphone :</b> ${c.phone || 'N/A'}</p>
+        <p><b>Date de retrait :</b> ${dateAffichee} • Créneau : ${c.creneau || 'N/A'}</p>
+        <p><b>Règlement :</b> ${c.payment || 'Non spécifié'}</p>
       </div>
       <h3 style="border-bottom: 2px solid #333; padding-bottom: 5px;">Détail de la commande</h3>
       <table>
-        ${tableRows || `<tr><td style="padding:8px;">${c.orderText}</td></tr>`}
+        ${tableRows || `<tr><td style="padding:8px;">${c.order || 'Aucun détail'}</td></tr>`}
       </table>
       <div class="total">Total : ${prixAffiche}</div>
       <div class="footer">
