@@ -70,7 +70,7 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 .stat-box .num{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#ff4f8b;}
 .stat-box .num.green{color:#25D366;}
 .stat-box .num.blue{color:#007aff;}
-.stat-box .num.orange{color:#ff9500;}
+.stat-box .num.orange{color:#ff9500;font-size:19px;}
 .stat-box .lbl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
 
 /* GROUPE JOUR */
@@ -1165,7 +1165,7 @@ function updateStats(){
   document.getElementById("stat-total").textContent=visible.length;
   document.getElementById("stat-new").textContent=nouv.length;
   document.getElementById("stat-done").textContent=conf.length;
-  document.getElementById("stat-ca").textContent=ca.toFixed(0)+"€";
+  document.getElementById("stat-ca").textContent=ca.toFixed(2)+"€";
 }
 
 function normalizePhone(raw){
