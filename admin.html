@@ -336,8 +336,12 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
         else if(payment.toLowerCase().includes("esp"))canal="Espèces";
       }
 
-      // Normaliser payment (supprimer PayPal)
-      if(payment.toLowerCase().includes("paypal"))payment="Paiement en ligne (carte)";
+      // Normaliser payment (uniquement les anciennes mentions "PayPal" isolées,
+      // sans écraser "Acompte réglé (Wero/PayPal)" / "Totalité réglée (Wero/PayPal)"
+      // dont calculerSolde() a besoin pour calculer le solde restant)
+      if(payment.toLowerCase().includes("paypal")&&!payment.toLowerCase().includes("acompte")&&!payment.toLowerCase().includes("totalité")&&!payment.toLowerCase().includes("totalite")){
+        payment="Paiement en ligne (carte)";
+      }
       // Vérifier si créneau urgent (aujourd'hui ET dans moins de 2h)
       let urgent=false;
       if(dateRetrait&&creneau){
@@ -1413,4 +1417,3 @@ function imprimerFacture(c) {
 </script>
 </body>
 </html>
-
