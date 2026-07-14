@@ -896,7 +896,7 @@ function getOrderText(cleanForSms=false,canal="WhatsApp"){
   if(depositMode==="total"){
     payText=`Totalité réglée via Wero/PayPal (${depositAmount.toFixed(2)}€) — rien à régler au retrait`;
   }else{
-    payText=`Acompte de ${depositAmount.toFixed(2)}€ réglé via Wero/PayPal + Solde de ${remaining.toFixed(2)}€ à régler via Wero/PayPal (demandé à la confirmation ou quand la commande sera prête)`;
+    payText=`Acompte de ${depositAmount.toFixed(2)}€ reglé + Solde de ${remaining.toFixed(2)}€ a régler une fois la commande prête ou en espèces ou CB sur place.`;
   }
   let b=cleanForSms?"":"*";
   let now=new Date();
@@ -1104,4 +1104,3 @@ window.onload=function(){
 </script>
 </body>
 </html>
-
