@@ -252,8 +252,11 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
 const SHEET_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
 const MOT_DE_PASSE="Ronciat";
-const TARGET="0745915946";
+const TARGET="0698213380";
 const CRENEAUX=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
+const WERO_PHONE="0698213380";
+const PAYPAL_ME_LINK="https://www.paypal.com/paypalme/ohmikate";
+const DEPOSIT_RATE=0.5;
 let toutesCommandes=[];
 let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
 let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
@@ -917,6 +920,7 @@ function renderCommande(c){
       <div class="recap-boites">${infoBoitesHtml}</div>
       <div class="detail-box">${c.order || ''}</div>
       <div style="font-size:11px; color:#888; margin-top:8px;">💳 Règlement : <b>${c.payment || 'Non spécifié'}</b> • Recu le ${c.datePropre || ''} à ${c.heure || ''}</div>
+      ${calculerSolde(c)>0.01?`<div style="font-size:12px; color:#ff9500; font-weight:bold; margin-top:6px; background:#1a1000; border:1px solid #ff9500; border-radius:8px; padding:6px 10px;">💰 Solde restant : ${calculerSolde(c).toFixed(2).replace('.',',')} € — inclus automatiquement dans le message de confirmation / "Prête"</div>`:``}
     </div>
     
     <div class="actions-sec" style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">`;
@@ -958,10 +962,34 @@ function envoyerSMS(id, pret){
   window.location.href = 'sms:'+targetPhone+'?body='+encodeURIComponent(txtSMS);
 }
 
+/* ===== SOLDE RESTANT (acompte 50% vs totalité réglée en ligne) =====
+   Déduit du champ "payment" (pas besoin de colonne Sheet dédiée) :
+   - "Totalité réglée..." → rien à payer
+   - "Acompte réglé..." → il reste 50% du total à régler
+   - tout autre cas (ex: anciennes commandes "Carte"/"Espèces") → considéré réglé */
+function calculerSolde(c){
+  let total=parseFloat(String(c.total).replace(",","."));
+  if(isNaN(total))return 0;
+  let payLower=(c.payment||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  if(payLower.includes("totalite"))return 0;
+  if(payLower.includes("acompte"))return Math.round(total*DEPOSIT_RATE*100)/100;
+  return 0;
+}
+
+function genBlocSolde(solde,b){
+  let soldeStr=solde.toFixed(2).replace(".",",");
+  let lienPaypal=PAYPAL_ME_LINK+"/"+solde.toFixed(2)+"EUR";
+  let bloc=`💰 ${b}Solde restant à régler : ${soldeStr} €${b}\n`;
+  bloc+=`📲 Via Wero : envoie ${soldeStr}€ au ${WERO_PHONE} (Oh! Mikaté)\n`;
+  bloc+=`💳 Ou via PayPal : ${lienPaypal}\n\n`;
+  return bloc;
+}
+
 function genMsg(c,pourSMS=false){
   let b=pourSMS?"":"*";
 
   let dateRetrait=formatDateRetrait(c.dateRetrait);
+  let solde=calculerSolde(c);
 
   let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
   msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
@@ -969,6 +997,7 @@ function genMsg(c,pourSMS=false){
   msg+=`⏰ Créneau : ${c.creneau||"—"}\n`;
   msg+=`💰 Total : ${c.total||"—"} €\n\n`;
   msg+=`📦 ${b}Ta commande :${b}\n${c.order||""}\n\n`;
+  if(solde>0.01)msg+=genBlocSolde(solde,b);
   msg+=`📍 ${b}Adresse de retrait :${b}\n36 rue du Chanoine Lallement, Reims\n\n`;
   msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — tu auras ta commande en mains propres ! 🍩\n\n`;
   msg+=`━━━━━━━━━━━━━━━\n`;
@@ -978,8 +1007,10 @@ function genMsg(c,pourSMS=false){
 
 function genMsgPret(c,pourSMS=false){
   let b=pourSMS?"":"*";
+  let solde=calculerSolde(c);
   let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
   msg+=`📦 ${b}Ta commande Oh! Mikaté est prête, tu peux venir la récupérer dès maintenant.${b}\n\n`;
+  if(solde>0.01)msg+=genBlocSolde(solde,b);
   msg+=`━━━━━━━━━━━━━━━\n`;
   msg+=`À tout de suite ! 🧇\n— Oh! Mikaté`;
   return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
@@ -1382,3 +1413,4 @@ function imprimerFacture(c) {
 </script>
 </body>
 </html>
+
