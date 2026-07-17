@@ -438,17 +438,16 @@ async function chargerComptesCreneaux(){
       if(!row.c || row.c.length < 2) return;
       let dateText = row.c[0] ? String(row.c[0].v).trim() : "";
       let creneauText = row.c[1] ? String(row.c[1].v).trim() : "";
+      let motifText = row.c[2] && row.c[2].v!==null ? String(row.c[2].v).trim() : "";
+      if(!motifText) motifText="Plein";
       if(!dateText || !creneauText) return;
-      
+
+      if(!blocages[dateText]) blocages[dateText]={all:null,slots:{}};
+
       if(creneauText.toUpperCase() === "TOUT"){
-        blocages[dateText] = "TOUT";
+        blocages[dateText].all = motifText;
       } else {
-        if(!Array.isArray(blocages[dateText])) {
-          if(blocages[dateText] !== "TOUT") blocages[dateText] = [];
-        }
-        if(Array.isArray(blocages[dateText])) {
-          blocages[dateText].push(creneauText);
-        }
+        blocages[dateText].slots[creneauText] = motifText;
       }
     });
     manuelsBlocages=blocages;
@@ -1027,16 +1026,21 @@ function handleDateChange(){
     
     // Test si le créneau ou le jour entier est marqué fermé sur votre Google Sheets
     let estBloqueManuellement = false;
-    if(blocageManuelJour === "TOUT") {
-      estBloqueManuellement = true;
-    } else if(Array.isArray(blocageManuelJour) && blocageManuelJour.includes(t)) {
-      estBloqueManuellement = true;
+    let motifBlocage = "Plein";
+    if(blocageManuelJour){
+      if(blocageManuelJour.all){
+        estBloqueManuellement = true;
+        motifBlocage = blocageManuelJour.all;
+      } else if(blocageManuelJour.slots && blocageManuelJour.slots[t]){
+        estBloqueManuellement = true;
+        motifBlocage = blocageManuelJour.slots[t];
+      }
     }
 
     if(estApresLimiteJourJ){
       let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (Indisponible ⏰)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
     } else if(estBloqueManuellement) {
-      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (Fermé ❌)";o.disabled=true;o.style.color="#777";timeSelect.appendChild(o);
+      let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" ("+motifBlocage+" ❌)";o.disabled=true;o.style.color="#777";timeSelect.appendChild(o);
     } else if(estComplet){
       let o=document.createElement("option");o.value="COMPLET";o.textContent=t+" (complet ⛔)";o.disabled=true;o.style.color="#555";timeSelect.appendChild(o);
     } else {
