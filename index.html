@@ -6,40 +6,62 @@
 <title>Oh! Mikaté - Commande</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body{margin:0;font-family:'Montserrat',sans-serif;background:#000;color:#fff;padding-bottom:72px;}
-.hero{width:100%;max-width:1200px;margin:0 auto;background:#111;overflow:hidden;}
+:root{
+  --ink:#2B1B12;
+  --ink-muted:#7A6A5C;
+  --ink-faint:#A9998A;
+  --bg:#FBF3E7;
+  --surface:#FFFFFF;
+  --surface-alt:#F3E7D4;
+  --border:#E4D3BA;
+  --accent:#A62639;
+  --accent-dark:#7E1B2B;
+  --accent-soft:#F5E2E2;
+  --gold:#D9A441;
+  --gold-soft:#FBF0DC;
+  --success:#3F7D58;
+  --success-soft:#E7F0EA;
+  --error:#B3261E;
+  --error-soft:#F8E6E4;
+  --blue:#3A6B7D;
+  --amber:#C97C2C;
+  --font-display:'Fraunces',serif;
+  --font-body:'Work Sans',sans-serif;
+}
+body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--ink);padding-bottom:72px;}
+.hero{width:100%;max-width:1200px;margin:0 auto;background:var(--surface);overflow:hidden;}
 .hero img{width:100%;height:auto;display:block;}
 .section{padding:20px;max-width:900px;margin:auto;}
 .compose-layout{display:flex;flex-direction:column;gap:10px;}
 .compose-col-left{flex:0 0 auto;}
 .compose-col-right{flex:1 1 auto;min-width:0;}
-h2{font-family:'Bebas Neue',sans-serif;text-align:center;color:#ff4f8b;margin:25px 0;font-size:32px;letter-spacing:2px;text-transform:uppercase;}
-h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-left:10px;margin-top:30px;font-size:22px;margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
-.info-limite{color:#ff4f8b;font-size:13px;font-style:italic;margin-bottom:15px;display:block;}
-.lots-info-box{background:#1a0d14;border:1px solid #4a1f2e;border-left:4px solid #ff4f8b;border-radius:8px;padding:12px 14px;margin:0 0 18px;font-size:13px;line-height:1.65;color:#e3bdcc;}
-.lots-info-box b{color:#ff4f8b;}
-.lots-info-box .lots-info-tip{display:block;margin-top:6px;color:#bbb;}
+h2{font-family:var(--font-display);font-weight:600;text-align:center;color:var(--accent);margin:28px 0 18px;font-size:30px;letter-spacing:0.3px;}
+h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--accent);padding-left:12px;margin-top:32px;font-size:20px;margin-bottom:6px;color:var(--ink);}
+.info-limite{color:var(--ink-muted);font-size:13px;font-style:italic;margin-bottom:15px;display:block;}
+.lots-info-box{background:var(--accent-soft);border:1px solid #E7C9CD;border-left:3px solid var(--accent);border-radius:10px;padding:12px 14px;margin:0 0 18px;font-size:13px;line-height:1.65;color:#6B3A42;}
+.lots-info-box b{color:var(--accent-dark);}
+.lots-info-box .lots-info-tip{display:block;margin-top:6px;color:#8A6D72;}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
-.card{background:#111;border:2px solid #222;border-radius:12px;overflow:hidden;text-align:center;transition:.2s;position:relative;display:flex;flex-direction:column;justify-content:space-between;}
-.card img{width:100%;height:200px;object-fit:contain;background-color:#111;}
-.card p{margin:10px;font-size:14px;font-weight:bold;}
-.qty-controls{display:flex;align-items:center;justify-content:space-between;background:#222;margin:0 10px 10px 10px;border-radius:20px;overflow:hidden;border:1px solid #333;}
-.qty-btn{background:#333;color:white;border:none;width:35px;height:35px;font-size:18px;font-weight:bold;cursor:pointer;transition:.2s;}
-.qty-btn:hover{background:#ff4f8b;}
-.qty-input{font-size:15px;font-weight:bold;width:40px;height:35px;background:transparent;border:none;color:white;text-align:center;-moz-appearance:textfield;}
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;text-align:center;transition:.2s;position:relative;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 1px 3px rgba(43,27,18,0.06);}
+.card img{width:100%;height:200px;object-fit:contain;background-color:var(--surface-alt);}
+.card p{margin:10px;font-size:14px;font-weight:600;}
+.qty-controls{display:flex;align-items:center;justify-content:space-between;background:var(--surface-alt);margin:0 10px 10px 10px;border-radius:20px;overflow:hidden;border:1px solid var(--border);}
+.qty-btn{background:var(--ink);color:var(--surface);border:none;width:35px;height:35px;font-size:18px;font-weight:bold;cursor:pointer;transition:.2s;}
+.qty-btn:hover{background:var(--accent);}
+.qty-input{font-size:15px;font-weight:600;width:40px;height:35px;background:transparent;border:none;color:var(--ink);text-align:center;-moz-appearance:textfield;}
 .qty-input::-webkit-outer-spin-button,.qty-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-.card.has-qty{border-color:#ff4f8b;}
-.box-composer{background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:12px;margin-top:16px;}
-.box-title{font-size:15px;font-weight:bold;color:#ff4f8b;margin-bottom:10px;border-bottom:1px solid #222;padding-bottom:5px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.box-remove-btn{background:transparent;border:1.5px solid #442222;color:#ff6b6b;font-size:12px;font-weight:bold;padding:7px 11px;border-radius:8px;cursor:pointer;flex-shrink:0;font-family:'Montserrat',sans-serif;text-transform:none;letter-spacing:0;transition:.15s;white-space:nowrap;}
-.box-remove-btn:hover{background:#2a0a0a;border-color:#ff4444;}
+.card.has-qty{border-color:var(--accent);box-shadow:0 2px 10px rgba(166,38,57,0.12);}
+.box-composer{background:var(--surface);border:1.5px solid var(--accent);border-radius:14px;padding:12px;margin-top:16px;}
+.box-title{font-size:15px;font-weight:600;color:var(--accent-dark);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.box-remove-btn{background:transparent;border:1.5px solid var(--error);color:var(--error);font-size:12px;font-weight:600;padding:7px 11px;border-radius:8px;cursor:pointer;flex-shrink:0;font-family:var(--font-body);transition:.15s;white-space:nowrap;}
+.box-remove-btn:hover{background:var(--error-soft);}
 .box-remove-btn:active{transform:scale(0.95);}
-.lot-row{background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:8px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;}
-.lot-preview-img{width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid #444;flex-shrink:0;}
+.lot-row{background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:8px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start;}
+.lot-preview-img{width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--border);flex-shrink:0;}
 .lot-content{flex-grow:1;min-width:0;}
-.lot-title{font-size:12px;font-weight:bold;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.lot-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
 .selectors-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
 .lot-selects-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
 .lot-selects-row .chip-section{margin-bottom:0;}
@@ -51,69 +73,69 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
   .lot-selects-row .select-custom{font-size:10.5px;padding:8px 2px;}
 }
 .chip-section{margin-bottom:8px;}
-.chip-label{font-size:10.5px;color:#999;font-weight:bold;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px;}
-.chip-price{color:#ff4f8b;font-weight:normal;text-transform:none;letter-spacing:0;margin-left:4px;}
+.chip-label{font-size:10.5px;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px;}
+.chip-price{color:var(--accent);font-weight:normal;text-transform:none;letter-spacing:0;margin-left:4px;}
 .chip-group{display:flex;flex-wrap:wrap;gap:5px;}
-.chip{background:#000;border:1.5px solid #333;color:#ccc;font-size:11.5px;font-weight:bold;padding:5px 10px;border-radius:16px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:.15s;white-space:nowrap;line-height:1.3;}
+.chip{background:var(--surface);border:1.5px solid var(--border);color:var(--ink-muted);font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:16px;cursor:pointer;font-family:var(--font-body);transition:.15s;white-space:nowrap;line-height:1.3;}
 .chip:active{transform:scale(0.96);}
-.chip.selected{background:#ff4f8b;border-color:#ff4f8b;color:#fff;box-shadow:0 2px 8px rgba(255,79,139,0.35);}
+.chip.selected{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(166,38,57,0.25);}
 .progress-tracker{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 20px;flex-wrap:wrap;}
-.progress-step{display:flex;align-items:center;gap:6px;font-size:11px;color:#666;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;}
-.progress-dot{width:22px;height:22px;border-radius:50%;background:#222;border:1.5px solid #333;color:#666;display:flex;align-items:center;justify-content:center;font-size:11px;}
-.progress-step.step-active{color:#ff4f8b;}
-.progress-step.step-active .progress-dot{border-color:#ff4f8b;color:#ff4f8b;}
-.progress-step.step-done{color:#25D366;}
-.progress-step.step-done .progress-dot{background:#25D366;border-color:#25D366;color:#fff;}
-.progress-line{width:24px;height:1.5px;background:#333;}
-.box-subtotal{color:#ff4f8b;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0;}
-.lot-badge{color:#25D366;font-size:13px;}
-.lot-row.lot-configured{border-color:#25D366;}
+.progress-step{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.progress-dot{width:22px;height:22px;border-radius:50%;background:var(--surface-alt);border:1.5px solid var(--border);color:var(--ink-faint);display:flex;align-items:center;justify-content:center;font-size:11px;}
+.progress-step.step-active{color:var(--accent);}
+.progress-step.step-active .progress-dot{border-color:var(--accent);color:var(--accent);}
+.progress-step.step-done{color:var(--success);}
+.progress-step.step-done .progress-dot{background:var(--success);border-color:var(--success);color:#fff;}
+.progress-line{width:24px;height:1.5px;background:var(--border);}
+.box-subtotal{color:var(--accent);font-size:13px;font-weight:normal;text-transform:none;letter-spacing:0;}
+.lot-badge{color:var(--success);font-size:13px;}
+.lot-row.lot-configured{border-color:var(--success);}
 .lot-tabs{display:flex;gap:6px;margin-bottom:10px;}
-.lot-tab{flex:1;background:#000;border:1.5px solid #333;color:#aaa;font-size:12px;font-weight:bold;padding:8px 6px;border-radius:8px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;transition:.15s;display:flex;align-items:center;justify-content:center;gap:4px;}
-.lot-tab.lot-tab-active{background:#ff4f8b;border-color:#ff4f8b;color:#fff;}
-.lot-tab .lot-tab-check{color:#25D366;font-size:12px;}
+.lot-tab{flex:1;background:var(--surface);border:1.5px solid var(--border);color:var(--ink-muted);font-size:12px;font-weight:600;padding:8px 6px;border-radius:8px;cursor:pointer;font-family:var(--font-body);text-align:center;transition:.15s;display:flex;align-items:center;justify-content:center;gap:4px;}
+.lot-tab.lot-tab-active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.lot-tab .lot-tab-check{color:var(--success);font-size:12px;}
 .lot-tab.lot-tab-active .lot-tab-check{color:#fff;}
 @media (max-width:420px){
   .lot-preview-img{width:48px;height:48px;}
   .lot-tab{font-size:11px;padding:7px 4px;}
 }
-.select-custom{width:100%;padding:10px;background:#000;border:1px solid #444;border-radius:6px;color:white;font-size:13px;height:40px;box-sizing:border-box;}
-.select-custom:focus{border-color:#ff4f8b;outline:none;}
+.select-custom{width:100%;padding:10px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-size:13px;height:40px;box-sizing:border-box;font-family:var(--font-body);}
+.select-custom:focus{border-color:var(--accent);outline:none;}
 .form-group{margin-bottom:15px;}
-.form-group label{display:block;margin-bottom:8px;font-weight:bold;font-size:14px;color:#ccc;}
-.form-group label .requis{color:#ff4f8b;}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px;background:#111;border:2px solid #222;border-radius:8px;color:white;font-size:15px;box-sizing:border-box;}
-.form-group textarea{resize:vertical;font-family:'Montserrat',sans-serif;}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#ff4f8b;outline:none;}
-.input-error{border-color:#ff4444 !important;}
-.input-success{border-color:#25D366 !important;}
-.field-msg{font-size:12px;margin-top:6px;padding:8px 12px;border-radius:8px;display:none;font-weight:bold;}
-.field-msg.error{display:block;background:#2a0a0a;color:#ff6b6b;border:1px solid #ff4444;}
-.field-msg.success{display:block;background:#0a2a12;color:#25D366;border:1px solid #25D366;}
+.form-group label{display:block;margin-bottom:8px;font-weight:600;font-size:14px;color:var(--ink);}
+.form-group label .requis{color:var(--accent);}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;color:var(--ink);font-size:15px;box-sizing:border-box;font-family:var(--font-body);}
+.form-group textarea{resize:vertical;font-family:var(--font-body);}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);outline:none;}
+.input-error{border-color:var(--error) !important;}
+.input-success{border-color:var(--success) !important;}
+.field-msg{font-size:12px;margin-top:6px;padding:8px 12px;border-radius:8px;display:none;font-weight:600;}
+.field-msg.error{display:block;background:var(--error-soft);color:var(--error);border:1px solid #EBB8B2;}
+.field-msg.success{display:block;background:var(--success-soft);color:var(--success);border:1px solid #BFDBCB;}
 .payment-selector{display:flex;gap:10px;margin-top:5px;}
-.pay-opt{flex:1;background:#111;border:2px solid #222;padding:12px;border-radius:8px;color:#fff;font-weight:bold;cursor:pointer;text-align:center;font-size:14px;}
-.pay-opt.selected{border-color:#ff4f8b;background:#201217;}
-.summary{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:2px solid #ff4f8b;z-index:1000;box-shadow:0 -5px 20px rgba(0,0,0,0.5);}
+.pay-opt{flex:1;background:var(--surface);border:1.5px solid var(--border);padding:12px;border-radius:10px;color:var(--ink);font-weight:600;cursor:pointer;text-align:center;font-size:14px;}
+.pay-opt.selected{border-color:var(--accent);background:var(--accent-soft);}
+.summary{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1.5px solid var(--border);z-index:1000;box-shadow:0 -6px 20px rgba(43,27,18,0.08);}
 .summary-content{max-width:900px;margin:auto;}
-.summary-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:999;}
+.summary-backdrop{display:none;position:fixed;inset:0;background:rgba(43,27,18,0.45);z-index:999;}
 .summary-backdrop.show{display:block;}
 .summary-collapsed{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 15px;cursor:pointer;}
 .summary-mini-info{display:flex;align-items:center;gap:8px;min-width:0;}
 .summary-cart-icon{font-size:18px;flex-shrink:0;}
-.summary-mini-total{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:1px;white-space:nowrap;}
-.summary-mini-count{font-size:11px;color:#999;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.summary-toggle-btn{background:#ff4f8b;border:none;color:#fff;font-family:'Montserrat',sans-serif;font-weight:bold;font-size:12px;padding:9px 14px;border-radius:20px;display:flex;align-items:center;gap:6px;cursor:pointer;text-transform:uppercase;letter-spacing:0.4px;flex-shrink:0;white-space:nowrap;}
+.summary-mini-total{font-family:var(--font-display);font-weight:600;font-size:21px;letter-spacing:0.2px;white-space:nowrap;color:var(--ink);}
+.summary-mini-count{font-size:11px;color:var(--ink-muted);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.summary-toggle-btn{background:var(--accent);border:none;color:#fff;font-family:var(--font-body);font-weight:600;font-size:12px;padding:9px 14px;border-radius:20px;display:flex;align-items:center;gap:6px;cursor:pointer;text-transform:uppercase;letter-spacing:0.4px;flex-shrink:0;white-space:nowrap;}
 .summary-toggle-btn .chevron{display:inline-block;transition:transform .25s;font-size:10px;}
 .summary.expanded .summary-toggle-btn .chevron{transform:rotate(180deg);}
 .summary-expanded{max-height:0;overflow:hidden;transition:max-height .3s ease;}
-.summary.expanded .summary-expanded{max-height:75vh;overflow-y:auto;border-top:1px solid #222;}
+.summary.expanded .summary-expanded{max-height:75vh;overflow-y:auto;border-top:1px solid var(--border);}
 .summary-expanded-inner{padding:15px;}
-#recap{font-size:13px;max-height:120px;overflow-y:auto;margin-bottom:10px;color:#ccc;padding-right:5px;}
+#recap{font-size:13px;max-height:120px;overflow-y:auto;margin-bottom:10px;color:var(--ink-muted);padding-right:5px;}
 .recap-full-box{margin-top:16px;position:sticky;top:12px;}
-#recap-full{font-size:13px;max-height:none;color:#ccc;line-height:1.6;}
-#recap-full small{color:#999;}
-.recap-full-total{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #333;margin-top:10px;padding-top:10px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:#fff;}
-.recap-full-total span:last-child{color:#ff4f8b;}
+#recap-full{font-size:13px;max-height:none;color:var(--ink-muted);line-height:1.6;}
+#recap-full small{color:var(--ink-faint);}
+.recap-full-total{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);margin-top:10px;padding-top:10px;font-family:var(--font-display);font-weight:600;font-size:20px;letter-spacing:0.2px;color:var(--ink);}
+.recap-full-total span:last-child{color:var(--accent);}
 @media (min-width:700px){
   .retrait-layout{flex-direction:row;align-items:flex-start;gap:20px;}
   .retrait-layout .compose-col-left{flex:0 0 300px;}
@@ -123,51 +145,51 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
   .summary-mini-total{font-size:18px;}
   .summary-toggle-btn{font-size:11px;padding:8px 11px;}
 }
-.total{font-size:22px;font-weight:bold;margin:5px 0 12px 0;display:flex;justify-content:space-between;font-family:'Bebas Neue',sans-serif;}
-.btn{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:12px;border-radius:40px;margin-top:8px;font-weight:bold;text-decoration:none;color:#fff;border:none;width:100%;box-sizing:border-box;font-size:16px;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:0.3s;}
-.btn:hover{filter:brightness(1.2);transform:translateY(-2px);}
-.btn:disabled,.btn.disabled{background:#222!important;color:#555!important;border:1px solid #333!important;cursor:not-allowed;transform:none!important;}
-.paypal{background:#ff4f8b;}
-.especes{background:#333;border:1px solid #555;}
-.whatsapp{background:#25D366;}
-.smsbtn{background:#007aff;}
-.phonebtn{background:#ff9500;}
-.small{font-size:11px;opacity:0.8;text-align:center;margin-top:8px;line-height:15px;color:#ddd;}
-#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#ff4f8b;color:white;padding:12px 25px;border-radius:30px;font-weight:bold;box-shadow:0 4px 15px rgba(255,79,139,0.4);transition:0.4s;opacity:0;z-index:9999;text-align:center;}
+.total{font-size:22px;font-weight:600;margin:5px 0 12px 0;display:flex;justify-content:space-between;font-family:var(--font-display);}
+.btn{font-family:var(--font-body);display:block;text-align:center;padding:13px;border-radius:10px;margin-top:8px;font-weight:600;text-decoration:none;color:#fff;border:none;width:100%;box-sizing:border-box;font-size:15px;cursor:pointer;letter-spacing:0.2px;transition:0.2s;}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.btn:disabled,.btn.disabled{background:var(--surface-alt)!important;color:var(--ink-faint)!important;border:1px solid var(--border)!important;cursor:not-allowed;transform:none!important;}
+.paypal{background:var(--accent);}
+.especes{background:var(--surface-alt);border:1px solid var(--border);color:var(--ink);}
+.whatsapp{background:var(--success);}
+.smsbtn{background:var(--blue);}
+.phonebtn{background:var(--amber);}
+.small{font-size:11px;opacity:0.85;text-align:center;margin-top:8px;line-height:15px;color:var(--ink-muted);}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--ink);color:var(--bg);padding:12px 25px;border-radius:30px;font-weight:600;box-shadow:0 4px 15px rgba(43,27,18,0.25);transition:0.4s;opacity:0;z-index:9999;text-align:center;}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-.confirm-modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:2000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
+.confirm-modal-backdrop{display:none;position:fixed;inset:0;background:rgba(43,27,18,0.5);z-index:2000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;}
 .confirm-modal-backdrop.show{display:flex;}
-.confirm-modal{background:#111;border:2px solid #ff4f8b;border-radius:14px;padding:22px;max-width:340px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.6);}
-.confirm-modal-text{font-size:15px;color:#fff;margin-bottom:18px;line-height:1.5;font-weight:bold;}
+.confirm-modal{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:22px;max-width:340px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(43,27,18,0.2);}
+.confirm-modal-text{font-size:15px;color:var(--ink);margin-bottom:18px;line-height:1.5;font-weight:600;}
 .confirm-modal-actions{display:flex;gap:10px;}
-.confirm-modal-btn{flex:1;padding:12px;border-radius:24px;border:none;font-family:'Montserrat',sans-serif;font-weight:bold;font-size:13px;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;}
-.confirm-modal-btn.cancel{background:#222;color:#ccc;border:1px solid #444;}
-.confirm-modal-btn.confirm{background:#ff4444;color:#fff;}
+.confirm-modal-btn{flex:1;padding:12px;border-radius:10px;border:none;font-family:var(--font-body);font-weight:600;font-size:13px;cursor:pointer;letter-spacing:0.3px;}
+.confirm-modal-btn.cancel{background:var(--surface-alt);color:var(--ink-muted);border:1px solid var(--border);}
+.confirm-modal-btn.confirm{background:var(--error);color:#fff;}
 .confirm-modal-btn:active{transform:scale(0.96);}
-#confirmation-page{display:none;min-height:100vh;padding:30px 20px 60px;box-sizing:border-box;background:#000;}
+#confirmation-page{display:none;min-height:100vh;padding:30px 20px 60px;box-sizing:border-box;background:var(--bg);}
 .confirm-wrapper{max-width:600px;margin:0 auto;}
 .confirm-header{text-align:center;margin-bottom:30px;}
-.confirm-header .check-icon{width:80px;height:80px;background:linear-gradient(135deg,#25D366,#1aa750);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;box-shadow:0 0 30px rgba(37,211,102,0.4);animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);}
+.confirm-header .check-icon{width:80px;height:80px;background:linear-gradient(135deg,var(--success),#2E6144);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;box-shadow:0 0 30px rgba(63,125,88,0.3);animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);}
 @keyframes popIn{0%{transform:scale(0);opacity:0;}100%{transform:scale(1);opacity:1;}}
-.confirm-header h1{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#fff;margin:0 0 8px;letter-spacing:2px;}
-.confirm-header p{color:#aaa;font-size:14px;margin:0;}
-.confirm-card{background:#111;border:1px solid #2a2a2a;border-radius:16px;overflow:hidden;margin-bottom:20px;}
-.confirm-card-header{background:#1a1a1a;padding:14px 20px;border-bottom:1px solid #222;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#ff4f8b;display:flex;align-items:center;gap:8px;}
+.confirm-header h1{font-family:var(--font-display);font-weight:600;font-size:32px;color:var(--ink);margin:0 0 8px;letter-spacing:0.2px;}
+.confirm-header p{color:var(--ink-muted);font-size:14px;margin:0;}
+.confirm-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:20px;}
+.confirm-card-header{background:var(--surface-alt);padding:14px 20px;border-bottom:1px solid var(--border);font-family:var(--font-display);font-weight:600;font-size:17px;letter-spacing:0.2px;color:var(--accent-dark);display:flex;align-items:center;gap:8px;}
 .confirm-card-body{padding:20px;}
-.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid #1e1e1e;gap:12px;}
+.info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);gap:12px;}
 .info-row:last-child{border-bottom:none;}
-.info-label{color:#888;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0;padding-top:2px;}
-.info-value{color:#fff;font-size:14px;font-weight:bold;text-align:right;}
-.order-detail-box{background:#0a0a0a;border:1px solid #222;border-radius:10px;padding:15px;font-size:13px;line-height:1.8;color:#ccc;white-space:pre-wrap;word-break:break-word;}
-.total-line{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#1a0d12;border-top:2px solid #ff4f8b;font-family:'Bebas Neue',sans-serif;font-size:24px;color:#ff4f8b;}
+.info-label{color:var(--ink-faint);font-size:12px;text-transform:uppercase;letter-spacing:0.5px;flex-shrink:0;padding-top:2px;}
+.info-value{color:var(--ink);font-size:14px;font-weight:600;text-align:right;}
+.order-detail-box{background:var(--surface-alt);border:1px solid var(--border);border-radius:10px;padding:15px;font-size:13px;line-height:1.8;color:var(--ink-muted);white-space:pre-wrap;word-break:break-word;}
+.total-line{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--accent-soft);border-top:2px solid var(--accent);font-family:var(--font-display);font-weight:600;font-size:22px;color:var(--accent-dark);}
 .action-section{margin-bottom:20px;}
-.action-section h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:#fff;margin:0 0 12px;border-left:none;padding-left:0;}
-.action-section p{font-size:13px;color:#888;margin:0 0 14px;line-height:1.5;}
-.cancel-section{text-align:center;padding:20px;background:#111;border-radius:12px;border:1px solid #222;}
-.cancel-section h4{color:#aaa;font-size:14px;margin:0 0 12px;font-weight:normal;}
+.action-section h3{font-family:var(--font-display);font-weight:600;font-size:19px;letter-spacing:0.2px;color:var(--ink);margin:0 0 12px;border-left:none;padding-left:0;}
+.action-section p{font-size:13px;color:var(--ink-muted);margin:0 0 14px;line-height:1.5;}
+.cancel-section{text-align:center;padding:20px;background:var(--surface);border-radius:14px;border:1.5px solid var(--border);}
+.cancel-section h4{color:var(--ink-muted);font-size:14px;margin:0 0 12px;font-weight:normal;}
 .cancel-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.cancel-link{font-size:13px;padding:8px 16px;border-radius:20px;text-decoration:none;font-weight:bold;}
-.btn-nouvelle{background:none;border:1px solid #333;color:#555;font-size:12px;padding:10px 20px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;margin-top:16px;display:block;width:100%;text-align:center;}
+.cancel-link{font-size:13px;padding:8px 16px;border-radius:20px;text-decoration:none;font-weight:600;}
+.btn-nouvelle{background:none;border:1px solid var(--border);color:var(--ink-faint);font-size:12px;padding:10px 20px;border-radius:20px;cursor:pointer;font-family:var(--font-body);margin-top:16px;display:block;width:100%;text-align:center;}
 </style>
 </head>
 <body>
@@ -182,22 +204,32 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
   </div>
 </div>
 
+<div id="limite-modal-backdrop" class="confirm-modal-backdrop">
+  <div class="confirm-modal">
+    <div class="confirm-modal-text">📦 Commande limitée à 10 boîtes maximum.<br><br>Pour une commande plus importante, envoie un SMS au <strong style="color:#A62639;">06 98 21 33 80</strong>.</div>
+    <div class="confirm-modal-actions">
+      <button type="button" class="confirm-modal-btn cancel" onclick="document.getElementById('limite-modal-backdrop').classList.remove('show')">Compris</button>
+      <a href="sms:0698213380" class="confirm-modal-btn confirm" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">💬 Envoyer un SMS</a>
+    </div>
+  </div>
+</div>
+
 <!-- PAGE PRINCIPALE -->
 <div id="main-page">
 <div class="hero"><img src="Images/Flyer4.jpg" alt="Oh! Mikaté Flyer"></div>
-<div style="background:#111;padding:15px;text-align:center;font-size:14px;margin:15px;border-radius:10px;border:1px solid #333;">
+<div style="background:#FFFFFF;padding:15px;text-align:center;font-size:14px;margin:15px;border-radius:10px;border:1px solid #E4D3BA;">
 ⭐ Préparation à la commande<br>📍 Retrait sur Reims
-  <section style="margin:20px 15px;padding:20px;background:#222;border-radius:10px;border:1px solid #ff4f8b;">
-    <h2 style="color:#ff4f8b;text-align:center;margin-top:0;">Oh! Mikaté : Authentiques beignets congolais à Reims</h2>
-    <p style="line-height:1.6;color:#ccc;text-align:center;">Envie d'une pause gourmande ? Découvrez les <strong>Mikatés</strong>, préparés avec passion à <strong>Reims</strong>. Je vous propose une expérience gustative à petits prix: des <strong>beignets</strong> bien moelleux, déclinables avec les nappages et garnitures proposés.</p>
-    <p style="line-height:1.6;color:#ccc;text-align:center;margin-bottom:0;">Idéal pour vos événements ou vos pauses gourmandes, commandez vos boîtes en ligne et venez les récupérer sur place.</p>
-    <div style="text-align:center;margin-top:20px;border-top:1px solid #444;padding-top:15px;">
-      <h3 style="font-size:16px;color:#ff4f8b;margin-bottom:10px;">Rejoignez Oh! Mikaté</h3>
+  <section style="margin:20px 15px;padding:20px;background:#F3E7D4;border-radius:10px;border:1px solid #A62639;">
+    <h2 style="color:#A62639;text-align:center;margin-top:0;">Oh! Mikaté : Authentiques beignets congolais à Reims</h2>
+    <p style="line-height:1.6;color:#7A6A5C;text-align:center;">Envie d'une pause gourmande ? Découvrez les <strong>Mikatés</strong>, préparés avec passion à <strong>Reims</strong>. Je vous propose une expérience gustative à petits prix: des <strong>beignets</strong> bien moelleux, déclinables avec les nappages et garnitures proposés.</p>
+    <p style="line-height:1.6;color:#7A6A5C;text-align:center;margin-bottom:0;">Idéal pour vos événements ou vos pauses gourmandes, commandez vos boîtes en ligne et venez les récupérer sur place.</p>
+    <div style="text-align:center;margin-top:20px;border-top:1px solid #E4D3BA;padding-top:15px;">
+      <h3 style="font-size:16px;color:#A62639;margin-bottom:10px;">Rejoignez Oh! Mikaté</h3>
       <div style="display:flex;justify-content:center;gap:15px;margin-bottom:10px;">
         <a href="https://www.snapchat.com/add/ohmikate" target="_blank" style="text-decoration:none;font-size:14px;background:#FFFC00;color:#000;padding:6px 12px;border-radius:20px;font-weight:bold;">👻 Snapchat</a>
         <a href="https://www.instagram.com/oh_mikate" target="_blank" style="text-decoration:none;font-size:14px;background:#E1306C;color:#fff;padding:6px 12px;border-radius:20px;font-weight:bold;">📸 Instagram</a>
       </div>
-      <p style="font-size:11px;color:#aaa;font-style:italic;line-height:1.3;margin-top:10px;"><strong>Stock en temps réel, promos, nouveautés et offres spéciales !</strong></p>
+      <p style="font-size:11px;color:#7A6A5C;font-style:italic;line-height:1.3;margin-top:10px;"><strong>Stock en temps réel, promos, nouveautés et offres spéciales !</strong></p>
     </div>
   </section>
 </div>
@@ -214,7 +246,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 <div class="compose-layout">
 <div class="compose-col compose-col-left">
 <h3>1. Choisis ton format de boîte</h3>
-<span class="info-limite" style="color:#ccc;">Sélectionne une ou plusieurs boîtes pour personnaliser tes beignets.</span>
+<span class="info-limite" style="color:#7A6A5C;">Sélectionne une ou plusieurs boîtes pour personnaliser tes beignets.</span>
 <div class="grid">
   <div class="card product-card" data-name="9 beignets" data-price="5">
     <img src="Images/Beignet9.jpg">
@@ -240,9 +272,9 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 <div id="composition-zone"></div>
 </div><!-- end compose-col-right -->
 </div><!-- end compose-layout -->
-<div style="background:#222;padding:15px;border-radius:8px;margin:20px 0;border-left:4px solid #ff4f8b;">
-  <h3 style="margin-top:0;color:#ff4f8b;font-size:18px;">⚠️ Informations Allergènes</h3>
-  <p style="font-size:13px;line-height:1.5;color:#ccc;">Les Mikatés peuvent contenir ou être en contact avec : <strong>gluten (blé), arachides, fruits à coque, produits laitiers (lait) et soja</strong>. Merci de nous signaler toute allergie sévère dans la zone "Précisions" ci-dessous.</p>
+<div style="background:#F3E7D4;padding:15px;border-radius:8px;margin:20px 0;border-left:4px solid #A62639;">
+  <h3 style="margin-top:0;color:#A62639;font-size:18px;">⚠️ Informations Allergènes</h3>
+  <p style="font-size:13px;line-height:1.5;color:#7A6A5C;">Les Mikatés peuvent contenir ou être en contact avec : <strong>gluten (blé), arachides, fruits à coque, produits laitiers (lait) et soja</strong>. Merci de nous signaler toute allergie sévère dans la zone "Précisions" ci-dessous.</p>
 </div>
 <h3>3. Tes informations de retrait</h3>
 <div class="compose-layout retrait-layout">
@@ -254,7 +286,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
   </div>
 </div><!-- end compose-col-left -->
 <div class="compose-col compose-col-right">
-<span class="info-limite" style="color:#aaa;font-style:normal;">📍 L'adresse complète te sera transmise lors de la validation de ton créneau.</span>
+<span class="info-limite" style="color:#7A6A5C;font-style:normal;">📍 L'adresse complète te sera transmise lors de la validation de ton créneau.</span>
 <div class="form-group">
   <label for="client-name">Ton Prénom : <span class="requis">*</span></label>
   <input type="text" id="client-name" placeholder="Ex: Marie Dupont" oninput="updateUI()">
@@ -279,11 +311,13 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
   <textarea id="client-notes" rows="3" placeholder="Ex: Ajoutez les détails souhaités !" oninput="updateUI()"></textarea>
 </div>
 <div class="form-group">
-  <label>Montant à régler en ligne (Wero ou PayPal) : <span class="requis">*</span></label>
+  <label>Mode de règlement : <span class="requis">*</span></label>
   <div class="payment-selector">
-    <div id="opt-acompte" class="pay-opt" onclick="selectPayment('acompte')">💰 Acompte (50%)</div>
+    <div id="opt-acompte" class="pay-opt" style="display:none;" onclick="selectPayment('acompte')">💰 Acompte (50%)<br><span style="font-weight:normal;font-size:11px;opacity:0.75;">en ligne ou en espèces</span></div>
     <div id="opt-total" class="pay-opt" onclick="selectPayment('total')">✅ Totalité (100%)</div>
   </div>
+  <div id="opt-especes" class="pay-opt" style="display:none;margin-top:8px;" onclick="selectPayment('especes')">💵 Tout payer en espèces à la commande</div>
+  <div id="seuil-note" style="display:none;font-size:12px;color:#A9998A;margin-top:6px;line-height:1.5;">ℹ️ À partir de 10€ de commande, un acompte (en ligne ou en espèces) ou le règlement total en ligne est obligatoire pour valider ta commande.</div>
 </div>
 </div><!-- end compose-col-right -->
 </div><!-- end retrait-layout -->
@@ -306,23 +340,32 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       <div class="summary-expanded-inner">
         <div id="recap">Aucune sélection</div>
         <div class="total"><span>Total :</span><span><span id="total">0.00</span> €</span></div>
-        <div id="cgv-wrap" style="display:none;margin:8px 0;background:#111;border:1px solid #333;border-radius:10px;padding:12px;">
-          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#aaa;line-height:1.5;">
-            <input type="checkbox" id="cgv-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#ff4f8b;flex-shrink:0;margin-top:2px;">
-            <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#ff4f8b;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté.</span>
+        <div id="cgv-wrap" style="display:none;margin:8px 0;background:#FFFFFF;border:1px solid #E4D3BA;border-radius:10px;padding:12px;">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#7A6A5C;line-height:1.5;">
+            <input type="checkbox" id="cgv-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#A62639;flex-shrink:0;margin-top:2px;">
+            <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#A62639;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté.</span>
           </label>
         </div>
-        <div id="deposit-wrap" style="display:none;margin:8px 0;background:#1a0d14;border:1px solid #ff4f8b;border-radius:10px;padding:14px;">
-          <div id="deposit-title" style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ff4f8b;letter-spacing:1px;margin-bottom:8px;">💰 ACOMPTE OBLIGATOIRE (50%)</div>
-          <div id="deposit-text" style="font-size:13px;color:#ccc;line-height:1.6;margin-bottom:10px;"></div>
-          <div style="background:#111;border:1px solid #333;border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px;color:#ccc;">
-            📲 <strong style="color:#fff;">Via Wero</strong> : envoie <span id="deposit-wero-label">l'acompte</span> au <strong style="color:#fff;">06 98 21 33 80</strong> (Oh! Mikaté) depuis ton appli bancaire.
+        <div id="deposit-wrap" style="display:none;margin:8px 0;background:#F5E2E2;border:1px solid #A62639;border-radius:10px;padding:14px;">
+          <div id="deposit-title" style="font-family:var(--font-display);font-size:16px;color:#A62639;letter-spacing:1px;margin-bottom:8px;">💰 ACOMPTE OBLIGATOIRE (50%)</div>
+          <div id="deposit-text" style="font-size:13px;color:#7A6A5C;line-height:1.6;margin-bottom:10px;"></div>
+          <div style="background:#FFFFFF;border:1px solid #E4D3BA;border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px;color:#7A6A5C;">
+            📲 <strong style="color:#2B1B12;">Via Wero</strong> : envoie <span id="deposit-wero-label">l'acompte</span> au <strong style="color:#2B1B12;">06 98 21 33 80</strong> (Oh! Mikaté) depuis ton appli bancaire.
           </div>
-          <a id="paypal-link" href="#" target="_blank" class="btn" style="background:#0070ba;margin-top:0;margin-bottom:10px;font-size:14px;padding:11px;">💳 Payer <span id="paypal-label">l'acompte</span> via PayPal</a>
-          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#aaa;line-height:1.5;">
-            <input type="checkbox" id="deposit-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#ff4f8b;flex-shrink:0;margin-top:2px;">
-            <span>J'ai réglé <span id="deposit-check-label">mon acompte</span> de <strong id="deposit-amount-2" style="color:#fff;">0.00€</strong> via Wero ou PayPal.</span>
-          </label>
+          <a id="paypal-link" href="#" target="_blank" class="btn" style="background:#3A6B7D;margin-top:0;margin-bottom:10px;font-size:14px;padding:11px;">💳 Payer <span id="paypal-label">l'acompte</span> via PayPal</a>
+          <div id="deposit-check-wrap-total" style="display:none;">
+            <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#7A6A5C;line-height:1.5;">
+              <input type="checkbox" id="deposit-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#A62639;flex-shrink:0;margin-top:2px;">
+              <span>J'ai réglé <span id="deposit-check-label">la totalité</span> de <strong id="deposit-amount-2" style="color:#2B1B12;">0.00€</strong> via Wero ou PayPal.</span>
+            </label>
+          </div>
+          <div id="deposit-choice-wrap" style="display:none;">
+            <div style="font-size:12px;color:#A9998A;margin-bottom:8px;">Comment souhaites-tu régler ton acompte de <strong id="deposit-amount-2b" style="color:#2B1B12;">0.00€</strong> ?</div>
+            <div style="display:flex;gap:8px;">
+              <div id="deposit-choice-online" class="pay-opt" style="flex:1;font-size:13px;padding:10px;" onclick="selectDepositChoice('online')">💳 J'ai réglé en ligne</div>
+              <div id="deposit-choice-cash" class="pay-opt" style="flex:1;font-size:13px;padding:10px;border-color:#D9A441;" onclick="selectDepositChoice('cash')">💵 Je viens déposer en espèces</div>
+            </div>
+          </div>
         </div>
         <a id="whatsapp" class="btn whatsapp disabled" target="_blank" onclick="return checkForm(event,'WhatsApp')">📲 Envoyer ma commande sur WhatsApp</a>
         <button id="sms-btn" class="btn smsbtn disabled" onclick="triggerSMS(event)">💬 Valider ma commande par SMS</button>
@@ -338,7 +381,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
 <div id="especes-page" style="display:none;">
   <div class="confirm-wrapper">
     <div class="confirm-header">
-      <div class="check-icon" style="background:linear-gradient(135deg,#ff9500,#ff6b00);">📋</div>
+      <div class="check-icon" style="background:linear-gradient(135deg,#C97C2C,#A6591E);">📋</div>
       <h1>Commande envoyée !</h1>
       <p>Votre commande a bien été transmise. Conservez ce récapitulatif.</p>
     </div>
@@ -348,7 +391,7 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
         <div class="info-row"><span class="info-label">Prénom</span><span class="info-value" id="e-name">—</span></div>
         <div class="info-row"><span class="info-label">Date de retrait</span><span class="info-value" id="e-date">—</span></div>
         <div class="info-row"><span class="info-label">Créneau</span><span class="info-value" id="e-time">—</span></div>
-        <div class="info-row"><span class="info-label" id="e-deposit-label">Acompte réglé</span><span class="info-value" id="e-deposit" style="color:#25D366;">—</span></div>
+        <div class="info-row"><span class="info-label" id="e-deposit-label">Acompte réglé</span><span class="info-value" id="e-deposit" style="color:#3F7D58;">—</span></div>
         <div class="info-row"><span class="info-label" id="e-remaining-label">Solde</span><span class="info-value" id="e-remaining">—</span></div>
       </div>
     </div>
@@ -357,22 +400,22 @@ h3{font-family:'Bebas Neue',sans-serif;border-left:4px solid #ff4f8b;padding-lef
       <div class="confirm-card-body"><div id="e-order-detail" class="order-detail-box">—</div></div>
       <div class="total-line"><span>Total à prévoir</span><span id="e-total">0,00 €</span></div>
     </div>
-    <div style="background:#111;border:1px solid #ff9500;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+    <div style="background:#FFFFFF;border:1px solid #C97C2C;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
       <div style="font-size:22px;margin-bottom:8px;">⏳</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ff9500;letter-spacing:1px;margin-bottom:8px;">CONFIRMATION SOUS 30 MINUTES</div>
-      <div style="font-size:13px;color:#aaa;line-height:1.7;">Votre commande est en cours de validation.<br>Vous recevrez très prochainement un message de confirmation avec l'adresse exacte de retrait.<br><br><strong id="e-appoint-note" style="color:#fff;">💡 Pensez à prévoir l'appoint exact !</strong></div>
+      <div style="font-family:var(--font-display);font-size:16px;color:#C97C2C;letter-spacing:1px;margin-bottom:8px;">CONFIRMATION SOUS 30 MINUTES</div>
+      <div style="font-size:13px;color:#7A6A5C;line-height:1.7;">Votre commande est en cours de validation.<br>Vous recevrez très prochainement un message de confirmation avec l'adresse exacte de retrait.<br><br><strong id="e-appoint-note" style="color:#2B1B12;">💡 Pensez à prévoir l'appoint exact !</strong></div>
     </div>
     <div class="cancel-section">
       <h4>Un empêchement ? Vous pouvez annuler votre commande :</h4>
       <div class="cancel-links">
-        <a id="e-cancel-whatsapp" href="#" class="cancel-link" style="background:#ff4f8b22;color:#ff4f8b;border:1px solid #ff4f8b;">📲 Annuler via WhatsApp</a>
-        <a id="e-cancel-sms" href="#" class="cancel-link" style="background:#007aff22;color:#007aff;border:1px solid #007aff;">💬 Annuler par SMS</a>
-        <a href="tel:0698213380" class="cancel-link" style="background:#ff950022;color:#ff9500;border:1px solid #ff9500;">📞 Annuler par appel</a>
+        <a id="e-cancel-whatsapp" href="#" class="cancel-link" style="background:#A6263922;color:#A62639;border:1px solid #A62639;">📲 Annuler via WhatsApp</a>
+        <a id="e-cancel-sms" href="#" class="cancel-link" style="background:#3A6B7D22;color:#3A6B7D;border:1px solid #3A6B7D;">💬 Annuler par SMS</a>
+        <a href="tel:0698213380" class="cancel-link" style="background:#C97C2C22;color:#C97C2C;border:1px solid #C97C2C;">📞 Annuler par appel</a>
       </div>
     </div>
-    <div style="text-align:center;margin-top:20px;padding:16px;background:#111;border-radius:12px;border:1px solid #222;">
-      <div style="font-size:13px;color:#888;margin-bottom:8px;">Une question ?</div>
-      <a href="mailto:ohmikate51@gmail.com" style="color:#ff4f8b;text-decoration:none;font-weight:bold;font-size:14px;">📧 ohmikate51@gmail.com</a>
+    <div style="text-align:center;margin-top:20px;padding:16px;background:#FFFFFF;border-radius:12px;border:1px solid #E4D3BA;">
+      <div style="font-size:13px;color:#A9998A;margin-bottom:8px;">Une question ?</div>
+      <a href="mailto:ohmikate51@gmail.com" style="color:#A62639;text-decoration:none;font-weight:bold;font-size:14px;">📧 ohmikate51@gmail.com</a>
     </div>
     <button class="btn-nouvelle" onclick="nouvelleCommande()">🔄 Passer une nouvelle commande</button>
   </div>
@@ -385,9 +428,11 @@ const boxPrices={"9 beignets":5.0,"12 beignets":7.0};
 const nappagePrices={"Aucun":0,"Chocolat":0.50,"Caramel":0.50,"Pistache":1.50,"Bueno":1.00};
 const garnitureprix={"Aucun":0,"Éclats M&M's":0.50,"Éclats Spéculoos":0.50,"Éclats Cacahuète":0.50,"Éclat de pistache":1.50,"Bueno":1.00};
 const potPrices={"Aucun":0,"Pot Nutella":0.50,"Pot Pâte d'arachide":0.50,"Pot Pistache":1.50,"Pot Bueno":1.00};
-let depositMode=""; // "acompte" (50%) ou "total" (100%)
+let depositMode=""; // "acompte" (50%) ou "total" (100%) ou "especes" (0% en ligne, tout à la commande)
+let depositCashChoice=""; // pour le mode acompte : "online" ou "cash"
 const targetPhone="0698213380";
-const depositRates={acompte:0.5,total:1.0};
+const depositRates={acompte:0.5,total:1.0,especes:0};
+const SEUIL_ACOMPTE_OBLIGATOIRE=10; // en dessous de ce montant, le paiement en ligne devient facultatif
 const paypalMeLink="https://www.paypal.com/paypalme/ohmikate";
 const baseHours=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
 let espècesPageAffichée=false;
@@ -399,6 +444,7 @@ const SHEET_URL_READONLY=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gvi
 const SHEET_URL_BLOCAGES=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Fermetures`;
 
 const MAX_COMMANDES_PAR_CRENEAU=5;
+const MAX_BOITES_PAR_COMMANDE=10;
 let orderCounts={};
 let manuelsBlocages={}; // Stockera les fermetures définies par vos soins
 
@@ -439,14 +485,14 @@ async function chargerComptesCreneaux(){
       let dateText = row.c[0] ? String(row.c[0].v).trim() : "";
       let creneauText = row.c[1] ? String(row.c[1].v).trim() : "";
       let motifText = row.c[2] && row.c[2].v!==null ? String(row.c[2].v).trim() : "";
-      if(!motifText) motifText="Plein";
       if(!dateText || !creneauText) return;
 
       if(!blocages[dateText]) blocages[dateText]={all:null,slots:{}};
 
       if(creneauText.toUpperCase() === "TOUT"){
-        blocages[dateText].all = motifText;
-      } else {
+        blocages[dateText].all = motifText || "Plein";
+      } else if(motifText){
+        // Un créneau précis n'est bloqué que si un motif est réellement renseigné
         blocages[dateText].slots[creneauText] = motifText;
       }
     });
@@ -481,6 +527,14 @@ function changeBoxQty(type,change){
 }
 function setBoxQty(type,value){
   let val=Math.max(0,parseInt(value)||0);
+  let otherType=type==="9 beignets"?"12 beignets":"9 beignets";
+  let otherVal=boxesSelected[otherType]||0;
+  if(val+otherVal>MAX_BOITES_PAR_COMMANDE){
+    val=Math.max(0,MAX_BOITES_PAR_COMMANDE-otherVal);
+    let qtyInput=document.getElementById(type==="9 beignets"?"qty-9":"qty-12");
+    if(qtyInput)qtyInput.value=val;
+    showLimiteBoitesModal();
+  }
   boxesSelected[type]=val;
   let card=document.querySelector(`[data-name="${type}"]`);
   if(val>0)card.classList.add("has-qty");else card.classList.remove("has-qty");
@@ -794,34 +848,76 @@ function updateUI(){
   const summaryBar=document.getElementById("summary-bar");
   if(boxesSelected["9 beignets"]>0||boxesSelected["12 beignets"]>0)summaryBar.classList.add("show");else summaryBar.classList.remove("show");
   const btnsCommunication=[document.getElementById("whatsapp"),document.getElementById("sms-btn"),document.getElementById("phone-btn")];
+  let especesOptEl=document.getElementById("opt-especes");
+  let acompteOptEl=document.getElementById("opt-acompte");
+  let seuilNoteEl=document.getElementById("seuil-note");
+  if(total>0&&total<SEUIL_ACOMPTE_OBLIGATOIRE){
+    especesOptEl.style.display="block";
+    acompteOptEl.style.display="none";
+    seuilNoteEl.style.display="none";
+    if(depositMode==="acompte")depositMode="";
+  }else{
+    especesOptEl.style.display="none";
+    acompteOptEl.style.display="block";
+    seuilNoteEl.style.display=total>0?"block":"none";
+    if(depositMode==="especes")depositMode="";
+  }
   document.getElementById("opt-acompte").classList.toggle("selected",depositMode==='acompte');
   document.getElementById("opt-total").classList.toggle("selected",depositMode==='total');
+  especesOptEl.classList.toggle("selected",depositMode==='especes');
   if(depositMode==="acompte"||depositMode==="total"){
     let rate=depositRates[depositMode];
     let depositAmount=total*rate;
     let remaining=total-depositAmount;
     document.getElementById("cgv-wrap").style.display="block";
     document.getElementById("deposit-wrap").style.display="block";
+    let totalCheckWrap=document.getElementById("deposit-check-wrap-total");
+    let choiceWrap=document.getElementById("deposit-choice-wrap");
     if(depositMode==="total"){
+      totalCheckWrap.style.display="block";
+      choiceWrap.style.display="none";
+      depositCashChoice="";
       document.getElementById("deposit-title").textContent="✅ RÈGLEMENT INTÉGRAL (100%)";
-      document.getElementById("deposit-text").innerHTML=`Pour valider ta commande, la totalité, soit <strong style="color:#fff;">${depositAmount.toFixed(2)}€</strong>, est à régler dès maintenant via Wero ou PayPal. Il n'y aura rien à régler au retrait.`;
+      document.getElementById("deposit-text").innerHTML=`Pour valider ta commande, la totalité, soit <strong style="color:#2B1B12;">${depositAmount.toFixed(2)}€</strong>, est à régler dès maintenant via Wero ou PayPal. Il n'y aura rien à régler au retrait.`;
       document.getElementById("deposit-wero-label").textContent="le montant total";
       document.getElementById("paypal-label").textContent="la totalité";
-      document.getElementById("deposit-check-label").textContent="la totalité";
+      document.getElementById("deposit-amount-2").textContent=depositAmount.toFixed(2)+"€";
     }else{
+      totalCheckWrap.style.display="none";
+      choiceWrap.style.display="block";
       document.getElementById("deposit-title").textContent="💰 ACOMPTE (50%)";
-      document.getElementById("deposit-text").innerHTML=`Pour valider ta commande, un acompte de <strong style="color:#fff;">${depositAmount.toFixed(2)}€</strong> est à régler dès maintenant via Wero ou PayPal. Le solde de <strong style="color:#fff;">${remaining.toFixed(2)}€</strong> te sera demandé via Wero ou PayPal lors de la confirmation de ta commande, ou au plus tard lorsqu'elle sera prête.`;
+      document.getElementById("deposit-text").innerHTML=`Pour valider ta commande, un acompte de <strong style="color:#2B1B12;">${depositAmount.toFixed(2)}€</strong> est à régler dès maintenant (en ligne ou en espèces). Le solde de <strong style="color:#2B1B12;">${remaining.toFixed(2)}€</strong> te sera demandé lors de la confirmation de ta commande, ou au plus tard lorsqu'elle sera prête.`;
       document.getElementById("deposit-wero-label").textContent="l'acompte";
       document.getElementById("paypal-label").textContent="l'acompte";
-      document.getElementById("deposit-check-label").textContent="mon acompte";
+      document.getElementById("deposit-amount-2b").textContent=depositAmount.toFixed(2)+"€";
+      document.getElementById("deposit-choice-online").classList.toggle("selected",depositCashChoice==='online');
+      document.getElementById("deposit-choice-cash").classList.toggle("selected",depositCashChoice==='cash');
     }
-    document.getElementById("deposit-amount-2").textContent=depositAmount.toFixed(2)+"€";
     document.getElementById("paypal-link").href=paypalMeLink+"/"+depositAmount.toFixed(2)+"EUR";
     btnsCommunication.forEach(btn=>{btn.style.display="block";});
     document.querySelector(".small").style.display="block";
     let cgvOk=document.getElementById("cgv-check").checked;
-    let depositOk=document.getElementById("deposit-check").checked;
+    let depositOk=depositMode==="total"?document.getElementById("deposit-check").checked:!!depositCashChoice;
     let shouldEnable=isFormValid()&&cgvOk&&depositOk;
+    btnsCommunication.forEach(btn=>{
+      if(shouldEnable){btn.removeAttribute("disabled");btn.classList.remove("disabled");}
+      else{btn.setAttribute("disabled","true");btn.classList.add("disabled");}
+    });
+    let whatsappMsg=encodeURIComponent(getOrderText(false,"WhatsApp"));
+    let waEl=document.getElementById("whatsapp");
+    waEl.href="https://wa.me/33"+targetPhone.substring(1)+"?text="+whatsappMsg;
+    waEl.onclick=function(e){
+      if(!checkForm(e,"WhatsApp"))return false;
+      setTimeout(()=>afficherPageEspeces("WhatsApp"),800);
+      return true;
+    };
+  }else if(depositMode==="especes"){
+    document.getElementById("cgv-wrap").style.display="block";
+    document.getElementById("deposit-wrap").style.display="none";
+    btnsCommunication.forEach(btn=>{btn.style.display="block";});
+    document.querySelector(".small").style.display="block";
+    let cgvOk=document.getElementById("cgv-check").checked;
+    let shouldEnable=isFormValid()&&cgvOk;
     btnsCommunication.forEach(btn=>{
       if(shouldEnable){btn.removeAttribute("disabled");btn.classList.remove("disabled");}
       else{btn.setAttribute("disabled","true");btn.classList.add("disabled");}
@@ -876,8 +972,12 @@ function checkForm(event,canal="WhatsApp"){
   if(!isFormValid()){showToast("⚠️ Formulaire incomplet !");if(event)event.preventDefault();return false;}
   let cgvOk=document.getElementById("cgv-check")?.checked;
   if(!cgvOk){showToast("⚠️ Veuillez accepter les CGV !");if(event)event.preventDefault();return false;}
-  let depositOk=document.getElementById("deposit-check")?.checked;
-  if(!depositOk){showToast(depositMode==="total"?"⚠️ Merci de confirmer le règlement de la totalité !":"⚠️ Merci de confirmer le règlement de l'acompte !");if(event)event.preventDefault();return false;}
+  if(depositMode==="total"){
+    let depositOk=document.getElementById("deposit-check")?.checked;
+    if(!depositOk){showToast("⚠️ Merci de confirmer le règlement de la totalité !");if(event)event.preventDefault();return false;}
+  }else if(depositMode==="acompte"){
+    if(!depositCashChoice){showToast("⚠️ Merci d'indiquer comment tu règles ton acompte !");if(event)event.preventDefault();return false;}
+  }
   return true;
 }
 
@@ -889,11 +989,15 @@ function getOrderText(cleanForSms=false,canal="WhatsApp"){
   let noteField=document.getElementById("client-notes").value.trim();
   let orderInfo=calculateTotalAndExtractStructure();
   let payText;
-  let rate=depositRates[depositMode]||0.5;
+  let rate=depositRates.hasOwnProperty(depositMode)?depositRates[depositMode]:0.5;
   let depositAmount=orderInfo.totalPrice*rate;
   let remaining=orderInfo.totalPrice-depositAmount;
   if(depositMode==="total"){
     payText=`Totalité réglée via Wero/PayPal (${depositAmount.toFixed(2)}€) — rien à régler au retrait`;
+  }else if(depositMode==="especes"){
+    payText=`Paiement intégral (${orderInfo.totalPrice.toFixed(2)}€) en espèces ou CB à la commande, aucun montant réglé en ligne.`;
+  }else if(depositMode==="acompte"&&depositCashChoice==="cash"){
+    payText=`⚠️ Le client souhaite venir DÉPOSER L'ACOMPTE EN ESPÈCES (${depositAmount.toFixed(2)}€) + Solde de ${remaining.toFixed(2)}€ à régler une fois la commande prête ou en espèces/CB sur place.`;
   }else{
     payText=`Acompte de ${depositAmount.toFixed(2)}€ reglé + Solde de ${remaining.toFixed(2)}€ a régler une fois la commande prête ou en espèces ou CB sur place.`;
   }
@@ -934,10 +1038,12 @@ function afficherPageEspeces(canalEspeces="WhatsApp"){
   let time=document.getElementById("client-time").value;
   let phone=normalizePhone(document.getElementById("client-phone").value.trim());
   let orderInfo=calculateTotalAndExtractStructure();
-  let rate=depositRates[depositMode]||0.5;
+  let rate=depositRates.hasOwnProperty(depositMode)?depositRates[depositMode]:0.5;
   let depositAmount=orderInfo.totalPrice*rate;
   let remaining=orderInfo.totalPrice-depositAmount;
   let isTotal=depositMode==="total";
+  let isEspeces=depositMode==="especes";
+  let isAcompteCash=depositMode==="acompte"&&depositCashChoice==="cash";
   document.getElementById("main-page").style.display="none";
   document.getElementById("especes-page").style.display="block";
   document.body.style.paddingBottom="0";
@@ -947,18 +1053,18 @@ function afficherPageEspeces(canalEspeces="WhatsApp"){
   fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
     method:"POST",mode:"no-cors",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({name,phone,order:orderInfo.detailsText,total:orderInfo.totalPrice.toFixed(2),acompte:depositAmount.toFixed(2),solde:remaining.toFixed(2),payment:isTotal?"Totalité réglée (Wero/PayPal)":"Acompte réglé (Wero/PayPal)",date:dateStr,dateRetrait:date,creneau:time,canal:canalEspeces})
+    body:JSON.stringify({name,phone,order:orderInfo.detailsText,total:orderInfo.totalPrice.toFixed(2),acompte:depositAmount.toFixed(2),solde:remaining.toFixed(2),payment:isEspeces?"Paiement intégral en espèces/CB à la commande":(isTotal?"Totalité réglée (Wero/PayPal)":(isAcompteCash?"Acompte à déposer en espèces":"Acompte réglé (Wero/PayPal)")),date:dateStr,dateRetrait:date,creneau:time,canal:canalEspeces})
   });
   document.getElementById("e-name").textContent=name||"—";
   document.getElementById("e-date").textContent=date||"—";
   document.getElementById("e-time").textContent=time||"—";
   document.getElementById("e-order-detail").textContent=orderInfo.detailsText||"—";
   document.getElementById("e-total").textContent=orderInfo.totalPrice.toFixed(2)+" €";
-  document.getElementById("e-deposit-label").textContent=isTotal?"Réglé en ligne":"Acompte réglé";
-  document.getElementById("e-deposit").textContent=depositAmount.toFixed(2)+" € ✅";
-  document.getElementById("e-remaining-label").textContent=isTotal?"Solde":"Solde (via Wero/PayPal)";
-  document.getElementById("e-remaining").textContent=remaining.toFixed(2)+" €";
-  document.getElementById("e-appoint-note").textContent=isTotal?"💡 Rien à régler, votre commande est entièrement payée !":"💡 Le solde vous sera demandé via Wero ou PayPal, à la confirmation de votre commande ou lorsqu'elle sera prête.";
+  document.getElementById("e-deposit-label").textContent=isEspeces?"Réglé en ligne":(isTotal?"Réglé en ligne":(isAcompteCash?"Acompte à déposer":"Acompte réglé"));
+  document.getElementById("e-deposit").textContent=isEspeces?"0.00 €":(isAcompteCash?(depositAmount.toFixed(2)+" € (en espèces)"):(depositAmount.toFixed(2)+" € ✅"));
+  document.getElementById("e-remaining-label").textContent=isEspeces?"À régler à la commande":(isTotal?"Solde":"Solde (au retrait)");
+  document.getElementById("e-remaining").textContent=isEspeces?(orderInfo.totalPrice.toFixed(2)+" €"):(remaining.toFixed(2)+" €");
+  document.getElementById("e-appoint-note").textContent=isEspeces?"💡 Le montant total sera à régler en espèces ou par CB à la commande.":(isTotal?"💡 Rien à régler, votre commande est entièrement payée !":(isAcompteCash?"💡 Passe déposer ton acompte en espèces, le solde sera réglé au retrait.":"💡 Le solde vous sera demandé via Wero ou PayPal, à la confirmation de votre commande ou lorsqu'elle sera prête."));
   let msgAnnul=`Bonjour, je souhaite annuler ma commande :\n\n📅 Date souhaitée : ${date}\n⏰ Créneau : ${time}\n💰 Total : ${orderInfo.totalPrice.toFixed(2)} €\n\n📦 Détail :\n${orderInfo.detailsText}\n\nMerci de confirmer l'annulation.`;
   let msgAnnulSMS=msgAnnul.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
   document.getElementById("e-cancel-whatsapp").href="https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnul);
@@ -971,8 +1077,14 @@ function afficherPageEspeces(canalEspeces="WhatsApp"){
 
 function selectPayment(mode){
   depositMode=mode;
+  depositCashChoice="";
   updateUI();
   toggleSummary(true);
+}
+
+function selectDepositChoice(choice){
+  depositCashChoice=choice;
+  updateUI();
 }
 
 function nouvelleCommande(){
@@ -1053,6 +1165,13 @@ function handleDateChange(){
   });
   updateUI();
 }
+
+function showLimiteBoitesModal(){
+  document.getElementById("limite-modal-backdrop").classList.add("show");
+}
+document.getElementById("limite-modal-backdrop").addEventListener("click",function(e){
+  if(e.target===this)this.classList.remove("show");
+});
 
 function showToast(m){const t=document.getElementById("toast");t.innerHTML=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),5000);}
 
