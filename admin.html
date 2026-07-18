@@ -4,157 +4,185 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Oh! Mikaté — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+:root{
+  --ink:#2B1B12;
+  --ink-muted:#7A6A5C;
+  --ink-faint:#A9998A;
+  --bg:#FBF3E7;
+  --surface:#FFFFFF;
+  --surface-alt:#F3E7D4;
+  --border:#D9C29E;
+  --accent:#A62639;
+  --accent-dark:#7E1B2B;
+  --accent-soft:#F5E2E2;
+  --gold:#D9A441;
+  --gold-soft:#FBF0DC;
+  --success:#3F7D58;
+  --success-soft:#E7F0EA;
+  --error:#B3261E;
+  --error-soft:#F8E6E4;
+  --blue:#3A6B7D;
+  --blue-soft:#E4EEF1;
+  --amber:#C97C2C;
+  --amber-soft:#FBEEDD;
+  --purple:#6B5B95;
+  --purple-soft:#EDEAF7;
+  --font-display:'Fraunces',serif;
+  --font-body:'Work Sans',sans-serif;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:100vh;padding:20px 15px 60px;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-height:100vh;padding:20px 15px 60px;}
 #login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
-.login-card{background:#111;border:2px solid #ff4f8b;border-radius:20px;padding:35px 25px;max-width:360px;width:100%;text-align:center;}
-.login-card h1{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#ff4f8b;letter-spacing:2px;margin-bottom:6px;}
-.login-card p{font-size:12px;color:#888;margin-bottom:24px;}
-.login-card input{width:100%;padding:13px;background:#1a1a1a;border:2px solid #333;border-radius:10px;color:#fff;font-size:16px;text-align:center;letter-spacing:3px;margin-bottom:14px;font-family:'Montserrat',sans-serif;}
-.login-card input:focus{border-color:#ff4f8b;outline:none;}
-.login-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:13px;width:100%;font-size:18px;cursor:pointer;letter-spacing:1px;}
-.login-error{color:#ff4444;font-size:13px;margin-top:10px;display:none;}
+.login-card{background:var(--surface);border:2px solid var(--accent);border-radius:18px;padding:35px 25px;max-width:360px;width:100%;text-align:center;box-shadow:0 4px 20px rgba(43,27,18,0.08);}
+.login-card h1{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--accent);letter-spacing:0.3px;margin-bottom:6px;}
+.login-card p{font-size:12px;color:var(--ink-muted);margin-bottom:24px;}
+.login-card input{width:100%;padding:13px;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:10px;color:var(--ink);font-size:16px;text-align:center;letter-spacing:3px;margin-bottom:14px;font-family:var(--font-body);}
+.login-card input:focus{border-color:var(--accent);outline:none;}
+.login-btn{font-family:var(--font-body);font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px;width:100%;font-size:16px;cursor:pointer;letter-spacing:0.3px;}
+.login-error{color:var(--error);font-size:13px;margin-top:10px;display:none;}
 #admin-screen{display:none;}
-.header{text-align:center;padding:20px 0 16px;border-bottom:2px solid #ff4f8b;margin-bottom:20px;}
-.header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#ff4f8b;letter-spacing:2px;}
-.header p{font-size:11px;color:#888;margin-top:4px;}
+.header{text-align:center;padding:20px 0 16px;border-bottom:2px solid var(--accent);margin-bottom:20px;}
+.header h1{font-family:var(--font-display);font-weight:600;font-size:24px;color:var(--accent);letter-spacing:0.3px;}
+.header p{font-size:11px;color:var(--ink-muted);margin-top:4px;}
 .toolbar{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;align-items:center;flex-wrap:wrap;}
 .page-tabs{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;}
-.page-tab{flex:1;background:#111;border:2px solid #222;color:#888;font-size:13px;font-weight:bold;padding:11px 10px;border-radius:10px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;transition:.15s;}
-.page-tab.page-tab-active{background:#ff4f8b;border-color:#ff4f8b;color:#fff;}
-.page-tab-badge{display:inline-block;background:#ff9500;color:#fff;font-size:11px;font-weight:bold;padding:1px 7px;border-radius:10px;margin-left:6px;}
-.page-tab.page-tab-active .page-tab-badge{background:#fff;color:#ff4f8b;}
-.histo-jour{background:#111;border:2px solid #222;border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
+.page-tab{flex:1;background:var(--surface);border:1.5px solid var(--accent);color:var(--accent-dark);font-size:13px;font-weight:600;padding:11px 10px;border-radius:10px;cursor:pointer;font-family:var(--font-body);text-align:center;transition:.15s;}
+.page-tab.page-tab-active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.page-tab-badge{display:inline-block;background:var(--amber);color:#fff;font-size:11px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px;}
+.page-tab.page-tab-active .page-tab-badge{background:#fff;color:var(--accent);}
+.histo-jour{background:var(--surface);border:2px solid var(--accent);border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
 .histo-jour-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
-.histo-jour-titre{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#fff;}
+.histo-jour-titre{font-family:var(--font-display);font-weight:600;font-size:17px;letter-spacing:0.2px;color:var(--ink);}
 .histo-jour-stats{display:flex;gap:14px;align-items:center;}
-.histo-jour-nb{font-size:12px;color:#888;}
-.histo-jour-ca{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;}
-.histo-jour-chevron{color:#666;font-size:13px;margin-left:8px;transition:transform .2s;}
+.histo-jour-nb{font-size:12px;color:var(--ink-muted);}
+.histo-jour-ca{font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--accent);}
+.histo-jour-chevron{color:var(--ink-faint);font-size:13px;margin-left:8px;transition:transform .2s;}
 .histo-jour-chevron.open{transform:rotate(180deg);}
-.histo-jour-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #222;}
+.histo-jour-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
 .histo-jour-detail.open{display:block;}
-.histo-ligne{display:flex;justify-content:space-between;align-items:start;padding:10px 0;border-bottom:1px solid #1a1a1a;font-size:13px;gap:8px;}
+.histo-ligne{display:flex;justify-content:space-between;align-items:start;padding:10px 0;border-bottom:1px solid var(--surface-alt);font-size:13px;gap:8px;}
 .histo-ligne:last-child{border-bottom:none;}
-.histo-ligne-nom{color:#fff;font-weight:bold;}
-.histo-ligne-meta{color:#777;font-size:11px;margin-top:3px;}
-.histo-ligne-boites{font-size:11px;color:#ff9500;margin-top:3px;}
-.histo-ligne-prix{color:#ff4f8b;font-weight:bold;white-space:nowrap;}
-.histo-totaux-globaux{display:flex;justify-content:space-around;max-width:600px;margin:0 auto 16px;background:#111;border:2px solid #ff4f8b;border-radius:12px;padding:14px;}
+.histo-ligne-nom{color:var(--ink);font-weight:600;}
+.histo-ligne-meta{color:var(--ink-faint);font-size:11px;margin-top:3px;}
+.histo-ligne-boites{font-size:11px;color:var(--amber);margin-top:3px;}
+.histo-ligne-prix{color:var(--accent);font-weight:600;white-space:nowrap;}
+.histo-totaux-globaux{display:flex;justify-content:space-around;max-width:600px;margin:0 auto 16px;background:var(--surface);border:1.5px solid var(--accent);border-radius:12px;padding:14px;}
 .histo-total-item{text-align:center;}
-.histo-total-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;}
-.histo-total-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
-.histo-copy-btn{display:block;width:100%;margin-top:12px;background:#1a1a2e;border:1px solid #635bff;color:#a09af0;font-size:12px;font-weight:bold;padding:8px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;}
-.histo-copy-btn:hover{background:#25244a;}
+.histo-total-num{font-family:var(--font-display);font-weight:600;font-size:21px;color:var(--ink);}
+.histo-total-lbl{font-size:10px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.5px;}
+.histo-copy-btn{display:block;width:100%;margin-top:12px;background:var(--purple);border:2px solid var(--purple);color:#fff;font-size:12px;font-weight:600;padding:8px;border-radius:20px;cursor:pointer;font-family:var(--font-body);text-align:center;}
+.histo-copy-btn:hover{filter:brightness(1.08);}
 .histo-tabs{display:flex;gap:8px;max-width:600px;margin:0 auto 14px;}
-.histo-tab{flex:1;background:#111;border:1.5px solid #222;color:#888;font-size:12px;font-weight:bold;padding:9px 8px;border-radius:8px;cursor:pointer;font-family:'Montserrat',sans-serif;text-align:center;}
-.histo-tab.active{background:#ff4f8b;border-color:#ff4f8b;color:#fff;}
-.histo-search{width:100%;background:#111;border:1.5px solid #333;color:#fff;font-size:13px;padding:10px 14px;border-radius:10px;font-family:'Montserrat',sans-serif;box-sizing:border-box;margin-bottom:14px;max-width:600px;display:block;margin-left:auto;margin-right:auto;}
-.histo-search:focus{border-color:#ff4f8b;outline:none;}
-.client-card{background:#111;border:2px solid #222;border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
+.histo-tab{flex:1;background:var(--surface);border:1.5px solid var(--accent);color:var(--accent-dark);font-size:12px;font-weight:600;padding:9px 8px;border-radius:8px;cursor:pointer;font-family:var(--font-body);text-align:center;}
+.histo-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.histo-search{width:100%;background:var(--surface);border:1.5px solid var(--accent);color:var(--ink);font-size:13px;padding:10px 14px;border-radius:10px;font-family:var(--font-body);box-sizing:border-box;margin-bottom:14px;max-width:600px;display:block;margin-left:auto;margin-right:auto;}
+.histo-search:focus{border-color:var(--accent);outline:none;}
+.client-card{background:var(--surface);border:2px solid var(--accent);border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
 .client-card-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
-.client-nom{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;letter-spacing:1px;}
+.client-nom{font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--ink);letter-spacing:0.2px;}
 .client-stats{text-align:right;}
-.client-ca{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#ff4f8b;}
-.client-nb{font-size:11px;color:#888;}
-.client-badge-fidele{display:inline-block;background:#ff4f8b22;border:1px solid #ff4f8b;color:#ff4f8b;font-size:10px;font-weight:bold;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;}
-.client-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #222;}
+.client-ca{font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--accent);}
+.client-nb{font-size:11px;color:var(--ink-muted);}
+.client-badge-fidele{display:inline-block;background:var(--gold-soft);border:1px solid var(--gold);color:#8A6512;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;}
+.client-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
 .client-detail.open{display:block;}
-.refresh-btn{font-family:'Bebas Neue',sans-serif;background:#ff4f8b;color:#fff;border:none;border-radius:30px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;white-space:nowrap;}
-.filter-select{flex:1;min-width:120px;padding:10px;background:#111;border:2px solid #222;border-radius:10px;color:#fff;font-size:13px;font-family:'Montserrat',sans-serif;}
-.filter-select:focus{border-color:#ff4f8b;outline:none;}
+.refresh-btn{font-family:var(--font-body);font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:14px;cursor:pointer;white-space:nowrap;}
+.filter-select{flex:1;min-width:120px;padding:10px;background:var(--surface);border:1.5px solid var(--accent);border-radius:10px;color:var(--ink);font-size:13px;font-family:var(--font-body);}
+.filter-select:focus{border-color:var(--accent);outline:none;}
 .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:600px;margin:0 auto 16px;}
-.stat-box{background:#111;border:1px solid #222;border-radius:10px;padding:10px;text-align:center;}
-.stat-box .num{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#ff4f8b;}
-.stat-box .num.green{color:#25D366;}
-.stat-box .num.blue{color:#007aff;}
-.stat-box .num.orange{color:#ff9500;font-size:19px;}
-.stat-box .lbl{font-size:9px;color:#888;text-transform:uppercase;letter-spacing:0.5px;}
+.stat-box{background:var(--surface);border:1.5px solid var(--accent);border-radius:10px;padding:10px;text-align:center;}
+.stat-box .num{font-family:var(--font-display);font-weight:600;font-size:22px;color:var(--accent);}
+.stat-box .num.green{color:var(--success);}
+.stat-box .num.blue{color:var(--blue);}
+.stat-box .num.orange{color:var(--amber);font-size:18px;}
+.stat-box .lbl{font-size:9px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.5px;}
 
 /* GROUPE JOUR */
 .jour-group{max-width:600px;margin:0 auto 20px;}
-.jour-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#1a1a1a;border-radius:10px;margin-bottom:10px;border-left:4px solid #ff4f8b;}
-.jour-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#fff;}
-.jour-stats{font-size:12px;color:#888;text-align:right;}
-.jour-ca{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ff4f8b;}
-.jour-count{font-size:11px;color:#888;}
+.jour-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--surface-alt);border-radius:10px;margin-bottom:10px;border-left:3px solid var(--accent);}
+.jour-title{font-family:var(--font-display);font-weight:600;font-size:17px;letter-spacing:0.2px;color:var(--ink);}
+.jour-stats{font-size:12px;color:var(--ink-muted);text-align:right;}
+.jour-ca{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--accent);}
+.jour-count{font-size:11px;color:var(--ink-muted);}
 
 /* CRÉNEAUX */
 .creneaux-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:0 4px;}
-.creneaux-date-label{font-size:11px;color:#888;font-weight:bold;padding:0 4px;margin:8px 0 4px;}
-.creneau-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:bold;cursor:pointer;transition:filter .15s;}
-.creneau-badge:hover{filter:brightness(1.3);}
-.creneau-libre{background:#0a2a12;color:#25D366;border:1px solid #25D36644;}
-.creneau-charge{background:#2a1a00;color:#ff9500;border:1px solid #ff950044;}
-.creneau-plein{background:#2a0a0a;color:#ff4444;border:1px solid #ff444444;}
-.creneau-urgent{background:#ff4444;color:#fff;animation:pulse 1s infinite;}
+.creneaux-date-label{font-size:11px;color:var(--ink-muted);font-weight:600;padding:0 4px;margin:8px 0 4px;}
+.creneau-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;cursor:pointer;transition:filter .15s;}
+.creneau-badge:hover{filter:brightness(0.95);}
+.creneau-libre{background:var(--success-soft);color:var(--success);border:1px solid #BFDBCB;}
+.creneau-charge{background:var(--amber-soft);color:var(--amber);border:1px solid #EFD3AC;}
+.creneau-plein{background:var(--error-soft);color:var(--error);border:1px solid #EBB8B2;}
+.creneau-urgent{background:var(--error);color:#fff;animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
-@keyframes highlight-flash{0%{box-shadow:0 0 0 0 rgba(255,79,139,0);border-color:inherit;}25%{box-shadow:0 0 0 5px rgba(255,79,139,0.7);border-color:#ff4f8b;}75%{box-shadow:0 0 0 3px rgba(255,79,139,0.3);border-color:#ff4f8b;}100%{box-shadow:0 0 0 0 rgba(255,79,139,0);border-color:inherit;}}
+@keyframes highlight-flash{0%{box-shadow:0 0 0 0 rgba(166,38,57,0);border-color:inherit;}25%{box-shadow:0 0 0 5px rgba(166,38,57,0.4);border-color:var(--accent);}75%{box-shadow:0 0 0 3px rgba(166,38,57,0.2);border-color:var(--accent);}100%{box-shadow:0 0 0 0 rgba(166,38,57,0);border-color:inherit;}}
 .commande-highlight{animation:highlight-flash 2s ease-out;}
-.commande-highlight-secondary{border-color:#ff4f8b44!important;box-shadow:0 0 0 2px rgba(255,79,139,0.15);}
+.commande-highlight-secondary{border-color:#A6263944!important;box-shadow:0 0 0 2px rgba(166,38,57,0.1);}
 
 /* CARTE COMMANDE */
-.commande-card{background:#111;border:1px solid #222;border-radius:14px;padding:16px;margin-bottom:10px;}
-.commande-card.nouvelle{border-color:#ff4f8b;box-shadow:0 0 10px rgba(255,79,139,0.1);}
-.commande-card.confirmee{border-color:#25D366;opacity:0.8;}
-.commande-card.urgente{border-color:#ff9500;box-shadow:0 0 10px rgba(255,149,0,0.2);}
-.commande-card.prete{border-color:#007aff;opacity:0.85;}
-.badge{display:inline-block;font-size:10px;font-weight:bold;padding:3px 8px;border-radius:20px;margin-bottom:8px;letter-spacing:1px;}
-.badge-new{background:#ff4f8b;color:#fff;}
-.badge-ok{background:#25D366;color:#fff;}
-.badge-urgent{background:#ff9500;color:#fff;animation:pulse 1s infinite;}
-.badge-prete{background:#007aff;color:#fff;}
-.btn-prete{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#007aff;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
-.btn-prete:hover{filter:brightness(1.15);}
+.commande-card{background:var(--surface);border:2px solid var(--accent);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(43,27,18,0.07);}
+.commande-card.nouvelle{border-color:var(--accent);box-shadow:0 0 10px rgba(166,38,57,0.08);}
+.commande-card.confirmee{border-color:var(--success);opacity:0.9;}
+.commande-card.urgente{border-color:var(--amber);box-shadow:0 0 10px rgba(201,124,44,0.15);}
+.commande-card.prete{border-color:var(--blue);opacity:0.92;}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;margin-bottom:8px;letter-spacing:0.3px;}
+.badge-new{background:var(--accent);color:#fff;}
+.badge-ok{background:var(--success);color:#fff;}
+.badge-urgent{background:var(--amber);color:#fff;animation:pulse 1s infinite;}
+.badge-prete{background:var(--blue);color:#fff;}
+.btn-prete{font-family:var(--font-body);font-weight:600;display:block;text-align:center;padding:11px;border-radius:10px;font-size:14px;color:#fff;text-decoration:none;background:var(--blue);margin-bottom:7px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.btn-prete:hover{filter:brightness(1.08);}
 .commande-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
-.client-name{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;}
-.commande-meta{font-size:11px;color:#666;margin-top:2px;line-height:1.5;}
-.canal-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:bold;}
-.canal-wa{background:#25D36622;color:#25D366;border:1px solid #25D36644;}
-.canal-sms{background:#007aff22;color:#007aff;border:1px solid #007aff44;}
-.canal-carte{background:#635bff22;color:#a09af0;border:1px solid #635bff44;}
+.client-name{font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--ink);}
+.commande-meta{font-size:11px;color:var(--ink-faint);margin-top:2px;line-height:1.5;}
+.canal-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;}
+.canal-wa{background:var(--success-soft);color:var(--success);border:1px solid #BFDBCB;}
+.canal-sms{background:var(--blue-soft);color:var(--blue);border:1px solid #C7DBE1;}
+.canal-carte{background:var(--purple-soft);color:var(--purple);border:1px solid #D6D0EA;}
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
-.info-item{background:#1a1a1a;border-radius:8px;padding:8px 10px;}
-.info-item .label{font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;}
-.info-item .value{font-size:13px;font-weight:bold;color:#fff;}
+.info-item{background:var(--surface-alt);border-radius:8px;padding:8px 10px;}
+.info-item .label{font-size:10px;color:var(--ink-muted);text-transform:uppercase;margin-bottom:2px;}
+.info-item .value{font-size:13px;font-weight:600;color:var(--ink);}
 .info-item.full{grid-column:1/-1;}
-.detail-box{background:#0a0a0a;border:1px solid #1e1e1e;border-radius:8px;padding:10px;font-size:12px;color:#aaa;line-height:1.7;white-space:pre-wrap;margin-top:4px;}
+.detail-box{background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:12px;color:var(--ink-muted);line-height:1.7;white-space:pre-wrap;margin-top:4px;}
 .recap-boites{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
-.recap-boite-chip{background:#1a1410;border:1px solid #ff9500;color:#ff9500;font-size:12px;font-weight:bold;padding:5px 10px;border-radius:8px;}
-.total-row{display:flex;justify-content:space-between;padding:8px 12px;background:#1a0d12;border-radius:8px;margin:10px 0;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#ff4f8b;}
-.btn-wa{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#25D366;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
-.btn-sms{font-family:'Bebas Neue',sans-serif;display:block;text-align:center;padding:11px;border-radius:30px;font-size:14px;color:#fff;text-decoration:none;background:#007aff;margin-bottom:7px;letter-spacing:1px;border:none;width:100%;cursor:pointer;transition:0.2s;}
-.btn-wa:hover,.btn-sms:hover{filter:brightness(1.15);}
+.recap-boite-chip{background:var(--amber-soft);border:1px solid var(--amber);color:var(--amber);font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;}
+.total-row{display:flex;justify-content:space-between;padding:8px 12px;background:var(--accent-soft);border-radius:8px;margin:10px 0;font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--accent-dark);}
+.btn-wa{font-family:var(--font-body);font-weight:600;display:block;text-align:center;padding:11px;border-radius:10px;font-size:14px;color:#fff;text-decoration:none;background:var(--success);margin-bottom:7px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.btn-sms{font-family:var(--font-body);font-weight:600;display:block;text-align:center;padding:11px;border-radius:10px;font-size:14px;color:#fff;text-decoration:none;background:var(--blue);margin-bottom:7px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.btn-wa:hover,.btn-sms:hover{filter:brightness(1.08);}
 .actions-sec{display:flex;gap:8px;margin-top:4px;}
-.btn-marquer{flex:1;background:none;border:1px solid #333;color:#888;font-size:11px;padding:8px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:0.2s;}
-.btn-supp{flex:1;background:none;border:1px solid #ff444433;color:#ff6666;font-size:11px;padding:8px;border-radius:20px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:0.2s;}
-.btn-marquer:hover{border-color:#25D366;color:#25D366;}
-.btn-supp:hover{background:#ff444422;}
+.btn-marquer{flex:1;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-dark);font-size:11px;font-weight:600;padding:8px;border-radius:20px;cursor:pointer;font-family:var(--font-body);transition:0.2s;}
+.btn-supp{flex:1;background:var(--error-soft);border:2px solid var(--error);color:var(--error);font-size:11px;padding:8px;border-radius:20px;cursor:pointer;font-family:var(--font-body);transition:0.2s;}
+.btn-marquer:hover{border-color:var(--success);color:var(--success);}
+.btn-supp:hover{background:var(--error-soft);}
 .checkbox-wrap{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.cmd-checkbox{width:20px;height:20px;accent-color:#ff4f8b;cursor:pointer;flex-shrink:0;}
-.selection-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#111;border-top:2px solid #ff4f8b;padding:12px 16px;max-width:600px;margin:0 auto;border-radius:16px 16px 0 0;z-index:100;}
+.cmd-checkbox{width:20px;height:20px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.selection-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:var(--surface);border-top:2px solid var(--accent);padding:12px 16px;max-width:600px;margin:0 auto;border-radius:16px 16px 0 0;z-index:100;box-shadow:0 -6px 20px rgba(43,27,18,0.08);}
 .selection-bar.show{display:block;}
 .selection-bar-content{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-.sel-count{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ff4f8b;flex:1;}
-.btn-sel-conf{font-family:'Bebas Neue',sans-serif;background:#25D366;color:#fff;border:none;border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;}
-.btn-sel-supp{font-family:'Bebas Neue',sans-serif;background:#ff4444;color:#fff;border:none;border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;}
-.btn-sel-annul{font-family:'Bebas Neue',sans-serif;background:#333;color:#aaa;border:none;border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;letter-spacing:1px;}
+.sel-count{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--accent);flex:1;}
+.btn-sel-conf{font-family:var(--font-body);font-weight:600;background:var(--success);color:#fff;border:none;border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;}
+.btn-sel-supp{font-family:var(--font-body);font-weight:600;background:var(--error);color:#fff;border:none;border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;}
+.btn-sel-annul{font-family:var(--font-body);font-weight:600;background:var(--surface);color:var(--accent-dark);border:1.5px solid var(--accent);border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;}
 .tout-select-wrap{display:flex;align-items:center;gap:8px;max-width:600px;margin:0 auto 10px;padding:8px 4px;}
-.tout-select-wrap label{font-size:13px;color:#888;cursor:pointer;}
-.loading{text-align:center;padding:40px;color:#888;font-size:14px;}
-#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:#ff4f8b;color:white;padding:11px 22px;border-radius:30px;font-weight:bold;transition:0.4s;opacity:0;z-index:9999;font-size:13px;text-align:center;}
+.tout-select-wrap label{font-size:13px;color:var(--ink-muted);cursor:pointer;}
+.loading{text-align:center;padding:40px;color:var(--ink-muted);font-size:14px;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--ink-muted);font-size:14px;max-width:600px;margin:0 auto;}
+.empty-state p{margin:0;}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--ink);color:var(--bg);padding:11px 22px;border-radius:30px;font-weight:600;transition:0.4s;opacity:0;z-index:9999;font-size:13px;text-align:center;}
 #toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-.popup{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9998;align-items:center;justify-content:center;padding:20px;}
+.popup{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(43,27,18,0.5);z-index:9998;align-items:center;justify-content:center;padding:20px;}
 .popup.show{display:flex;}
-.popup-box{background:#1a1a1a;border:2px solid #ff4444;border-radius:16px;padding:24px;max-width:320px;width:100%;text-align:center;}
-.popup-box h3{color:#ff6666;font-size:18px;margin-bottom:10px;}
-.popup-box p{font-size:13px;color:#aaa;margin-bottom:18px;line-height:1.5;}
+.popup-box{background:var(--surface);border:1.5px solid var(--error);border-radius:16px;padding:24px;max-width:320px;width:100%;text-align:center;}
+.popup-box h3{color:var(--error);font-size:17px;margin-bottom:10px;font-family:var(--font-display);font-weight:600;}
+.popup-box p{font-size:13px;color:var(--ink-muted);margin-bottom:18px;line-height:1.5;}
 .popup-btns{display:flex;gap:10px;}
-.popup-btns button{flex:1;padding:12px;border-radius:20px;font-family:'Bebas Neue',sans-serif;font-size:15px;cursor:pointer;border:none;letter-spacing:1px;}
-.btn-ok-supp{background:#ff4444;color:#fff;}
-.btn-cancel{background:#222;color:#aaa;}
+.popup-btns button{flex:1;padding:12px;border-radius:10px;font-family:var(--font-body);font-weight:600;font-size:14px;cursor:pointer;border:none;}
+.btn-ok-supp{background:var(--error);color:#fff;}
+.btn-cancel{background:var(--surface-alt);color:var(--ink-muted);}
 </style>
 </head>
 <body>
@@ -166,6 +194,18 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
     <div class="popup-btns">
       <button class="btn-cancel" onclick="fermerPopup()">Annuler</button>
       <button class="btn-ok-supp" onclick="confirmerSuppression()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup" id="popup-solde">
+  <div class="popup-box">
+    <h3>💰 Solde restant</h3>
+    <p>Cette commande a un solde de <strong id="popup-solde-montant" style="color:var(--ink);"></strong> à régler. As-tu déjà reçu ce paiement ?</p>
+    <div class="popup-btns" style="flex-direction:column;gap:8px;">
+      <button class="btn-ok-supp" style="background:var(--success);" onclick="confirmerChoixSolde(true)">✅ Oui, solde déjà reçu</button>
+      <button class="btn-ok-supp" style="background:var(--amber);" onclick="confirmerChoixSolde(false)">🔔 Non, le rappeler au client</button>
+      <button class="btn-cancel" onclick="fermerPopupSolde()">Annuler</button>
     </div>
   </div>
 </div>
@@ -198,6 +238,7 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
   <div class="page-tabs">
     <button class="page-tab page-tab-active" id="ptab-commandes" onclick="switchPageTab('commandes')">📋 Commandes</button>
     <button class="page-tab" id="ptab-aprepare" onclick="switchPageTab('aprepare')">🍳 À préparer<span class="page-tab-badge" id="badge-aprepare" style="display:none;">0</span></button>
+    <button class="page-tab" id="ptab-demandes" onclick="switchPageTab('demandes')">📥 Demandes<span class="page-tab-badge" id="badge-demandes" style="display:none;">0</span></button>
     <button class="page-tab" id="ptab-historique" onclick="switchPageTab('historique')">📊 Historique</button>
   </div>
 
@@ -218,7 +259,7 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
     <div class="tout-select-wrap" id="tout-select-wrap" style="display:none;">
       <input type="checkbox" id="tout-select" class="cmd-checkbox" onchange="toutSelectionner(this.checked)">
       <label for="tout-select">Tout sélectionner</label>
-      <span id="sel-info" style="font-size:12px;color:#555;margin-left:8px;"></span>
+      <span id="sel-info" style="font-size:12px;color:var(--ink-faint);margin-left:8px;"></span>
     </div>
 
     <div id="container"><div class="loading">⏳ Chargement...</div></div>
@@ -226,6 +267,10 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 
   <div id="vue-aprepare" style="display:none;">
     <div id="aprepare-container"><div class="loading">⏳ Chargement...</div></div>
+  </div>
+
+  <div id="vue-demandes" style="display:none;">
+    <div id="demandes-container"><div class="loading">⏳ Chargement...</div></div>
   </div>
 
   <div id="vue-historique" style="display:none;">
@@ -251,6 +296,8 @@ body{font-family:'Montserrat',sans-serif;background:#000;color:#fff;min-height:1
 <script>
 const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
 const SHEET_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
+const SHEET_URL_DEMANDES=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Demandes`;
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec";
 const MOT_DE_PASSE="Ronciat";
 const TARGET="0698213380";
 const CRENEAUX=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
@@ -261,6 +308,8 @@ let toutesCommandes=[];
 let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
 let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
 let pretes=JSON.parse(localStorage.getItem('ohMikatePretes')||'[]');
+let soldeRecu=JSON.parse(localStorage.getItem('ohMikateSoldeRecu')||'[]');
+let idPretePendant=null;
 let derniersGroupesHisto={};
 let idASupp=null;
 
@@ -382,6 +431,7 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
     updateBadgeAPreparer(nbAPreparer);
     if(document.getElementById("vue-historique").style.display!=="none")afficherHistorique();
     if(document.getElementById("vue-aprepare").style.display!=="none")afficherAPreparer();
+    chargerDemandes();
     let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
     document.getElementById("last-refresh").textContent="Mis à jour à "+now+" • Auto toutes les 60s";
   }catch(e){
@@ -465,12 +515,15 @@ function afficher(){
 function switchPageTab(tab){
   document.getElementById("ptab-commandes").classList.toggle("page-tab-active",tab==="commandes");
   document.getElementById("ptab-aprepare").classList.toggle("page-tab-active",tab==="aprepare");
+  document.getElementById("ptab-demandes").classList.toggle("page-tab-active",tab==="demandes");
   document.getElementById("ptab-historique").classList.toggle("page-tab-active",tab==="historique");
   document.getElementById("vue-commandes").style.display=tab==="commandes"?"block":"none";
   document.getElementById("vue-aprepare").style.display=tab==="aprepare"?"block":"none";
+  document.getElementById("vue-demandes").style.display=tab==="demandes"?"block":"none";
   document.getElementById("vue-historique").style.display=tab==="historique"?"block":"none";
   if(tab==="historique")afficherHistorique();
   if(tab==="aprepare")afficherAPreparer();
+  if(tab==="demandes")chargerDemandes();
 }
 
 /* ===== VUE À PRÉPARER : confirmées mais pas encore prêtes ===== */
@@ -505,6 +558,142 @@ function updateBadgeAPreparer(n){
   }else{
     badge.style.display="none";
   }
+}
+
+/* ===== VUE DEMANDES CLIENTS (annulation / modification / complément) ===== */
+let demandesTraitees=JSON.parse(localStorage.getItem('ohMikateDemandesTraitees')||'[]');
+let toutesDemandes=[];
+
+function parseDateDemande(str){
+  if(!str)return null;
+  let m2=str.match(/Date\((\d{4}),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?/);
+  if(m2)return new Date(parseInt(m2[1]),parseInt(m2[2]),parseInt(m2[3]),m2[4]?parseInt(m2[4]):0,m2[5]?parseInt(m2[5]):0,m2[6]?parseInt(m2[6]):0);
+  return null;
+}
+
+async function chargerDemandes(){
+  let container=document.getElementById("demandes-container");
+  try{
+    let res=await fetch(SHEET_URL_DEMANDES+"&t="+Date.now());
+    let text=await res.text();
+    let json=JSON.parse(text.replace("/*O_o*/\ngoogle.visualization.Query.setResponse(","").replace(");",""));
+    let rows=(json.table&&json.table.rows)||[];
+    toutesDemandes=rows.map((row,i)=>{
+      let c=row.c||[];
+      return{
+        id:i,
+        horodatage:c[0]?String(c[0].v):"",
+        phone:c[1]?String(c[1].v):"",
+        name:c[2]?c[2].v:"",
+        dateRetrait:c[3]?String(c[3].v):"",
+        creneau:c[4]?String(c[4].v):"",
+        type:c[5]?c[5].v:"",
+        detail:c[6]?c[6].v:""
+      };
+    }).filter(d=>d.name||d.detail);
+    afficherDemandes();
+  }catch(e){
+    container.innerHTML=`<div class="empty-state"><p>❌ Impossible de charger les demandes. Vérifie que l'onglet "Demandes" existe bien dans le Google Sheets.</p></div>`;
+  }
+}
+
+function afficherDemandes(){
+  let container=document.getElementById("demandes-container");
+  let enAttente=toutesDemandes.filter(d=>!demandesTraitees.includes(d.id));
+  updateBadgeDemandes(enAttente.length);
+
+  if(enAttente.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📭</div><p>Aucune demande en attente.</p></div>`;
+    return;
+  }
+
+  // Les plus récentes en premier
+  enAttente.sort((a,b)=>(parseDateDemande(b.horodatage)||0)-(parseDateDemande(a.horodatage)||0));
+
+  const ICONES={"Annulation":"🗑️","Modification":"✏️","Complément":"➕"};
+  const COULEURS={"Annulation":"var(--error)","Modification":"var(--amber)","Complément":"var(--success)"};
+
+  container.innerHTML=enAttente.map(d=>{
+    let icone=ICONES[d.type]||"📌";
+    let couleur=COULEURS[d.type]||"var(--accent)";
+    return`<div class="commande-card" style="border-color:${couleur};">
+      <div class="commande-header">
+        <div>
+          <span class="client-name">${icone} ${d.name||"Client"}</span>
+          <div class="commande-meta">📞 ${d.phone||"—"} • souhaite <b style="color:${couleur};">${(d.type||"").toUpperCase()}</b> sa commande</div>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="label">📅 Retrait concerné</div>
+          <div class="value">${formatDateRetrait(d.dateRetrait)}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">⏰ Créneau</div>
+          <div class="value">${d.creneau||"—"}</div>
+        </div>
+      </div>
+      <div class="detail-box">${(d.detail||"").replace(/</g,"&lt;")}</div>
+      <div class="actions-sec" style="margin-top:12px;">
+        <button class="btn-prete" style="background:var(--success);" onclick="validerDemande(${d.id})">✅ Valider</button>
+        <button class="btn-supp" onclick="refuserDemande(${d.id})">❌ Refuser</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function updateBadgeDemandes(n){
+  let badge=document.getElementById("badge-demandes");
+  if(n>0){
+    badge.textContent=n;
+    badge.style.display="inline-block";
+  }else{
+    badge.style.display="none";
+  }
+}
+
+function trouverCommandeCorrespondante(d){
+  let phoneN=normalizePhone(d.phone);
+  return toutesCommandes.find(c=>normalizePhone(c.phone)===phoneN&&String(c.dateRetrait)===String(d.dateRetrait)&&String(c.creneau)===String(d.creneau));
+}
+
+function validerDemande(id){
+  let d=toutesDemandes.find(x=>x.id===id);
+  if(!d)return;
+
+  if(d.type==="Annulation"){
+    let c=trouverCommandeCorrespondante(d);
+    if(c){
+      supprimees.push(c.id);
+      localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
+      confirmees=confirmees.filter(cid=>cid!==c.id);
+      localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+      pretes=pretes.filter(pid=>pid!==c.id);
+      localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+      updateStats();
+      rafraichirVuesSecondaires();
+      setTimeout(afficher,300);
+      showToast("🗑️ Commande annulée suite à la demande du client");
+    }else{
+      showToast("⚠️ Commande correspondante introuvable — vérifie manuellement");
+    }
+  }else{
+    showToast(`✅ Demande marquée traitée — pense à ${d.type==="Complément"?"ajouter":"modifier"} la commande dans le tableau`);
+  }
+
+  marquerDemandeTraitee(id);
+}
+
+function refuserDemande(id){
+  if(!confirm("Confirmer le refus de cette demande ? Le client ne sera pas notifié automatiquement."))return;
+  marquerDemandeTraitee(id);
+  showToast("❌ Demande refusée");
+}
+
+function marquerDemandeTraitee(id){
+  if(!demandesTraitees.includes(id))demandesTraitees.push(id);
+  localStorage.setItem('ohMikateDemandesTraitees',JSON.stringify(demandesTraitees));
+  afficherDemandes();
 }
 
 let histoTabActif="jours";
@@ -556,8 +745,8 @@ function afficherHistoJours(){
     <div class="histo-total-item"><div class="histo-total-num">${jours.length}</div><div class="histo-total-lbl">Jours</div></div>
     <div class="histo-total-item"><div class="histo-total-num">${caGlobal.toFixed(2)}€</div><div class="histo-total-lbl">CA total</div></div>
   </div>
-  <button class="histo-copy-btn" style="max-width:600px;margin:0 auto 16px;background:#12241a;border-color:#25D366;color:#25D366;display:block;" onclick="imprimerRecapComplet()">🖨️ Imprimer le récapitulatif comptable complet</button>
-  <button class="histo-copy-btn" style="max-width:600px;margin:0 auto 16px;background:#1a1e2e;border-color:#635bff;color:#a09af0;display:block;" onclick="imprimerRecapMensuel()">🖨️ Imprimer le récapitulatif mensuel</button>`;
+  <button class="histo-copy-btn" style="max-width:600px;margin:0 auto 16px;background:var(--success-soft);border-color:var(--success);color:var(--success);display:block;" onclick="imprimerRecapComplet()">🖨️ Imprimer le récapitulatif comptable complet</button>
+  <button class="histo-copy-btn" style="max-width:600px;margin:0 auto 16px;background:var(--purple-soft);border-color:var(--purple);color:var(--purple);display:block;" onclick="imprimerRecapMensuel()">🖨️ Imprimer le récapitulatif mensuel</button>`;
 
   jours.forEach((key,idx)=>{
     let {cmds,label}=groupes[key];
@@ -597,7 +786,7 @@ function afficherHistoJours(){
       <div class="histo-jour-detail" id="detail-${safeId}">
         ${lignes}
         <button class="histo-copy-btn" onclick="copierRecapJour(\`${txtRecap.replace(/`/g,"\\`")}\`)">📋 Copier le récap du jour</button>
-        <button class="histo-copy-btn" style="background:#12241a;border-color:#25D366;color:#25D366;margin-top:6px;" onclick="imprimerRecapJour('${key}')">🖨️ Imprimer le récap du jour</button>
+        <button class="histo-copy-btn" style="background:var(--success-soft);border-color:var(--success);color:var(--success);margin-top:6px;" onclick="imprimerRecapJour('${key}')">🖨️ Imprimer le récap du jour</button>
       </div>
     </div>`;
   });
@@ -672,7 +861,7 @@ function afficherHistoClients(){
         </div>
       </div>
       <div class="client-detail" id="detail-${safeId}">
-        ${habitude?`<div style="font-size:12px;color:#ff9500;margin-bottom:10px;">📦 Habitudes : ${habitude}</div>`:""}
+        ${habitude?`<div style="font-size:12px;color:var(--amber);margin-bottom:10px;">📦 Habitudes : ${habitude}</div>`:""}
         ${cmds.map(c=>`<div class="histo-ligne">
           <div>
             <div class="histo-ligne-meta">🗓️ ${formatDateRetrait(c.dateRetrait)} • ⏰ ${c.creneau||"—"}</div>
@@ -888,7 +1077,7 @@ function renderCommande(c){
   let nbAnnul = nbAnnulationsPourTel(c.phone);
   let alerteBlacklist = "";
   if(nbAnnul >= 2){
-    alerteBlacklist = `<div style="background:#742a2a; color:#fff; padding:6px; border-radius:5px; font-size:11px; margin-bottom:10px; font-weight:bold;">⚠️ ATTENTION : Ce client a déjà annulé ${nbAnnul} commandes !</div>`;
+    alerteBlacklist = `<div style="background:var(--error); color:#fff; padding:6px; border-radius:5px; font-size:11px; margin-bottom:10px; font-weight:bold;">⚠️ ATTENTION : Ce client a déjà annulé ${nbAnnul} commandes !</div>`;
   }
   
   // Correction ici : Utilisation des fonctions de sélection existantes pour éviter le crash
@@ -923,14 +1112,14 @@ function renderCommande(c){
       
       <div class="recap-boites">${infoBoitesHtml}</div>
       <div class="detail-box">${c.order || ''}</div>
-      <div style="font-size:11px; color:#888; margin-top:8px;">💳 Règlement : <b>${c.payment || 'Non spécifié'}</b> • Recu le ${c.datePropre || ''} à ${c.heure || ''}</div>
-      ${calculerSolde(c)>0.01?`<div style="font-size:12px; color:#ff9500; font-weight:bold; margin-top:6px; background:#1a1000; border:1px solid #ff9500; border-radius:8px; padding:6px 10px;">💰 Solde restant : ${calculerSolde(c).toFixed(2).replace('.',',')} € — inclus automatiquement dans le message de confirmation / "Prête"</div>`:``}
+      <div style="font-size:11px; color:var(--ink-muted); margin-top:8px;">💳 Règlement : <b>${c.payment || 'Non spécifié'}</b> • Recu le ${c.datePropre || ''} à ${c.heure || ''}</div>
+      ${calculerSolde(c)>0.01?(soldeRecu.includes(c.id)?`<div style="font-size:12px; color:var(--success); font-weight:bold; margin-top:6px; background:var(--success-soft); border:1px solid var(--success); border-radius:8px; padding:6px 10px;">✅ Solde de ${calculerSolde(c).toFixed(2).replace('.',',')} € marqué comme reçu</div>`:`<div style="font-size:12px; color:var(--amber); font-weight:bold; margin-top:6px; background:var(--amber-soft); border:1px solid var(--amber); border-radius:8px; padding:6px 10px;">💰 Solde restant : ${calculerSolde(c).toFixed(2).replace('.',',')} € — un choix te sera demandé au clic sur "Prête"</div>`):``}
     </div>
     
     <div class="actions-sec" style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">`;
   
   if(!conf && !prt){
-    html += `<button class="btn-prete" style="background:#25D366;" onclick="marquer(${c.id})">✅ Valider</button>`;
+    html += `<button class="btn-prete" style="background:var(--success);" onclick="marquer(${c.id})">✅ Valider</button>`;
   } else if(conf && !prt){
     html += `<button class="btn-prete" onclick="marquerPrete(${c.id})">🍳 Prête</button>`;
     html += `<button class="btn-marquer" onclick="annulerConfirmation(${c.id})">⬅️ Restaurer</button>`;
@@ -948,7 +1137,7 @@ function renderCommande(c){
   
   // Bouton d'impression sécurisé
   let cSafe = JSON.stringify(c).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  html += `<button class="btn-marquer" style="border-color:#635bff; color:#a09af0;" onclick="imprimerFacture(${cSafe})">🖨️ Imprimer</button>`;
+  html += `<button class="btn-marquer" style="border-color:var(--purple); color:var(--purple);" onclick="imprimerFacture(${cSafe})">🖨️ Imprimer</button>`;
   
   html += `<button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Suppr.</button>
     </div>
@@ -1004,6 +1193,7 @@ function genMsg(c,pourSMS=false){
   if(solde>0.01)msg+=genBlocSolde(solde,b);
   msg+=`📍 ${b}Adresse de retrait :${b}\n36 rue du Chanoine Lallement, Reims\n\n`;
   msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — tu auras ta commande en mains propres ! 🍩\n\n`;
+  msg+=`🔗 ${b}Besoin de modifier ou d'annuler ?${b}\nohmikate.netlify.app/mes-commandes\n\n`;
   msg+=`━━━━━━━━━━━━━━━\n`;
   msg+=`À tout à l'heure ! 🧇\n— Oh! Mikaté`;
   return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
@@ -1014,7 +1204,14 @@ function genMsgPret(c,pourSMS=false){
   let solde=calculerSolde(c);
   let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
   msg+=`📦 ${b}Ta commande Oh! Mikaté est prête, tu peux venir la récupérer dès maintenant.${b}\n\n`;
-  if(solde>0.01)msg+=genBlocSolde(solde,b);
+  if(solde>0.01){
+    if(soldeRecu.includes(c.id)){
+      msg+=`✅ ${b}J'ai bien reçu la totalité du règlement, merci beaucoup !${b}\n\n`;
+    }else{
+      msg+=genBlocSolde(solde,b);
+      msg+=`🙏 Merci de ne pas oublier le solde en venant récupérer ta commande !\n\n`;
+    }
+  }
   msg+=`━━━━━━━━━━━━━━━\n`;
   msg+=`À tout de suite ! 🧇\n— Oh! Mikaté`;
   return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
@@ -1117,18 +1314,49 @@ function annulerConfirmation(id){
 }
 
 function marquerPrete(id){
-  if(!pretes.includes(id)){
-    pretes.push(id);
-    localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
-    updateStats();
-    rafraichirVuesSecondaires();
-    setTimeout(afficher,400);
+  if(pretes.includes(id))return;
+  let c=toutesCommandes.find(x=>x.id===id);
+  let solde=c?calculerSolde(c):0;
+  if(solde>0.01){
+    idPretePendant=id;
+    document.getElementById("popup-solde-montant").textContent=solde.toFixed(2).replace(".",",")+" €";
+    document.getElementById("popup-solde").classList.add("show");
+    return;
   }
+  finaliserPrete(id);
+}
+
+function finaliserPrete(id){
+  pretes.push(id);
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,400);
+}
+
+function confirmerChoixSolde(recu){
+  if(idPretePendant===null)return;
+  if(recu){
+    if(!soldeRecu.includes(idPretePendant))soldeRecu.push(idPretePendant);
+  }else{
+    soldeRecu=soldeRecu.filter(x=>x!==idPretePendant);
+  }
+  localStorage.setItem('ohMikateSoldeRecu',JSON.stringify(soldeRecu));
+  let id=idPretePendant;
+  fermerPopupSolde();
+  finaliserPrete(id);
+}
+
+function fermerPopupSolde(){
+  idPretePendant=null;
+  document.getElementById("popup-solde").classList.remove("show");
 }
 
 function annulerPrete(id){
   pretes=pretes.filter(p=>p!==id);
+  soldeRecu=soldeRecu.filter(x=>x!==id);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  localStorage.setItem('ohMikateSoldeRecu',JSON.stringify(soldeRecu));
   updateStats();
   rafraichirVuesSecondaires();
   setTimeout(afficher,300);
