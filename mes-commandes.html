@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oh! Mikaté — Mes commandes</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2B1B12;
+  --ink-muted:#7A6A5C;
+  --ink-faint:#A9998A;
+  --bg:#FBF3E7;
+  --surface:#FFFFFF;
+  --surface-alt:#F3E7D4;
+  --border:#D9C29E;
+  --accent:#A62639;
+  --accent-dark:#7E1B2B;
+  --accent-soft:#F5E2E2;
+  --gold:#D9A441;
+  --gold-soft:#FBF0DC;
+  --success:#3F7D58;
+  --success-soft:#E7F0EA;
+  --error:#B3261E;
+  --error-soft:#F8E6E4;
+  --blue:#3A6B7D;
+  --amber:#C97C2C;
+  --amber-soft:#FBEEDD;
+  --font-display:'Fraunces',serif;
+  --font-body:'Work Sans',sans-serif;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--ink);padding:24px 16px 60px;max-width:600px;margin-left:auto;margin-right:auto;}
+h1{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--accent);text-align:center;margin:0 0 4px;letter-spacing:0.2px;}
+.sous-titre{text-align:center;color:var(--ink-muted);font-size:13px;margin-bottom:26px;}
+.lookup-box{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;}
+.lookup-box label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;}
+.lookup-box input{width:100%;padding:13px;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:10px;color:var(--ink);font-size:16px;font-family:var(--font-body);box-sizing:border-box;text-align:center;letter-spacing:1px;}
+.lookup-box input:focus{border-color:var(--accent);outline:none;}
+.btn-lookup{width:100%;margin-top:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font-body);}
+.btn-lookup:hover{filter:brightness(1.05);}
+.btn-lookup:disabled{opacity:0.6;cursor:not-allowed;}
+.msg{text-align:center;font-size:13px;color:var(--ink-muted);padding:20px 0;}
+.msg.error{color:var(--error);}
+#resultats{display:none;}
+.commande-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+.commande-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.commande-date{font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--ink);}
+.commande-statut{font-size:10px;font-weight:600;padding:3px 9px;border-radius:12px;letter-spacing:0.3px;white-space:nowrap;}
+.statut-nouvelle{background:var(--accent-soft);color:var(--accent-dark);}
+.statut-confirmee{background:var(--success-soft);color:var(--success);}
+.statut-prete{background:#E4EEF1;color:var(--blue);}
+.commande-detail{font-size:13px;color:var(--ink-muted);line-height:1.7;white-space:pre-wrap;background:var(--surface-alt);border-radius:8px;padding:10px;margin-bottom:10px;}
+.commande-meta{font-size:12px;color:var(--ink-faint);margin-bottom:12px;}
+.commande-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.action-btn{flex:1;min-width:100px;background:var(--surface-alt);border:1.5px solid var(--border);color:var(--ink);font-size:12px;font-weight:600;padding:10px 8px;border-radius:20px;cursor:pointer;font-family:var(--font-body);text-align:center;}
+.action-btn.annuler{border-color:var(--error);color:var(--error);}
+.action-btn.modifier{border-color:var(--amber);color:var(--amber);}
+.action-btn.completer{border-color:var(--success);color:var(--success);}
+.action-btn:hover{filter:brightness(0.97);}
+.retour{display:block;text-align:center;margin-top:24px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:600;}
+
+.popup{display:none;position:fixed;inset:0;background:rgba(43,27,18,0.5);z-index:999;align-items:center;justify-content:center;padding:20px;}
+.popup.show{display:flex;}
+.popup-box{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:22px;max-width:360px;width:100%;}
+.popup-box h3{font-family:var(--font-display);font-weight:600;font-size:18px;margin:0 0 6px;color:var(--ink);}
+.popup-box p{font-size:13px;color:var(--ink-muted);margin:0 0 14px;line-height:1.5;}
+.popup-box textarea{width:100%;padding:11px;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:10px;color:var(--ink);font-size:14px;font-family:var(--font-body);box-sizing:border-box;resize:vertical;min-height:70px;margin-bottom:14px;}
+.popup-box textarea:focus{border-color:var(--accent);outline:none;}
+.popup-btns{display:flex;gap:10px;}
+.popup-btns button{flex:1;padding:12px;border-radius:10px;border:none;font-family:var(--font-body);font-weight:600;font-size:14px;cursor:pointer;}
+.popup-cancel{background:var(--surface-alt);color:var(--ink-muted);}
+.popup-confirm{background:var(--accent);color:#fff;}
+</style>
+</head>
+<body>
+
+<h1>🧇 Mes commandes</h1>
+<p class="sous-titre">Retrouve ta commande avec ton numéro de téléphone</p>
+
+<div class="lookup-box">
+  <label for="phone-input">Numéro de téléphone utilisé pour commander</label>
+  <input type="tel" id="phone-input" placeholder="06 XX XX XX XX" maxlength="14" inputmode="tel">
+  <button class="btn-lookup" id="btn-lookup" onclick="chercherCommandes()">🔍 Retrouver ma commande</button>
+</div>
+
+<div id="msg-zone"></div>
+<div id="resultats"></div>
+
+<a href="/" class="retour">← Retour au site de commande</a>
+
+<!-- Popup annulation -->
+<div class="popup" id="popup-annuler">
+  <div class="popup-box">
+    <h3>🗑️ Annuler la commande</h3>
+    <p>Cette demande sera transmise à Oh! Mikaté, qui te confirmera l'annulation. Consulte les CGV pour les conditions de remboursement de l'acompte.</p>
+    <div class="popup-btns">
+      <button class="popup-cancel" onclick="fermerPopups()">Retour</button>
+      <button class="popup-confirm" style="background:var(--error);" onclick="envoyerDemande('annulation')">Confirmer l'annulation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Popup modifier -->
+<div class="popup" id="popup-modifier">
+  <div class="popup-box">
+    <h3>✏️ Modifier la commande</h3>
+    <p>Décris ce que tu souhaites changer (créneau, contenu des boîtes...). Oh! Mikaté te recontactera pour confirmer.</p>
+    <textarea id="texte-modifier" placeholder="Ex : je voudrais changer mon créneau pour 19h00 - 19h30"></textarea>
+    <div class="popup-btns">
+      <button class="popup-cancel" onclick="fermerPopups()">Annuler</button>
+      <button class="popup-confirm" style="background:var(--amber);" onclick="envoyerDemande('modification')">Envoyer la demande</button>
+    </div>
+  </div>
+</div>
+
+<!-- Popup compléter -->
+<div class="popup" id="popup-completer">
+  <div class="popup-box">
+    <h3>➕ Compléter la commande</h3>
+    <p>Décris ce que tu veux ajouter à ta commande. Oh! Mikaté te confirmera le nouveau total.</p>
+    <textarea id="texte-completer" placeholder="Ex : j'aimerais ajouter une boîte de 9 beignets nature"></textarea>
+    <div class="popup-btns">
+      <button class="popup-cancel" onclick="fermerPopups()">Annuler</button>
+      <button class="popup-confirm" style="background:var(--success);" onclick="envoyerDemande('complement')">Envoyer la demande</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================================================================
+   CONTRAT AVEC LE SCRIPT APPS SCRIPT (backend Google Sheets)
+   ----------------------------------------------------------------
+   Recherche  : GET  APPS_SCRIPT_URL?action=lookup&phone=0612345678
+                -> répond avec un JSON:
+                   { "ok": true, "commandes": [
+                       { "id": "...", "dateRecu": "...", "name": "...",
+                         "order": "...", "total": "...", "payment": "...",
+                         "dateRetrait": "...", "creneau": "...", "statut": "nouvelle|confirmee|prete" }
+                   ]}
+                Le script NE renvoie QUE les commandes dont le numéro
+                normalisé correspond à celui demandé — jamais les autres.
+
+   Demande    : POST APPS_SCRIPT_URL  body JSON:
+                { action:"demande", type:"annulation|modification|complement",
+                  commandeId, phone, name, dateRetrait, creneau, detail }
+                -> ajoute une ligne dans l'onglet "Demandes" du Sheet.
+   ================================================================ */
+const APPS_SCRIPT_URL="REMPLACER_PAR_URL_APPS_SCRIPT";
+
+let commandesTrouvees=[];
+let demandeEnCours=null; // {commandeId, type}
+
+function normalizePhone(raw){
+  if(!raw)return"";
+  let p=String(raw).replace(/[\s\.\-\(\)]+/g,'');
+  if(p.startsWith("+33"))p="0"+p.substring(3);
+  else if(p.startsWith("0033"))p="0"+p.substring(4);
+  if(!p.startsWith("0"))p="0"+p;
+  return p;
+}
+
+function afficherMsg(texte,erreur=false){
+  document.getElementById("msg-zone").innerHTML=`<div class="msg${erreur?' error':''}">${texte}</div>`;
+}
+
+async function chercherCommandes(){
+  let raw=document.getElementById("phone-input").value.trim();
+  let phone=normalizePhone(raw);
+  if(!/^\d{10}$/.test(phone)){
+    afficherMsg("⚠️ Merci d'entrer un numéro de téléphone valide.",true);
+    return;
+  }
+  let btn=document.getElementById("btn-lookup");
+  btn.disabled=true;btn.textContent="⏳ Recherche...";
+  document.getElementById("resultats").style.display="none";
+  afficherMsg("");
+
+  try{
+    let res=await fetch(APPS_SCRIPT_URL+"?action=lookup&phone="+encodeURIComponent(phone));
+    let data=await res.json();
+    commandesTrouvees=(data&&data.commandes)||[];
+    if(commandesTrouvees.length===0){
+      afficherMsg("Aucune commande trouvée pour ce numéro. Vérifie qu'il s'agit bien du numéro utilisé lors de la commande.");
+    }else{
+      afficherMsg("");
+      afficherResultats();
+    }
+  }catch(e){
+    afficherMsg("❌ Impossible de contacter le service pour le moment. Réessaie dans quelques instants.",true);
+  }
+  btn.disabled=false;btn.textContent="🔍 Retrouver ma commande";
+}
+
+function libelleStatut(s){
+  if(s==="prete")return{cls:"statut-prete",txt:"🍳 Prête"};
+  if(s==="confirmee")return{cls:"statut-confirmee",txt:"✅ Confirmée"};
+  return{cls:"statut-nouvelle",txt:"🆕 En attente de confirmation"};
+}
+
+function afficherResultats(){
+  let zone=document.getElementById("resultats");
+  zone.innerHTML=commandesTrouvees.map(c=>{
+    let statut=libelleStatut(c.statut);
+    return`<div class="commande-card">
+      <div class="commande-top">
+        <div class="commande-date">📅 ${c.dateRetrait||"—"}</div>
+        <span class="commande-statut ${statut.cls}">${statut.txt}</span>
+      </div>
+      <div class="commande-meta">⏰ ${c.creneau||"—"} • 💰 ${c.total||"—"} € • 💳 ${c.payment||"—"}</div>
+      <div class="commande-detail">${c.order||""}</div>
+      <div class="commande-actions">
+        <button class="action-btn annuler" onclick="ouvrirPopup('annuler','${c.id}')">🗑️ Annuler</button>
+        <button class="action-btn modifier" onclick="ouvrirPopup('modifier','${c.id}')">✏️ Modifier</button>
+        <button class="action-btn completer" onclick="ouvrirPopup('completer','${c.id}')">➕ Compléter</button>
+      </div>
+    </div>`;
+  }).join("");
+  zone.style.display="block";
+}
+
+function ouvrirPopup(type,commandeId){
+  demandeEnCours={commandeId,type};
+  document.getElementById("popup-"+type).classList.add("show");
+}
+
+function fermerPopups(){
+  document.querySelectorAll(".popup").forEach(p=>p.classList.remove("show"));
+  demandeEnCours=null;
+}
+
+async function envoyerDemande(typeDemande){
+  if(!demandeEnCours)return;
+  let c=commandesTrouvees.find(x=>x.id===demandeEnCours.commandeId);
+  if(!c)return;
+
+  let detail="";
+  if(typeDemande==="modification")detail=document.getElementById("texte-modifier").value.trim();
+  if(typeDemande==="complement")detail=document.getElementById("texte-completer").value.trim();
+  if((typeDemande==="modification"||typeDemande==="complement")&&!detail){
+    alert("Merci de préciser ta demande.");
+    return;
+  }
+
+  let phone=normalizePhone(document.getElementById("phone-input").value.trim());
+  let payload={
+    action:"demande",
+    type:typeDemande,
+    commandeId:c.id,
+    phone,
+    name:c.name||"",
+    dateRetrait:c.dateRetrait||"",
+    creneau:c.creneau||"",
+    detail
+  };
+
+  try{
+    await fetch(APPS_SCRIPT_URL,{
+      method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(payload)
+    });
+  }catch(e){}
+
+  fermerPopups();
+  afficherMsg("✅ Ta demande a bien été transmise à Oh! Mikaté, tu recevras une confirmation prochainement.");
+  document.getElementById("resultats").style.display="none";
+}
+
+document.getElementById("phone-input").addEventListener("keydown",function(e){
+  if(e.key==="Enter")chercherCommandes();
+});
+</script>
+</body>
+</html>
