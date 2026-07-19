@@ -353,6 +353,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
             📲 <strong style="color:#2B1B12;">Via Wero</strong> : envoie <span id="deposit-wero-label">l'acompte</span> au <strong style="color:#2B1B12;">06 98 21 33 80</strong> (Oh! Mikaté) depuis ton appli bancaire.
           </div>
           <a id="paypal-link" href="#" target="_blank" class="btn" style="background:#3A6B7D;margin-top:0;margin-bottom:10px;font-size:14px;padding:11px;">💳 Payer <span id="paypal-label">l'acompte</span> via PayPal</a>
+          <button id="stripe-btn" type="button" class="btn" style="background:#635bff;margin-top:0;margin-bottom:10px;font-size:14px;padding:11px;" onclick="lancerPaiementStripe()">💳 Payer <span id="stripe-label">l'acompte</span> par carte bancaire</button>
           <div id="deposit-check-wrap-total" style="display:none;">
             <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#7A6A5C;line-height:1.5;">
               <input type="checkbox" id="deposit-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#A62639;flex-shrink:0;margin-top:2px;">
@@ -879,9 +880,10 @@ function updateUI(){
       choiceWrap.style.display="none";
       depositCashChoice="";
       document.getElementById("deposit-title").textContent="✅ RÈGLEMENT INTÉGRAL (100%)";
-      document.getElementById("deposit-text").innerHTML=`Pour valider ta commande, la totalité, soit <strong style="color:#2B1B12;">${depositAmount.toFixed(2)}€</strong>, est à régler dès maintenant via Wero ou PayPal. Il n'y aura rien à régler au retrait.`;
+      document.getElementById("deposit-text").innerHTML=`Pour valider ta commande, la totalité, soit <strong style="color:#2B1B12;">${depositAmount.toFixed(2)}€</strong>, est à régler dès maintenant via Wero, PayPal ou carte bancaire. Il n'y aura rien à régler au retrait.`;
       document.getElementById("deposit-wero-label").textContent="le montant total";
       document.getElementById("paypal-label").textContent="la totalité";
+      document.getElementById("stripe-label").textContent="la totalité";
       document.getElementById("deposit-amount-2").textContent=depositAmount.toFixed(2)+"€";
     }else{
       totalCheckWrap.style.display="none";
@@ -890,6 +892,7 @@ function updateUI(){
       document.getElementById("deposit-text").innerHTML=`Pour valider ta commande, un acompte de <strong style="color:#2B1B12;">${depositAmount.toFixed(2)}€</strong> est à régler dès maintenant (en ligne ou en espèces). Le solde de <strong style="color:#2B1B12;">${remaining.toFixed(2)}€</strong> te sera demandé lors de la confirmation de ta commande, ou au plus tard lorsqu'elle sera prête.`;
       document.getElementById("deposit-wero-label").textContent="l'acompte";
       document.getElementById("paypal-label").textContent="l'acompte";
+      document.getElementById("stripe-label").textContent="l'acompte";
       document.getElementById("deposit-amount-2b").textContent=depositAmount.toFixed(2)+"€";
       document.getElementById("deposit-choice-online").classList.toggle("selected",depositCashChoice==='online');
       document.getElementById("deposit-choice-cash").classList.toggle("selected",depositCashChoice==='cash');
@@ -1218,12 +1221,96 @@ function validatePhone(){
   input.classList.add("input-success");input.classList.remove("input-error");msg.className="field-msg success";msg.textContent="✅ Numéro valide !";return true;
 }
 
+async function lancerPaiementStripe(){
+  if(!isFormValid()){showToast("⚠️ Merci de remplir tous les champs avant de payer.");return;}
+  let cgvOk=document.getElementById("cgv-check")?.checked;
+  if(!cgvOk){showToast("⚠️ Merci d'accepter les CGV avant de payer.");return;}
+
+  let orderInfo=calculateTotalAndExtractStructure();
+  let rate=depositRates.hasOwnProperty(depositMode)?depositRates[depositMode]:0.5;
+  let depositAmount=orderInfo.totalPrice*rate;
+  let remaining=orderInfo.totalPrice-depositAmount;
+  let name=document.getElementById("client-name").value.trim();
+  let phone=normalizePhone(document.getElementById("client-phone").value.trim());
+  let date=document.getElementById("client-date").value;
+  let time=document.getElementById("client-time").value;
+
+  // Sauvegarde tout ce qu'il faut pour reconstruire la confirmation après le retour de Stripe
+  localStorage.setItem('ohMikateStripeDraft',JSON.stringify({
+    name,phone,date,time,
+    orderDetail:orderInfo.detailsText,
+    total:orderInfo.totalPrice.toFixed(2),
+    depositAmount:depositAmount.toFixed(2),
+    remaining:remaining.toFixed(2),
+    isTotal:depositMode==="total"
+  }));
+
+  let btn=document.getElementById("stripe-btn");
+  let btnOriginalHtml=btn.innerHTML;
+  btn.disabled=true;btn.textContent="⏳ Connexion au paiement...";
+  try{
+    let response=await fetch("/.netlify/functions/create-checkout",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({amount:Math.round(depositAmount*100),orderSummary:orderInfo.summaryShort||orderInfo.detailsText.slice(0,200)})
+    });
+    let data=await response.json();
+    if(data.url){window.location.href=data.url;}
+    else{showToast("❌ Erreur : "+(data.error||"Impossible de créer le paiement"));btn.disabled=false;btn.innerHTML=btnOriginalHtml;}
+  }catch(err){
+    showToast("❌ Erreur de connexion. Réessaie.");
+    btn.disabled=false;btn.innerHTML=btnOriginalHtml;
+  }
+}
+
+function afficherConfirmationStripe(draft){
+  if(espècesPageAffichée)return;
+  espècesPageAffichée=true;
+  document.getElementById("main-page").style.display="none";
+  document.getElementById("especes-page").style.display="block";
+  document.body.style.paddingBottom="0";
+  let now2=new Date();
+  let heure2=now2.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  let dateStr=now2.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})+" "+heure2+" via Carte bancaire (Stripe)";
+  fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({name:draft.name,phone:draft.phone,order:draft.orderDetail,total:draft.total,acompte:draft.depositAmount,solde:draft.remaining,payment:draft.isTotal?"Totalité réglée (Stripe)":"Acompte réglé (Stripe)",date:dateStr,dateRetrait:draft.date,creneau:draft.time,canal:"Carte bancaire (Stripe)"})
+  });
+  document.getElementById("e-name").textContent=draft.name||"—";
+  document.getElementById("e-date").textContent=draft.date||"—";
+  document.getElementById("e-time").textContent=draft.time||"—";
+  document.getElementById("e-order-detail").textContent=draft.orderDetail||"—";
+  document.getElementById("e-total").textContent=draft.total+" €";
+  document.getElementById("e-deposit-label").textContent="Réglé par carte ✅";
+  document.getElementById("e-deposit").textContent=draft.depositAmount+" € ✅";
+  document.getElementById("e-remaining-label").textContent=draft.isTotal?"Solde":"Solde (au retrait)";
+  document.getElementById("e-remaining").textContent=draft.isTotal?"0.00 €":(draft.remaining+" €");
+  document.getElementById("e-appoint-note").textContent=draft.isTotal?"💡 Rien à régler, votre commande est entièrement payée !":"💡 Le solde vous sera demandé à la confirmation de votre commande, ou au plus tard lorsqu'elle sera prête.";
+  let msgAnnul=`Bonjour, je souhaite annuler ma commande :\n\n📅 Date souhaitée : ${draft.date}\n⏰ Créneau : ${draft.time}\n💰 Total : ${draft.total} €\n\n📦 Détail :\n${draft.orderDetail}\n\nMerci de confirmer l'annulation.`;
+  let msgAnnulSMS=msgAnnul.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  document.getElementById("e-cancel-whatsapp").href="https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgAnnul);
+  document.getElementById("e-cancel-sms").addEventListener("click",function(e){
+    e.preventDefault();
+    let ua=navigator.userAgent.toLowerCase();
+    window.location.href="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgAnnulSMS);
+  });
+  localStorage.removeItem('ohMikateStripeDraft');
+}
+
 window.onload=function(){
   document.getElementById("especes-page").style.display="none";
   document.getElementById("main-page").style.display="block";
   initDates();
   handleDateChange();
   chargerComptesCreneaux().then(()=>{handleDateChange();});
+
+  if(window.location.search.includes('success')){
+    let raw=localStorage.getItem('ohMikateStripeDraft');
+    if(raw){
+      let draft=JSON.parse(raw);
+      afficherConfirmationStripe(draft);
+    }
+  }
 };
 </script>
 </body>
