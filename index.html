@@ -6,28 +6,30 @@
 <title>Oh! Mikaté - Commande</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Caveat:wght@600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#2B1B12;
+  --ink:#241A12;
   --ink-muted:#7A6A5C;
   --ink-faint:#A9998A;
   --bg:#FBF3E7;
   --surface:#FFFFFF;
   --surface-alt:#F3E7D4;
   --border:#D9C29E;
-  --accent:#A62639;
-  --accent-dark:#7E1B2B;
-  --accent-soft:#F5E2E2;
-  --gold:#D9A441;
-  --gold-soft:#FBF0DC;
-  --success:#3F7D58;
-  --success-soft:#E7F0EA;
-  --error:#B3261E;
+  --accent:#E8236B;
+  --accent-dark:#B81552;
+  --accent-soft:#FCE0EA;
+  --gold:#F2871F;
+  --gold-soft:#FDEBD3;
+  --success:#2E9B5C;
+  --success-soft:#E1F5E9;
+  --error:#C0392B;
   --error-soft:#F8E6E4;
   --blue:#3A6B7D;
-  --amber:#C97C2C;
-  --font-display:'Fraunces',serif;
+  --amber:#F2871F;
+  --amber-dark:#C96A0F;
+  --font-display:'Fredoka',sans-serif;
+  --font-logo:'Caveat',cursive;
   --font-body:'Work Sans',sans-serif;
 }
 body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--ink);padding-bottom:72px;}
@@ -47,6 +49,9 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 .card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;text-align:center;transition:.2s;position:relative;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 1px 3px rgba(43,27,18,0.06);}
 .card img{width:100%;height:200px;object-fit:contain;background-color:var(--surface-alt);}
 .card p{margin:10px;font-size:14px;font-weight:600;}
+.price-tag{display:inline-block;color:#fff;font-family:var(--font-display);font-weight:600;padding:2px 10px;border-radius:20px;font-size:15px;}
+.price-tag-pink{background:var(--accent);}
+.price-tag-green{background:var(--success);}
 .qty-controls{display:flex;align-items:center;justify-content:space-between;background:var(--surface-alt);margin:0 10px 10px 10px;border-radius:20px;overflow:hidden;border:1px solid var(--border);}
 .qty-btn{background:var(--ink);color:var(--surface);border:none;width:35px;height:35px;font-size:18px;font-weight:bold;cursor:pointer;transition:.2s;}
 .qty-btn:hover{background:var(--accent);}
@@ -74,6 +79,10 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 }
 .chip-section{margin-bottom:8px;}
 .chip-label{font-size:10.5px;color:var(--ink-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px;}
+.chip-label-pink,.chip-label-orange,.chip-label-green{display:inline-block;color:#fff;padding:3px 10px;border-radius:20px;font-weight:700;}
+.chip-label-pink{background:var(--accent);}
+.chip-label-orange{background:var(--gold);}
+.chip-label-green{background:var(--success);}
 .chip-price{color:var(--accent);font-weight:normal;text-transform:none;letter-spacing:0;margin-left:4px;}
 .chip-group{display:flex;flex-wrap:wrap;gap:5px;}
 .chip{background:var(--surface);border:1.5px solid var(--border);color:var(--ink-muted);font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:16px;cursor:pointer;font-family:var(--font-body);transition:.15s;white-space:nowrap;line-height:1.3;}
@@ -206,7 +215,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 
 <div id="limite-modal-backdrop" class="confirm-modal-backdrop">
   <div class="confirm-modal">
-    <div class="confirm-modal-text">📦 Commande limitée à 10 boîtes maximum.<br><br>Pour une commande plus importante, envoie un SMS au <strong style="color:#A62639;">06 98 21 33 80</strong>.</div>
+    <div class="confirm-modal-text">📦 Commande limitée à 10 boîtes maximum.<br><br>Pour une commande plus importante, envoie un SMS au <strong style="color:#E8236B;">06 98 21 33 80</strong>.</div>
     <div class="confirm-modal-actions">
       <button type="button" class="confirm-modal-btn cancel" onclick="document.getElementById('limite-modal-backdrop').classList.remove('show')">Compris</button>
       <a href="sms:0698213380" class="confirm-modal-btn confirm" style="display:flex;align-items:center;justify-content:center;text-decoration:none;">💬 Envoyer un SMS</a>
@@ -214,17 +223,55 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
   </div>
 </div>
 
+<div id="promo-modal-backdrop" class="confirm-modal-backdrop">
+  <div class="confirm-modal" style="max-width:380px;padding:0;overflow:hidden;">
+    <img src="Images/Flyer2.jpg" alt="Nouveautés Bueno & Pistache" style="width:100%;height:auto;display:block;">
+    <div style="padding:16px;">
+      <button type="button" class="confirm-modal-btn cancel" style="width:100%;" onclick="document.getElementById('promo-modal-backdrop').classList.remove('show')">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <!-- PAGE PRINCIPALE -->
 <div id="main-page">
+<div id="promo-popup-backdrop" style="display:none;position:fixed;inset:0;background:rgba(36,26,18,0.55);z-index:3000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="background:var(--surface);border-radius:20px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 12px 40px rgba(36,26,18,0.3);">
+    <div style="background:var(--accent);padding:14px 16px;text-align:center;">
+      <div style="font-family:var(--font-display);font-weight:700;color:#fff;font-size:22px;letter-spacing:0.3px;">🎉 Nouveautés à découvrir !</div>
+      <div style="color:#fff;font-size:12px;opacity:0.9;margin-top:2px;">Du goût à petit prix</div>
+    </div>
+    <div style="padding:18px;">
+      <div style="background:#3D2418;border-radius:14px;padding:14px;margin-bottom:12px;color:#fff;">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:20px;color:#fff;">🌰 BUENO</div>
+        <div style="font-size:12px;color:#EBD9CC;margin-bottom:8px;">Le plaisir ultra gourmand !</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="chip-label chip-label-pink" style="margin:0;">Nappage +1,00€</span>
+          <span class="chip-label chip-label-pink" style="margin:0;">Garniture +1,00€</span>
+          <span class="chip-label chip-label-pink" style="margin:0;">Petit pot +1,00€</span>
+        </div>
+      </div>
+      <div style="background:#2E3B22;border-radius:14px;padding:14px;margin-bottom:16px;color:#fff;">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:20px;color:#fff;">🍏 PISTACHE</div>
+        <div style="font-size:12px;color:#D9E5CC;margin-bottom:8px;">Une saveur qui va vous faire craquer !</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="chip-label chip-label-green" style="margin:0;">Nappage +1,50€</span>
+          <span class="chip-label chip-label-green" style="margin:0;">Garniture +1,50€</span>
+          <span class="chip-label chip-label-green" style="margin:0;">Petit pot +1,50€</span>
+        </div>
+      </div>
+      <button type="button" onclick="fermerPromoPopup()" style="width:100%;background:var(--surface-alt);border:1.5px solid var(--border);color:var(--ink);font-family:var(--font-body);font-weight:600;font-size:14px;padding:12px;border-radius:10px;cursor:pointer;">Fermer</button>
+    </div>
+  </div>
+</div>
 <div class="hero"><img src="Images/Flyer4.jpg" alt="Oh! Mikaté Flyer"></div>
 <div style="background:#FFFFFF;padding:15px;text-align:center;font-size:14px;margin:15px;border-radius:10px;border:1px solid #E4D3BA;">
 ⭐ Préparation à la commande<br>📍 Retrait sur Reims
-  <section style="margin:20px 15px;padding:20px;background:#F3E7D4;border-radius:10px;border:1px solid #A62639;">
-    <h2 style="color:#A62639;text-align:center;margin-top:0;">Oh! Mikaté : Authentiques beignets congolais à Reims</h2>
+  <section style="margin:20px 15px;padding:20px;background:#F3E7D4;border-radius:10px;border:1px solid #E8236B;">
+    <h2 style="color:#E8236B;text-align:center;margin-top:0;">Oh! Mikaté : Authentiques beignets congolais à Reims</h2>
     <p style="line-height:1.6;color:#7A6A5C;text-align:center;">Envie d'une pause gourmande ? Découvrez les <strong>Mikatés</strong>, préparés avec passion à <strong>Reims</strong>. Je vous propose une expérience gustative à petits prix: des <strong>beignets</strong> bien moelleux, déclinables avec les nappages et garnitures proposés.</p>
     <p style="line-height:1.6;color:#7A6A5C;text-align:center;margin-bottom:0;">Idéal pour vos événements ou vos pauses gourmandes, commandez vos boîtes en ligne et venez les récupérer sur place.</p>
     <div style="text-align:center;margin-top:20px;border-top:1px solid #E4D3BA;padding-top:15px;">
-      <h3 style="font-size:16px;color:#A62639;margin-bottom:10px;">Rejoignez Oh! Mikaté</h3>
+      <h3 style="font-size:16px;color:#E8236B;margin-bottom:10px;">Rejoignez Oh! Mikaté</h3>
       <div style="display:flex;justify-content:center;gap:15px;margin-bottom:10px;">
         <a href="https://www.snapchat.com/add/ohmikate" target="_blank" style="text-decoration:none;font-size:14px;background:#FFFC00;color:#000;padding:6px 12px;border-radius:20px;font-weight:bold;">👻 Snapchat</a>
         <a href="https://www.instagram.com/oh_mikate" target="_blank" style="text-decoration:none;font-size:14px;background:#E1306C;color:#fff;padding:6px 12px;border-radius:20px;font-weight:bold;">📸 Instagram</a>
@@ -250,7 +297,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 <div class="grid">
   <div class="card product-card" data-name="9 beignets" data-price="5">
     <img src="Images/Beignet9.jpg">
-    <p>Boîte de 9 beignets — 5€</p>
+    <p>Boîte de 9 beignets — <span class="price-tag price-tag-pink">5€</span></p>
     <div class="qty-controls">
       <button class="qty-btn minus" onclick="changeBoxQty('9 beignets',-1)">-</button>
       <input type="number" id="qty-9" class="qty-input" value="0" min="0" onchange="setBoxQty('9 beignets',this.value)">
@@ -259,7 +306,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
   </div>
   <div class="card product-card" data-name="12 beignets" data-price="7">
     <img src="Images/Beignet9.jpg">
-    <p>Boîte de 12 beignets — 7€</p>
+    <p>Boîte de 12 beignets — <span class="price-tag price-tag-green">7€</span></p>
     <div class="qty-controls">
       <button class="qty-btn minus" onclick="changeBoxQty('12 beignets',-1)">-</button>
       <input type="number" id="qty-12" class="qty-input" value="0" min="0" onchange="setBoxQty('12 beignets',this.value)">
@@ -272,8 +319,8 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 <div id="composition-zone"></div>
 </div><!-- end compose-col-right -->
 </div><!-- end compose-layout -->
-<div style="background:#F3E7D4;padding:15px;border-radius:8px;margin:20px 0;border-left:4px solid #A62639;">
-  <h3 style="margin-top:0;color:#A62639;font-size:18px;">⚠️ Informations Allergènes</h3>
+<div style="background:#F3E7D4;padding:15px;border-radius:8px;margin:20px 0;border-left:4px solid #E8236B;">
+  <h3 style="margin-top:0;color:#E8236B;font-size:18px;">⚠️ Informations Allergènes</h3>
   <p style="font-size:13px;line-height:1.5;color:#7A6A5C;">Les Mikatés peuvent contenir ou être en contact avec : <strong>gluten (blé), arachides, fruits à coque, produits laitiers (lait) et soja</strong>. Merci de nous signaler toute allergie sévère dans la zone "Précisions" ci-dessous.</p>
 </div>
 <h3>3. Tes informations de retrait</h3>
@@ -342,12 +389,12 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
         <div class="total"><span>Total :</span><span><span id="total">0.00</span> €</span></div>
         <div id="cgv-wrap" style="display:none;margin:8px 0;background:#FFFFFF;border:1px solid #E4D3BA;border-radius:10px;padding:12px;">
           <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#7A6A5C;line-height:1.5;">
-            <input type="checkbox" id="cgv-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#A62639;flex-shrink:0;margin-top:2px;">
-            <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#A62639;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté.</span>
+            <input type="checkbox" id="cgv-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#E8236B;flex-shrink:0;margin-top:2px;">
+            <span>J'ai lu et j'accepte les <a href="/cgv.html" target="_blank" style="color:#E8236B;text-decoration:underline;">Conditions Générales de Vente</a> d'Oh! Mikaté.</span>
           </label>
         </div>
-        <div id="deposit-wrap" style="display:none;margin:8px 0;background:#F5E2E2;border:1px solid #A62639;border-radius:10px;padding:14px;">
-          <div id="deposit-title" style="font-family:var(--font-display);font-size:16px;color:#A62639;letter-spacing:1px;margin-bottom:8px;">💰 ACOMPTE OBLIGATOIRE (50%)</div>
+        <div id="deposit-wrap" style="display:none;margin:8px 0;background:#FCE0EA;border:1px solid #E8236B;border-radius:10px;padding:14px;">
+          <div id="deposit-title" style="font-family:var(--font-display);font-size:16px;color:#E8236B;letter-spacing:1px;margin-bottom:8px;">💰 ACOMPTE OBLIGATOIRE (50%)</div>
           <div id="deposit-text" style="font-size:13px;color:#7A6A5C;line-height:1.6;margin-bottom:10px;"></div>
           <div style="background:#FFFFFF;border:1px solid #E4D3BA;border-radius:8px;padding:10px;margin-bottom:8px;font-size:13px;color:#7A6A5C;">
             📲 <strong style="color:#2B1B12;">Via Wero</strong> : envoie <span id="deposit-wero-label">l'acompte</span> au <strong style="color:#2B1B12;">06 98 21 33 80</strong> (Oh! Mikaté) depuis ton appli bancaire.
@@ -356,7 +403,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
           <button id="stripe-btn" type="button" class="btn" style="background:#635bff;margin-top:0;margin-bottom:10px;font-size:14px;padding:11px;" onclick="lancerPaiementStripe()">💳 Payer <span id="stripe-label">l'acompte</span> par carte bancaire</button>
           <div id="deposit-check-wrap-total" style="display:none;">
             <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#7A6A5C;line-height:1.5;">
-              <input type="checkbox" id="deposit-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#A62639;flex-shrink:0;margin-top:2px;">
+              <input type="checkbox" id="deposit-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#E8236B;flex-shrink:0;margin-top:2px;">
               <span>J'ai réglé <span id="deposit-check-label">la totalité</span> de <strong id="deposit-amount-2" style="color:#2B1B12;">0.00€</strong> via Wero ou PayPal.</span>
             </label>
           </div>
@@ -364,7 +411,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
             <div style="font-size:12px;color:#A9998A;margin-bottom:8px;">Comment souhaites-tu régler ton acompte de <strong id="deposit-amount-2b" style="color:#2B1B12;">0.00€</strong> ?</div>
             <div style="display:flex;gap:8px;">
               <div id="deposit-choice-online" class="pay-opt" style="flex:1;font-size:13px;padding:10px;" onclick="selectDepositChoice('online')">💳 J'ai réglé en ligne</div>
-              <div id="deposit-choice-cash" class="pay-opt" style="flex:1;font-size:13px;padding:10px;border-color:#D9A441;" onclick="selectDepositChoice('cash')">💵 Je viens déposer en espèces</div>
+              <div id="deposit-choice-cash" class="pay-opt" style="flex:1;font-size:13px;padding:10px;border-color:#F2871F;" onclick="selectDepositChoice('cash')">💵 Je viens déposer en espèces</div>
             </div>
           </div>
         </div>
@@ -382,7 +429,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 <div id="especes-page" style="display:none;">
   <div class="confirm-wrapper">
     <div class="confirm-header">
-      <div class="check-icon" style="background:linear-gradient(135deg,#C97C2C,#A6591E);">📋</div>
+      <div class="check-icon" style="background:linear-gradient(135deg,#F2871F,#C96A0F);">📋</div>
       <h1>Commande envoyée !</h1>
       <p>Votre commande a bien été transmise. Conservez ce récapitulatif.</p>
     </div>
@@ -392,7 +439,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
         <div class="info-row"><span class="info-label">Prénom</span><span class="info-value" id="e-name">—</span></div>
         <div class="info-row"><span class="info-label">Date de retrait</span><span class="info-value" id="e-date">—</span></div>
         <div class="info-row"><span class="info-label">Créneau</span><span class="info-value" id="e-time">—</span></div>
-        <div class="info-row"><span class="info-label" id="e-deposit-label">Acompte réglé</span><span class="info-value" id="e-deposit" style="color:#3F7D58;">—</span></div>
+        <div class="info-row"><span class="info-label" id="e-deposit-label">Acompte réglé</span><span class="info-value" id="e-deposit" style="color:#2E9B5C;">—</span></div>
         <div class="info-row"><span class="info-label" id="e-remaining-label">Solde</span><span class="info-value" id="e-remaining">—</span></div>
       </div>
     </div>
@@ -401,23 +448,23 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
       <div class="confirm-card-body"><div id="e-order-detail" class="order-detail-box">—</div></div>
       <div class="total-line"><span>Total à prévoir</span><span id="e-total">0,00 €</span></div>
     </div>
-    <div style="background:#FFFFFF;border:1px solid #C97C2C;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+    <div style="background:#FFFFFF;border:1px solid #F2871F;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
       <div style="font-size:22px;margin-bottom:8px;">⏳</div>
-      <div style="font-family:var(--font-display);font-size:16px;color:#C97C2C;letter-spacing:1px;margin-bottom:8px;">CONFIRMATION SOUS 30 MINUTES</div>
+      <div style="font-family:var(--font-display);font-size:16px;color:#F2871F;letter-spacing:1px;margin-bottom:8px;">CONFIRMATION SOUS 30 MINUTES</div>
       <div style="font-size:13px;color:#7A6A5C;line-height:1.7;">Votre commande est en cours de validation.<br>Vous recevrez très prochainement un message de confirmation avec l'adresse exacte de retrait.<br><br><strong id="e-appoint-note" style="color:#2B1B12;">💡 Pensez à prévoir l'appoint exact !</strong></div>
     </div>
     <div class="cancel-section">
       <h4>Un empêchement ? Vous pouvez annuler votre commande :</h4>
       <div class="cancel-links">
-        <a id="e-cancel-whatsapp" href="#" class="cancel-link" style="background:#A6263922;color:#A62639;border:1px solid #A62639;">📲 Annuler via WhatsApp</a>
+        <a id="e-cancel-whatsapp" href="#" class="cancel-link" style="background:#E8236B22;color:#E8236B;border:1px solid #E8236B;">📲 Annuler via WhatsApp</a>
         <a id="e-cancel-sms" href="#" class="cancel-link" style="background:#3A6B7D22;color:#3A6B7D;border:1px solid #3A6B7D;">💬 Annuler par SMS</a>
-        <a href="tel:0698213380" class="cancel-link" style="background:#C97C2C22;color:#C97C2C;border:1px solid #C97C2C;">📞 Annuler par appel</a>
+        <a href="tel:0698213380" class="cancel-link" style="background:#F2871F22;color:#F2871F;border:1px solid #F2871F;">📞 Annuler par appel</a>
       </div>
       <a href="/mes-commandes" style="display:inline-block;margin-top:14px;font-size:12px;color:#7A6A5C;text-decoration:underline;">Ou gérer ma commande depuis « Mes commandes »</a>
     </div>
     <div style="text-align:center;margin-top:20px;padding:16px;background:#FFFFFF;border-radius:12px;border:1px solid #E4D3BA;">
       <div style="font-size:13px;color:#A9998A;margin-bottom:8px;">Une question ?</div>
-      <a href="mailto:ohmikate51@gmail.com" style="color:#A62639;text-decoration:none;font-weight:bold;font-size:14px;">📧 ohmikate51@gmail.com</a>
+      <a href="mailto:ohmikate51@gmail.com" style="color:#E8236B;text-decoration:none;font-weight:bold;font-size:14px;">📧 ohmikate51@gmail.com</a>
     </div>
     <button class="btn-nouvelle" onclick="nouvelleCommande()">🔄 Passer une nouvelle commande</button>
   </div>
@@ -710,7 +757,7 @@ function generateBoxRowHtml(idPrefix,defaultImg){
     <div class="lot-content">
       <div class="lot-title">✨ Personnalisation <span class="lot-badge"></span></div>
       <div class="chip-section">
-        <div class="chip-label">Enrobage</div>
+        <div class="chip-label chip-label-pink">Enrobage</div>
         <div class="chip-group lot-field" id="${idPrefix}-base" data-value="Nature">
           ${chipBtn(idPrefix,'base','Nature','Nature')}
           ${chipBtn(idPrefix,'base','Sucre','🍚 Sucre')}
@@ -719,7 +766,7 @@ function generateBoxRowHtml(idPrefix,defaultImg){
       </div>
       <div class="lot-selects-row">
         <div class="chip-section">
-          <div class="chip-label">🍫 Nappage</div>
+          <div class="chip-label chip-label-orange">🍫 Nappage</div>
           <select class="select-custom lot-field" id="${idPrefix}-nappage" data-value="Aucun" onchange="selectChip('${idPrefix}','nappage',this.value)">
             <option value="Aucun">Aucun</option>
             <option value="Chocolat">🍫 Chocolat (+0,50€)</option>
@@ -729,7 +776,7 @@ function generateBoxRowHtml(idPrefix,defaultImg){
           </select>
         </div>
         <div class="chip-section">
-          <div class="chip-label">🥜 Garniture</div>
+          <div class="chip-label chip-label-green">🥜 Garniture</div>
           <select class="select-custom lot-field" id="${idPrefix}-garniture" data-value="Aucun" onchange="selectChip('${idPrefix}','garniture',this.value)">
             <option value="Aucun">Aucun</option>
             <option value="Éclats M&M's">🍬 M&M's (+0,50€)</option>
@@ -740,7 +787,7 @@ function generateBoxRowHtml(idPrefix,defaultImg){
           </select>
         </div>
         <div class="chip-section">
-          <div class="chip-label">🍯 Pot</div>
+          <div class="chip-label chip-label-pink">🍯 Pot</div>
           <select class="select-custom lot-field" id="${idPrefix}-pot" data-value="Aucun" onchange="selectChip('${idPrefix}','pot',this.value)">
             <option value="Aucun">Aucun</option>
             <option value="Pot Nutella">🍫 Nutella (+0,50€)</option>
@@ -1176,6 +1223,9 @@ function showLimiteBoitesModal(){
 document.getElementById("limite-modal-backdrop").addEventListener("click",function(e){
   if(e.target===this)this.classList.remove("show");
 });
+document.getElementById("promo-modal-backdrop").addEventListener("click",function(e){
+  if(e.target===this)this.classList.remove("show");
+});
 
 function showToast(m){const t=document.getElementById("toast");t.innerHTML=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),5000);}
 
@@ -1310,6 +1360,14 @@ window.onload=function(){
       let draft=JSON.parse(raw);
       afficherConfirmationStripe(draft);
     }
+  }
+
+  // Pop-up promo "Nouveautés Bueno & Pistache" — visible à chaque visite jusqu'au 19/08/2026
+  const PROMO_FIN=new Date(2026,7,19,23,59,59); // mois 7 = août (0-indexé)
+  if(new Date()<=PROMO_FIN){
+    setTimeout(()=>{
+      document.getElementById("promo-modal-backdrop").classList.add("show");
+    },1500);
   }
 };
 </script>
