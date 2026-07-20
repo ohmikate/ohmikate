@@ -1169,14 +1169,27 @@ function calculerSolde(c){
   return 0;
 }
 
-function genBlocSolde(solde,b){
-  let soldeStr=solde.toFixed(2).replace(".",",");
-  let lienPaypal=PAYPAL_ME_LINK+"/"+solde.toFixed(2)+"EUR";
-  let bloc=`💰 ${b}Solde restant à régler : ${soldeStr} €${b}\n`;
-  bloc+=`📲 Via Wero : envoie ${soldeStr}€ au ${WERO_PHONE} (Oh! Mikaté)\n`;
-  bloc+=`💳 Ou via PayPal : ${lienPaypal}\n\n`;
+// Remplacez cette URL par votre vrai lien Stripe Payment Link
+const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/votre_lien_stripe";
+
+function genBlocSolde(solde, b, estEspeces = false){
+  let soldeStr = solde.toFixed(2).replace(".", ",");
+  let bloc = `💰 ${b}Solde restant à régler : ${soldeStr} €${b}\n`;
+
+  if (estEspeces) {
+    // Cas espèces : aucun lien en ligne affiché
+    bloc += `💵 Règlement en espèces (merci de faire l'appoint) ou par CB sur place.\n\n`;
+  } else {
+    // Cas paiement à distance : Wero, PayPal et Stripe Payment Link
+    let lienPaypal = PAYPAL_ME_LINK + "/" + solde.toFixed(2) + "EUR";
+    
+    bloc += `📲 Via Wero : envoie ${soldeStr}€ au ${WERO_PHONE} (Oh! Mikaté)\n`;
+    bloc += `💳 Via PayPal : ${lienPaypal}\n`;
+    bloc += `💳 Via Carte Bancaire : ${STRIPE_PAYMENT_LINK} (indiquer ${soldeStr}€)\n\n`;
+  }
   return bloc;
 }
+
 
 function genMsg(c,pourSMS=false){
   let b=pourSMS?"":"*";
