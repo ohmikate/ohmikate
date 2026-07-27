@@ -360,7 +360,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 <div class="form-group">
   <label>Mode de règlement : <span class="requis">*</span></label>
   <div class="payment-selector">
-    <div id="opt-acompte" class="pay-opt" style="display:none;" onclick="selectPayment('acompte')">💰 Acompte (50%)<br><span style="font-weight:normal;font-size:11px;opacity:0.75;">en ligne ou en espèces</span></div>
+    <div id="opt-acompte" class="pay-opt" style="display:none;" onclick="selectPayment('acompte')">💰 Acompte (50%)<br><span style="font-weight:normal;font-size:11px;opacity:0.75;">en ligne, en espèces ou CB sur place</span></div>
     <div id="opt-total" class="pay-opt" onclick="selectPayment('total')">✅ Totalité (100%)</div>
   </div>
   <div id="opt-especes" class="pay-opt" style="display:none;margin-top:8px;" onclick="selectPayment('especes')">💵 Tout payer en espèces à la commande</div>
@@ -411,7 +411,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
             <div style="font-size:12px;color:#A9998A;margin-bottom:8px;">Comment souhaites-tu régler ton acompte de <strong id="deposit-amount-2b" style="color:#2B1B12;">0.00€</strong> ?</div>
             <div style="display:flex;gap:8px;">
               <div id="deposit-choice-online" class="pay-opt" style="flex:1;font-size:13px;padding:10px;" onclick="selectDepositChoice('online')">💳 J'ai réglé en ligne</div>
-              <div id="deposit-choice-cash" class="pay-opt" style="flex:1;font-size:13px;padding:10px;border-color:#F2871F;" onclick="selectDepositChoice('cash')">💵 Je viens déposer en espèces</div>
+              <div id="deposit-choice-cash" class="pay-opt" style="flex:1;font-size:13px;padding:10px;border-color:#F2871F;" onclick="selectDepositChoice('cash')">💵 Je viens déposer en espèces ou CB sur place</div>
             </div>
           </div>
         </div>
