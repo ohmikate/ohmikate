@@ -4,32 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Oh! Mikaté — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Caveat:wght@600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#2B1B12;
+  --ink:#241A12;
   --ink-muted:#7A6A5C;
   --ink-faint:#A9998A;
   --bg:#FBF3E7;
   --surface:#FFFFFF;
   --surface-alt:#F3E7D4;
   --border:#D9C29E;
-  --accent:#A62639;
-  --accent-dark:#7E1B2B;
-  --accent-soft:#F5E2E2;
-  --gold:#D9A441;
-  --gold-soft:#FBF0DC;
-  --success:#3F7D58;
-  --success-soft:#E7F0EA;
+  --accent:#E8236B;
+  --accent-dark:#B81552;
+  --accent-soft:#FCE0EA;
+  --gold:#F2871F;
+  --gold-soft:#FDEBD3;
+  --success:#2E9B5C;
+  --success-soft:#E1F5E9;
   --error:#B3261E;
   --error-soft:#F8E6E4;
   --blue:#3A6B7D;
   --blue-soft:#E4EEF1;
-  --amber:#C97C2C;
+  --amber:#F2871F;
   --amber-soft:#FBEEDD;
   --purple:#6B5B95;
   --purple-soft:#EDEAF7;
-  --font-display:'Fraunces',serif;
+  --font-display:'Fredoka',sans-serif;
+  --font-logo:'Caveat',cursive;
   --font-body:'Work Sans',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -411,7 +412,7 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
           }
         }
       }
-      toutesCommandes.push({id:i,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
+      toutesCommandes.push({id:i,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
     });
     // Détecter nouvelles commandes et alerter
     let idsConnus=JSON.parse(localStorage.getItem('ohMikateIdsConnus')||'[]');
@@ -670,6 +671,7 @@ function validerDemande(id){
       localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
       pretes=pretes.filter(pid=>pid!==c.id);
       localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+      envoyerSuppressionAuSheet(c.id);
       updateStats();
       rafraichirVuesSecondaires();
       setTimeout(afficher,300);
@@ -1169,27 +1171,14 @@ function calculerSolde(c){
   return 0;
 }
 
-// Remplacez cette URL par votre vrai lien Stripe Payment Link
-const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/votre_lien_stripe";
-
-function genBlocSolde(solde, b, estEspeces = false){
-  let soldeStr = solde.toFixed(2).replace(".", ",");
-  let bloc = `💰 ${b}Solde restant à régler : ${soldeStr} €${b}\n`;
-
-  if (estEspeces) {
-    // Cas espèces : aucun lien en ligne affiché
-    bloc += `💵 Règlement en espèces (merci de faire l'appoint) ou par CB sur place.\n\n`;
-  } else {
-    // Cas paiement à distance : Wero, PayPal et Stripe Payment Link
-    let lienPaypal = PAYPAL_ME_LINK + "/" + solde.toFixed(2) + "EUR";
-    
-    bloc += `📲 Via Wero : envoie ${soldeStr}€ au ${WERO_PHONE} (Oh! Mikaté)\n`;
-    bloc += `💳 Via PayPal : ${lienPaypal}\n`;
-    bloc += `💳 Via Carte Bancaire : ${STRIPE_PAYMENT_LINK} (indiquer ${soldeStr}€)\n\n`;
-  }
+function genBlocSolde(solde,b){
+  let soldeStr=solde.toFixed(2).replace(".",",");
+  let lienPaypal=PAYPAL_ME_LINK+"/"+solde.toFixed(2)+"EUR";
+  let bloc=`💰 ${b}Solde restant à régler : ${soldeStr} €${b}\n`;
+  bloc+=`📲 Via Wero : envoie ${soldeStr}€ au ${WERO_PHONE} (Oh! Mikaté)\n`;
+  bloc+=`💳 Ou via PayPal : ${lienPaypal}\n\n`;
   return bloc;
 }
-
 
 function genMsg(c,pourSMS=false){
   let b=pourSMS?"":"*";
@@ -1307,10 +1296,21 @@ function rafraichirVuesSecondaires(){
   if(document.getElementById("vue-aprepare").style.display!=="none")afficherAPreparer();
 }
 
+function envoyerStatutAuSheet(id,statut){
+  let c=toutesCommandes.find(x=>x.id===id);
+  if(!c||!c.rowIndex)return;
+  fetch(APPS_SCRIPT_URL,{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"statut",rowIndex:c.rowIndex,statut})
+  }).catch(()=>{});
+}
+
 function marquer(id){
   if(!confirmees.includes(id)){
     confirmees.push(id);
     localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+    envoyerStatutAuSheet(id,"confirmee");
     updateStats();
     rafraichirVuesSecondaires();
     setTimeout(afficher,400);
@@ -1320,6 +1320,7 @@ function marquer(id){
 function annulerConfirmation(id){
   confirmees=confirmees.filter(c=>c!==id);
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  envoyerStatutAuSheet(id,"nouvelle");
   updateStats();
   rafraichirVuesSecondaires();
   setTimeout(afficher,300);
@@ -1342,6 +1343,7 @@ function marquerPrete(id){
 function finaliserPrete(id){
   pretes.push(id);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  envoyerStatutAuSheet(id,"prete");
   updateStats();
   rafraichirVuesSecondaires();
   setTimeout(afficher,400);
@@ -1370,6 +1372,7 @@ function annulerPrete(id){
   soldeRecu=soldeRecu.filter(x=>x!==id);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
   localStorage.setItem('ohMikateSoldeRecu',JSON.stringify(soldeRecu));
+  envoyerStatutAuSheet(id,"confirmee");
   updateStats();
   rafraichirVuesSecondaires();
   setTimeout(afficher,300);
@@ -1419,6 +1422,16 @@ function genMsgAnnulationParToi(c,pourSMS=false){
   return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
 }
 function fermerPopup(){idASupp=null;document.getElementById("popup-supp").classList.remove("show");}
+function envoyerSuppressionAuSheet(id){
+  let c=toutesCommandes.find(x=>x.id===id);
+  if(!c||!c.rowIndex)return;
+  fetch(APPS_SCRIPT_URL,{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"supprimer",rowIndex:c.rowIndex})
+  }).catch(()=>{});
+}
+
 function confirmerSuppression(){
   if(idASupp===null)return;
   supprimees.push(idASupp);
@@ -1427,6 +1440,7 @@ function confirmerSuppression(){
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
   pretes=pretes.filter(id=>id!==idASupp);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  envoyerSuppressionAuSheet(idASupp);
   fermerPopup();
   updateStats();
   rafraichirVuesSecondaires();

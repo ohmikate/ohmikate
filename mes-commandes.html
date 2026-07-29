@@ -4,29 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Oh! Mikaté — Mes commandes</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Caveat:wght@600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#2B1B12;
+  --ink:#241A12;
   --ink-muted:#7A6A5C;
   --ink-faint:#A9998A;
   --bg:#FBF3E7;
   --surface:#FFFFFF;
   --surface-alt:#F3E7D4;
   --border:#D9C29E;
-  --accent:#A62639;
-  --accent-dark:#7E1B2B;
-  --accent-soft:#F5E2E2;
-  --gold:#D9A441;
-  --gold-soft:#FBF0DC;
-  --success:#3F7D58;
-  --success-soft:#E7F0EA;
+  --accent:#E8236B;
+  --accent-dark:#B81552;
+  --accent-soft:#FCE0EA;
+  --gold:#F2871F;
+  --gold-soft:#FDEBD3;
+  --success:#2E9B5C;
+  --success-soft:#E1F5E9;
   --error:#B3261E;
   --error-soft:#F8E6E4;
   --blue:#3A6B7D;
-  --amber:#C97C2C;
+  --amber:#F2871F;
   --amber-soft:#FBEEDD;
-  --font-display:'Fraunces',serif;
+  --font-display:'Fredoka',sans-serif;
+  --font-logo:'Caveat',cursive;
   --font-body:'Work Sans',sans-serif;
 }
 *{box-sizing:border-box;}
@@ -136,7 +137,7 @@ h1{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--ac
                    { "ok": true, "commandes": [
                        { "id": "...", "dateRecu": "...", "name": "...",
                          "order": "...", "total": "...", "payment": "...",
-                         "dateRetrait": "...", "creneau": "...", "statut": "nouvelle|confirmee|prete" }
+                         "dateRetrait": "...", "creneau": "...", "statut": "nouvelle|confirmee|prete|annulee" }
                    ]}
                 Le script NE renvoie QUE les commandes dont le numéro
                 normalisé correspond à celui demandé — jamais les autres.
@@ -146,7 +147,7 @@ h1{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--ac
                   commandeId, phone, name, dateRetrait, creneau, detail }
                 -> ajoute une ligne dans l'onglet "Demandes" du Sheet.
    ================================================================ */
-const APPS_SCRIPT_URL="REMPLACER_PAR_URL_APPS_SCRIPT";
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec";
 
 let commandesTrouvees=[];
 let demandeEnCours=null; // {commandeId, type}
@@ -193,6 +194,7 @@ async function chercherCommandes(){
 }
 
 function libelleStatut(s){
+  if(s==="annulee")return{cls:"statut-nouvelle",txt:"🗑️ Annulée"};
   if(s==="prete")return{cls:"statut-prete",txt:"🍳 Prête"};
   if(s==="confirmee")return{cls:"statut-confirmee",txt:"✅ Confirmée"};
   return{cls:"statut-nouvelle",txt:"🆕 En attente de confirmation"};
@@ -202,6 +204,11 @@ function afficherResultats(){
   let zone=document.getElementById("resultats");
   zone.innerHTML=commandesTrouvees.map(c=>{
     let statut=libelleStatut(c.statut);
+    let actions=(c.statut==="annulee"||c.statut==="prete")?"":`<div class="commande-actions">
+        <button class="action-btn annuler" onclick="ouvrirPopup('annuler','${c.id}')">🗑️ Annuler</button>
+        <button class="action-btn modifier" onclick="ouvrirPopup('modifier','${c.id}')">✏️ Modifier</button>
+        <button class="action-btn completer" onclick="ouvrirPopup('completer','${c.id}')">➕ Compléter</button>
+      </div>`;
     return`<div class="commande-card">
       <div class="commande-top">
         <div class="commande-date">📅 ${c.dateRetrait||"—"}</div>
@@ -209,11 +216,7 @@ function afficherResultats(){
       </div>
       <div class="commande-meta">⏰ ${c.creneau||"—"} • 💰 ${c.total||"—"} € • 💳 ${c.payment||"—"}</div>
       <div class="commande-detail">${c.order||""}</div>
-      <div class="commande-actions">
-        <button class="action-btn annuler" onclick="ouvrirPopup('annuler','${c.id}')">🗑️ Annuler</button>
-        <button class="action-btn modifier" onclick="ouvrirPopup('modifier','${c.id}')">✏️ Modifier</button>
-        <button class="action-btn completer" onclick="ouvrirPopup('completer','${c.id}')">➕ Compléter</button>
-      </div>
+      ${actions}
     </div>`;
   }).join("");
   zone.style.display="block";
