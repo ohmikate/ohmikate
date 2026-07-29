@@ -200,27 +200,61 @@ function libelleStatut(s){
   return{cls:"statut-nouvelle",txt:"🆕 En attente de confirmation"};
 }
 
+// Échappe le HTML pour éviter que des apostrophes, guillemets ou balises
+// présentes dans les données (nom, détail de commande...) ne cassent le
+// rendu — c'était la cause probable des boutons qui ne réagissaient plus.
+function escapeHtml(str){
+  if(str===undefined||str===null)return"";
+  return String(str)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#39;");
+}
+
+// Convertit une date (ISO, "2026-07-30", objet Date sérialisé...) au format
+// français long, ex: "jeudi 30 juillet 2026". Si la date n'est pas
+// reconnue, on affiche la valeur telle quelle plutôt que de planter.
+function formatDateFr(dateStr){
+  if(!dateStr)return"—";
+  let d=new Date(dateStr);
+  if(isNaN(d.getTime()))return dateStr;
+  let txt=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  return txt.charAt(0).toUpperCase()+txt.slice(1);
+}
+
 function afficherResultats(){
   let zone=document.getElementById("resultats");
   zone.innerHTML=commandesTrouvees.map(c=>{
     let statut=libelleStatut(c.statut);
+    let idSafe=escapeHtml(c.id);
     let actions=(c.statut==="annulee"||c.statut==="prete")?"":`<div class="commande-actions">
-        <button class="action-btn annuler" onclick="ouvrirPopup('annuler','${c.id}')">🗑️ Annuler</button>
-        <button class="action-btn modifier" onclick="ouvrirPopup('modifier','${c.id}')">✏️ Modifier</button>
-        <button class="action-btn completer" onclick="ouvrirPopup('completer','${c.id}')">➕ Compléter</button>
+        <button class="action-btn annuler" data-action="annuler" data-id="${idSafe}">🗑️ Annuler</button>
+        <button class="action-btn modifier" data-action="modifier" data-id="${idSafe}">✏️ Modifier</button>
+        <button class="action-btn completer" data-action="completer" data-id="${idSafe}">➕ Compléter</button>
       </div>`;
     return`<div class="commande-card">
       <div class="commande-top">
-        <div class="commande-date">📅 ${c.dateRetrait||"—"}</div>
+        <div class="commande-date">📅 ${formatDateFr(c.dateRetrait)}</div>
         <span class="commande-statut ${statut.cls}">${statut.txt}</span>
       </div>
-      <div class="commande-meta">⏰ ${c.creneau||"—"} • 💰 ${c.total||"—"} € • 💳 ${c.payment||"—"}</div>
-      <div class="commande-detail">${c.order||""}</div>
+      <div class="commande-meta">⏰ ${escapeHtml(c.creneau)||"—"} • 💰 ${escapeHtml(c.total)||"—"} € • 💳 ${escapeHtml(c.payment)||"—"}</div>
+      <div class="commande-detail">${escapeHtml(c.order)}</div>
       ${actions}
     </div>`;
   }).join("");
   zone.style.display="block";
 }
+
+// Délégation d'événements : au lieu d'attributs onclick générés dynamiquement
+// (fragiles si l'id ou le texte contient des apostrophes/guillemets), on écoute
+// les clics sur la zone résultats et on lit les data-attributes.
+document.getElementById("resultats").addEventListener("click",function(e){
+  let btn=e.target.closest(".action-btn");
+  if(!btn)return;
+  ouvrirPopup(btn.dataset.action,btn.dataset.id);
+});
 
 function ouvrirPopup(type,commandeId){
   demandeEnCours={commandeId,type};
