@@ -655,7 +655,19 @@ function updateBadgeDemandes(n){
 
 function trouverCommandeCorrespondante(d){
   let phoneN=normalizePhone(d.phone);
-  return toutesCommandes.find(c=>normalizePhone(c.phone)===phoneN&&String(c.dateRetrait)===String(d.dateRetrait)&&String(c.creneau)===String(d.creneau));
+  let dDate=parseDate(d.dateRetrait);
+  let dCreneau=(d.creneau||"").trim().toLowerCase();
+  return toutesCommandes.find(c=>{
+    if(normalizePhone(c.phone)!==phoneN)return false;
+    let cCreneau=(c.creneau||"").trim().toLowerCase();
+    if(cCreneau!==dCreneau)return false;
+    let cDate=parseDate(c.dateRetrait);
+    if(dDate&&cDate){
+      return dDate.getFullYear()===cDate.getFullYear()&&dDate.getMonth()===cDate.getMonth()&&dDate.getDate()===cDate.getDate();
+    }
+    // Repli si l'une des deux dates n'a pas pu être analysée : comparaison texte brut
+    return String(c.dateRetrait).trim()===String(d.dateRetrait).trim();
+  });
 }
 
 function validerDemande(id){
@@ -1132,9 +1144,8 @@ function renderCommande(c){
   // Liens de contact WhatsApp / SMS
   let targetPhone = normalizePhone(c.phone);
   if(targetPhone){
-    let txtWA = prt ? genMsgPret(c, false) : genMsg(c, false);
-    html += `<a class="btn-wa" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" href="https://wa.me/33${targetPhone.substring(1)}?text=${encodeURIComponent(txtWA)}" target="_blank">📲 WhatsApp</a>`;
-    html += `<button class="btn-sms" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" onclick="envoyerSMS(${c.id}, ${prt})">💬 SMS</button>`;
+    html += `<button class="btn-wa" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" onclick="envoyerWhatsApp(${c.id})">📲 WhatsApp</button>`;
+    html += `<button class="btn-sms" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" onclick="envoyerSMS(${c.id})">💬 SMS</button>`;
   }
   
   // Bouton d'impression sécurisé
@@ -1148,11 +1159,22 @@ function renderCommande(c){
   return html;
 }
 
-function envoyerSMS(id, pret){
+function envoyerWhatsApp(id){
   let c = toutesCommandes.find(x=>x.id===id);
   if(!c){showToast("⚠️ Commande introuvable");return;}
   let targetPhone = normalizePhone(c.phone);
   if(!targetPhone){showToast("⚠️ Pas de numéro de téléphone");return;}
+  let pret = pretes.includes(id);
+  let txtWA = pret ? genMsgPret(c, false) : genMsg(c, false);
+  window.open("https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(txtWA), "_blank");
+}
+
+function envoyerSMS(id){
+  let c = toutesCommandes.find(x=>x.id===id);
+  if(!c){showToast("⚠️ Commande introuvable");return;}
+  let targetPhone = normalizePhone(c.phone);
+  if(!targetPhone){showToast("⚠️ Pas de numéro de téléphone");return;}
+  let pret = pretes.includes(id);
   let txtSMS = pret ? genMsgPret(c, true) : genMsg(c, true);
   window.location.href = 'sms:'+targetPhone+'?body='+encodeURIComponent(txtSMS);
 }
