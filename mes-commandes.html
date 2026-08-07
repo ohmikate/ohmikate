@@ -270,41 +270,48 @@ function fermerPopups(){
 }
 
 async function envoyerDemande(typeDemande){
-  if(!demandeEnCours)return;
-  let c=commandesTrouvees.find(x=>x.id===demandeEnCours.commandeId);
-  if(!c)return;
+  if(!demandeEnCours) return;
+  let c = commandesTrouvees.find(x => x.id === demandeEnCours.commandeId);
+  if(!c) return;
 
-  let detail="";
-  if(typeDemande==="modification")detail=document.getElementById("texte-modifier").value.trim();
-  if(typeDemande==="complement")detail=document.getElementById("texte-completer").value.trim();
-  if((typeDemande==="modification"||typeDemande==="complement")&&!detail){
+  let detail = "";
+  if(typeDemande === "modification") detail = document.getElementById("texte-modifier").value.trim();
+  if(typeDemande === "complement") detail = document.getElementById("texte-completer").value.trim();
+  if((typeDemande === "modification" || typeDemande === "complement") && !detail){
     alert("Merci de préciser ta demande.");
     return;
   }
 
-  let phone=normalizePhone(document.getElementById("phone-input").value.trim());
-  let payload={
-    action:"demande",
-    type:typeDemande,
-    commandeId:c.id,
-    phone,
-    name:c.name||"",
-    dateRetrait:c.dateRetrait||"",
-    creneau:c.creneau||"",
-    detail
+  let phone = normalizePhone(document.getElementById("phone-input").value.trim());
+  let payload = {
+    action: "demande",
+    type: typeDemande,
+    commandeId: c.id,
+    phone: phone,
+    name: c.name || "",
+    dateRetrait: c.dateRetrait || "",
+    creneau: c.creneau || "",
+    detail: detail
   };
 
-  try{
-    await fetch(APPS_SCRIPT_URL,{
-      method:"POST",mode:"no-cors",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(payload)
-    });
-  }catch(e){}
+  afficherMsg("⏳ Envoi de votre demande en cours...");
 
-  fermerPopups();
-  afficherMsg("✅ Ta demande a bien été transmise à Oh! Mikaté. Reviens sur cette page et refais une recherche pour suivre son traitement.");
-  document.getElementById("resultats").style.display="none";
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+
+    fermerPopups();
+    alert("✅ Votre demande a bien été transmise à Oh! Mikaté !");
+    
+    chercherCommandes();
+
+  } catch(e) {
+    console.error("Erreur lors de l'envoi:", e);
+    alert("❌ Une erreur s'est produite lors de l'envoi. Veuillez réessayer.");
+  }
 }
 
 document.getElementById("phone-input").addEventListener("keydown",function(e){
