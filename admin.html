@@ -583,6 +583,7 @@ async function chargerDemandes(){
       let c=row.c||[];
       return{
         id:i,
+        rowIndex:i+2,
         horodatage:c[0]?String(c[0].v):"",
         phone:c[1]?String(c[1].v):"",
         name:c[2]?c[2].v:"",
@@ -683,7 +684,7 @@ function validerDemande(id){
       localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
       pretes=pretes.filter(pid=>pid!==c.id);
       localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
-      envoyerSuppressionAuSheet(c.id);
+      envoyerSuppressionAuSheet(c.id,"annulee");
       updateStats();
       rafraichirVuesSecondaires();
       setTimeout(afficher,300);
@@ -695,18 +696,26 @@ function validerDemande(id){
     showToast(`✅ Demande marquée traitée — pense à ${d.type==="Complément"?"ajouter":"modifier"} la commande dans le tableau`);
   }
 
-  marquerDemandeTraitee(id);
+  marquerDemandeTraitee(id,"traitee");
 }
 
 function refuserDemande(id){
   if(!confirm("Confirmer le refus de cette demande ? Le client ne sera pas notifié automatiquement."))return;
-  marquerDemandeTraitee(id);
+  marquerDemandeTraitee(id,"refusee");
   showToast("❌ Demande refusée");
 }
 
-function marquerDemandeTraitee(id){
+function marquerDemandeTraitee(id,statutServeur){
   if(!demandesTraitees.includes(id))demandesTraitees.push(id);
   localStorage.setItem('ohMikateDemandesTraitees',JSON.stringify(demandesTraitees));
+  let d=toutesDemandes.find(x=>x.id===id);
+  if(d&&d.rowIndex&&statutServeur){
+    fetch(APPS_SCRIPT_URL,{
+      method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({action:"traiterDemande",rowIndex:d.rowIndex,statut:statutServeur})
+    }).catch(()=>{});
+  }
   afficherDemandes();
 }
 
@@ -1444,13 +1453,13 @@ function genMsgAnnulationParToi(c,pourSMS=false){
   return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
 }
 function fermerPopup(){idASupp=null;document.getElementById("popup-supp").classList.remove("show");}
-function envoyerSuppressionAuSheet(id){
+function envoyerSuppressionAuSheet(id,motif){
   let c=toutesCommandes.find(x=>x.id===id);
   if(!c||!c.rowIndex)return;
   fetch(APPS_SCRIPT_URL,{
     method:"POST",mode:"no-cors",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({action:"supprimer",rowIndex:c.rowIndex})
+    body:JSON.stringify({action:"supprimer",rowIndex:c.rowIndex,motif:motif||"supprime"})
   }).catch(()=>{});
 }
 
@@ -1462,7 +1471,7 @@ function confirmerSuppression(){
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
   pretes=pretes.filter(id=>id!==idASupp);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
-  envoyerSuppressionAuSheet(idASupp);
+  envoyerSuppressionAuSheet(idASupp,"supprime");
   fermerPopup();
   updateStats();
   rafraichirVuesSecondaires();
