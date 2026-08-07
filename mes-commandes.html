@@ -314,9 +314,12 @@ async function envoyerDemande(typeDemande){
   }
 }
 
-document.getElementById("phone-input").addEventListener("keydown",function(e){
-  if(e.key==="Enter")chercherCommandes();
-});
+var phoneInput = document.getElementById("phone-input");
+if (phoneInput) {
+  phoneInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") chercherCommandes();
+  });
+}
 </script>
 </body>
 </html>
