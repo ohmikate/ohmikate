@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oh! Mikaté — Mes commandes</title>
+<title>Oh! Mikaté — Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Caveat:wght@600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -24,143 +24,1548 @@
   --error:#B3261E;
   --error-soft:#F8E6E4;
   --blue:#3A6B7D;
+  --blue-soft:#E4EEF1;
   --amber:#F2871F;
   --amber-soft:#FBEEDD;
+  --purple:#6B5B95;
+  --purple-soft:#EDEAF7;
   --font-display:'Fredoka',sans-serif;
   --font-logo:'Caveat',cursive;
   --font-body:'Work Sans',sans-serif;
 }
-*{box-sizing:border-box;}
-body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--ink);padding:24px 16px 60px;max-width:600px;margin-left:auto;margin-right:auto;}
-h1{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--accent);text-align:center;margin:0 0 4px;letter-spacing:0.2px;}
-.sous-titre{text-align:center;color:var(--ink-muted);font-size:13px;margin-bottom:26px;}
-.lookup-box{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;}
-.lookup-box label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;}
-.lookup-box input{width:100%;padding:13px;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:10px;color:var(--ink);font-size:16px;font-family:var(--font-body);box-sizing:border-box;text-align:center;letter-spacing:1px;}
-.lookup-box input:focus{border-color:var(--accent);outline:none;}
-.btn-lookup{width:100%;margin-top:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font-body);}
-.btn-lookup:hover{filter:brightness(1.05);}
-.btn-lookup:disabled{opacity:0.6;cursor:not-allowed;}
-.msg{text-align:center;font-size:13px;color:var(--ink-muted);padding:20px 0;}
-.msg.error{color:var(--error);}
-#resultats{display:none;}
-.commande-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
-.commande-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
-.commande-date{font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--ink);}
-.commande-statut{font-size:10px;font-weight:600;padding:3px 9px;border-radius:12px;letter-spacing:0.3px;white-space:nowrap;}
-.statut-nouvelle{background:var(--accent-soft);color:var(--accent-dark);}
-.statut-confirmee{background:var(--success-soft);color:var(--success);}
-.statut-prete{background:#E4EEF1;color:var(--blue);}
-.commande-detail{font-size:13px;color:var(--ink-muted);line-height:1.7;white-space:pre-wrap;background:var(--surface-alt);border-radius:8px;padding:10px;margin-bottom:10px;}
-.commande-meta{font-size:12px;color:var(--ink-faint);margin-bottom:12px;}
-.commande-actions{display:flex;gap:8px;flex-wrap:wrap;}
-.action-btn{flex:1;min-width:100px;background:var(--surface-alt);border:1.5px solid var(--border);color:var(--ink);font-size:12px;font-weight:600;padding:10px 8px;border-radius:20px;cursor:pointer;font-family:var(--font-body);text-align:center;}
-.action-btn.annuler{border-color:var(--error);color:var(--error);}
-.action-btn.modifier{border-color:var(--amber);color:var(--amber);}
-.action-btn.completer{border-color:var(--success);color:var(--success);}
-.action-btn:hover{filter:brightness(0.97);}
-.retour{display:block;text-align:center;margin-top:24px;color:var(--accent);text-decoration:none;font-size:13px;font-weight:600;}
-.demande-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
-.demande-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
-.demande-type{font-size:13px;font-weight:600;color:var(--ink);}
-.demande-statut{font-size:10px;font-weight:600;padding:3px 9px;border-radius:12px;white-space:nowrap;}
-.demande-statut.attente{background:var(--amber-soft);color:var(--amber);}
-.demande-statut.traitee{background:var(--success-soft);color:var(--success);}
-.demande-statut.refusee{background:var(--error-soft);color:var(--error);}
-.demande-meta{font-size:11px;color:var(--ink-faint);}
-h2.section-titre{font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--ink);margin:24px 0 10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-height:100vh;padding:20px 15px 60px;}
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;}
+.login-card{background:var(--surface);border:2px solid var(--accent);border-radius:18px;padding:35px 25px;max-width:360px;width:100%;text-align:center;box-shadow:0 4px 20px rgba(43,27,18,0.08);}
+.login-card h1{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--accent);letter-spacing:0.3px;margin-bottom:6px;}
+.login-card p{font-size:12px;color:var(--ink-muted);margin-bottom:24px;}
+.login-card input{width:100%;padding:13px;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:10px;color:var(--ink);font-size:16px;text-align:center;letter-spacing:3px;margin-bottom:14px;font-family:var(--font-body);}
+.login-card input:focus{border-color:var(--accent);outline:none;}
+.login-btn{font-family:var(--font-body);font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:13px;width:100%;font-size:16px;cursor:pointer;letter-spacing:0.3px;}
+.login-error{color:var(--error);font-size:13px;margin-top:10px;display:none;}
+#admin-screen{display:none;}
+.header{text-align:center;padding:20px 0 16px;border-bottom:2px solid var(--accent);margin-bottom:20px;}
+.header h1{font-family:var(--font-display);font-weight:600;font-size:24px;color:var(--accent);letter-spacing:0.3px;}
+.header p{font-size:11px;color:var(--ink-muted);margin-top:4px;}
+.toolbar{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;align-items:center;flex-wrap:wrap;}
+.page-tabs{display:flex;gap:8px;max-width:600px;margin:0 auto 16px;}
+.page-tab{flex:1;background:var(--surface);border:1.5px solid var(--accent);color:var(--accent-dark);font-size:13px;font-weight:600;padding:11px 10px;border-radius:10px;cursor:pointer;font-family:var(--font-body);text-align:center;transition:.15s;}
+.page-tab.page-tab-active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.page-tab-badge{display:inline-block;background:var(--amber);color:#fff;font-size:11px;font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px;}
+.page-tab.page-tab-active .page-tab-badge{background:#fff;color:var(--accent);}
+.histo-jour{background:var(--surface);border:2px solid var(--accent);border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
+.histo-jour-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.histo-jour-titre{font-family:var(--font-display);font-weight:600;font-size:17px;letter-spacing:0.2px;color:var(--ink);}
+.histo-jour-stats{display:flex;gap:14px;align-items:center;}
+.histo-jour-nb{font-size:12px;color:var(--ink-muted);}
+.histo-jour-ca{font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--accent);}
+.histo-jour-chevron{color:var(--ink-faint);font-size:13px;margin-left:8px;transition:transform .2s;}
+.histo-jour-chevron.open{transform:rotate(180deg);}
+.histo-jour-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.histo-jour-detail.open{display:block;}
+.histo-ligne{display:flex;justify-content:space-between;align-items:start;padding:10px 0;border-bottom:1px solid var(--surface-alt);font-size:13px;gap:8px;}
+.histo-ligne:last-child{border-bottom:none;}
+.histo-ligne-nom{color:var(--ink);font-weight:600;}
+.histo-ligne-meta{color:var(--ink-faint);font-size:11px;margin-top:3px;}
+.histo-ligne-boites{font-size:11px;color:var(--amber);margin-top:3px;}
+.histo-ligne-prix{color:var(--accent);font-weight:600;white-space:nowrap;}
+.histo-totaux-globaux{display:flex;justify-content:space-around;max-width:600px;margin:0 auto 16px;background:var(--surface);border:1.5px solid var(--accent);border-radius:12px;padding:14px;}
+.histo-total-item{text-align:center;}
+.histo-total-num{font-family:var(--font-display);font-weight:600;font-size:21px;color:var(--ink);}
+.histo-total-lbl{font-size:10px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.5px;}
+.histo-copy-btn{display:block;width:100%;margin-top:12px;background:var(--purple);border:2px solid var(--purple);color:#fff;font-size:12px;font-weight:600;padding:8px;border-radius:20px;cursor:pointer;font-family:var(--font-body);text-align:center;}
+.histo-copy-btn:hover{filter:brightness(1.08);}
+.histo-tabs{display:flex;gap:8px;max-width:600px;margin:0 auto 14px;}
+.histo-tab{flex:1;background:var(--surface);border:1.5px solid var(--accent);color:var(--accent-dark);font-size:12px;font-weight:600;padding:9px 8px;border-radius:8px;cursor:pointer;font-family:var(--font-body);text-align:center;}
+.histo-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.histo-search{width:100%;background:var(--surface);border:1.5px solid var(--accent);color:var(--ink);font-size:13px;padding:10px 14px;border-radius:10px;font-family:var(--font-body);box-sizing:border-box;margin-bottom:14px;max-width:600px;display:block;margin-left:auto;margin-right:auto;}
+.histo-search:focus{border-color:var(--accent);outline:none;}
+.client-card{background:var(--surface);border:2px solid var(--accent);border-radius:12px;padding:14px 16px;max-width:600px;margin:0 auto 12px;}
+.client-card-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.client-nom{font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--ink);letter-spacing:0.2px;}
+.client-stats{text-align:right;}
+.client-ca{font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--accent);}
+.client-nb{font-size:11px;color:var(--ink-muted);}
+.client-badge-fidele{display:inline-block;background:var(--gold-soft);border:1px solid var(--gold);color:#8A6512;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;}
+.client-detail{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.client-detail.open{display:block;}
+.refresh-btn{font-family:var(--font-body);font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:14px;cursor:pointer;white-space:nowrap;}
+.filter-select{flex:1;min-width:120px;padding:10px;background:var(--surface);border:1.5px solid var(--accent);border-radius:10px;color:var(--ink);font-size:13px;font-family:var(--font-body);}
+.filter-select:focus{border-color:var(--accent);outline:none;}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:600px;margin:0 auto 16px;}
+.stat-box{background:var(--surface);border:1.5px solid var(--accent);border-radius:10px;padding:10px;text-align:center;}
+.stat-box .num{font-family:var(--font-display);font-weight:600;font-size:22px;color:var(--accent);}
+.stat-box .num.green{color:var(--success);}
+.stat-box .num.blue{color:var(--blue);}
+.stat-box .num.orange{color:var(--amber);font-size:18px;}
+.stat-box .lbl{font-size:9px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.5px;}
 
-.popup{display:none;position:fixed;inset:0;background:rgba(43,27,18,0.5);z-index:999;align-items:center;justify-content:center;padding:20px;}
+/* GROUPE JOUR */
+.jour-group{max-width:600px;margin:0 auto 20px;}
+.jour-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--surface-alt);border-radius:10px;margin-bottom:10px;border-left:3px solid var(--accent);}
+.jour-title{font-family:var(--font-display);font-weight:600;font-size:17px;letter-spacing:0.2px;color:var(--ink);}
+.jour-stats{font-size:12px;color:var(--ink-muted);text-align:right;}
+.jour-ca{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--accent);}
+.jour-count{font-size:11px;color:var(--ink-muted);}
+
+/* CRÉNEAUX */
+.creneaux-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:0 4px;}
+.creneaux-date-label{font-size:11px;color:var(--ink-muted);font-weight:600;padding:0 4px;margin:8px 0 4px;}
+.creneau-badge{font-size:11px;padding:4px 10px;border-radius:20px;font-weight:600;cursor:pointer;transition:filter .15s;}
+.creneau-badge:hover{filter:brightness(0.95);}
+.creneau-libre{background:var(--success-soft);color:var(--success);border:1px solid #BFDBCB;}
+.creneau-charge{background:var(--amber-soft);color:var(--amber);border:1px solid #EFD3AC;}
+.creneau-plein{background:var(--error-soft);color:var(--error);border:1px solid #EBB8B2;}
+.creneau-urgent{background:var(--error);color:#fff;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+@keyframes highlight-flash{0%{box-shadow:0 0 0 0 rgba(166,38,57,0);border-color:inherit;}25%{box-shadow:0 0 0 5px rgba(166,38,57,0.4);border-color:var(--accent);}75%{box-shadow:0 0 0 3px rgba(166,38,57,0.2);border-color:var(--accent);}100%{box-shadow:0 0 0 0 rgba(166,38,57,0);border-color:inherit;}}
+.commande-highlight{animation:highlight-flash 2s ease-out;}
+.commande-highlight-secondary{border-color:#A6263944!important;box-shadow:0 0 0 2px rgba(166,38,57,0.1);}
+
+/* CARTE COMMANDE */
+.commande-card{background:var(--surface);border:2px solid var(--accent);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(43,27,18,0.07);}
+.commande-card.nouvelle{border-color:var(--accent);box-shadow:0 0 10px rgba(166,38,57,0.08);}
+.commande-card.confirmee{border-color:var(--success);opacity:0.9;}
+.commande-card.urgente{border-color:var(--amber);box-shadow:0 0 10px rgba(201,124,44,0.15);}
+.commande-card.prete{border-color:var(--blue);opacity:0.92;}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;margin-bottom:8px;letter-spacing:0.3px;}
+.badge-new{background:var(--accent);color:#fff;}
+.badge-ok{background:var(--success);color:#fff;}
+.badge-urgent{background:var(--amber);color:#fff;animation:pulse 1s infinite;}
+.badge-prete{background:var(--blue);color:#fff;}
+.btn-prete{font-family:var(--font-body);font-weight:600;display:block;text-align:center;padding:11px;border-radius:10px;font-size:14px;color:#fff;text-decoration:none;background:var(--blue);margin-bottom:7px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.btn-prete:hover{filter:brightness(1.08);}
+.commande-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.client-name{font-family:var(--font-display);font-weight:600;font-size:19px;color:var(--ink);}
+.commande-meta{font-size:11px;color:var(--ink-faint);margin-top:2px;line-height:1.5;}
+.canal-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;}
+.canal-wa{background:var(--success-soft);color:var(--success);border:1px solid #BFDBCB;}
+.canal-sms{background:var(--blue-soft);color:var(--blue);border:1px solid #C7DBE1;}
+.canal-carte{background:var(--purple-soft);color:var(--purple);border:1px solid #D6D0EA;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+.info-item{background:var(--surface-alt);border-radius:8px;padding:8px 10px;}
+.info-item .label{font-size:10px;color:var(--ink-muted);text-transform:uppercase;margin-bottom:2px;}
+.info-item .value{font-size:13px;font-weight:600;color:var(--ink);}
+.info-item.full{grid-column:1/-1;}
+.detail-box{background:var(--surface-alt);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:12px;color:var(--ink-muted);line-height:1.7;white-space:pre-wrap;margin-top:4px;}
+.recap-boites{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.recap-boite-chip{background:var(--amber-soft);border:1px solid var(--amber);color:var(--amber);font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;}
+.total-row{display:flex;justify-content:space-between;padding:8px 12px;background:var(--accent-soft);border-radius:8px;margin:10px 0;font-family:var(--font-display);font-weight:600;font-size:17px;color:var(--accent-dark);}
+.btn-wa{font-family:var(--font-body);font-weight:600;display:block;text-align:center;padding:11px;border-radius:10px;font-size:14px;color:#fff;text-decoration:none;background:var(--success);margin-bottom:7px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.btn-sms{font-family:var(--font-body);font-weight:600;display:block;text-align:center;padding:11px;border-radius:10px;font-size:14px;color:#fff;text-decoration:none;background:var(--blue);margin-bottom:7px;border:none;width:100%;cursor:pointer;transition:0.2s;}
+.btn-wa:hover,.btn-sms:hover{filter:brightness(1.08);}
+.actions-sec{display:flex;gap:8px;margin-top:4px;}
+.btn-marquer{flex:1;background:var(--accent-soft);border:1.5px solid var(--accent);color:var(--accent-dark);font-size:11px;font-weight:600;padding:8px;border-radius:20px;cursor:pointer;font-family:var(--font-body);transition:0.2s;}
+.btn-supp{flex:1;background:var(--error-soft);border:2px solid var(--error);color:var(--error);font-size:11px;padding:8px;border-radius:20px;cursor:pointer;font-family:var(--font-body);transition:0.2s;}
+.btn-marquer:hover{border-color:var(--success);color:var(--success);}
+.btn-supp:hover{background:var(--error-soft);}
+.checkbox-wrap{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.cmd-checkbox{width:20px;height:20px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+.selection-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:var(--surface);border-top:2px solid var(--accent);padding:12px 16px;max-width:600px;margin:0 auto;border-radius:16px 16px 0 0;z-index:100;box-shadow:0 -6px 20px rgba(43,27,18,0.08);}
+.selection-bar.show{display:block;}
+.selection-bar-content{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.sel-count{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--accent);flex:1;}
+.btn-sel-conf{font-family:var(--font-body);font-weight:600;background:var(--success);color:#fff;border:none;border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;}
+.btn-sel-supp{font-family:var(--font-body);font-weight:600;background:var(--error);color:#fff;border:none;border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;}
+.btn-sel-annul{font-family:var(--font-body);font-weight:600;background:var(--surface);color:var(--accent-dark);border:1.5px solid var(--accent);border-radius:20px;padding:10px 16px;font-size:14px;cursor:pointer;}
+.tout-select-wrap{display:flex;align-items:center;gap:8px;max-width:600px;margin:0 auto 10px;padding:8px 4px;}
+.tout-select-wrap label{font-size:13px;color:var(--ink-muted);cursor:pointer;}
+.loading{text-align:center;padding:40px;color:var(--ink-muted);font-size:14px;}
+.empty-state{text-align:center;padding:40px 20px;color:var(--ink-muted);font-size:14px;max-width:600px;margin:0 auto;}
+.empty-state p{margin:0;}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--ink);color:var(--bg);padding:11px 22px;border-radius:30px;font-weight:600;transition:0.4s;opacity:0;z-index:9999;font-size:13px;text-align:center;}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.popup{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(43,27,18,0.5);z-index:9998;align-items:center;justify-content:center;padding:20px;}
 .popup.show{display:flex;}
-.popup-box{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:22px;max-width:360px;width:100%;}
-.popup-box h3{font-family:var(--font-display);font-weight:600;font-size:18px;margin:0 0 6px;color:var(--ink);}
-.popup-box p{font-size:13px;color:var(--ink-muted);margin:0 0 14px;line-height:1.5;}
-.popup-box textarea{width:100%;padding:11px;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:10px;color:var(--ink);font-size:14px;font-family:var(--font-body);box-sizing:border-box;resize:vertical;min-height:70px;margin-bottom:14px;}
-.popup-box textarea:focus{border-color:var(--accent);outline:none;}
+.popup-box{background:var(--surface);border:1.5px solid var(--error);border-radius:16px;padding:24px;max-width:320px;width:100%;text-align:center;}
+.popup-box h3{color:var(--error);font-size:17px;margin-bottom:10px;font-family:var(--font-display);font-weight:600;}
+.popup-box p{font-size:13px;color:var(--ink-muted);margin-bottom:18px;line-height:1.5;}
 .popup-btns{display:flex;gap:10px;}
-.popup-btns button{flex:1;padding:12px;border-radius:10px;border:none;font-family:var(--font-body);font-weight:600;font-size:14px;cursor:pointer;}
-.popup-cancel{background:var(--surface-alt);color:var(--ink-muted);}
-.popup-confirm{background:var(--accent);color:#fff;}
+.popup-btns button{flex:1;padding:12px;border-radius:10px;font-family:var(--font-body);font-weight:600;font-size:14px;cursor:pointer;border:none;}
+.btn-ok-supp{background:var(--error);color:#fff;}
+.btn-cancel{background:var(--surface-alt);color:var(--ink-muted);}
 </style>
 </head>
 <body>
-
-<h1>🧇 Mes commandes</h1>
-<p class="sous-titre">Retrouve ta commande avec ton numéro de téléphone</p>
-
-<div class="lookup-box">
-  <label for="phone-input">Numéro de téléphone utilisé pour commander</label>
-  <input type="tel" id="phone-input" placeholder="06 XX XX XX XX" maxlength="14" inputmode="tel">
-  <button class="btn-lookup" id="btn-lookup" onclick="chercherCommandes()">🔍 Retrouver ma commande</button>
-</div>
-
-<div id="msg-zone"></div>
-<div id="resultats"></div>
-<div id="mes-demandes"></div>
-
-<a href="/" class="retour">← Retour au site de commande</a>
-
-<!-- Popup annulation -->
-<div class="popup" id="popup-annuler">
+<div id="toast"></div>
+<div class="popup" id="popup-supp">
   <div class="popup-box">
-    <h3>🗑️ Annuler la commande</h3>
-    <p>Cette demande sera transmise à Oh! Mikaté, qui te confirmera l'annulation. Consulte les CGV pour les conditions de remboursement de l'acompte.</p>
+    <h3>⚠️ Supprimer ?</h3>
+    <p>La commande sera supprimée du tableau de bord. Elle restera dans Google Sheets.</p>
     <div class="popup-btns">
-      <button class="popup-cancel" onclick="fermerPopups()">Retour</button>
-      <button class="popup-confirm" style="background:var(--error);" onclick="envoyerDemande('annulation')">Confirmer l'annulation</button>
+      <button class="btn-cancel" onclick="fermerPopup()">Annuler</button>
+      <button class="btn-ok-supp" onclick="confirmerSuppression()">Supprimer</button>
     </div>
   </div>
 </div>
 
-<!-- Popup modifier -->
-<div class="popup" id="popup-modifier">
+<div class="popup" id="popup-solde">
   <div class="popup-box">
-    <h3>✏️ Modifier la commande</h3>
-    <p>Décris ce que tu souhaites changer (créneau, contenu des boîtes...). Oh! Mikaté te recontactera pour confirmer.</p>
-    <textarea id="texte-modifier" placeholder="Ex : je voudrais changer mon créneau pour 19h00 - 19h30"></textarea>
-    <div class="popup-btns">
-      <button class="popup-cancel" onclick="fermerPopups()">Annuler</button>
-      <button class="popup-confirm" style="background:var(--amber);" onclick="envoyerDemande('modification')">Envoyer la demande</button>
+    <h3>💰 Solde restant</h3>
+    <p>Cette commande a un solde de <strong id="popup-solde-montant" style="color:var(--ink);"></strong> à régler. As-tu déjà reçu ce paiement ?</p>
+    <div class="popup-btns" style="flex-direction:column;gap:8px;">
+      <button class="btn-ok-supp" style="background:var(--success);" onclick="confirmerChoixSolde(true)">✅ Oui, solde déjà reçu</button>
+      <button class="btn-ok-supp" style="background:var(--amber);" onclick="confirmerChoixSolde(false)">🔔 Non, le rappeler au client</button>
+      <button class="btn-cancel" onclick="fermerPopupSolde()">Annuler</button>
     </div>
   </div>
 </div>
 
-<!-- Popup compléter -->
-<div class="popup" id="popup-completer">
-  <div class="popup-box">
-    <h3>➕ Compléter la commande</h3>
-    <p>Décris ce que tu veux ajouter à ta commande. Oh! Mikaté te confirmera le nouveau total.</p>
-    <textarea id="texte-completer" placeholder="Ex : j'aimerais ajouter une boîte de 9 beignets nature"></textarea>
-    <div class="popup-btns">
-      <button class="popup-cancel" onclick="fermerPopups()">Annuler</button>
-      <button class="popup-confirm" style="background:var(--success);" onclick="envoyerDemande('complement')">Envoyer la demande</button>
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <h1>🧇 Oh! Mikaté</h1>
+    <p>Espace administration — accès privé</p>
+    <input type="password" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()">
+    <button class="login-btn" onclick="login()">Accéder →</button>
+    <p class="login-error" id="login-error">❌ Mot de passe incorrect</p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin-screen">
+  <div class="header">
+    <h1>🧇 Oh! Mikaté</h1>
+    <p id="last-refresh">Chargement...</p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-box"><div class="num" id="stat-total">0</div><div class="lbl">Total</div></div>
+    <div class="stat-box"><div class="num" id="stat-new">0</div><div class="lbl">Nouvelles</div></div>
+    <div class="stat-box"><div class="num green" id="stat-done">0</div><div class="lbl">Confirmées</div></div>
+    <div class="stat-box"><div class="num orange" id="stat-ca">0€</div><div class="lbl">CA total</div></div>
+  </div>
+
+  <div class="page-tabs">
+    <button class="page-tab page-tab-active" id="ptab-commandes" onclick="switchPageTab('commandes')">📋 Commandes</button>
+    <button class="page-tab" id="ptab-aprepare" onclick="switchPageTab('aprepare')">🍳 À préparer<span class="page-tab-badge" id="badge-aprepare" style="display:none;">0</span></button>
+    <button class="page-tab" id="ptab-demandes" onclick="switchPageTab('demandes')">📥 Demandes<span class="page-tab-badge" id="badge-demandes" style="display:none;">0</span></button>
+    <button class="page-tab" id="ptab-historique" onclick="switchPageTab('historique')">📊 Historique</button>
+    <button class="page-tab" id="ptab-archives" onclick="switchPageTab('archives')">🗄️ Archives<span class="page-tab-badge" id="badge-archives" style="display:none;">0</span></button>
+  </div>
+
+  <div id="vue-commandes">
+    <div class="toolbar">
+      <select class="filter-select" id="filter-vue" onchange="afficher()">
+        <option value="jour">Par jour</option>
+        <option value="semaine">Par semaine</option>
+      </select>
+      <select class="filter-select" id="filter-statut" onchange="afficher()">
+        <option value="toutes">Toutes</option>
+        <option value="nouvelles">🆕 Nouvelles</option>
+        <option value="confirmees">✅ Confirmées</option>
+      </select>
+      <button class="refresh-btn" onclick="charger()">🔄</button>
+    </div>
+
+    <div class="tout-select-wrap" id="tout-select-wrap" style="display:none;">
+      <input type="checkbox" id="tout-select" class="cmd-checkbox" onchange="toutSelectionner(this.checked)">
+      <label for="tout-select">Tout sélectionner</label>
+      <span id="sel-info" style="font-size:12px;color:var(--ink-faint);margin-left:8px;"></span>
+    </div>
+
+    <div id="container"><div class="loading">⏳ Chargement...</div></div>
+  </div>
+
+  <div id="vue-aprepare" style="display:none;">
+    <div id="aprepare-container"><div class="loading">⏳ Chargement...</div></div>
+  </div>
+
+  <div id="vue-demandes" style="display:none;">
+    <div id="demandes-container"><div class="loading">⏳ Chargement...</div></div>
+  </div>
+
+  <div id="vue-historique" style="display:none;">
+    <div class="histo-tabs">
+      <button class="histo-tab active" id="htab-jours" onclick="switchHistoTab('jours')">🗓️ Par jour</button>
+      <button class="histo-tab" id="htab-clients" onclick="switchHistoTab('clients')">👤 Par client</button>
+    </div>
+    <input class="histo-search" id="histo-search" type="text" placeholder="🔍 Rechercher un client..." oninput="filtrerHisto()" style="display:none;">
+    <div id="histo-container"><div class="loading">⏳ Chargement...</div></div>
+  </div>
+
+  <div id="vue-archives" style="display:none;">
+    <div id="archives-container"><div class="loading">⏳ Chargement...</div></div>
+  </div>
+
+  <!-- Barre d'actions groupées -->
+  <div class="selection-bar" id="selection-bar">
+    <div class="selection-bar-content">
+      <span class="sel-count" id="sel-count">0 sélectionnée(s)</span>
+      <button class="btn-sel-conf" onclick="confirmerSelection()">✅ Confirmer</button>
+      <button class="btn-sel-supp" onclick="supprimerSelection()">🗑️ Supprimer</button>
+      <button class="btn-sel-annul" onclick="deselectionnerTout()">✕ Annuler</button>
     </div>
   </div>
 </div>
 
 <script>
-/* ================================================================
-   CONTRAT AVEC LE SCRIPT APPS SCRIPT (backend Google Sheets)
-   ----------------------------------------------------------------
-   Recherche  : GET  APPS_SCRIPT_URL?action=lookup&phone=0612345678
-                -> répond avec un JSON:
-                   { "ok": true, "commandes": [
-                       { "id": "...", "dateRecu": "...", "name": "...",
-                         "order": "...", "total": "...", "payment": "...",
-                         "dateRetrait": "...", "creneau": "...", "statut": "nouvelle|confirmee|prete|annulee" }
-                   ]}
-                Le script NE renvoie QUE les commandes dont le numéro
-                normalisé correspond à celui demandé — jamais les autres.
-
-   Demande    : POST APPS_SCRIPT_URL  body JSON:
-                { action:"demande", type:"annulation|modification|complement",
-                  commandeId, phone, name, dateRetrait, creneau, detail }
-                -> ajoute une ligne dans l'onglet "Demandes" du Sheet.
-   ================================================================ */
+const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
+const SHEET_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
+const SHEET_URL_DEMANDES=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Demandes`;
 const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec";
+const MOT_DE_PASSE="Ronciat";
+const TARGET="0698213380";
+const CRENEAUX=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
+const WERO_PHONE="0698213380";
+const PAYPAL_ME_LINK="https://www.paypal.com/paypalme/ohmikate";
+const DEPOSIT_RATE=0.5;
+let toutesCommandes=[];
+let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
+let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
+let pretes=JSON.parse(localStorage.getItem('ohMikatePretes')||'[]');
+let archivees=JSON.parse(localStorage.getItem('ohMikateArchivees')||'[]');
+let soldeRecu=JSON.parse(localStorage.getItem('ohMikateSoldeRecu')||'[]');
+let idPretePendant=null;
+let derniersGroupesHisto={};
+let idASupp=null;
 
-let commandesTrouvees=[];
-let demandeEnCours=null; // {commandeId, type}
+/* LOGIN */
+function login(){
+  if(document.getElementById("pwd-input").value===MOT_DE_PASSE){
+    document.getElementById("login-screen").style.display="none";
+    document.getElementById("admin-screen").style.display="block";
+    charger();
+    setInterval(charger,60000);
+  }else{
+    document.getElementById("login-error").style.display="block";
+    document.getElementById("pwd-input").value="";
+  }
+}
+
+/* CHARGEMENT */
+async function charger(){
+  document.getElementById("last-refresh").textContent="⏳ Actualisation...";
+  try{
+    let res=await fetch(SHEET_URL+"&t="+Date.now());
+    let text=await res.text();
+    let json=JSON.parse(text.replace("/*O_o*/\ngoogle.visualization.Query.setResponse(","").replace(");",""));
+    toutesCommandes=[];
+    let totalLignes=(json.table.rows||[]).length;
+    let lignesIgnorees=0;
+    (json.table.rows||[]).forEach((row,i)=>{
+      if(!row.c){lignesIgnorees++;return;}
+      let hasData=row.c.some(cell=>cell&&cell.v!==null&&cell.v!=="");
+      if(!hasData){lignesIgnorees++;return;}
+      if(!row.c[1]||!row.c[1].v){lignesIgnorees++;return;}
+      let dateRecu=row.c[0]?String(row.c[0].v):"";
+      let name=row.c[1]?row.c[1].v:"";
+      let phone=row.c[2]?String(row.c[2].v):"";
+      let order=row.c[3]?row.c[3].v:"";
+      let total=row.c[4]?String(row.c[4].v):"";
+      let payment=row.c[5]?row.c[5].v:"";
+      // Colonnes supplémentaires (peuvent exister ou non)
+      let dateRetrait=row.c[6]?String(row.c[6].v):"";
+let creneau=row.c[7]?String(row.c[7].v):"";
+let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
+// Traitement et formatage de l'heure
+      let heureRaw = row.c[9] ? String(row.c[9].v) : "";
+      let heure = heureRaw;
+      if (heureRaw.includes("Date(")) {
+        let hm = heureRaw.match(/Date\(\d+,\d+,\d+,(\d+),(\d+)/);
+        if (hm) heure = hm[1].padStart(2, '0') + ":" + hm[2].padStart(2, '0');
+      }
+
+      // Traitement et formatage de la date de réception
+      let dateRaw = row.c[0] ? String(row.c[0].v) : "";
+      let datePropre = dateRaw;
+      if (dateRaw.includes("Date(")) {
+        let dm = dateRaw.match(/Date\((\d+),(\d+),(\d+)/);
+        if (dm) {
+          // dm[1] = Année, dm[2] = Mois (informatique), dm[3] = Jour
+          let annee = parseInt(dm[1]);
+          let mois = parseInt(dm[2]);
+          let jour = parseInt(dm[3]);
+          
+          // Formatage en JJ/MM/AAAA (en ajoutant les 0 si nécessaire)
+          let jourStr = String(jour).padStart(2, '0');
+          let moisStr = String(mois + 1).padStart(2, '0'); // On ajoute 1 car les mois commencent à 0 en JS
+          
+          datePropre = jourStr + "/" + moisStr + "/" + annee;
+        }
+      }
+
+      // Normaliser le canal
+      if(!canal&&payment){
+        if(payment.toLowerCase().includes("carte")||payment.toLowerCase().includes("ligne"))canal="Carte bancaire";
+        else if(payment.toLowerCase().includes("paypal"))canal="Carte bancaire";
+        else if(payment.toLowerCase().includes("esp"))canal="Espèces";
+      }
+
+      // Normaliser payment (uniquement les anciennes mentions "PayPal" isolées,
+      // sans écraser "Acompte réglé (Wero/PayPal)" / "Totalité réglée (Wero/PayPal)"
+      // dont calculerSolde() a besoin pour calculer le solde restant)
+      if(payment.toLowerCase().includes("paypal")&&!payment.toLowerCase().includes("acompte")&&!payment.toLowerCase().includes("totalité")&&!payment.toLowerCase().includes("totalite")){
+        payment="Paiement en ligne (carte)";
+      }
+      // Vérifier si créneau urgent (aujourd'hui ET dans moins de 2h)
+      let urgent=false;
+      if(dateRetrait&&creneau){
+        let dRetrait=parseDate(dateRetrait);
+        let today=new Date();
+        let isRetraitAujourdhui=dRetrait&&
+          dRetrait.getDate()===today.getDate()&&
+          dRetrait.getMonth()===today.getMonth()&&
+          dRetrait.getFullYear()===today.getFullYear();
+        if(isRetraitAujourdhui){
+          let now=new Date();
+          let cm2=creneau.match(/(\d{1,2})h(\d{2})/);
+          if(cm2){
+            let slotH=parseInt(cm2[1]),slotM=parseInt(cm2[2]);
+            let slotMins=slotH*60+slotM;
+            let nowMins=now.getHours()*60+now.getMinutes();
+            if(slotMins-nowMins>0&&slotMins-nowMins<=120)urgent=true;
+          }
+        }
+      }
+      toutesCommandes.push({id:i,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
+    });
+    // Détecter nouvelles commandes et alerter
+    let idsConnus=JSON.parse(localStorage.getItem('ohMikateIdsConnus')||'[]');
+    let nouveaux=toutesCommandes.filter(c=>!idsConnus.includes(c.id)&&!supprimees.includes(c.id));
+    if(nouveaux.length>0&&idsConnus.length>0){
+      // Nouvelle(s) commande(s) !
+      jouerSon();
+      if(navigator.vibrate)navigator.vibrate([300,100,300]);
+      showToast(`🆕 ${nouveaux.length} nouvelle${nouveaux.length>1?"s":""} commande${nouveaux.length>1?"s":""} !`);
+    }
+    localStorage.setItem('ohMikateIdsConnus',JSON.stringify(toutesCommandes.map(c=>c.id)));
+
+    afficher();
+    updateStats();
+    let visiblePourBadge=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+    let nbAPreparer=visiblePourBadge.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id)).length;
+    updateBadgeAPreparer(nbAPreparer);
+    let nbArchiveesBadge=visiblePourBadge.filter(c=>archivees.includes(c.id)).length;
+    updateBadgeArchives(nbArchiveesBadge);
+    if(document.getElementById("vue-historique").style.display!=="none")afficherHistorique();
+    if(document.getElementById("vue-aprepare").style.display!=="none")afficherAPreparer();
+    if(document.getElementById("vue-archives").style.display!=="none")afficherArchives();
+    chargerDemandes();
+    let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById("last-refresh").textContent="Mis à jour à "+now+" • Auto toutes les 60s";
+  }catch(e){
+    document.getElementById("last-refresh").textContent="❌ Erreur";
+    showToast("❌ Impossible de charger");
+  }
+}
+
+/* AFFICHAGE */
+function afficher(){
+  let vue=document.getElementById("filter-vue").value;
+  let statut=document.getElementById("filter-statut").value;
+  let container=document.getElementById("container");
+
+  let filtered=toutesCommandes.filter(c=>{
+    if(supprimees.includes(c.id))return false;
+    if(archivees.includes(c.id))return false;
+    if(statut==="nouvelles")return!confirmees.includes(c.id);
+    if(statut==="confirmees")return confirmees.includes(c.id);
+    return true;
+  });
+
+  if(filtered.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">🍩</div><p>Aucune commande.</p></div>`;
+    return;
+  }
+
+  // Grouper par jour ou semaine
+  let groupes={};
+  filtered.forEach(c=>{
+    let key;
+    if(vue==="semaine"){
+      // Semaine ISO
+      let d=parseDate(c.dateRecu);
+      if(d){
+        let jan4=new Date(d.getFullYear(),0,4);
+        let semaine=Math.ceil(((d-jan4)/86400000+jan4.getDay()+1)/7);
+        key=`Semaine ${semaine} — ${d.getFullYear()}`;
+      }else key="Date inconnue";
+    }else{
+      // Jour
+      let d=parseDate(c.dateRecu);
+      if(d){
+        key=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+        key=key.charAt(0).toUpperCase()+key.slice(1);
+      }else key=c.dateRecu||"Date inconnue";
+    }
+    if(!groupes[key])groupes[key]=[];
+    groupes[key].push(c);
+  });
+
+  let html="";
+  Object.keys(groupes).forEach(jour=>{
+    let cmds=groupes[jour];
+    let ca=cmds.reduce((s,c)=>{
+      let v=parseFloat(String(c.total).replace(",","."));
+      return s+(isNaN(v)?0:v);
+    },0);
+    let nouvelles=cmds.filter(c=>!confirmees.includes(c.id)).length;
+    let creneauxHtml=analyserCreneaux(cmds);
+
+    html+=`<div class="jour-group">
+      <div class="jour-header">
+        <div>
+          <div class="jour-title">📅 ${jour}</div>
+          <div class="jour-count">${cmds.length} commande${cmds.length>1?"s":""} • ${nouvelles} en attente</div>
+        </div>
+        <div class="jour-ca">${ca.toFixed(2)} €</div>
+      </div>
+      ${creneauxHtml}
+      ${cmds.map(c=>renderCommande(c)).join("")}
+    </div>`;
+  });
+
+  container.innerHTML=html;
+  // Réinitialise les index de navigation des créneaux après rechargement
+  Object.keys(creneauNavIndex).forEach(k=>delete creneauNavIndex[k]);
+  document.getElementById("tout-select-wrap").style.display=filtered.length>0?"flex":"none";
+}
+
+/* ===== ONGLETS DE PAGE (Commandes / Historique) ===== */
+function switchPageTab(tab){
+  document.getElementById("ptab-commandes").classList.toggle("page-tab-active",tab==="commandes");
+  document.getElementById("ptab-aprepare").classList.toggle("page-tab-active",tab==="aprepare");
+  document.getElementById("ptab-demandes").classList.toggle("page-tab-active",tab==="demandes");
+  document.getElementById("ptab-historique").classList.toggle("page-tab-active",tab==="historique");
+  document.getElementById("ptab-archives").classList.toggle("page-tab-active",tab==="archives");
+  document.getElementById("vue-commandes").style.display=tab==="commandes"?"block":"none";
+  document.getElementById("vue-aprepare").style.display=tab==="aprepare"?"block":"none";
+  document.getElementById("vue-demandes").style.display=tab==="demandes"?"block":"none";
+  document.getElementById("vue-historique").style.display=tab==="historique"?"block":"none";
+  document.getElementById("vue-archives").style.display=tab==="archives"?"block":"none";
+  if(tab==="historique")afficherHistorique();
+  if(tab==="aprepare")afficherAPreparer();
+  if(tab==="demandes")chargerDemandes();
+  if(tab==="archives")afficherArchives();
+}
+
+/* ===== VUE À PRÉPARER : confirmées mais pas encore prêtes ===== */
+function afficherAPreparer(){
+  let container=document.getElementById("aprepare-container");
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  let aPreparer=visible.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id));
+
+  updateBadgeAPreparer(aPreparer.length);
+
+  if(aPreparer.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">🎉</div><p>Rien à préparer pour le moment !</p></div>`;
+    return;
+  }
+
+  // Trie par date de retrait puis créneau, pour suivre l'ordre de préparation logique
+  aPreparer.sort((a,b)=>{
+    let da=parseDate(a.dateRetrait),db=parseDate(b.dateRetrait);
+    if(da&&db&&da.getTime()!==db.getTime())return da-db;
+    return(a.creneau||"").localeCompare(b.creneau||"");
+  });
+
+  container.innerHTML=aPreparer.map(c=>renderCommande(c)).join("");
+  document.getElementById("tout-select-wrap").style.display="none";
+}
+
+function updateBadgeAPreparer(n){
+  let badge=document.getElementById("badge-aprepare");
+  if(n>0){
+    badge.textContent=n;
+    badge.style.display="inline-block";
+  }else{
+    badge.style.display="none";
+  }
+}
+
+/* ===== VUE ARCHIVES : commandes prêtes mises de côté ===== */
+function afficherArchives(){
+  let container=document.getElementById("archives-container");
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  let archives=visible.filter(c=>archivees.includes(c.id));
+
+  updateBadgeArchives(archives.length);
+
+  if(archives.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">🗄️</div><p>Aucune commande archivée.</p></div>`;
+    return;
+  }
+
+  archives.sort((a,b)=>{
+    let da=parseDate(a.dateRetrait),db=parseDate(b.dateRetrait);
+    if(da&&db&&da.getTime()!==db.getTime())return db-da;
+    return(b.creneau||"").localeCompare(a.creneau||"");
+  });
+
+  container.innerHTML=archives.map(c=>renderCommande(c,{archive:true})).join("");
+  document.getElementById("tout-select-wrap").style.display="none";
+}
+
+function updateBadgeArchives(n){
+  let badge=document.getElementById("badge-archives");
+  if(n>0){
+    badge.textContent=n;
+    badge.style.display="inline-block";
+  }else{
+    badge.style.display="none";
+  }
+}
+
+function archiverCommande(id){
+  if(!archivees.includes(id))archivees.push(id);
+  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,300);
+  showToast("📦 Commande archivée");
+}
+
+function desarchiverCommande(id){
+  archivees=archivees.filter(a=>a!==id);
+  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,300);
+  showToast("♻️ Commande désarchivée");
+}
+
+/* ===== VUE DEMANDES CLIENTS (annulation / modification / complément) ===== */
+let demandesTraitees=JSON.parse(localStorage.getItem('ohMikateDemandesTraitees')||'[]');
+let toutesDemandes=[];
+
+function parseDateDemande(str){
+  if(!str)return null;
+  let m2=str.match(/Date\((\d{4}),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?/);
+  if(m2)return new Date(parseInt(m2[1]),parseInt(m2[2]),parseInt(m2[3]),m2[4]?parseInt(m2[4]):0,m2[5]?parseInt(m2[5]):0,m2[6]?parseInt(m2[6]):0);
+  return null;
+}
+
+async function chargerDemandes(){
+  let container=document.getElementById("demandes-container");
+  try{
+    let res=await fetch(SHEET_URL_DEMANDES+"&t="+Date.now());
+    let text=await res.text();
+    let json=JSON.parse(text.replace("/*O_o*/\ngoogle.visualization.Query.setResponse(","").replace(");",""));
+    let rows=(json.table&&json.table.rows)||[];
+    toutesDemandes=rows.map((row,i)=>{
+      let c=row.c||[];
+      return{
+        id:i,
+        rowIndex:i+2,
+        horodatage:c[0]?String(c[0].v):"",
+        phone:c[1]?String(c[1].v):"",
+        name:c[2]?c[2].v:"",
+        dateRetrait:c[3]?String(c[3].v):"",
+        creneau:c[4]?String(c[4].v):"",
+        type:c[5]?c[5].v:"",
+        detail:c[6]?c[6].v:""
+      };
+    }).filter(d=>d.name||d.detail);
+    afficherDemandes();
+  }catch(e){
+    container.innerHTML=`<div class="empty-state"><p>❌ Impossible de charger les demandes. Vérifie que l'onglet "Demandes" existe bien dans le Google Sheets.</p></div>`;
+  }
+}
+
+function afficherDemandes(){
+  let container=document.getElementById("demandes-container");
+  let enAttente=toutesDemandes.filter(d=>!demandesTraitees.includes(d.id));
+  updateBadgeDemandes(enAttente.length);
+
+  if(enAttente.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📭</div><p>Aucune demande en attente.</p></div>`;
+    return;
+  }
+
+  // Les plus récentes en premier
+  enAttente.sort((a,b)=>(parseDateDemande(b.horodatage)||0)-(parseDateDemande(a.horodatage)||0));
+
+  const ICONES={"Annulation":"🗑️","Modification":"✏️","Complément":"➕"};
+  const COULEURS={"Annulation":"var(--error)","Modification":"var(--amber)","Complément":"var(--success)"};
+
+  container.innerHTML=enAttente.map(d=>{
+    let icone=ICONES[d.type]||"📌";
+    let couleur=COULEURS[d.type]||"var(--accent)";
+    return`<div class="commande-card" style="border-color:${couleur};">
+      <div class="commande-header">
+        <div>
+          <span class="client-name">${icone} ${d.name||"Client"}</span>
+          <div class="commande-meta">📞 ${d.phone||"—"} • souhaite <b style="color:${couleur};">${(d.type||"").toUpperCase()}</b> sa commande</div>
+        </div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="label">📅 Retrait concerné</div>
+          <div class="value">${formatDateRetrait(d.dateRetrait)}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">⏰ Créneau</div>
+          <div class="value">${d.creneau||"—"}</div>
+        </div>
+      </div>
+      <div class="detail-box">${(d.detail||"").replace(/</g,"&lt;")}</div>
+      <div class="actions-sec" style="margin-top:12px;">
+        <button class="btn-prete" style="background:var(--success);" onclick="validerDemande(${d.id})">✅ Valider</button>
+        <button class="btn-supp" onclick="refuserDemande(${d.id})">❌ Refuser</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function updateBadgeDemandes(n){
+  let badge=document.getElementById("badge-demandes");
+  if(n>0){
+    badge.textContent=n;
+    badge.style.display="inline-block";
+  }else{
+    badge.style.display="none";
+  }
+}
+
+function trouverCommandeCorrespondante(d){
+  let phoneN=normalizePhone(d.phone);
+  let dDate=parseDate(d.dateRetrait);
+  let dCreneau=(d.creneau||"").trim().toLowerCase();
+  return toutesCommandes.find(c=>{
+    if(normalizePhone(c.phone)!==phoneN)return false;
+    let cCreneau=(c.creneau||"").trim().toLowerCase();
+    if(cCreneau!==dCreneau)return false;
+    let cDate=parseDate(c.dateRetrait);
+    if(dDate&&cDate){
+      return dDate.getFullYear()===cDate.getFullYear()&&dDate.getMonth()===cDate.getMonth()&&dDate.getDate()===cDate.getDate();
+    }
+    // Repli si l'une des deux dates n'a pas pu être analysée : comparaison texte brut
+    return String(c.dateRetrait).trim()===String(d.dateRetrait).trim();
+  });
+}
+
+function validerDemande(id){
+  let d=toutesDemandes.find(x=>x.id===id);
+  if(!d)return;
+
+  if(d.type==="Annulation"){
+    let c=trouverCommandeCorrespondante(d);
+    if(c){
+      supprimees.push(c.id);
+      localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
+      confirmees=confirmees.filter(cid=>cid!==c.id);
+      localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+      pretes=pretes.filter(pid=>pid!==c.id);
+      localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+      envoyerSuppressionAuSheet(c.id,"annulee");
+      updateStats();
+      rafraichirVuesSecondaires();
+      setTimeout(afficher,300);
+      showToast("🗑️ Commande annulée suite à la demande du client");
+    }else{
+      showToast("⚠️ Commande correspondante introuvable — vérifie manuellement");
+    }
+  }else{
+    showToast(`✅ Demande marquée traitée — pense à ${d.type==="Complément"?"ajouter":"modifier"} la commande dans le tableau`);
+  }
+
+  marquerDemandeTraitee(id,"traitee");
+}
+
+function refuserDemande(id){
+  if(!confirm("Confirmer le refus de cette demande ? Le client ne sera pas notifié automatiquement."))return;
+  marquerDemandeTraitee(id,"refusee");
+  showToast("❌ Demande refusée");
+}
+
+function marquerDemandeTraitee(id,statutServeur){
+  if(!demandesTraitees.includes(id))demandesTraitees.push(id);
+  localStorage.setItem('ohMikateDemandesTraitees',JSON.stringify(demandesTraitees));
+  let d=toutesDemandes.find(x=>x.id===id);
+  if(d&&d.rowIndex&&statutServeur){
+    fetch(APPS_SCRIPT_URL,{
+      method:"POST",mode:"no-cors",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({action:"traiterDemande",rowIndex:d.rowIndex,statut:statutServeur})
+    }).catch(()=>{});
+  }
+  afficherDemandes();
+}
+
+let histoTabActif="jours";
+
+function switchHistoTab(tab){
+  histoTabActif=tab;
+  document.getElementById("htab-jours").classList.toggle("active",tab==="jours");
+  document.getElementById("htab-clients").classList.toggle("active",tab==="clients");
+  document.getElementById("histo-search").style.display=tab==="clients"?"block":"none";
+  document.getElementById("histo-search").value="";
+  afficherHistorique();
+}
+
+function filtrerHisto(){
+  afficherHistorique();
+}
+
+function afficherHistorique(){
+  if(histoTabActif==="clients")afficherHistoClients();
+  else afficherHistoJours();
+}
+
+/* ===== VUE HISTORIQUE PAR JOUR ===== */
+function afficherHistoJours(){
+  let container=document.getElementById("histo-container");
+  // Uniquement les commandes confirmées
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&confirmees.includes(c.id));
+
+  if(visible.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📊</div><p>Aucune commande confirmée.</p></div>`;
+    return;
+  }
+
+  // Regroupe par date de retrait, clé canonique
+  function cleDate(dr){let d=parseDate(dr||"");if(!d)return dr||"?";let mm=String(d.getMonth()+1).padStart(2,"0");let dd=String(d.getDate()).padStart(2,"0");return`${d.getFullYear()}-${mm}-${dd}`;}
+  let groupes={};
+  visible.forEach(c=>{
+    let key=cleDate(c.dateRetrait);
+    if(!groupes[key])groupes[key]={cmds:[],dateObj:parseDate(c.dateRetrait),label:formatDateRetrait(c.dateRetrait)};
+    groupes[key].cmds.push(c);
+  });
+
+  let jours=Object.keys(groupes).sort((a,b)=>b.localeCompare(a));
+
+  let caGlobal=visible.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+
+  let html=`<div class="histo-totaux-globaux">
+    <div class="histo-total-item"><div class="histo-total-num">${visible.length}</div><div class="histo-total-lbl">Commandes</div></div>
+    <div class="histo-total-item"><div class="histo-total-num">${jours.length}</div><div class="histo-total-lbl">Jours</div></div>
+    <div class="histo-total-item"><div class="histo-total-num">${caGlobal.toFixed(2)}€</div><div class="histo-total-lbl">CA total</div></div>
+  </div>
+  <button class="histo-copy-btn" style="max-width:600px;margin:0 auto 16px;background:var(--success-soft);border-color:var(--success);color:var(--success);display:block;" onclick="imprimerRecapComplet()">🖨️ Imprimer le récapitulatif comptable complet</button>
+  <button class="histo-copy-btn" style="max-width:600px;margin:0 auto 16px;background:var(--purple-soft);border-color:var(--purple);color:var(--purple);display:block;" onclick="imprimerRecapMensuel()">🖨️ Imprimer le récapitulatif mensuel</button>`;
+
+  jours.forEach((key,idx)=>{
+    let {cmds,label}=groupes[key];
+    let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+    let safeId="histo-"+idx;
+    let lignes=cmds.map(c=>{
+      let recap=extraireRecapBoitesTexte(c.order);
+      return`<div class="histo-ligne">
+        <div>
+          <div class="histo-ligne-nom">✅ ${c.name||"—"}</div>
+          <div class="histo-ligne-meta">⏰ ${c.creneau||"—"} • ${c.payment||"—"}</div>
+          ${recap?`<div class="histo-ligne-boites">📦 ${recap}</div>`:""}
+        </div>
+        <div class="histo-ligne-prix">${c.total||"—"} €</div>
+      </div>`;
+    }).join("");
+
+    // Texte à copier pour le récap du jour
+    let txtRecap=`📋 Récap ${label}\n${"─".repeat(28)}\n`;
+    cmds.forEach(c=>{
+      let recap=extraireRecapBoitesTexte(c.order);
+      txtRecap+=`• ${c.name||"—"} — ${recap||"?"} — ${c.total||"—"}€ (${c.payment||"—"})\n`;
+    });
+    txtRecap+=`${"─".repeat(28)}\n✅ ${cmds.length} commande${cmds.length>1?"s":""} — Total : ${ca.toFixed(2)}€`;
+
+    html+=`<div class="histo-jour">
+      <div class="histo-jour-header" onclick="toggleHistoJour('${safeId}')">
+        <div class="histo-jour-titre">🗓️ ${label}</div>
+        <div class="histo-jour-stats">
+          <div>
+            <div class="histo-jour-ca">${ca.toFixed(2)} €</div>
+            <div class="histo-jour-nb">${cmds.length} commande${cmds.length>1?"s":""}</div>
+          </div>
+          <span class="histo-jour-chevron" id="chevron-${safeId}">▼</span>
+        </div>
+      </div>
+      <div class="histo-jour-detail" id="detail-${safeId}">
+        ${lignes}
+        <button class="histo-copy-btn" onclick="copierRecapJour(\`${txtRecap.replace(/`/g,"\\`")}\`)">📋 Copier le récap du jour</button>
+        <button class="histo-copy-btn" style="background:var(--success-soft);border-color:var(--success);color:var(--success);margin-top:6px;" onclick="imprimerRecapJour('${key}')">🖨️ Imprimer le récap du jour</button>
+      </div>
+    </div>`;
+  });
+
+  derniersGroupesHisto=groupes;
+  container.innerHTML=html;
+}
+
+/* ===== VUE HISTORIQUE PAR CLIENT ===== */
+function afficherHistoClients(){
+  let container=document.getElementById("histo-container");
+  let recherche=(document.getElementById("histo-search")?.value||"").toLowerCase().trim();
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&confirmees.includes(c.id));
+
+  if(visible.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">👤</div><p>Aucune commande confirmée.</p></div>`;
+    return;
+  }
+
+  // Regroupe par nom client (insensible à la casse)
+  let clients={};
+  visible.forEach(c=>{
+    let nom=(c.name||"Inconnu").trim();
+    let key=nom.toLowerCase();
+    if(!clients[key])clients[key]={nom,cmds:[]};
+    clients[key].cmds.push(c);
+  });
+
+  // Filtre par recherche
+  let keys=Object.keys(clients).filter(k=>!recherche||k.includes(recherche));
+
+  // Tri : les plus fidèles (nb commandes) en premier
+  keys.sort((a,b)=>clients[b].cmds.length-clients[a].cmds.length||a.localeCompare(b));
+
+  if(keys.length===0){
+    container.innerHTML=`<div class="empty-state"><p>Aucun client trouvé pour "${recherche}".</p></div>`;
+    return;
+  }
+
+  let html="";
+  keys.forEach((key,idx)=>{
+    let {nom,cmds}=clients[key];
+    let ca=cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+    let nb=cmds.length;
+    let fidele=nb>=3;
+    let safeId="client-"+idx;
+
+    // Habitudes : boîtes les plus commandées
+    let allBoites={};
+    cmds.forEach(c=>{
+      let regex=/BOÎTE DE (\d+) BEIGNETS/gi,m;
+      while((m=regex.exec(c.order||""))!==null){
+        allBoites[m[1]]=(allBoites[m[1]]||0)+1;
+      }
+    });
+    let habitude=Object.keys(allBoites).map(t=>`${allBoites[t]}× Boîte ${t}`).join(", ");
+
+    let derniereCmd=cmds.sort((a,b)=>{
+      let da=parseDate(a.dateRetrait),db=parseDate(b.dateRetrait);
+      return(db||0)-(da||0);
+    })[0];
+
+    html+=`<div class="client-card">
+      <div class="client-card-header" onclick="toggleClientDetail('${safeId}')">
+        <div>
+          <div class="client-nom">${nom}${fidele?`<span class="client-badge-fidele">⭐ FIDÈLE</span>`:""}</div>
+          <div class="histo-jour-nb">${nb} commande${nb>1?"s":""} • Dernière : ${formatDateRetrait(derniereCmd?.dateRetrait||"")}</div>
+        </div>
+        <div class="client-stats">
+          <div class="client-ca">${ca.toFixed(2)} €</div>
+          <div class="client-nb">dépensé au total</div>
+        </div>
+      </div>
+      <div class="client-detail" id="detail-${safeId}">
+        ${habitude?`<div style="font-size:12px;color:var(--amber);margin-bottom:10px;">📦 Habitudes : ${habitude}</div>`:""}
+        ${cmds.map(c=>`<div class="histo-ligne">
+          <div>
+            <div class="histo-ligne-meta">🗓️ ${formatDateRetrait(c.dateRetrait)} • ⏰ ${c.creneau||"—"}</div>
+            <div class="histo-ligne-boites">📦 ${extraireRecapBoitesTexte(c.order)||"—"}</div>
+          </div>
+          <div class="histo-ligne-prix">${c.total||"—"} €</div>
+        </div>`).join("")}
+      </div>
+    </div>`;
+  });
+
+  container.innerHTML=html;
+}
+
+function toggleClientDetail(safeId){
+  document.getElementById("detail-"+safeId).classList.toggle("open");
+}
+
+function toggleHistoJour(safeId){
+  document.getElementById("detail-"+safeId).classList.toggle("open");
+  document.getElementById("chevron-"+safeId).classList.toggle("open");
+}
+
+function extraireRecapBoitesTexte(orderText){
+  if(!orderText)return"";
+  let regex=/BOÎTE DE (\d+) BEIGNETS/gi,counts={},m;
+  while((m=regex.exec(orderText))!==null)counts[m[1]]=(counts[m[1]]||0)+1;
+  return Object.keys(counts).sort((a,b)=>parseInt(a)-parseInt(b)).map(t=>`${counts[t]}× Boîte ${t}`).join(" + ");
+}
+
+function copierRecapJour(txt){
+  navigator.clipboard.writeText(txt).then(()=>showToast("📋 Récap copié !")).catch(()=>{
+    let el=document.createElement("textarea");
+    el.value=txt;document.body.appendChild(el);el.select();
+    document.execCommand("copy");document.body.removeChild(el);
+    showToast("📋 Récap copié !");
+  });
+}
+
+function parseDate(str){
+  if(!str)return null;
+  // Format DD/MM/YYYY HH:MM via Canal
+  let m=str.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if(m)return new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]));
+  // Format Date(YYYY,M,D) de Google Sheets — ATTENTION: mois est 0-indexé dans JS mais PAS dans Sheets
+  // Sheets: Date(2026,6,1) = 1er juillet 2026 (mois 6 = juillet car 0=jan)
+  let m2=str.match(/Date\((\d{4}),(\d+),(\d+)/);
+  if(m2)return new Date(parseInt(m2[1]),parseInt(m2[2]),parseInt(m2[3]));
+  // Format YYYY-MM-DD
+  let m3=str.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if(m3)return new Date(parseInt(m3[1]),parseInt(m3[2])-1,parseInt(m3[3]));
+  // Format texte français (ex: "Mercredi 1 juillet 2026" ou "1 juillet 2026")
+  const MOIS_FR={janvier:0,février:1,fevrier:1,mars:2,avril:3,mai:4,juin:5,juillet:6,août:7,aout:7,septembre:8,octobre:9,novembre:10,décembre:11,decembre:11};
+  let strNorm=str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  let m4=strNorm.match(/(\d{1,2})\s+([a-zéû]+)\s+(\d{4})/);
+  if(m4){
+    let moisNom=m4[2].normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    let moisIdx=MOIS_FR[moisNom]??MOIS_FR[m4[2]];
+    if(moisIdx!==undefined)return new Date(parseInt(m4[3]),moisIdx,parseInt(m4[1]));
+  }
+  return null;
+}
+
+/* ===== FORMATER DATE RETRAIT LISIBLEMENT ===== */
+function formatDateRetrait(str){
+  if(!str)return"—";
+  // Si déjà en format lisible (ex: "Mercredi 1 juillet")
+  if(/[a-zA-ZàâäéèêëîïôùûüçÀÂÄÉÈÊËÎÏÔÙÛÜÇ]/.test(str)&&!str.includes("Date("))return str;
+  let d=parseDate(str);
+  if(!d)return str;
+  let label=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  return label.charAt(0).toUpperCase()+label.slice(1);
+}
+
+function analyserCreneaux(cmds){
+  // Normalise chaque dateRetrait en clé canonique "YYYY-MM-DD" via parseDate,
+  // pour éviter que le même jour en formats différents crée deux groupes séparés
+  function cleDate(dateRetrait){
+    let d=parseDate(dateRetrait||"");
+    if(!d)return dateRetrait||"inconnue";
+    let mm=String(d.getMonth()+1).padStart(2,"0");
+    let dd=String(d.getDate()).padStart(2,"0");
+    return`${d.getFullYear()}-${mm}-${dd}`;
+  }
+
+  let parDateRetrait={};   // clé canonique -> {cmds, dateRetraitOrig}
+  let ordreDate=[];
+  cmds.forEach(c=>{
+    if(!c.creneau)return;
+    let key=cleDate(c.dateRetrait);
+    if(!parDateRetrait[key]){
+      parDateRetrait[key]={cmds:[],dateRetraitOrig:c.dateRetrait||""};
+      ordreDate.push(key);
+    }
+    parDateRetrait[key].cmds.push(c);
+  });
+
+  let plusieursDates=ordreDate.length>1;
+  let now=new Date();
+  let nowMins=now.getHours()*60+now.getMinutes();
+  let today=new Date();
+
+  let html="";
+  ordreDate.forEach(key=>{
+    let {cmds:groupeCmds, dateRetraitOrig}=parDateRetrait[key];
+    let dRetrait=parseDate(dateRetraitOrig);
+    let isToday=dRetrait&&
+      dRetrait.getDate()===today.getDate()&&
+      dRetrait.getMonth()===today.getMonth()&&
+      dRetrait.getFullYear()===today.getFullYear();
+    let counts={};
+    groupeCmds.forEach(c=>{counts[c.creneau]=(counts[c.creneau]||0)+1;});
+
+    let badges="";
+    CRENEAUX.forEach(cr=>{
+      let n=counts[cr];
+      if(!n)return;
+      let m=cr.match(/(\d{1,2})h(\d{2})/);
+      let slotMins=m?(parseInt(m[1])*60+parseInt(m[2])):999;
+      let diff=slotMins-nowMins;
+      let cls,icon;
+      if(n>=5){cls="creneau-plein";icon="⛔";}
+      else if(isToday&&diff>0&&diff<=30){cls="creneau-urgent";icon="🔴";}
+      else if(isToday&&diff>0&&diff<=120){cls="creneau-urgent";icon="⚡";}
+      else if(n>=2){cls="creneau-charge";icon="⚠️";}
+      else{cls="creneau-libre";icon="✅";}
+      badges+=`<span class="creneau-badge ${cls}" onclick="scrollVersCreneau('${cr.replace(/'/g,"\\'")}','${key}')">${icon} ${cr} (${n}/5)</span>`;
+    });
+    if(!badges)return;
+
+    if(plusieursDates){
+      html+=`<div class="creneaux-date-label">🗓️ Retrait : ${formatDateRetrait(dateRetraitOrig)}</div>`;
+    }
+    html+=`<div class="creneaux-bar">${badges}</div>`;
+  });
+  return html;
+}
+
+function badgeCanal(canal){
+  if(!canal)return"";
+  let cls="canal-carte",icon="💳";
+  if(canal.toLowerCase().includes("whatsapp")){cls="canal-wa";icon="📲";}
+  else if(canal.toLowerCase().includes("sms")){cls="canal-sms";icon="💬";}
+  return`<span class="canal-badge ${cls}">${icon} ${canal}</span>`;
+}
+
+// Mémorise l'index de navigation par créneau (clé = creneau+datecle)
+const creneauNavIndex={};
+
+function scrollVersCreneau(creneau, cleCanonique){
+  let cartes=Array.from(document.querySelectorAll(".commande-card")).filter(el=>{
+    return el.dataset.creneau===creneau&&el.dataset.datecle===cleCanonique;
+  });
+  if(cartes.length===0)return;
+
+  // Clé unique pour ce créneau+date
+  let navKey=creneau+"||"+cleCanonique;
+
+  // Avance à la suivante (ou revient à 0 si on est au bout)
+  if(creneauNavIndex[navKey]===undefined)creneauNavIndex[navKey]=0;
+  else creneauNavIndex[navKey]=(creneauNavIndex[navKey]+1)%cartes.length;
+
+  let idx=creneauNavIndex[navKey];
+  let cible=cartes[idx];
+
+  // Scroll vers la carte ciblée
+  cible.scrollIntoView({behavior:"smooth",block:"start"});
+
+  // Retire toute surbrillance existante sur toutes les cartes du créneau
+  cartes.forEach(el=>{
+    el.classList.remove("commande-highlight","commande-highlight-secondary");
+    void el.offsetWidth;
+  });
+
+  // Surbrillance forte sur la carte ciblée, discrète sur les autres
+  setTimeout(()=>{
+    cible.classList.add("commande-highlight");
+    cartes.filter((_,i)=>i!==idx).forEach(el=>el.classList.add("commande-highlight-secondary"));
+    setTimeout(()=>cartes.forEach(el=>{
+      el.classList.remove("commande-highlight","commande-highlight-secondary");
+    }),2200);
+  },300);
+}
+
+function extraireRecapBoites(orderText){
+  if(!orderText)return"—";
+  let regex=/BOÎTE DE (\d+) BEIGNETS/gi;
+  let counts={};
+  let m;
+  while((m=regex.exec(orderText))!==null){
+    let taille=m[1];
+    counts[taille]=(counts[taille]||0)+1;
+  }
+  let tailles=Object.keys(counts).sort((a,b)=>parseInt(a)-parseInt(b));
+  if(tailles.length===0)return"—";
+  return tailles.map(t=>`<span class="recap-boite-chip">${counts[t]}× Boîte ${t}</span>`).join("");
+}
+
+function renderCommande(c, opts){
+  opts = opts || {};
+  let conf = confirmees.includes(c.id);
+  let prt = pretes.includes(c.id);
+  let arch = archivees.includes(c.id);
+  
+  // Extraction propre du prix
+  let prixBrut = parseFloat(String(c.total).replace(",", "."));
+  let prixAffiche = isNaN(prixBrut) ? "0,00 €" : prixBrut.toFixed(2).replace(".", ",") + " €";
+  
+  let dateText = formatDateRetrait(c.dateRetrait);
+  let statusBadge = "";
+  if(arch) statusBadge = `<span class="badge" style="background:var(--ink-faint);color:#fff;">🗄️ Archivée</span>`;
+  else if(prt) statusBadge = `<span class="badge badge-prete">🍳 Prête</span>`;
+  else if(conf) statusBadge = `<span class="badge badge-ok">✅ Validée</span>`;
+  else statusBadge = `<span class="badge badge-new">🆕 Nouvelle</span>`;
+  
+  let nbAnnul = nbAnnulationsPourTel(c.phone);
+  let alerteBlacklist = "";
+  if(nbAnnul >= 2){
+    alerteBlacklist = `<div style="background:var(--error); color:#fff; padding:6px; border-radius:5px; font-size:11px; margin-bottom:10px; font-weight:bold;">⚠️ ATTENTION : Ce client a déjà annulé ${nbAnnul} commandes !</div>`;
+  }
+  
+  // Correction ici : Utilisation des fonctions de sélection existantes pour éviter le crash
+  let checkedStr = getSelected().includes(c.id) ? "checked" : "";
+  let infoBoitesHtml = extraireRecapBoites(c.order);
+  
+  let html = `<div class="commande-card ${conf ? 'confirmee' : ''} ${prt ? 'prete' : ''} ${c.urgent ? 'urgente' : ''}" id="card-${c.id}" data-creneau="${c.creneau}" data-datecle="${c.dateRetrait}">
+    <div class="commande-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <input type="checkbox" id="chk-${c.id}" class="cmd-checkbox" ${checkedStr} onchange="onCheckChange()">
+        <span class="client-name">${c.name || 'Inconnu'}</span>
+        ${statusBadge}
+      </div>
+      <span class="histo-jour-ca">${prixAffiche}</span>
+    </div>
+    <div>
+      ${alerteBlacklist}
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="label">📅 Retrait</div>
+          <div class="value">${dateText}</div>
+        </div>
+        <div class="info-item">
+          <div class="label">⏰ Créneau</div>
+          <div class="value">${c.creneau || 'Non spécifié'}</div>
+        </div>
+        <div class="info-item full">
+          <div class="label">📞 Contact & Canal</div>
+          <div class="value">${c.phone || 'Non renseigné'} ${badgeCanal(c.canal)}</div>
+        </div>
+      </div>
+      
+      <div class="recap-boites">${infoBoitesHtml}</div>
+      <div class="detail-box">${c.order || ''}</div>
+      <div style="font-size:11px; color:var(--ink-muted); margin-top:8px;">💳 Règlement : <b>${c.payment || 'Non spécifié'}</b> • Recu le ${c.datePropre || ''} à ${c.heure || ''}</div>
+      ${calculerSolde(c)>0.01?(soldeRecu.includes(c.id)?`<div style="font-size:12px; color:var(--success); font-weight:bold; margin-top:6px; background:var(--success-soft); border:1px solid var(--success); border-radius:8px; padding:6px 10px;">✅ Solde de ${calculerSolde(c).toFixed(2).replace('.',',')} € marqué comme reçu</div>`:`<div style="font-size:12px; color:var(--amber); font-weight:bold; margin-top:6px; background:var(--amber-soft); border:1px solid var(--amber); border-radius:8px; padding:6px 10px;">💰 Solde restant : ${calculerSolde(c).toFixed(2).replace('.',',')} € — un choix te sera demandé au clic sur "Prête"</div>`):``}
+    </div>
+    
+    <div class="actions-sec" style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">`;
+  
+  if(opts.archive){
+    html += `<button class="btn-marquer" style="border-color:var(--success);color:var(--success);" onclick="desarchiverCommande(${c.id})">♻️ Désarchiver</button>`;
+  } else if(!conf && !prt){
+    html += `<button class="btn-prete" style="background:var(--success);" onclick="marquer(${c.id})">✅ Valider</button>`;
+  } else if(conf && !prt){
+    html += `<button class="btn-prete" onclick="marquerPrete(${c.id})">🍳 Prête</button>`;
+    html += `<button class="btn-marquer" onclick="annulerConfirmation(${c.id})">⬅️ Restaurer</button>`;
+  } else if(prt){
+    html += `<button class="btn-marquer" onclick="annulerPrete(${c.id})">⬅️ Pas prête</button>`;
+    html += `<button class="btn-marquer" style="border-color:var(--blue);color:var(--blue);" onclick="archiverCommande(${c.id})">📦 Archiver</button>`;
+  }
+  
+  // Liens de contact WhatsApp / SMS
+  let targetPhone = normalizePhone(c.phone);
+  if(targetPhone){
+    html += `<button class="btn-wa" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" onclick="envoyerWhatsApp(${c.id})">📲 WhatsApp</button>`;
+    html += `<button class="btn-sms" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" onclick="envoyerSMS(${c.id})">💬 SMS</button>`;
+  }
+  
+  // Bouton d'impression sécurisé
+  let cSafe = JSON.stringify(c).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  html += `<button class="btn-marquer" style="border-color:var(--purple); color:var(--purple);" onclick="imprimerFacture(${cSafe})">🖨️ Imprimer</button>`;
+  
+  html += `<button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Suppr.</button>
+    </div>
+  </div>`;
+  
+  return html;
+}
+
+function envoyerWhatsApp(id){
+  let c = toutesCommandes.find(x=>x.id===id);
+  if(!c){showToast("⚠️ Commande introuvable");return;}
+  let targetPhone = normalizePhone(c.phone);
+  if(!targetPhone){showToast("⚠️ Pas de numéro de téléphone");return;}
+  let pret = pretes.includes(id);
+  let txtWA = pret ? genMsgPret(c, false) : genMsg(c, false);
+  window.open("https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(txtWA), "_blank");
+}
+
+function envoyerSMS(id){
+  let c = toutesCommandes.find(x=>x.id===id);
+  if(!c){showToast("⚠️ Commande introuvable");return;}
+  let targetPhone = normalizePhone(c.phone);
+  if(!targetPhone){showToast("⚠️ Pas de numéro de téléphone");return;}
+  let pret = pretes.includes(id);
+  let txtSMS = pret ? genMsgPret(c, true) : genMsg(c, true);
+  window.location.href = 'sms:'+targetPhone+'?body='+encodeURIComponent(txtSMS);
+}
+
+/* ===== SOLDE RESTANT (acompte 50% vs totalité réglée en ligne) =====
+   Déduit du champ "payment" (pas besoin de colonne Sheet dédiée) :
+   - "Totalité réglée..." → rien à payer
+   - "Acompte réglé..." → il reste 50% du total à régler
+   - tout autre cas (ex: anciennes commandes "Carte"/"Espèces") → considéré réglé */
+function calculerSolde(c){
+  let total=parseFloat(String(c.total).replace(",","."));
+  if(isNaN(total))return 0;
+  let payLower=(c.payment||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  if(payLower.includes("totalite"))return 0;
+  if(payLower.includes("acompte"))return Math.round(total*DEPOSIT_RATE*100)/100;
+  return 0;
+}
+
+function genBlocSolde(solde,b){
+  let soldeStr=solde.toFixed(2).replace(".",",");
+  let lienPaypal=PAYPAL_ME_LINK+"/"+solde.toFixed(2)+"EUR";
+  let bloc=`💰 ${b}Solde restant à régler : ${soldeStr} €${b}\n`;
+  bloc+=`📲 Via Wero : envoie ${soldeStr}€ au ${WERO_PHONE} (Oh! Mikaté)\n`;
+  bloc+=`💳 Ou via PayPal : ${lienPaypal}\n\n`;
+  return bloc;
+}
+
+function genMsg(c,pourSMS=false){
+  let b=pourSMS?"":"*";
+
+  let dateRetrait=formatDateRetrait(c.dateRetrait);
+  let solde=calculerSolde(c);
+
+  let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
+  msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
+  msg+=`🗓️ Date : ${dateRetrait}\n`;
+  msg+=`⏰ Créneau : ${c.creneau||"—"}\n`;
+  msg+=`💰 Total : ${c.total||"—"} €\n\n`;
+  msg+=`📦 ${b}Ta commande :${b}\n${c.order||""}\n\n`;
+  if(solde>0.01)msg+=genBlocSolde(solde,b);
+  msg+=`📍 ${b}Adresse de retrait :${b}\n36 rue du Chanoine Lallement, Reims\n\n`;
+  msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — tu auras ta commande en mains propres ! 🍩\n\n`;
+  msg+=`🔗 ${b}Besoin de modifier ou d'annuler ?${b}\nohmikate.netlify.app/mes-commandes\n\n`;
+  msg+=`━━━━━━━━━━━━━━━\n`;
+  msg+=`À tout à l'heure ! 🧇\n— Oh! Mikaté`;
+  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
+}
+
+function genMsgPret(c,pourSMS=false){
+  let b=pourSMS?"":"*";
+  let solde=calculerSolde(c);
+  let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
+  msg+=`📦 ${b}Ta commande Oh! Mikaté est prête, tu peux venir la récupérer dès maintenant.${b}\n\n`;
+  if(solde>0.01){
+    if(soldeRecu.includes(c.id)){
+      msg+=`✅ ${b}J'ai bien reçu la totalité du règlement, merci beaucoup !${b}\n\n`;
+    }else{
+      msg+=genBlocSolde(solde,b);
+      msg+=`🙏 Merci de ne pas oublier le solde en venant récupérer ta commande !\n\n`;
+    }
+  }
+  msg+=`━━━━━━━━━━━━━━━\n`;
+  msg+=`À tout de suite ! 🧇\n— Oh! Mikaté`;
+  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
+}
+
+/* ===== SÉLECTION GROUPÉE ===== */
+function onCheckChange(){
+  let checked=getSelected();
+  let selBar=document.getElementById("selection-bar");
+  let selCount=document.getElementById("sel-count");
+  let toutChk=document.getElementById("tout-select");
+  let visible=getVisibleIds();
+  if(checked.length>0){
+    selBar.classList.add("show");
+    selCount.textContent=checked.length+" sélectionnée"+(checked.length>1?"s":"");
+  }else{
+    selBar.classList.remove("show");
+  }
+  toutChk.checked=checked.length===visible.length&&visible.length>0;
+  document.getElementById("sel-info").textContent=checked.length>0?checked.length+" / "+visible.length+" sélectionnée(s)":"";
+}
+
+function getSelected(){
+  return Array.from(document.querySelectorAll('.cmd-checkbox:checked')).map(c=>parseInt(c.id.replace('chk-','')));
+}
+
+function getVisibleIds(){
+  return Array.from(document.querySelectorAll('.cmd-checkbox')).map(c=>parseInt(c.id.replace('chk-','')));
+}
+
+function toutSelectionner(checked){
+  document.querySelectorAll('.cmd-checkbox').forEach(c=>{c.checked=checked;});
+  onCheckChange();
+}
+
+function deselectionnerTout(){
+  document.querySelectorAll('.cmd-checkbox').forEach(c=>{c.checked=false;});
+  document.getElementById("tout-select").checked=false;
+  onCheckChange();
+}
+
+function confirmerSelection(){
+  let ids=getSelected();
+  if(ids.length===0)return;
+  ids.forEach(id=>{
+    if(!confirmees.includes(id))confirmees.push(id);
+  });
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  deselectionnerTout();
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,300);
+  showToast(`✅ ${ids.length} commande${ids.length>1?"s":""} confirmée${ids.length>1?"s":""} !`);
+}
+
+function supprimerSelection(){
+  let ids=getSelected();
+  if(ids.length===0)return;
+  if(!confirm(`Supprimer ${ids.length} commande${ids.length>1?"s":""} ?`))return;
+  ids.forEach(id=>{
+    if(!supprimees.includes(id))supprimees.push(id);
+    confirmees=confirmees.filter(c=>c!==id);
+    pretes=pretes.filter(p=>p!==id);
+    archivees=archivees.filter(a=>a!==id);
+  });
+  localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
+  deselectionnerTout();
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,300);
+  showToast(`🗑️ ${ids.length} commande${ids.length>1?"s":""} supprimée${ids.length>1?"s":""}`);
+}
+
+function rafraichirVuesSecondaires(){
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  let nbAPreparer=visible.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id)).length;
+  updateBadgeAPreparer(nbAPreparer);
+  let nbArchivees=visible.filter(c=>archivees.includes(c.id)).length;
+  updateBadgeArchives(nbArchivees);
+  if(document.getElementById("vue-historique").style.display!=="none")afficherHistorique();
+  if(document.getElementById("vue-aprepare").style.display!=="none")afficherAPreparer();
+  if(document.getElementById("vue-archives").style.display!=="none")afficherArchives();
+}
+
+function envoyerStatutAuSheet(id,statut){
+  let c=toutesCommandes.find(x=>x.id===id);
+  if(!c||!c.rowIndex)return;
+  fetch(APPS_SCRIPT_URL,{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"statut",rowIndex:c.rowIndex,statut})
+  }).catch(()=>{});
+}
+
+function marquer(id){
+  if(!confirmees.includes(id)){
+    confirmees.push(id);
+    localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+    envoyerStatutAuSheet(id,"confirmee");
+    updateStats();
+    rafraichirVuesSecondaires();
+    setTimeout(afficher,400);
+  }
+}
+
+function annulerConfirmation(id){
+  confirmees=confirmees.filter(c=>c!==id);
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  envoyerStatutAuSheet(id,"nouvelle");
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,300);
+  showToast("↩️ Confirmation annulée");
+}
+
+function marquerPrete(id){
+  if(pretes.includes(id))return;
+  let c=toutesCommandes.find(x=>x.id===id);
+  let solde=c?calculerSolde(c):0;
+  if(solde>0.01){
+    idPretePendant=id;
+    document.getElementById("popup-solde-montant").textContent=solde.toFixed(2).replace(".",",")+" €";
+    document.getElementById("popup-solde").classList.add("show");
+    return;
+  }
+  finaliserPrete(id);
+}
+
+function finaliserPrete(id){
+  pretes.push(id);
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  envoyerStatutAuSheet(id,"prete");
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,400);
+}
+
+function confirmerChoixSolde(recu){
+  if(idPretePendant===null)return;
+  if(recu){
+    if(!soldeRecu.includes(idPretePendant))soldeRecu.push(idPretePendant);
+  }else{
+    soldeRecu=soldeRecu.filter(x=>x!==idPretePendant);
+  }
+  localStorage.setItem('ohMikateSoldeRecu',JSON.stringify(soldeRecu));
+  let id=idPretePendant;
+  fermerPopupSolde();
+  finaliserPrete(id);
+}
+
+function fermerPopupSolde(){
+  idPretePendant=null;
+  document.getElementById("popup-solde").classList.remove("show");
+}
+
+function annulerPrete(id){
+  pretes=pretes.filter(p=>p!==id);
+  soldeRecu=soldeRecu.filter(x=>x!==id);
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  localStorage.setItem('ohMikateSoldeRecu',JSON.stringify(soldeRecu));
+  envoyerStatutAuSheet(id,"confirmee");
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,300);
+  showToast("↩️ Statut \"prête\" annulé");
+}
+
+function demanderSupp(id){idASupp=id;document.getElementById("popup-supp").classList.add("show");}
+
+/* ===== ANNULATIONS CLIENT (blacklist) ===== */
+let annulees=JSON.parse(localStorage.getItem('ohMikateAnnulees')||'[]');
+
+function nbAnnulationsPourTel(phone){
+  let p=normalizePhone(phone);
+  if(!p)return 0;
+  return annulees.filter(a=>normalizePhone(a.phone)===p).length;
+}
+
+function marquerAnnuleeParClient(id){
+  let c=toutesCommandes.find(cmd=>cmd.id===id);
+  if(!c)return;
+  if(!confirm(`Confirmer que ${c.name||"ce client"} a annulé cette commande ?`))return;
+  annulees.push({id:c.id,phone:normalizePhone(c.phone),name:c.name||"—",date:new Date().toLocaleDateString('fr-FR')});
+  localStorage.setItem('ohMikateAnnulees',JSON.stringify(annulees));
+  supprimees.push(id);
+  localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
+  confirmees=confirmees.filter(cid=>cid!==id);
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  pretes=pretes.filter(pid=>pid!==id);
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  archivees=archivees.filter(aid=>aid!==id);
+  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
+  updateStats();afficher();
+  let nb=nbAnnulationsPourTel(c.phone);
+  showToast(nb>=2?`⚠️ ${nb}e annulation pour ce numéro !`:"📋 Annulation enregistrée");
+}
+
+function genMsgAnnulationParToi(c,pourSMS=false){
+  let b=pourSMS?"":"*";
+  let dateRetrait=formatDateRetrait(c.dateRetrait);
+  let estCarte=(c.payment||"").toLowerCase().includes("carte");
+  let msg=`Bonjour ${c.name||""},\n\n`;
+  msg+=`😔 Je suis vraiment désolée, mais je suis dans l'obligation d'annuler ta commande prévue le ${dateRetrait} (créneau ${c.creneau||"—"}).\n\n`;
+  if(estCarte){
+    msg+=`${b}Ton paiement de ${c.total||"—"} € va être intégralement remboursé sur ta carte${b} (délai généralement de 5 à 10 jours ouvrés selon ta banque).\n\n`;
+  }else{
+    msg+=`${b}Aucun montant ne te sera demandé${b}, et j'espère pouvoir te régaler une prochaine fois ! 🧇\n\n`;
+  }
+  msg+=`Encore désolée pour la gêne occasionnée.\n— Oh! Mikaté`;
+  return pourSMS?msg.normalize("NFD").replace(/[\u0300-\u036f]/g,""):msg;
+}
+function fermerPopup(){idASupp=null;document.getElementById("popup-supp").classList.remove("show");}
+function envoyerSuppressionAuSheet(id,motif){
+  let c=toutesCommandes.find(x=>x.id===id);
+  if(!c||!c.rowIndex)return;
+  fetch(APPS_SCRIPT_URL,{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"supprimer",rowIndex:c.rowIndex,motif:motif||"supprime"})
+  }).catch(()=>{});
+}
+
+function confirmerSuppression(){
+  if(idASupp===null)return;
+  supprimees.push(idASupp);
+  localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
+  confirmees=confirmees.filter(id=>id!==idASupp);
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  pretes=pretes.filter(id=>id!==idASupp);
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  envoyerSuppressionAuSheet(idASupp,"supprime");
+  fermerPopup();
+  updateStats();
+  rafraichirVuesSecondaires();
+  afficher();
+  showToast("🗑️ Commande supprimée");
+}
+
+function updateStats(){
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  let conf=visible.filter(c=>confirmees.includes(c.id));
+  let nouv=visible.filter(c=>!confirmees.includes(c.id));
+  let ca=visible.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+  document.getElementById("stat-total").textContent=visible.length;
+  document.getElementById("stat-new").textContent=nouv.length;
+  document.getElementById("stat-done").textContent=conf.length;
+  document.getElementById("stat-ca").textContent=ca.toFixed(2)+"€";
+}
 
 function normalizePhone(raw){
   if(!raw)return"";
@@ -171,164 +1576,207 @@ function normalizePhone(raw){
   return p;
 }
 
-function afficherMsg(texte,erreur=false){
-  document.getElementById("msg-zone").innerHTML=`<div class="msg${erreur?' error':''}">${texte}</div>`;
-}
-
-async function chercherCommandes(){
-  let raw=document.getElementById("phone-input").value.trim();
-  let phone=normalizePhone(raw);
-  if(!/^\d{10}$/.test(phone)){
-    afficherMsg("⚠️ Merci d'entrer un numéro de téléphone valide.",true);
-    return;
-  }
-  let btn=document.getElementById("btn-lookup");
-  btn.disabled=true;btn.textContent="⏳ Recherche...";
-  document.getElementById("resultats").style.display="none";
-  afficherMsg("");
-
+function jouerSon(){
   try{
-    let res=await fetch(APPS_SCRIPT_URL+"?action=lookup&phone="+encodeURIComponent(phone));
-    let data=await res.json();
-    commandesTrouvees=(data&&data.commandes)||[];
-    afficherDemandesClient((data&&data.demandes)||[]);
-    if(commandesTrouvees.length===0){
-      afficherMsg("Aucune commande trouvée pour ce numéro. Vérifie qu'il s'agit bien du numéro utilisé lors de la commande.");
-    }else{
-      afficherMsg("");
-      afficherResultats();
-    }
-  }catch(e){
-    afficherMsg("❌ Impossible de contacter le service pour le moment. Réessaie dans quelques instants.",true);
-  }
-  btn.disabled=false;btn.textContent="🔍 Retrouver ma commande";
-}
-
-function libelleStatutDemande(s){
-  if(s==="Traitée")return{cls:"traitee",txt:"✅ Traitée"};
-  if(s==="Refusée")return{cls:"refusee",txt:"❌ Refusée"};
-  return{cls:"attente",txt:"⏳ En attente"};
-}
-
-const ICONES_DEMANDE={"Annulation":"🗑️","Modification":"✏️","Complément":"➕"};
-
-function afficherDemandesClient(demandes){
-  let zone=document.getElementById("mes-demandes");
-  if(!demandes||demandes.length===0){zone.innerHTML="";return;}
-  demandes.sort((a,b)=>(b.horodatage||"").localeCompare(a.horodatage||""));
-  let html=`<h2 class="section-titre">📋 Suivi de mes demandes</h2>`;
-  html+=demandes.map(d=>{
-    let statut=libelleStatutDemande(d.statut);
-    return`<div class="demande-card">
-      <div class="demande-top">
-        <span class="demande-type">${ICONES_DEMANDE[d.type]||"📌"} ${d.type||"Demande"}</span>
-        <span class="demande-statut ${statut.cls}">${statut.txt}</span>
-      </div>
-      <div class="demande-meta">📅 ${d.dateRetrait||"—"} • ⏰ ${d.creneau||"—"}${d.detail?" • "+d.detail:""}</div>
-    </div>`;
-  }).join("");
-  zone.innerHTML=html;
-}
-
-function libelleStatut(s){
-  if(s==="annulee")return{cls:"statut-nouvelle",txt:"🗑️ Annulée"};
-  if(s==="prete")return{cls:"statut-prete",txt:"🍳 Prête"};
-  if(s==="confirmee")return{cls:"statut-confirmee",txt:"✅ Confirmée"};
-  return{cls:"statut-nouvelle",txt:"🆕 En attente de confirmation"};
-}
-
-function afficherResultats(){
-  let zone=document.getElementById("resultats");
-  zone.innerHTML=commandesTrouvees.map(c=>{
-    let statut=libelleStatut(c.statut);
-    let actions=(c.statut==="annulee"||c.statut==="prete")?"":`<div class="commande-actions">
-        <button class="action-btn annuler" onclick="ouvrirPopup('annuler','${c.id}')">🗑️ Annuler</button>
-        <button class="action-btn modifier" onclick="ouvrirPopup('modifier','${c.id}')">✏️ Modifier</button>
-        <button class="action-btn completer" onclick="ouvrirPopup('completer','${c.id}')">➕ Compléter</button>
-      </div>`;
-    return`<div class="commande-card">
-      <div class="commande-top">
-        <div class="commande-date">📅 ${c.dateRetrait||"—"}</div>
-        <span class="commande-statut ${statut.cls}">${statut.txt}</span>
-      </div>
-      <div class="commande-meta">⏰ ${c.creneau||"—"} • 💰 ${c.total||"—"} € • 💳 ${c.payment||"—"}</div>
-      <div class="commande-detail">${c.order||""}</div>
-      ${actions}
-    </div>`;
-  }).join("");
-  zone.style.display="block";
-}
-
-function ouvrirPopup(type,commandeId){
-  demandeEnCours={commandeId,type};
-  document.getElementById("popup-"+type).classList.add("show");
-}
-
-function fermerPopups(){
-  document.querySelectorAll(".popup").forEach(p=>p.classList.remove("show"));
-  demandeEnCours=null;
-}
-
-async function envoyerDemande(typeDemande){
-  if(!demandeEnCours) return;
-  let c = commandesTrouvees.find(x => String(x.id) === String(demandeEnCours.commandeId));
-  if(!c){
-    afficherMsg("❌ Une erreur est survenue (commande introuvable). Merci de rafraîchir la page et réessayer.",true);
-    return;
-  }
-
-  let detail = "";
-  if(typeDemande === "modification") detail = document.getElementById("texte-modifier").value.trim();
-  if(typeDemande === "complement") detail = document.getElementById("texte-completer").value.trim();
-  if((typeDemande === "modification" || typeDemande === "complement") && !detail){
-    alert("Merci de préciser ta demande.");
-    return;
-  }
-
-  let phone = normalizePhone(document.getElementById("phone-input").value.trim());
-  let payload = {
-    action: "demande",
-    type: typeDemande,
-    commandeId: c.id,
-    phone: phone,
-    name: c.name || "",
-    dateRetrait: c.dateRetrait || "",
-    creneau: c.creneau || "",
-    detail: detail
-  };
-
-  afficherMsg("⏳ Envoi de votre demande en cours...");
-
-  try {
-    let res = await fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
+    let ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [523,659,784].forEach((freq,i)=>{
+      let o=ctx.createOscillator();
+      let g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=freq;
+      o.type="sine";
+      g.gain.setValueAtTime(0.3,ctx.currentTime+i*0.15);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.15+0.3);
+      o.start(ctx.currentTime+i*0.15);
+      o.stop(ctx.currentTime+i*0.15+0.3);
     });
-    let texte = await res.text();
-
-    if(!res.ok || texte.trim() !== "OK"){
-      console.error("Réponse inattendue du serveur:", res.status, texte);
-      throw new Error("Réponse serveur invalide");
-    }
-
-    fermerPopups();
-    alert("✅ Votre demande a bien été transmise à Oh! Mikaté !");
-
-    chercherCommandes();
-
-  } catch(e) {
-    console.error("Erreur lors de l'envoi:", e);
-    alert("❌ Une erreur s'est produite lors de l'envoi. Veuillez réessayer, ou contacter Oh! Mikaté directement si le problème persiste.");
-  }
+  }catch(e){}
 }
 
-var phoneInput = document.getElementById("phone-input");
-if (phoneInput) {
-  phoneInput.addEventListener("keydown", function(e) {
-    if (e.key === "Enter") chercherCommandes();
+function showToast(m){
+  let t=document.getElementById("toast");
+  t.textContent=m;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3000);
+}
+function formatMontant(v){
+  let n=parseFloat(String(v).replace(",","."));
+  return isNaN(n)?"0,00 €":n.toFixed(2).replace(".",",")+" €";
+}
+
+function genererImpressionComptable(titre, joursData){
+  let toutesCmds = joursData.flatMap(j=>j.cmds);
+  let totalGlobal = toutesCmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+
+  // Répartition par mode de règlement (utile pour le rapprochement comptable)
+  let parPaiement={};
+  toutesCmds.forEach(c=>{
+    let mode=(c.payment||"Non spécifié").trim();
+    let v=parseFloat(String(c.total).replace(",","."));
+    if(!parPaiement[mode])parPaiement[mode]={nb:0,total:0};
+    parPaiement[mode].nb++;
+    parPaiement[mode].total+=isNaN(v)?0:v;
   });
+
+  let sectionsHtml = joursData.map(j=>{
+    let caJour=j.cmds.reduce((s,c)=>{let v=parseFloat(String(c.total).replace(",","."));return s+(isNaN(v)?0:v);},0);
+    let rows=j.cmds.map(c=>`
+      <tr>
+        <td style="padding:6px; border-bottom:1px solid #eee;">${c.name||"—"}</td>
+        <td style="padding:6px; border-bottom:1px solid #eee;">${c.creneau||"—"}</td>
+        <td style="padding:6px; border-bottom:1px solid #eee;">${extraireRecapBoitesTexte(c.order)||"—"}</td>
+        <td style="padding:6px; border-bottom:1px solid #eee;">${c.payment||"—"}</td>
+        <td style="padding:6px; border-bottom:1px solid #eee; text-align:right;">${formatMontant(c.total)}</td>
+      </tr>`).join("");
+    return `
+      <h3 style="margin-top:24px; border-bottom:2px solid #333; padding-bottom:5px;">🗓️ ${j.label}</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
+        <thead>
+          <tr style="background:#eee;">
+            <th style="text-align:left; padding:6px;">Client</th>
+            <th style="text-align:left; padding:6px;">Créneau</th>
+            <th style="text-align:left; padding:6px;">Détail</th>
+            <th style="text-align:left; padding:6px;">Règlement</th>
+            <th style="text-align:right; padding:6px;">Montant</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div style="text-align:right; font-weight:bold; margin-top:6px; font-size:14px;">Sous-total ${j.label} : ${formatMontant(caJour)} — ${j.cmds.length} commande${j.cmds.length>1?"s":""}</div>
+    `;
+  }).join("");
+
+  let paiementRows = Object.keys(parPaiement).map(mode=>`
+    <tr>
+      <td style="padding:6px; border-bottom:1px solid #eee;">${mode}</td>
+      <td style="padding:6px; border-bottom:1px solid #eee; text-align:center;">${parPaiement[mode].nb}</td>
+      <td style="padding:6px; border-bottom:1px solid #eee; text-align:right;">${formatMontant(parPaiement[mode].total)}</td>
+    </tr>`).join("");
+
+  let fenetre = window.open("", "_blank", "width=850,height=700");
+  fenetre.document.write(`
+    <html>
+    <head>
+      <title>${titre}</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 25px; color: #222; }
+        .header { text-align: center; margin-bottom: 10px; }
+        .header p { color:#777; font-size:12px; }
+        table { width: 100%; border-collapse: collapse; }
+        .total-global { text-align: right; font-size: 20px; font-weight: bold; margin-top: 24px; padding-top:12px; border-top:2px solid #333; }
+        .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #777; border-top: 1px solid #ddd; padding-top: 10px; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h2>${titre}</h2>
+        <p><b>Oh! Mikaté</b> — SIRET : 98418057200019</p>
+        <p>Édité le ${new Date().toLocaleDateString("fr-FR")}</p>
+      </div>
+      ${sectionsHtml}
+      <h3 style="margin-top:28px; border-bottom:2px solid #333; padding-bottom:5px;">💳 Répartition par mode de règlement</h3>
+      <table style="width:60%; margin-top:8px; font-size:13px;">
+        <thead><tr style="background:#eee;"><th style="text-align:left; padding:6px;">Mode</th><th style="padding:6px;">Nb</th><th style="text-align:right; padding:6px;">Total</th></tr></thead>
+        <tbody>${paiementRows}</tbody>
+      </table>
+      <div class="total-global">TOTAL GÉNÉRAL : ${formatMontant(totalGlobal)} — ${toutesCmds.length} commande${toutesCmds.length>1?"s":""}</div>
+      <div class="footer"><p>Document généré automatiquement — usage comptable interne.</p></div>
+    </body>
+    </html>
+  `);
+  fenetre.document.close();
+  fenetre.print();
 }
+
+function capitalize(s){return s?s.charAt(0).toUpperCase()+s.slice(1):s;}
+
+function imprimerRecapMensuel(){
+  let jours=Object.keys(derniersGroupesHisto);
+  if(jours.length===0){showToast("⚠️ Aucune donnée à imprimer");return;}
+
+  let mois={};
+  jours.forEach(key=>{
+    let g=derniersGroupesHisto[key];
+    let d=g.dateObj;
+    let mKey = d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}` : "inconnu";
+    let mLabel = d ? capitalize(d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'})) : "Date inconnue";
+    if(!mois[mKey])mois[mKey]={label:mLabel, cmds:[]};
+    mois[mKey].cmds.push(...g.cmds);
+  });
+
+  let mKeys=Object.keys(mois).sort((a,b)=>b.localeCompare(a));
+  let joursData=mKeys.map(k=>({label:mois[k].label, cmds:mois[k].cmds}));
+  genererImpressionComptable("Récapitulatif comptable mensuel", joursData);
+}
+
+function imprimerRecapJour(key){
+  let g = derniersGroupesHisto[key];
+  if(!g){showToast("⚠️ Introuvable");return;}
+  genererImpressionComptable(`Récapitulatif comptable — ${g.label}`, [{label:g.label, cmds:g.cmds}]);
+}
+
+function imprimerRecapComplet(){
+  let jours=Object.keys(derniersGroupesHisto).sort((a,b)=>b.localeCompare(a));
+  if(jours.length===0){showToast("⚠️ Aucune donnée à imprimer");return;}
+  let joursData = jours.map(k=>({label:derniersGroupesHisto[k].label, cmds:derniersGroupesHisto[k].cmds}));
+  genererImpressionComptable("Récapitulatif comptable — Période complète", joursData);
+}
+
+function imprimerFacture(c) {
+  let tableRows = "";
+  // Extraction basique pour le tableau d'impression
+  if (c.order) {
+    let lines = c.order.split("\n");
+    lines.forEach(l => {
+      if(l.trim() && !l.includes("Total payé")) {
+        tableRows += `<tr><td style="padding:8px; border-bottom:1px solid #ddd;">${l}</td></tr>`;
+      }
+    });
+  }
+
+  let prixBrut = parseFloat(String(c.total).replace(",", "."));
+  let prixAffiche = isNaN(prixBrut) ? "0,00 €" : prixBrut.toFixed(2).replace(".", ",") + " €";
+  let dateAffichee = formatDateRetrait(c.dateRetrait);
+
+  let fenetre = window.open("", "_blank", "width=800,height=600");
+  fenetre.document.write(`
+    <html>
+    <head>
+      <title>Facture - ${c.name || 'Client'}</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .details { margin-bottom: 20px; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 20px; }
+        .footer { margin-top: 50px; text-align: center; font-size: 11px; color: #777; border-top: 1px solid #ddd; padding-top: 10px; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h2>FACTURE / REÇU</h2>
+        <p><b>Oh! Mikaté</b></p>
+      </div>
+      <div class="details">
+        <p><b>Client :</b> ${c.name || 'Inconnu'}</p>
+        <p><b>Téléphone :</b> ${c.phone || 'N/A'}</p>
+        <p><b>Date de retrait :</b> ${dateAffichee} • Créneau : ${c.creneau || 'N/A'}</p>
+        <p><b>Règlement :</b> ${c.payment || 'Non spécifié'}</p>
+      </div>
+      <h3 style="border-bottom: 2px solid #333; padding-bottom: 5px;">Détail de la commande</h3>
+      <table>
+        ${tableRows || `<tr><td style="padding:8px;">${c.order || 'Aucun détail'}</td></tr>`}
+      </table>
+      <div class="total">Total : ${prixAffiche}</div>
+      <div class="footer">
+        <p>Merci pour votre confiance ! À bientôt chez Oh! Mikaté.</p>
+        <p>SIRET : 98418057200019</p>
+      </div>
+    </body>
+    </html>
+  `);
+  fenetre.document.close();
+  fenetre.print();
+}  
 </script>
 </body>
 </html>
