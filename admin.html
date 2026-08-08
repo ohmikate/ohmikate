@@ -182,6 +182,16 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-heig
 .popup-box p{font-size:13px;color:var(--ink-muted);margin-bottom:18px;line-height:1.5;}
 .popup-btns{display:flex;gap:10px;}
 .popup-btns button{flex:1;padding:12px;border-radius:10px;font-family:var(--font-body);font-weight:600;font-size:14px;cursor:pointer;border:none;}
+.popup-box-edit{max-width:420px;text-align:left;border-color:var(--amber);}
+.popup-box-edit h3{color:var(--amber);text-align:left;}
+.popup-box-edit p{text-align:left;}
+.edit-label{display:block;font-size:12px;font-weight:600;margin:12px 0 5px;color:var(--ink-muted);}
+.edit-textarea{width:100%;min-height:110px;padding:10px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:13px;box-sizing:border-box;resize:vertical;color:var(--ink);}
+.edit-input{width:100%;padding:10px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:14px;box-sizing:border-box;color:var(--ink);}
+.demandes-subtabs{display:flex;gap:8px;max-width:600px;margin:0 auto 14px;}
+.demandes-subtab{flex:1;background:var(--surface);border:1.5px solid var(--accent);color:var(--accent-dark);font-size:12px;font-weight:600;padding:9px 8px;border-radius:8px;cursor:pointer;font-family:var(--font-body);text-align:center;}
+.demandes-subtab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.badge-demande-statut{font-size:10px;font-weight:600;padding:3px 9px;border-radius:12px;white-space:nowrap;}
 .btn-ok-supp{background:var(--error);color:#fff;}
 .btn-cancel{background:var(--surface-alt);color:var(--ink-muted);}
 </style>
@@ -207,6 +217,22 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-heig
       <button class="btn-ok-supp" style="background:var(--success);" onclick="confirmerChoixSolde(true)">✅ Oui, solde déjà reçu</button>
       <button class="btn-ok-supp" style="background:var(--amber);" onclick="confirmerChoixSolde(false)">🔔 Non, le rappeler au client</button>
       <button class="btn-cancel" onclick="fermerPopupSolde()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup" id="popup-edition-commande">
+  <div class="popup-box popup-box-edit">
+    <h3>✏️ Modifier la commande</h3>
+    <p>Client : <strong id="edit-demande-client">—</strong><br>
+    Demande du client : <em id="edit-demande-detail">—</em></p>
+    <label class="edit-label">Contenu de la commande</label>
+    <textarea id="edit-commande-order" class="edit-textarea"></textarea>
+    <label class="edit-label">Total (€)</label>
+    <input type="text" id="edit-commande-total" class="edit-input">
+    <div class="popup-btns" style="margin-top:14px;">
+      <button class="btn-cancel" onclick="fermerEditionCommande()">Annuler</button>
+      <button class="btn-ok-supp" style="background:var(--amber);" onclick="enregistrerEditionCommande()">💾 Enregistrer</button>
     </div>
   </div>
 </div>
@@ -241,6 +267,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-heig
     <button class="page-tab" id="ptab-aprepare" onclick="switchPageTab('aprepare')">🍳 À préparer<span class="page-tab-badge" id="badge-aprepare" style="display:none;">0</span></button>
     <button class="page-tab" id="ptab-demandes" onclick="switchPageTab('demandes')">📥 Demandes<span class="page-tab-badge" id="badge-demandes" style="display:none;">0</span></button>
     <button class="page-tab" id="ptab-historique" onclick="switchPageTab('historique')">📊 Historique</button>
+    <button class="page-tab" id="ptab-archives" onclick="switchPageTab('archives')">🗄️ Archives<span class="page-tab-badge" id="badge-archives" style="display:none;">0</span></button>
   </div>
 
   <div id="vue-commandes">
@@ -271,6 +298,10 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-heig
   </div>
 
   <div id="vue-demandes" style="display:none;">
+    <div class="demandes-subtabs">
+      <button class="demandes-subtab active" id="dtab-attente" onclick="switchDemandesTab('attente')">⏳ En attente</button>
+      <button class="demandes-subtab" id="dtab-historique" onclick="switchDemandesTab('historique')">📜 Historique</button>
+    </div>
     <div id="demandes-container"><div class="loading">⏳ Chargement...</div></div>
   </div>
 
@@ -281,6 +312,10 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-heig
     </div>
     <input class="histo-search" id="histo-search" type="text" placeholder="🔍 Rechercher un client..." oninput="filtrerHisto()" style="display:none;">
     <div id="histo-container"><div class="loading">⏳ Chargement...</div></div>
+  </div>
+
+  <div id="vue-archives" style="display:none;">
+    <div id="archives-container"><div class="loading">⏳ Chargement...</div></div>
   </div>
 
   <!-- Barre d'actions groupées -->
@@ -309,6 +344,7 @@ let toutesCommandes=[];
 let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
 let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
 let pretes=JSON.parse(localStorage.getItem('ohMikatePretes')||'[]');
+let archivees=JSON.parse(localStorage.getItem('ohMikateArchivees')||'[]');
 let soldeRecu=JSON.parse(localStorage.getItem('ohMikateSoldeRecu')||'[]');
 let idPretePendant=null;
 let derniersGroupesHisto={};
@@ -430,8 +466,11 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
     let visiblePourBadge=toutesCommandes.filter(c=>!supprimees.includes(c.id));
     let nbAPreparer=visiblePourBadge.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id)).length;
     updateBadgeAPreparer(nbAPreparer);
+    let nbArchiveesBadge=visiblePourBadge.filter(c=>archivees.includes(c.id)).length;
+    updateBadgeArchives(nbArchiveesBadge);
     if(document.getElementById("vue-historique").style.display!=="none")afficherHistorique();
     if(document.getElementById("vue-aprepare").style.display!=="none")afficherAPreparer();
+    if(document.getElementById("vue-archives").style.display!=="none")afficherArchives();
     chargerDemandes();
     let now=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
     document.getElementById("last-refresh").textContent="Mis à jour à "+now+" • Auto toutes les 60s";
@@ -449,6 +488,7 @@ function afficher(){
 
   let filtered=toutesCommandes.filter(c=>{
     if(supprimees.includes(c.id))return false;
+    if(archivees.includes(c.id))return false;
     if(statut==="nouvelles")return!confirmees.includes(c.id);
     if(statut==="confirmees")return confirmees.includes(c.id);
     return true;
@@ -518,13 +558,16 @@ function switchPageTab(tab){
   document.getElementById("ptab-aprepare").classList.toggle("page-tab-active",tab==="aprepare");
   document.getElementById("ptab-demandes").classList.toggle("page-tab-active",tab==="demandes");
   document.getElementById("ptab-historique").classList.toggle("page-tab-active",tab==="historique");
+  document.getElementById("ptab-archives").classList.toggle("page-tab-active",tab==="archives");
   document.getElementById("vue-commandes").style.display=tab==="commandes"?"block":"none";
   document.getElementById("vue-aprepare").style.display=tab==="aprepare"?"block":"none";
   document.getElementById("vue-demandes").style.display=tab==="demandes"?"block":"none";
   document.getElementById("vue-historique").style.display=tab==="historique"?"block":"none";
+  document.getElementById("vue-archives").style.display=tab==="archives"?"block":"none";
   if(tab==="historique")afficherHistorique();
   if(tab==="aprepare")afficherAPreparer();
   if(tab==="demandes")chargerDemandes();
+  if(tab==="archives")afficherArchives();
 }
 
 /* ===== VUE À PRÉPARER : confirmées mais pas encore prêtes ===== */
@@ -561,9 +604,62 @@ function updateBadgeAPreparer(n){
   }
 }
 
+/* ===== VUE ARCHIVES : commandes prêtes mises de côté ===== */
+function afficherArchives(){
+  let container=document.getElementById("archives-container");
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
+  let archives=visible.filter(c=>archivees.includes(c.id));
+
+  updateBadgeArchives(archives.length);
+
+  if(archives.length===0){
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">🗄️</div><p>Aucune commande archivée.</p></div>`;
+    return;
+  }
+
+  archives.sort((a,b)=>{
+    let da=parseDate(a.dateRetrait),db=parseDate(b.dateRetrait);
+    if(da&&db&&da.getTime()!==db.getTime())return db-da;
+    return(b.creneau||"").localeCompare(a.creneau||"");
+  });
+
+  container.innerHTML=archives.map(c=>renderCommande(c,{archive:true})).join("");
+  document.getElementById("tout-select-wrap").style.display="none";
+}
+
+function updateBadgeArchives(n){
+  let badge=document.getElementById("badge-archives");
+  if(n>0){
+    badge.textContent=n;
+    badge.style.display="inline-block";
+  }else{
+    badge.style.display="none";
+  }
+}
+
+function archiverCommande(id){
+  if(!archivees.includes(id))archivees.push(id);
+  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,300);
+  showToast("📦 Commande archivée");
+}
+
+function desarchiverCommande(id){
+  archivees=archivees.filter(a=>a!==id);
+  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,300);
+  showToast("♻️ Commande désarchivée");
+}
+
 /* ===== VUE DEMANDES CLIENTS (annulation / modification / complément) ===== */
-let demandesTraitees=JSON.parse(localStorage.getItem('ohMikateDemandesTraitees')||'[]');
+let demandesTraitees=JSON.parse(localStorage.getItem('ohMikateDemandesTraitees')||'{}');
 let toutesDemandes=[];
+let demandesTabActif="attente";
+let idEditionDemande=null;
 
 function parseDateDemande(str){
   if(!str)return null;
@@ -590,7 +686,8 @@ async function chargerDemandes(){
         dateRetrait:c[3]?String(c[3].v):"",
         creneau:c[4]?String(c[4].v):"",
         type:c[5]?c[5].v:"",
-        detail:c[6]?c[6].v:""
+        detail:c[6]?c[6].v:"",
+        statutServeur:c[7]?String(c[7].v):"En attente"
       };
     }).filter(d=>d.name||d.detail);
     afficherDemandes();
@@ -599,49 +696,104 @@ async function chargerDemandes(){
   }
 }
 
+function statutEffectif(d){
+  return demandesTraitees[d.id] || d.statutServeur || "En attente";
+}
+
+function switchDemandesTab(tab){
+  demandesTabActif=tab;
+  document.getElementById("dtab-attente").classList.toggle("active",tab==="attente");
+  document.getElementById("dtab-historique").classList.toggle("active",tab==="historique");
+  afficherDemandes();
+}
+
 function afficherDemandes(){
   let container=document.getElementById("demandes-container");
-  let enAttente=toutesDemandes.filter(d=>!demandesTraitees.includes(d.id));
+  let enAttente=toutesDemandes.filter(d=>statutEffectif(d)==="En attente");
   updateBadgeDemandes(enAttente.length);
-
-  if(enAttente.length===0){
-    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📭</div><p>Aucune demande en attente.</p></div>`;
-    return;
-  }
-
-  // Les plus récentes en premier
-  enAttente.sort((a,b)=>(parseDateDemande(b.horodatage)||0)-(parseDateDemande(a.horodatage)||0));
 
   const ICONES={"Annulation":"🗑️","Modification":"✏️","Complément":"➕"};
   const COULEURS={"Annulation":"var(--error)","Modification":"var(--amber)","Complément":"var(--success)"};
 
-  container.innerHTML=enAttente.map(d=>{
-    let icone=ICONES[d.type]||"📌";
-    let couleur=COULEURS[d.type]||"var(--accent)";
-    return`<div class="commande-card" style="border-color:${couleur};">
-      <div class="commande-header">
-        <div>
-          <span class="client-name">${icone} ${d.name||"Client"}</span>
-          <div class="commande-meta">📞 ${d.phone||"—"} • souhaite <b style="color:${couleur};">${(d.type||"").toUpperCase()}</b> sa commande</div>
+  if(demandesTabActif==="attente"){
+    if(enAttente.length===0){
+      container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📭</div><p>Aucune demande en attente.</p></div>`;
+      return;
+    }
+    enAttente.sort((a,b)=>(parseDateDemande(b.horodatage)||0)-(parseDateDemande(a.horodatage)||0));
+    container.innerHTML=enAttente.map(d=>{
+      let icone=ICONES[d.type]||"📌";
+      let couleur=COULEURS[d.type]||"var(--accent)";
+      let typeSimple=(d.type||"").replace(/[^\wÀ-ÿ ]/g,"").trim(); // enlève l'emoji pour comparer
+      let estAnnulation=typeSimple.toLowerCase().includes("annulation");
+      let boutonsAction=estAnnulation
+        ? `<button class="btn-prete" style="background:var(--success);" onclick="validerDemande(${d.id})">✅ Valider l'annulation</button>`
+        : `<button class="btn-prete" onclick="ouvrirEditionCommande(${d.id})">✏️ Éditer la commande</button>
+           <button class="btn-marquer" onclick="marquerDemandeTraitee(${d.id},'traitee')">✅ Marquer traitée</button>`;
+      return`<div class="commande-card" style="border-color:${couleur};">
+        <div class="commande-header">
+          <div>
+            <span class="client-name">${icone} ${d.name||"Client"}</span>
+            <div class="commande-meta">📞 ${d.phone||"—"} • souhaite <b style="color:${couleur};">${(d.type||"").toUpperCase()}</b> sa commande</div>
+          </div>
         </div>
-      </div>
-      <div class="info-grid">
-        <div class="info-item">
-          <div class="label">📅 Retrait concerné</div>
-          <div class="value">${formatDateRetrait(d.dateRetrait)}</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">📅 Retrait concerné</div>
+            <div class="value">${formatDateRetrait(d.dateRetrait)}</div>
+          </div>
+          <div class="info-item">
+            <div class="label">⏰ Créneau</div>
+            <div class="value">${d.creneau||"—"}</div>
+          </div>
         </div>
-        <div class="info-item">
-          <div class="label">⏰ Créneau</div>
-          <div class="value">${d.creneau||"—"}</div>
+        <div class="detail-box">${(d.detail||"").replace(/</g,"&lt;")}</div>
+        <div class="actions-sec" style="margin-top:12px;">
+          ${boutonsAction}
+          <button class="btn-supp" onclick="refuserDemande(${d.id})">❌ Refuser</button>
         </div>
-      </div>
-      <div class="detail-box">${(d.detail||"").replace(/</g,"&lt;")}</div>
-      <div class="actions-sec" style="margin-top:12px;">
-        <button class="btn-prete" style="background:var(--success);" onclick="validerDemande(${d.id})">✅ Valider</button>
-        <button class="btn-supp" onclick="refuserDemande(${d.id})">❌ Refuser</button>
-      </div>
-    </div>`;
-  }).join("");
+      </div>`;
+    }).join("");
+  }else{
+    let traitees=toutesDemandes.filter(d=>statutEffectif(d)!=="En attente");
+    if(traitees.length===0){
+      container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📜</div><p>Aucune demande traitée pour le moment.</p></div>`;
+      return;
+    }
+    traitees.sort((a,b)=>(parseDateDemande(b.horodatage)||0)-(parseDateDemande(a.horodatage)||0));
+    container.innerHTML=traitees.map(d=>{
+      let icone=ICONES[d.type]||"📌";
+      let couleur=COULEURS[d.type]||"var(--accent)";
+      let s=statutEffectif(d);
+      let estRefusee=s==="Refusée";
+      let badgeStatut=estRefusee
+        ? `<span class="badge-demande-statut" style="background:var(--error-soft);color:var(--error);">❌ Refusée</span>`
+        : `<span class="badge-demande-statut" style="background:var(--success-soft);color:var(--success);">✅ Traitée</span>`;
+      return`<div class="commande-card" style="border-color:${couleur};opacity:0.9;">
+        <div class="commande-header">
+          <div>
+            <span class="client-name">${icone} ${d.name||"Client"}</span>
+            <div class="commande-meta">📞 ${d.phone||"—"} • ${(d.type||"").toUpperCase()} • ${d.horodatage||""}</div>
+          </div>
+          ${badgeStatut}
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="label">📅 Retrait concerné</div>
+            <div class="value">${formatDateRetrait(d.dateRetrait)}</div>
+          </div>
+          <div class="info-item">
+            <div class="label">⏰ Créneau</div>
+            <div class="value">${d.creneau||"—"}</div>
+          </div>
+        </div>
+        <div class="detail-box">${(d.detail||"").replace(/</g,"&lt;")}</div>
+        <div class="actions-sec" style="margin-top:12px;">
+          <button class="btn-marquer" onclick="marquerDemandeTraitee(${d.id},'attente')">↩️ Remettre en attente</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
 }
 
 function updateBadgeDemandes(n){
@@ -675,7 +827,7 @@ function validerDemande(id){
   let d=toutesDemandes.find(x=>x.id===id);
   if(!d)return;
 
-  if(d.type==="Annulation"){
+  if((d.type||"").toLowerCase().includes("annulation")){
     let c=trouverCommandeCorrespondante(d);
     if(c){
       supprimees.push(c.id);
@@ -684,6 +836,8 @@ function validerDemande(id){
       localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
       pretes=pretes.filter(pid=>pid!==c.id);
       localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+      archivees=archivees.filter(aid=>aid!==c.id);
+      localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
       envoyerSuppressionAuSheet(c.id,"annulee");
       updateStats();
       rafraichirVuesSecondaires();
@@ -692,8 +846,6 @@ function validerDemande(id){
     }else{
       showToast("⚠️ Commande correspondante introuvable — vérifie manuellement");
     }
-  }else{
-    showToast(`✅ Demande marquée traitée — pense à ${d.type==="Complément"?"ajouter":"modifier"} la commande dans le tableau`);
   }
 
   marquerDemandeTraitee(id,"traitee");
@@ -705,8 +857,10 @@ function refuserDemande(id){
   showToast("❌ Demande refusée");
 }
 
+const LIBELLES_STATUT_DEMANDE={traitee:"Traitée", refusee:"Refusée", attente:"En attente"};
+
 function marquerDemandeTraitee(id,statutServeur){
-  if(!demandesTraitees.includes(id))demandesTraitees.push(id);
+  demandesTraitees[id]=LIBELLES_STATUT_DEMANDE[statutServeur]||statutServeur;
   localStorage.setItem('ohMikateDemandesTraitees',JSON.stringify(demandesTraitees));
   let d=toutesDemandes.find(x=>x.id===id);
   if(d&&d.rowIndex&&statutServeur){
@@ -717,6 +871,54 @@ function marquerDemandeTraitee(id,statutServeur){
     }).catch(()=>{});
   }
   afficherDemandes();
+}
+
+/* ===== ÉDITION DE COMMANDE depuis une demande de modification/complément ===== */
+function ouvrirEditionCommande(id){
+  let d=toutesDemandes.find(x=>x.id===id);
+  if(!d)return;
+  let c=trouverCommandeCorrespondante(d);
+  if(!c){
+    showToast("⚠️ Commande correspondante introuvable — modifie-la manuellement dans le tableau");
+    return;
+  }
+  idEditionDemande={demandeId:id,commandeId:c.id,rowIndex:c.rowIndex};
+  document.getElementById("edit-demande-client").textContent=c.name||"—";
+  document.getElementById("edit-demande-detail").textContent=d.detail||"—";
+  document.getElementById("edit-commande-order").value=c.order||"";
+  document.getElementById("edit-commande-total").value=c.total||"";
+  document.getElementById("popup-edition-commande").classList.add("show");
+}
+
+function fermerEditionCommande(){
+  idEditionDemande=null;
+  document.getElementById("popup-edition-commande").classList.remove("show");
+}
+
+function enregistrerEditionCommande(){
+  if(!idEditionDemande)return;
+  let nouvelOrder=document.getElementById("edit-commande-order").value.trim();
+  let nouveauTotal=document.getElementById("edit-commande-total").value.trim();
+  if(!nouvelOrder){
+    alert("Le contenu de la commande ne peut pas être vide.");
+    return;
+  }
+
+  fetch(APPS_SCRIPT_URL,{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"modifierContenu",rowIndex:idEditionDemande.rowIndex,order:nouvelOrder,total:nouveauTotal})
+  }).catch(()=>{});
+
+  let c=toutesCommandes.find(x=>x.id===idEditionDemande.commandeId);
+  if(c){c.order=nouvelOrder;c.total=nouveauTotal;}
+
+  let demandeId=idEditionDemande.demandeId;
+  fermerEditionCommande();
+  marquerDemandeTraitee(demandeId,"traitee");
+  updateStats();
+  setTimeout(afficher,300);
+  showToast("💾 Commande mise à jour et demande marquée traitée");
 }
 
 let histoTabActif="jours";
@@ -1083,9 +1285,11 @@ function extraireRecapBoites(orderText){
   return tailles.map(t=>`<span class="recap-boite-chip">${counts[t]}× Boîte ${t}</span>`).join("");
 }
 
-function renderCommande(c){
+function renderCommande(c, opts){
+  opts = opts || {};
   let conf = confirmees.includes(c.id);
   let prt = pretes.includes(c.id);
+  let arch = archivees.includes(c.id);
   
   // Extraction propre du prix
   let prixBrut = parseFloat(String(c.total).replace(",", "."));
@@ -1093,7 +1297,8 @@ function renderCommande(c){
   
   let dateText = formatDateRetrait(c.dateRetrait);
   let statusBadge = "";
-  if(prt) statusBadge = `<span class="badge badge-prete">🍳 Prête</span>`;
+  if(arch) statusBadge = `<span class="badge" style="background:var(--ink-faint);color:#fff;">🗄️ Archivée</span>`;
+  else if(prt) statusBadge = `<span class="badge badge-prete">🍳 Prête</span>`;
   else if(conf) statusBadge = `<span class="badge badge-ok">✅ Validée</span>`;
   else statusBadge = `<span class="badge badge-new">🆕 Nouvelle</span>`;
   
@@ -1141,13 +1346,16 @@ function renderCommande(c){
     
     <div class="actions-sec" style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">`;
   
-  if(!conf && !prt){
+  if(opts.archive){
+    html += `<button class="btn-marquer" style="border-color:var(--success);color:var(--success);" onclick="desarchiverCommande(${c.id})">♻️ Désarchiver</button>`;
+  } else if(!conf && !prt){
     html += `<button class="btn-prete" style="background:var(--success);" onclick="marquer(${c.id})">✅ Valider</button>`;
   } else if(conf && !prt){
     html += `<button class="btn-prete" onclick="marquerPrete(${c.id})">🍳 Prête</button>`;
     html += `<button class="btn-marquer" onclick="annulerConfirmation(${c.id})">⬅️ Restaurer</button>`;
   } else if(prt){
     html += `<button class="btn-marquer" onclick="annulerPrete(${c.id})">⬅️ Pas prête</button>`;
+    html += `<button class="btn-marquer" style="border-color:var(--blue);color:var(--blue);" onclick="archiverCommande(${c.id})">📦 Archiver</button>`;
   }
   
   // Liens de contact WhatsApp / SMS
@@ -1308,10 +1516,12 @@ function supprimerSelection(){
     if(!supprimees.includes(id))supprimees.push(id);
     confirmees=confirmees.filter(c=>c!==id);
     pretes=pretes.filter(p=>p!==id);
+    archivees=archivees.filter(a=>a!==id);
   });
   localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
   deselectionnerTout();
   updateStats();
   rafraichirVuesSecondaires();
@@ -1323,8 +1533,11 @@ function rafraichirVuesSecondaires(){
   let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id));
   let nbAPreparer=visible.filter(c=>confirmees.includes(c.id)&&!pretes.includes(c.id)).length;
   updateBadgeAPreparer(nbAPreparer);
+  let nbArchivees=visible.filter(c=>archivees.includes(c.id)).length;
+  updateBadgeArchives(nbArchivees);
   if(document.getElementById("vue-historique").style.display!=="none")afficherHistorique();
   if(document.getElementById("vue-aprepare").style.display!=="none")afficherAPreparer();
+  if(document.getElementById("vue-archives").style.display!=="none")afficherArchives();
 }
 
 function envoyerStatutAuSheet(id,statut){
@@ -1433,6 +1646,8 @@ function marquerAnnuleeParClient(id){
   localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
   pretes=pretes.filter(pid=>pid!==id);
   localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  archivees=archivees.filter(aid=>aid!==id);
+  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
   updateStats();afficher();
   let nb=nbAnnulationsPourTel(c.phone);
   showToast(nb>=2?`⚠️ ${nb}e annulation pour ce numéro !`:"📋 Annulation enregistrée");
