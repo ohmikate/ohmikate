@@ -224,45 +224,29 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 </div>
 
 <div id="promo-modal-backdrop" class="confirm-modal-backdrop">
-  <div class="confirm-modal" style="max-width:380px;padding:0;overflow:hidden;">
-    <img src="Images/Flyer2.jpg" alt="Nouveautés Bueno & Pistache" style="width:100%;height:auto;display:block;">
+  <div class="confirm-modal" style="max-width:360px;padding:0;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#A62639,#7E1B2B);padding:22px 18px;text-align:center;position:relative;">
+      <div class="offre-blink" style="font-size:34px;line-height:1.1;">🔥🧇🔥</div>
+      <div style="font-family:var(--font-display);font-weight:700;color:#fff;font-size:22px;letter-spacing:0.2px;margin-top:6px;">OFFRE FLASH</div>
+      <div style="color:#fff;font-size:15px;font-weight:600;margin-top:6px;">2 boîtes de 12 beignets</div>
+      <div style="color:#fff;font-size:13px;opacity:0.9;">= 24 beignets à partager 🎉</div>
+      <div class="offre-blink" style="font-family:var(--font-display);font-weight:700;font-size:32px;color:#D9A441;margin-top:10px;">10€ <span style="font-size:16px;color:#fff;opacity:0.75;text-decoration:line-through;font-family:var(--font-body);">14€</span></div>
+      <div style="color:#fff;font-size:12px;margin-top:8px;background:rgba(0,0,0,0.15);display:inline-block;padding:5px 12px;border-radius:20px;">⏰ Jusqu'au 10/08 seulement !</div>
+    </div>
     <div style="padding:16px;">
-      <button type="button" class="confirm-modal-btn cancel" style="width:100%;" onclick="document.getElementById('promo-modal-backdrop').classList.remove('show')">Fermer</button>
+      <button type="button" style="width:100%;background:var(--accent);color:#fff;border:none;font-family:var(--font-body);font-weight:600;font-size:14px;padding:13px;border-radius:10px;cursor:pointer;margin-bottom:8px;" onclick="document.getElementById('promo-modal-backdrop').classList.remove('show');document.getElementById('offre-2x12-banner').scrollIntoView({behavior:'smooth',block:'center'});">🎉 J'en profite !</button>
+      <button type="button" class="confirm-modal-btn cancel" style="width:100%;" onclick="document.getElementById('promo-modal-backdrop').classList.remove('show')">Plus tard</button>
     </div>
   </div>
 </div>
 
+<style>
+@keyframes offreBlink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.55;transform:scale(1.06);}}
+.offre-blink{animation:offreBlink 1.1s ease-in-out infinite;}
+</style>
+
 <!-- PAGE PRINCIPALE -->
 <div id="main-page">
-<div id="promo-popup-backdrop" style="display:none;position:fixed;inset:0;background:rgba(36,26,18,0.55);z-index:3000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
-  <div style="background:var(--surface);border-radius:20px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 12px 40px rgba(36,26,18,0.3);">
-    <div style="background:var(--accent);padding:14px 16px;text-align:center;">
-      <div style="font-family:var(--font-display);font-weight:700;color:#fff;font-size:22px;letter-spacing:0.3px;">🎉 Nouveautés à découvrir !</div>
-      <div style="color:#fff;font-size:12px;opacity:0.9;margin-top:2px;">Du goût à petit prix</div>
-    </div>
-    <div style="padding:18px;">
-      <div style="background:#3D2418;border-radius:14px;padding:14px;margin-bottom:12px;color:#fff;">
-        <div style="font-family:var(--font-display);font-weight:700;font-size:20px;color:#fff;">🌰 BUENO</div>
-        <div style="font-size:12px;color:#EBD9CC;margin-bottom:8px;">Le plaisir ultra gourmand !</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <span class="chip-label chip-label-pink" style="margin:0;">Nappage +1,00€</span>
-          <span class="chip-label chip-label-pink" style="margin:0;">Garniture +1,00€</span>
-          <span class="chip-label chip-label-pink" style="margin:0;">Petit pot +1,00€</span>
-        </div>
-      </div>
-      <div style="background:#2E3B22;border-radius:14px;padding:14px;margin-bottom:16px;color:#fff;">
-        <div style="font-family:var(--font-display);font-weight:700;font-size:20px;color:#fff;">🍏 PISTACHE</div>
-        <div style="font-size:12px;color:#D9E5CC;margin-bottom:8px;">Une saveur qui va vous faire craquer !</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          <span class="chip-label chip-label-green" style="margin:0;">Nappage +1,50€</span>
-          <span class="chip-label chip-label-green" style="margin:0;">Garniture +1,50€</span>
-          <span class="chip-label chip-label-green" style="margin:0;">Petit pot +1,50€</span>
-        </div>
-      </div>
-      <button type="button" onclick="fermerPromoPopup()" style="width:100%;background:var(--surface-alt);border:1.5px solid var(--border);color:var(--ink);font-family:var(--font-body);font-weight:600;font-size:14px;padding:12px;border-radius:10px;cursor:pointer;">Fermer</button>
-    </div>
-  </div>
-</div>
 <div class="hero"><img src="Images/Flyer4.jpg" alt="Oh! Mikaté Flyer"></div>
 <div style="background:#FFFFFF;padding:15px;text-align:center;font-size:14px;margin:15px;border-radius:10px;border:1px solid #E4D3BA;">
 ⭐ Préparation à la commande<br>📍 Retrait sur Reims
@@ -294,6 +278,10 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 <div class="compose-col compose-col-left">
 <h3>1. Choisis ton format de boîte</h3>
 <span class="info-limite" style="color:#7A6A5C;">Sélectionne une ou plusieurs boîtes pour personnaliser tes beignets.</span>
+<div id="offre-2x12-banner" style="background:linear-gradient(135deg,#A62639,#7E1B2B);color:#fff;border-radius:12px;padding:12px 16px;margin-bottom:16px;text-align:center;box-shadow:0 3px 10px rgba(166,38,57,0.25);">
+  <div style="font-family:var(--font-display);font-weight:600;font-size:17px;">🔥 2 boîtes de 12 beignets = 24 beignets à 10€ !</div>
+  <div style="font-size:12px;opacity:0.9;margin-top:2px;">au lieu de 14€ — offre valable jusqu'au 10/08 seulement</div>
+</div>
 <div class="grid">
   <div class="card product-card" data-name="9 beignets" data-price="5">
     <img src="Images/Beignet9.jpg">
@@ -305,6 +293,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
     </div>
   </div>
   <div class="card product-card" data-name="12 beignets" data-price="7">
+    <div id="offre-2x12-badge" style="position:absolute;top:8px;right:8px;background:#D9A441;color:#2B1B12;font-size:10px;font-weight:700;padding:4px 8px;border-radius:20px;z-index:2;box-shadow:0 2px 6px rgba(43,27,18,0.25);">🔥 x2 = 10€</div>
     <img src="Images/Beignet9.jpg">
     <p>Boîte de 12 beignets — <span class="price-tag price-tag-green">7€</span></p>
     <div class="qty-controls">
@@ -484,6 +473,7 @@ const depositRates={acompte:0.5,total:1.0,especes:0};
 const SEUIL_ACOMPTE_OBLIGATOIRE=10; // en dessous de ce montant, le paiement en ligne devient facultatif
 const paypalMeLink="https://www.paypal.com/paypalme/ohmikate";
 const baseHours=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
+const hoursAvance=["15h00 - 15h30","15h30 - 16h00","16h00 - 16h30","16h30 - 17h00"].concat(baseHours);
 let espècesPageAffichée=false;
 
 /* ===== COMPTAGE ET BLOCAGES (lecture seule Google Sheets) ===== */
@@ -848,6 +838,18 @@ function calculateTotalAndExtractStructure(){
   if(boxesSelected["9 beignets"]>0)textSummaryList.push(`${boxesSelected["9 beignets"]}x Boîte de 9`);
   total+=boxesSelected["12 beignets"]*boxPrices["12 beignets"];
   if(boxesSelected["12 beignets"]>0)textSummaryList.push(`${boxesSelected["12 beignets"]}x Boîte de 12`);
+
+  // Offre temporaire : 2 boîtes de 12 (24 beignets) à 10€ au lieu de 14€ — jusqu'au 10/08/2026 inclus
+  let remiseOffre=0;
+  if(new Date()<FIN_OFFRES_TEMPORAIRES){
+    let nbPaires=Math.floor(boxesSelected["12 beignets"]/2);
+    remiseOffre=nbPaires*4; // 4€ économisés par paire (14€ -> 10€)
+    if(remiseOffre>0){
+      total-=remiseOffre;
+      textSummaryList.push(`🎉 Offre 2 boîtes de 12 (-${remiseOffre.toFixed(2)}€)`);
+      structuredOrderText+=`\n🎉 OFFRE 2 BOÎTES DE 12 (24 beignets à 10€) x${nbPaires} : -${remiseOffre.toFixed(2)}€\n`;
+    }
+  }
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
     let idPrefix=`box9-${b}`;
     let{total:supTotal}=computeBoxSupplements(idPrefix);
@@ -1144,6 +1146,9 @@ function nouvelleCommande(){
   window.location.href=window.location.pathname;
 }
 
+// Fin des offres/assouplissements temporaires — tout reprend automatiquement le mardi 11/08/2026
+const FIN_OFFRES_TEMPORAIRES=new Date(2026,7,11);
+
 function initDates(){
   const dateSelect=document.getElementById("client-date");
   dateSelect.innerHTML='<option value="">-- Sélectionne une date --</option>';
@@ -1151,7 +1156,7 @@ function initDates(){
   let startDate=new Date(2026,6,1);
   if(now>startDate)startDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   // Si 15h passées, on commence dès demain (le jour même n'est plus proposé)
-  if(now.getHours()>=15){
+  if(now.getHours()>=15 && now>=FIN_OFFRES_TEMPORAIRES){
     startDate.setDate(startDate.getDate()+1);
   }
   for(let i=0;i<14;i++){
@@ -1175,15 +1180,18 @@ function handleDateChange(){
   let todayLabel=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   todayLabel=todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1);
 
-  // Blocage automatique jour J après 15h
-  let estApresLimiteJourJ=(selectedDate===todayLabel && now.getHours()>=15);
+  // Blocage automatique jour J après 15h (suspendu jusqu'au 10/08/2026 inclus)
+  let estApresLimiteJourJ=(selectedDate===todayLabel && now.getHours()>=15 && now>=FIN_OFFRES_TEMPORAIRES);
 
   // Récupération des blocages configurés à distance sur Sheets pour ce jour sélectionné
   let blocageManuelJour = manuelsBlocages[selectedDate];
 
   let comptesDuJour=orderCounts[normaliserDateEnCle(selectedDate)||selectedDate]||{};
   
-  baseHours.forEach(t=>{
+  // Jour J : créneaux à partir de 17h00 — jours suivants (jusqu'à la veille) : à partir de 15h00
+  let creneauxDuJour = (selectedDate===todayLabel) ? baseHours : hoursAvance;
+
+  creneauxDuJour.forEach(t=>{
     let nbCommandes=comptesDuJour[t]||0;
     let estComplet=nbCommandes>=MAX_COMMANDES_PAR_CRENEAU;
     
@@ -1350,6 +1358,10 @@ function afficherConfirmationStripe(draft){
 window.onload=function(){
   document.getElementById("especes-page").style.display="none";
   document.getElementById("main-page").style.display="block";
+  if(new Date()>=FIN_OFFRES_TEMPORAIRES){
+    let banner=document.getElementById("offre-2x12-banner");let badge=document.getElementById("offre-2x12-badge");
+    if(banner)banner.remove();if(badge)badge.remove();
+  }
   initDates();
   handleDateChange();
   chargerComptesCreneaux().then(()=>{handleDateChange();});
@@ -1362,9 +1374,8 @@ window.onload=function(){
     }
   }
 
-  // Pop-up promo "Nouveautés Bueno & Pistache" — visible à chaque visite jusqu'au 19/08/2026
-  const PROMO_FIN=new Date(2026,7,19,23,59,59); // mois 7 = août (0-indexé)
-  if(new Date()<=PROMO_FIN){
+  // Pop-up promo "Offre flash 2 boîtes de 12 à 10€" — visible à chaque visite jusqu'à la fin de l'offre
+  if(new Date()<FIN_OFFRES_TEMPORAIRES){
     setTimeout(()=>{
       document.getElementById("promo-modal-backdrop").classList.add("show");
     },1500);
