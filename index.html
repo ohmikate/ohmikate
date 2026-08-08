@@ -544,6 +544,16 @@ async function chargerComptesCreneaux(){
   }
 }
 
+// Parse une cellule du Sheet "Stock". Formats acceptés :
+//   "Pistache"          -> indisponible, sans date connue (reste bloqué)
+//   "Pistache - 11/08"  -> indisponible mais sélectionnable, avec date de retour affichée
+function parseCelluleStock(raw){
+  let parts=raw.split(" - ");
+  let nom=parts[0].trim();
+  let date=parts.length>1?parts.slice(1).join(" - ").trim():null;
+  return {nom,date};
+}
+
 async function chargerStockIndisponible(){
   try{
     let res=await fetch(SHEET_URL_STOCK+"&t="+Date.now());
@@ -556,9 +566,9 @@ async function chargerStockIndisponible(){
       let n=row.c[0]&&row.c[0].v!==null?String(row.c[0].v).trim():"";
       let g=row.c[1]&&row.c[1].v!==null?String(row.c[1].v).trim():"";
       let p=row.c[2]&&row.c[2].v!==null?String(row.c[2].v).trim():"";
-      if(n)result.nappage.push(n);
-      if(g)result.garniture.push(g);
-      if(p)result.pot.push(p);
+      if(n)result.nappage.push(parseCelluleStock(n));
+      if(g)result.garniture.push(parseCelluleStock(g));
+      if(p)result.pot.push(parseCelluleStock(p));
     });
     stockIndisponible=result;
   }catch(e){
@@ -694,9 +704,10 @@ function generateCompositionForm(){
     if(!m)return;
     let field=m[2];
     let val=currentSelections[g.id]||(g.tagName==="SELECT"?g.value:g.dataset.value);
-    // Si la sélection précédente vient de passer en rupture de stock, on revient sur "Aucun"
-    if((field==="nappage"||field==="garniture"||field==="pot")&&(stockIndisponible[field]||[]).includes(val)){
-      val="Aucun";optionRemplacee=true;
+    // Si la sélection précédente est bloquée sans date de retour connue, on revient sur "Aucun"
+    if(field==="nappage"||field==="garniture"||field==="pot"){
+      let entree=(stockIndisponible[field]||[]).find(e=>e.nom===val);
+      if(entree&&!entree.date){val="Aucun";optionRemplacee=true;}
     }
     setChipValue(m[1],field,val);
   });
@@ -773,13 +784,19 @@ function chipBtn(idPrefix,field,value,label){
   return `<button type="button" class="chip" data-val="${value}" onclick="selectChip('${idPrefix}','${field}','${value}')">${label}</button>`;
 }
 
-/* Construit une balise <option>, grisée et désactivée si l'option est en rupture de stock */
+/* Construit une balise <option>.
+   - Absente de la liste "Stock" -> option normale
+   - Présente sans date -> grisée, non sélectionnable
+   - Présente avec une date -> sélectionnable, avec la date de retour affichée (le client peut anticiper) */
 function optionHtml(field,value,label){
-  let indispo=(stockIndisponible[field]||[]).includes(value);
-  if(indispo){
-    return `<option value="${value}" disabled style="color:#B0A79A;">${label} — Réapprovisionnement en cours ⏳</option>`;
+  let entree=(stockIndisponible[field]||[]).find(e=>e.nom===value);
+  if(!entree){
+    return `<option value="${value}">${label}</option>`;
   }
-  return `<option value="${value}">${label}</option>`;
+  if(entree.date){
+    return `<option value="${value}">${label} — Dispo à partir du ${entree.date} ⏳</option>`;
+  }
+  return `<option value="${value}" disabled style="color:#B0A79A;">${label} — Réapprovisionnement en cours ⏳</option>`;
 }
 
 function generateBoxRowHtml(idPrefix,defaultImg){
