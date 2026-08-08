@@ -481,11 +481,14 @@ const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
 const SHEET_URL_READONLY=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
 // Lien vers le nouvel onglet pour les fermetures manuelles
 const SHEET_URL_BLOCAGES=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Fermetures`;
+// Onglet "Stock" : 3 colonnes (Nappage indispo / Garniture indispo / Pot indispo), une valeur en rupture par ligne
+const SHEET_URL_STOCK=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Stock`;
 
 const MAX_COMMANDES_PAR_CRENEAU=5;
 const MAX_BOITES_PAR_COMMANDE=10;
 let orderCounts={};
 let manuelsBlocages={}; // Stockera les fermetures définies par vos soins
+let stockIndisponible={nappage:[],garniture:[],pot:[]}; // Options en rupture, lues depuis l'onglet "Stock"
 
 async function chargerComptesCreneaux(){
   try{
@@ -538,6 +541,28 @@ async function chargerComptesCreneaux(){
     manuelsBlocages=blocages;
   }catch(e){
     manuelsBlocages={};
+  }
+}
+
+async function chargerStockIndisponible(){
+  try{
+    let res=await fetch(SHEET_URL_STOCK+"&t="+Date.now());
+    let text=await res.text();
+    let json=JSON.parse(text.substring(47,text.length-2));
+    let rows=json.table.rows||[];
+    let result={nappage:[],garniture:[],pot:[]};
+    rows.forEach(row=>{
+      if(!row.c)return;
+      let n=row.c[0]&&row.c[0].v!==null?String(row.c[0].v).trim():"";
+      let g=row.c[1]&&row.c[1].v!==null?String(row.c[1].v).trim():"";
+      let p=row.c[2]&&row.c[2].v!==null?String(row.c[2].v).trim():"";
+      if(n)result.nappage.push(n);
+      if(g)result.garniture.push(g);
+      if(p)result.pot.push(p);
+    });
+    stockIndisponible=result;
+  }catch(e){
+    stockIndisponible={nappage:[],garniture:[],pot:[]};
   }
 }
 
@@ -663,12 +688,19 @@ function generateCompositionForm(){
     html+=`</div>`;
   }
   container.innerHTML=html;
+  let optionRemplacee=false;
   container.querySelectorAll(".lot-field").forEach(g=>{
     let m=g.id.match(/^(.*)-(base|nappage|garniture|pot)$/);
     if(!m)return;
+    let field=m[2];
     let val=currentSelections[g.id]||(g.tagName==="SELECT"?g.value:g.dataset.value);
-    setChipValue(m[1],m[2],val);
+    // Si la sélection précédente vient de passer en rupture de stock, on revient sur "Aucun"
+    if((field==="nappage"||field==="garniture"||field==="pot")&&(stockIndisponible[field]||[]).includes(val)){
+      val="Aucun";optionRemplacee=true;
+    }
+    setChipValue(m[1],field,val);
   });
+  if(optionRemplacee)showToast("⚠️ Une option choisie est en rupture de stock, elle a été retirée.");
   container.querySelectorAll(".lot-row").forEach(row=>{updateBoxImage(row.dataset.prefix,row.dataset.defaultimg);});
 }
 
@@ -741,6 +773,15 @@ function chipBtn(idPrefix,field,value,label){
   return `<button type="button" class="chip" data-val="${value}" onclick="selectChip('${idPrefix}','${field}','${value}')">${label}</button>`;
 }
 
+/* Construit une balise <option>, grisée et désactivée si l'option est en rupture de stock */
+function optionHtml(field,value,label){
+  let indispo=(stockIndisponible[field]||[]).includes(value);
+  if(indispo){
+    return `<option value="${value}" disabled style="color:#B0A79A;">${label} — Réapprovisionnement en cours ⏳</option>`;
+  }
+  return `<option value="${value}">${label}</option>`;
+}
+
 function generateBoxRowHtml(idPrefix,defaultImg){
   return `<div class="lot-row lot-active" data-prefix="${idPrefix}" data-defaultimg="${defaultImg}">
     <img id="${idPrefix}-img" src="${defaultImg}" class="lot-preview-img" alt="Aperçu boîte">
@@ -758,32 +799,32 @@ function generateBoxRowHtml(idPrefix,defaultImg){
         <div class="chip-section">
           <div class="chip-label chip-label-orange">🍫 Nappage</div>
           <select class="select-custom lot-field" id="${idPrefix}-nappage" data-value="Aucun" onchange="selectChip('${idPrefix}','nappage',this.value)">
-            <option value="Aucun">Aucun</option>
-            <option value="Chocolat">🍫 Chocolat (+0,50€)</option>
-            <option value="Caramel">🍮 Caramel (+0,50€)</option>
-            <option value="Pistache">🍏 Pistache (+1,50€)</option>
-            <option value="Bueno">🌰 Bueno (+1,00€)</option>
+            ${optionHtml('nappage','Aucun','Aucun')}
+            ${optionHtml('nappage','Chocolat','🍫 Chocolat (+0,50€)')}
+            ${optionHtml('nappage','Caramel','🍮 Caramel (+0,50€)')}
+            ${optionHtml('nappage','Pistache','🍏 Pistache (+1,50€)')}
+            ${optionHtml('nappage','Bueno','🌰 Bueno (+1,00€)')}
           </select>
         </div>
         <div class="chip-section">
           <div class="chip-label chip-label-green">🥜 Garniture</div>
           <select class="select-custom lot-field" id="${idPrefix}-garniture" data-value="Aucun" onchange="selectChip('${idPrefix}','garniture',this.value)">
-            <option value="Aucun">Aucun</option>
-            <option value="Éclats M&M's">🍬 M&M's (+0,50€)</option>
-            <option value="Éclats Spéculoos">🍪 Spéculoos (+0,50€)</option>
-            <option value="Éclats Cacahuète">🥜 Cacahuètes (+0,50€)</option>
-            <option value="Éclat de pistache">🍏 Éclat de pistache (+1,50€)</option>
-            <option value="Bueno">🌰 Bueno (+1,00€)</option>
+            ${optionHtml('garniture','Aucun','Aucun')}
+            ${optionHtml('garniture',"Éclats M&M's","🍬 M&M's (+0,50€)")}
+            ${optionHtml('garniture','Éclats Spéculoos','🍪 Spéculoos (+0,50€)')}
+            ${optionHtml('garniture','Éclats Cacahuète','🥜 Cacahuètes (+0,50€)')}
+            ${optionHtml('garniture','Éclat de pistache','🍏 Éclat de pistache (+1,50€)')}
+            ${optionHtml('garniture','Bueno','🌰 Bueno (+1,00€)')}
           </select>
         </div>
         <div class="chip-section">
           <div class="chip-label chip-label-pink">🍯 Pot</div>
           <select class="select-custom lot-field" id="${idPrefix}-pot" data-value="Aucun" onchange="selectChip('${idPrefix}','pot',this.value)">
-            <option value="Aucun">Aucun</option>
-            <option value="Pot Nutella">🍫 Nutella (+0,50€)</option>
-            <option value="Pot Pâte d'arachide">🥜 Pâte d'arachide (+0,50€)</option>
-            <option value="Pot Pistache">🍏 Pistache (+1,50€)</option>
-            <option value="Pot Bueno">🌰 Bueno (+1,00€)</option>
+            ${optionHtml('pot','Aucun','Aucun')}
+            ${optionHtml('pot','Pot Nutella','🍫 Nutella (+0,50€)')}
+            ${optionHtml('pot',"Pot Pâte d'arachide","🥜 Pâte d'arachide (+0,50€)")}
+            ${optionHtml('pot','Pot Pistache','🍏 Pistache (+1,50€)')}
+            ${optionHtml('pot','Pot Bueno','🌰 Bueno (+1,00€)')}
           </select>
         </div>
       </div>
@@ -1365,6 +1406,7 @@ window.onload=function(){
   initDates();
   handleDateChange();
   chargerComptesCreneaux().then(()=>{handleDateChange();});
+  chargerStockIndisponible().then(()=>{generateCompositionForm();});
 
   if(window.location.search.includes('success')){
     let raw=localStorage.getItem('ohMikateStripeDraft');
