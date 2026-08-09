@@ -247,12 +247,9 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 
 <!-- PAGE PRINCIPALE -->
 <div id="main-page">
-<<<<<<< Updated upstream
-=======
 <div id="edition-banner" style="display:none;background:var(--amber);color:#fff;padding:14px 20px;text-align:center;font-family:var(--font-display);font-weight:600;font-size:15px;">
   ✏️ Tu modifies ta commande — <span id="edition-banner-sub" style="font-weight:normal;font-size:13px;display:block;margin-top:2px;"></span>
 </div>
->>>>>>> Stashed changes
 <div class="hero"><img src="Images/Flyer4.jpg" alt="Oh! Mikaté Flyer"></div>
 <div style="background:#FFFFFF;padding:15px;text-align:center;font-size:14px;margin:15px;border-radius:10px;border:1px solid #E4D3BA;">
 ⭐ Préparation à la commande<br>📍 Retrait sur Reims
@@ -1647,11 +1644,7 @@ window.onload=function(){
   initDates();
   handleDateChange();
   chargerComptesCreneaux().then(()=>{handleDateChange();});
-<<<<<<< Updated upstream
-  chargerStockIndisponible().then(()=>{generateCompositionForm();});
-=======
   chargerStockIndisponible().then(()=>{generateCompositionForm();activerModeEdition();});
->>>>>>> Stashed changes
 
   if(window.location.search.includes('success')){
     let raw=localStorage.getItem('ohMikateStripeDraft');
@@ -1662,11 +1655,7 @@ window.onload=function(){
   }
 
   // Pop-up promo "Offre flash 2 boîtes de 12 à 10€" — visible à chaque visite jusqu'à la fin de l'offre
-<<<<<<< Updated upstream
-  if(new Date()<FIN_OFFRES_TEMPORAIRES){
-=======
   if(new Date()<FIN_OFFRES_TEMPORAIRES && !editMode){
->>>>>>> Stashed changes
     setTimeout(()=>{
       document.getElementById("promo-modal-backdrop").classList.add("show");
     },1500);
