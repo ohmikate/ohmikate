@@ -410,6 +410,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
         <a id="whatsapp" class="btn whatsapp disabled" target="_blank" onclick="return checkForm(event,'WhatsApp')">📲 Envoyer ma commande sur WhatsApp</a>
         <button id="sms-btn" class="btn smsbtn disabled" onclick="triggerSMS(event)">💬 Valider ma commande par SMS</button>
         <a id="phone-btn" class="btn phonebtn disabled" onclick="triggerCall(event)">📞 Valider et m'appeler au téléphone</a>
+        <div id="edition-recap-total" style="display:none;margin:10px 0;padding:12px;background:#FFF7ED;border:1px solid #F2871F;border-radius:10px;"></div>
         <button id="envoyer-demande-btn" type="button" class="btn" style="display:none;background:var(--amber);" onclick="envoyerDemandeModification()">📤 Envoyer ma demande</button>
         <div class="small">💡 Choisis tes boîtes, configure-les et remplis tes coordonnées (*) pour débloquer l'envoi.</div>
       </div>
@@ -430,6 +431,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
       <div class="confirm-card-header">📦 Ce que tu as proposé</div>
       <div class="confirm-card-body"><div id="edition-confirm-detail" class="order-detail-box">—</div></div>
       <div class="total-line"><span>Nouveau total</span><span id="edition-confirm-total">0,00 €</span></div>
+      <div id="edition-confirm-diff" style="text-align:center;font-weight:600;margin-top:6px;"></div>
     </div>
     <div style="background:#FFFFFF;border:1px solid #F2871F;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
       <div style="font-size:13px;color:#7A6A5C;line-height:1.7;">La différence éventuelle (à payer ou à rembourser) sera réglée directement au moment du retrait de ta commande.</div>
@@ -1024,20 +1026,46 @@ function mergeStructuredSelections(base,delta){
   };
 }
 
+async function chargerCommandeOrigineEdition(){
+  try{
+    let res=await fetch(APPS_SCRIPT_URL_LOOKUP+"?action=lookup&phone="+encodeURIComponent(editPhone));
+    let data=await res.json();
+    let commandes=(data&&data.commandes)||[];
+    _commandeOrigine=commandes.find(c=>String(c.id)===String(editCommandeId));
+  }catch(e){
+    _commandeOrigine=null;
+  }
+}
+
+// La commande d'origine est au format "dd/MM/yyyy" (colonne Sheet) alors que le sélecteur
+// de date affiche des libellés français ("Lundi 12 janvier") : on convertit pour pouvoir les comparer.
+function formaterDateRetraitEnLabelOption(dateRetraitStr){
+  if(!dateRetraitStr)return null;
+  let m=dateRetraitStr.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if(!m)return null;
+  let d=new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]));
+  let label=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  return label.charAt(0).toUpperCase()+label.slice(1);
+}
+
+// La commande d'origine occupe déjà une place sur son créneau : sans cette correction, le système
+// la compterait deux fois et afficherait son propre créneau comme "complet" à cause d'elle-même.
+function exclureCommandeOrigineDuComptage(){
+  if(!_commandeOrigine||!_commandeOrigine.dateRetrait||!_commandeOrigine.creneau)return;
+  let cle=normaliserDateEnCle(_commandeOrigine.dateRetrait)||_commandeOrigine.dateRetrait;
+  if(orderCounts[cle]&&typeof orderCounts[cle][_commandeOrigine.creneau]==="number"){
+    orderCounts[cle][_commandeOrigine.creneau]=Math.max(0,orderCounts[cle][_commandeOrigine.creneau]-1);
+  }
+}
+
 async function activerModeEdition(){
   if(!editMode||!editPhone)return;
 
-  // On masque tout ce qui concerne le paiement en ligne : ici on ne fait que proposer une modification.
-  document.getElementById("cgv-wrap").style.display="none";
-  document.getElementById("deposit-wrap").style.display="none";
-  document.getElementById("whatsapp").style.display="none";
-  document.getElementById("sms-btn").style.display="none";
-  document.getElementById("phone-btn").style.display="none";
+  // Le masquage définitif du paiement est géré directement dans updateUI() (à chaque rafraîchissement).
   document.getElementById("envoyer-demande-btn").style.display="block";
   let paiementGroupe=document.getElementById("opt-total")?.closest(".form-group");
   if(paiementGroupe)paiementGroupe.style.display="none";
   document.getElementById("seuil-note").style.display="none";
-  depositMode="total"; // valeur neutre en interne, non affichée, pour ne pas bloquer updateUI()
 
   document.getElementById("client-phone").value=editPhone;
   document.getElementById("client-phone").readOnly=true;
@@ -1048,15 +1076,6 @@ async function activerModeEdition(){
     editMode==="complement"
       ? "Choisis ci-dessous uniquement ce que tu veux AJOUTER à ta commande existante."
       : "Recompose ci-dessous ta commande telle que tu la souhaites désormais.";
-
-  try{
-    let res=await fetch(APPS_SCRIPT_URL_LOOKUP+"?action=lookup&phone="+encodeURIComponent(editPhone));
-    let data=await res.json();
-    let commandes=(data&&data.commandes)||[];
-    _commandeOrigine=commandes.find(c=>String(c.id)===String(editCommandeId));
-  }catch(e){
-    _commandeOrigine=null;
-  }
 
   if(!_commandeOrigine){
     showToast("⚠️ Impossible de retrouver ta commande d'origine — merci de recomposer ta commande en entier.");
@@ -1076,23 +1095,58 @@ async function activerModeEdition(){
     }
   }
 
-  // Pré-sélection de la date/créneau d'origine si toujours proposée
+  // Pré-sélection de la date/créneau d'origine — le comptage a été corrigé juste avant
+  // (voir exclureCommandeOrigineDuComptage) pour que son propre créneau reste disponible.
   let dateSelect=document.getElementById("client-date");
   let timeSelect=document.getElementById("client-time");
-  if(_commandeOrigine.dateRetrait){
-    let optionExiste=Array.from(dateSelect.options).some(o=>o.value===_commandeOrigine.dateRetrait);
+  let labelDateOrigine=formaterDateRetraitEnLabelOption(_commandeOrigine.dateRetrait);
+  if(labelDateOrigine){
+    let optionExiste=Array.from(dateSelect.options).some(o=>o.value===labelDateOrigine);
     if(optionExiste){
-      dateSelect.value=_commandeOrigine.dateRetrait;
+      dateSelect.value=labelDateOrigine;
       handleDateChange();
-      setTimeout(()=>{
-        let timeOptionExiste=Array.from(timeSelect.options).some(o=>o.value===_commandeOrigine.creneau);
-        if(timeOptionExiste)timeSelect.value=_commandeOrigine.creneau;
-        updateUI();
-      },100);
+      let timeOptionExiste=Array.from(timeSelect.options).some(o=>o.value===_commandeOrigine.creneau);
+      if(timeOptionExiste)timeSelect.value=_commandeOrigine.creneau;
+      else showToast("⚠️ Ton créneau d'origine n'est plus disponible, merci d'en choisir un autre.");
+    }else{
+      showToast("⚠️ La date de ta commande d'origine n'est plus proposée, merci d'en choisir une autre.");
     }
   }
 
   updateUI();
+}
+
+// Calcule le nouveau total et le vrai montant restant à régler (ou à rembourser) au retrait,
+// en tenant compte de l'acompte déjà réglé en ligne sur la commande d'origine.
+function calculerResteAPayer(totalComposeur){
+  if(!_commandeOrigine)return{totalOrigine:0,acomptePaye:0,nouveauTotal:totalComposeur,resteDu:totalComposeur};
+  let totalOrigine=parseFloat(String(_commandeOrigine.total).replace(",","."))||0;
+  let acomptePaye=parseFloat(String(_commandeOrigine.acomptePaye||"0").replace(",","."))||0;
+  let nouveauTotal=editMode==="complement"?(totalOrigine+totalComposeur):totalComposeur;
+  let resteDu=nouveauTotal-acomptePaye;
+  return{totalOrigine,acomptePaye,nouveauTotal,resteDu};
+}
+
+function htmlResteAPayer(resteDu){
+  if(Math.abs(resteDu)<0.01)return`<div style="color:#7A6A5C;font-size:13px;">Rien à régler : ta commande sera intégralement soldée.</div>`;
+  if(resteDu>0)return`<div style="color:#E8236B;font-weight:600;font-size:14px;">${resteDu.toFixed(2).replace(".",",")} € à régler au retrait</div>`;
+  return`<div style="color:#3A6B7D;font-weight:600;font-size:14px;">${Math.abs(resteDu).toFixed(2).replace(".",",")} € à te rembourser au retrait</div>`;
+}
+
+function mettreAJourRecapEdition(totalComposeur){
+  let zone=document.getElementById("edition-recap-total");
+  if(!zone||!editMode)return;
+  zone.style.display="block";
+  if(!_commandeOrigine){
+    zone.innerHTML=`<div style="font-size:13px;color:#7A6A5C;">Nouveau total : <strong>${totalComposeur.toFixed(2).replace(".",",")} €</strong></div>`;
+    return;
+  }
+  let{totalOrigine,acomptePaye,nouveauTotal,resteDu}=calculerResteAPayer(totalComposeur);
+  zone.innerHTML=`
+    <div style="font-size:12px;color:#7A6A5C;">Total actuel de ta commande : <strong>${totalOrigine.toFixed(2).replace(".",",")} €</strong>${acomptePaye>0?` (dont ${acomptePaye.toFixed(2).replace(".",",")} € déjà réglés en ligne)`:""}</div>
+    <div style="font-size:16px;color:#2B1B12;font-weight:700;margin:4px 0;">Nouveau total : ${nouveauTotal.toFixed(2).replace(".",",")} €</div>
+    ${htmlResteAPayer(resteDu)}
+  `;
 }
 
 async function envoyerDemandeModification(){
@@ -1148,6 +1202,14 @@ async function envoyerDemandeModification(){
 
     document.getElementById("edition-confirm-detail").textContent=detailFinal;
     document.getElementById("edition-confirm-total").textContent=totalFinal.toFixed(2).replace(".",",")+" €";
+    let diffEl=document.getElementById("edition-confirm-diff");
+    if(_commandeOrigine){
+      let acomptePayeConf=parseFloat(String(_commandeOrigine.acomptePaye||"0").replace(",","."))||0;
+      let resteDuConf=totalFinal-acomptePayeConf;
+      diffEl.innerHTML=htmlResteAPayer(resteDuConf);
+    }else{
+      diffEl.textContent="";
+    }
     document.getElementById("main-page").style.display="none";
     document.getElementById("edition-confirm-page").style.display="block";
     document.body.style.paddingBottom="0";
@@ -1177,6 +1239,18 @@ function updateUI(){
   const summaryBar=document.getElementById("summary-bar");
   if(boxesSelected["9 beignets"]>0||boxesSelected["12 beignets"]>0)summaryBar.classList.add("show");else summaryBar.classList.remove("show");
   const btnsCommunication=[document.getElementById("whatsapp"),document.getElementById("sms-btn"),document.getElementById("phone-btn")];
+
+  if(editMode){
+    // En mode édition, aucun paiement en ligne n'est proposé : on garde tout masqué
+    // à chaque rafraîchissement, quoi qu'il arrive dans le composeur.
+    document.getElementById("cgv-wrap").style.display="none";
+    document.getElementById("deposit-wrap").style.display="none";
+    btnsCommunication.forEach(btn=>{btn.style.display="none";});
+    mettreAJourRecapEdition(total);
+    syncSummaryPadding();
+    return;
+  }
+
   let especesOptEl=document.getElementById("opt-especes");
   let acompteOptEl=document.getElementById("opt-acompte");
   let seuilNoteEl=document.getElementById("seuil-note");
@@ -1375,6 +1449,8 @@ function afficherPageEspeces(canalEspeces="WhatsApp"){
   let isTotal=depositMode==="total";
   let isEspeces=depositMode==="especes";
   let isAcompteCash=depositMode==="acompte"&&depositCashChoice==="cash";
+  // Montant réellement réglé en ligne à cet instant (0 si tout est prévu en espèces, y compris l'acompte "à déposer en espèces")
+  let montantPayeReel=(isEspeces||isAcompteCash)?0:depositAmount;
   document.getElementById("main-page").style.display="none";
   document.getElementById("especes-page").style.display="block";
   document.body.style.paddingBottom="0";
@@ -1384,7 +1460,7 @@ function afficherPageEspeces(canalEspeces="WhatsApp"){
   fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
     method:"POST",mode:"no-cors",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({name,phone,order:orderInfo.detailsText,total:orderInfo.totalPrice.toFixed(2),acompte:depositAmount.toFixed(2),solde:remaining.toFixed(2),payment:isEspeces?"Paiement intégral en espèces/CB à la commande":(isTotal?"Totalité réglée (Wero/PayPal)":(isAcompteCash?"Acompte à déposer en espèces":"Acompte réglé (Wero/PayPal)")),date:dateStr,dateRetrait:date,creneau:time,canal:canalEspeces,orderJSON:JSON.stringify(getStructuredSelections())})
+    body:JSON.stringify({name,phone,order:orderInfo.detailsText,total:orderInfo.totalPrice.toFixed(2),acompte:montantPayeReel.toFixed(2),solde:remaining.toFixed(2),payment:isEspeces?"Paiement intégral en espèces/CB à la commande":(isTotal?"Totalité réglée (Wero/PayPal)":(isAcompteCash?"Acompte à déposer en espèces":"Acompte réglé (Wero/PayPal)")),date:dateStr,dateRetrait:date,creneau:time,canal:canalEspeces,orderJSON:JSON.stringify(getStructuredSelections())})
   });
   document.getElementById("e-name").textContent=name||"—";
   document.getElementById("e-date").textContent=date||"—";
@@ -1643,8 +1719,19 @@ window.onload=function(){
   }
   initDates();
   handleDateChange();
-  chargerComptesCreneaux().then(()=>{handleDateChange();});
-  chargerStockIndisponible().then(()=>{generateCompositionForm();activerModeEdition();});
+  if(editMode&&editPhone){
+    chargerCommandeOrigineEdition().then(()=>{
+      Promise.all([chargerComptesCreneaux(),chargerStockIndisponible()]).then(()=>{
+        exclureCommandeOrigineDuComptage();
+        handleDateChange();
+        generateCompositionForm();
+        activerModeEdition();
+      });
+    });
+  }else{
+    chargerComptesCreneaux().then(()=>{handleDateChange();});
+    chargerStockIndisponible().then(()=>{generateCompositionForm();});
+  }
 
   if(window.location.search.includes('success')){
     let raw=localStorage.getItem('ohMikateStripeDraft');
