@@ -112,32 +112,6 @@ h2.section-titre{font-family:var(--font-display);font-weight:600;font-size:18px;
   </div>
 </div>
 
-<!-- Popup modifier -->
-<div class="popup" id="popup-modifier">
-  <div class="popup-box">
-    <h3>✏️ Modifier la commande</h3>
-    <p>Décris ce que tu souhaites changer (créneau, contenu des boîtes...). Oh! Mikaté te recontactera pour confirmer.</p>
-    <textarea id="texte-modifier" placeholder="Ex : je voudrais changer mon créneau pour 19h00 - 19h30"></textarea>
-    <div class="popup-btns">
-      <button class="popup-cancel" onclick="fermerPopups()">Annuler</button>
-      <button class="popup-confirm" style="background:var(--amber);" onclick="envoyerDemande('modification')">Envoyer la demande</button>
-    </div>
-  </div>
-</div>
-
-<!-- Popup compléter -->
-<div class="popup" id="popup-completer">
-  <div class="popup-box">
-    <h3>➕ Compléter la commande</h3>
-    <p>Décris ce que tu veux ajouter à ta commande. Oh! Mikaté te confirmera le nouveau total.</p>
-    <textarea id="texte-completer" placeholder="Ex : j'aimerais ajouter une boîte de 9 beignets nature"></textarea>
-    <div class="popup-btns">
-      <button class="popup-cancel" onclick="fermerPopups()">Annuler</button>
-      <button class="popup-confirm" style="background:var(--success);" onclick="envoyerDemande('complement')">Envoyer la demande</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* ================================================================
    CONTRAT AVEC LE SCRIPT APPS SCRIPT (backend Google Sheets)
@@ -243,8 +217,8 @@ function afficherResultats(){
     let statut=libelleStatut(c.statut);
     let actions=(c.statut==="annulee"||c.statut==="prete")?"":`<div class="commande-actions">
         <button class="action-btn annuler" onclick="ouvrirPopup('annuler','${c.id}')">🗑️ Annuler</button>
-        <button class="action-btn modifier" onclick="ouvrirPopup('modifier','${c.id}')">✏️ Modifier</button>
-        <button class="action-btn completer" onclick="ouvrirPopup('completer','${c.id}')">➕ Compléter</button>
+        <button class="action-btn modifier" onclick="ouvrirEdition('modification','${c.id}')">✏️ Modifier</button>
+        <button class="action-btn completer" onclick="ouvrirEdition('complement','${c.id}')">➕ Compléter</button>
       </div>`;
     return`<div class="commande-card">
       <div class="commande-top">
@@ -264,6 +238,11 @@ function ouvrirPopup(type,commandeId){
   document.getElementById("popup-"+type).classList.add("show");
 }
 
+function ouvrirEdition(mode,commandeId){
+  let phone=normalizePhone(document.getElementById("phone-input").value.trim());
+  window.location.href=`/?mode=${encodeURIComponent(mode)}&phone=${encodeURIComponent(phone)}&commande=${encodeURIComponent(commandeId)}`;
+}
+
 function fermerPopups(){
   document.querySelectorAll(".popup").forEach(p=>p.classList.remove("show"));
   demandeEnCours=null;
@@ -274,6 +253,7 @@ async function envoyerDemande(typeDemande){
   let c = commandesTrouvees.find(x => String(x.id) === String(demandeEnCours.commandeId));
   if(!c){
     afficherMsg("❌ Une erreur est survenue (commande introuvable). Merci de rafraîchir la page et réessayer.",true);
+<<<<<<< Updated upstream:mes-commandes.html
     return;
   }
 
@@ -282,6 +262,8 @@ async function envoyerDemande(typeDemande){
   if(typeDemande === "complement") detail = document.getElementById("texte-completer").value.trim();
   if((typeDemande === "modification" || typeDemande === "complement") && !detail){
     alert("Merci de préciser ta demande.");
+=======
+>>>>>>> Stashed changes:mes-commandes (2).html
     return;
   }
 
@@ -294,7 +276,11 @@ async function envoyerDemande(typeDemande){
     name: c.name || "",
     dateRetrait: c.dateRetrait || "",
     creneau: c.creneau || "",
+<<<<<<< Updated upstream:mes-commandes.html
     detail: detail
+=======
+    detail: ""
+>>>>>>> Stashed changes:mes-commandes (2).html
   };
 
   afficherMsg("⏳ Envoi de votre demande en cours...");
@@ -306,19 +292,27 @@ async function envoyerDemande(typeDemande){
       body: JSON.stringify(payload)
     });
     let texte = await res.text();
+<<<<<<< Updated upstream:mes-commandes.html
 
+=======
+>>>>>>> Stashed changes:mes-commandes (2).html
     if(!res.ok || texte.trim() !== "OK"){
       console.error("Réponse inattendue du serveur:", res.status, texte);
       throw new Error("Réponse serveur invalide");
     }
 
     fermerPopups();
+<<<<<<< Updated upstream:mes-commandes.html
     alert("✅ Votre demande a bien été transmise à Oh! Mikaté !");
 
+=======
+    afficherMsg("✅ Ta demande a bien été transmise à Oh! Mikaté !");
+>>>>>>> Stashed changes:mes-commandes (2).html
     chercherCommandes();
 
   } catch(e) {
     console.error("Erreur lors de l'envoi:", e);
+<<<<<<< Updated upstream:mes-commandes.html
     alert("❌ Une erreur s'est produite lors de l'envoi. Veuillez réessayer, ou contacter Oh! Mikaté directement si le problème persiste.");
   }
 }
@@ -329,6 +323,12 @@ if (phoneInput) {
     if (e.key === "Enter") chercherCommandes();
   });
 }
+=======
+    afficherMsg("❌ Une erreur s'est produite lors de l'envoi. Réessaie, ou contacte Oh! Mikaté directement si le problème persiste.",true);
+  }
+}
+
+>>>>>>> Stashed changes:mes-commandes (2).html
 </script>
 </body>
 </html>

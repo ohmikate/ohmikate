@@ -687,7 +687,14 @@ async function chargerDemandes(){
         creneau:c[4]?String(c[4].v):"",
         type:c[5]?c[5].v:"",
         detail:c[6]?c[6].v:"",
+<<<<<<< Updated upstream:admin.html
         statutServeur:c[7]?String(c[7].v):"En attente"
+=======
+        statutServeur:c[7]?String(c[7].v):"En attente",
+        nouveauTotal:c[8]?String(c[8].v):"",
+        orderJSONPropose:c[9]?String(c[9].v):"",
+        commandeRowIndex:c[10]?String(c[10].v):""
+>>>>>>> Stashed changes:admin (2).html
       };
     }).filter(d=>d.name||d.detail);
     afficherDemandes();
@@ -807,6 +814,10 @@ function updateBadgeDemandes(n){
 }
 
 function trouverCommandeCorrespondante(d){
+  if(d.commandeRowIndex){
+    let parRow=toutesCommandes.find(c=>String(c.rowIndex)===String(d.commandeRowIndex));
+    if(parRow)return parRow;
+  }
   let phoneN=normalizePhone(d.phone);
   let dDate=parseDate(d.dateRetrait);
   let dCreneau=(d.creneau||"").trim().toLowerCase();
@@ -882,11 +893,19 @@ function ouvrirEditionCommande(id){
     showToast("⚠️ Commande correspondante introuvable — modifie-la manuellement dans le tableau");
     return;
   }
+<<<<<<< Updated upstream:admin.html
   idEditionDemande={demandeId:id,commandeId:c.id,rowIndex:c.rowIndex};
   document.getElementById("edit-demande-client").textContent=c.name||"—";
   document.getElementById("edit-demande-detail").textContent=d.detail||"—";
   document.getElementById("edit-commande-order").value=c.order||"";
   document.getElementById("edit-commande-total").value=c.total||"";
+=======
+  idEditionDemande={demandeId:id,commandeId:c.id,rowIndex:c.rowIndex,orderJSON:d.orderJSONPropose||""};
+  document.getElementById("edit-demande-client").textContent=c.name||"—";
+  document.getElementById("edit-demande-detail").textContent=d.detail?"Le client a proposé le contenu ci-dessous — vérifie avant d'enregistrer :":"Aucune proposition structurée reçue — édite manuellement.";
+  document.getElementById("edit-commande-order").value=d.detail||c.order||"";
+  document.getElementById("edit-commande-total").value=d.nouveauTotal||c.total||"";
+>>>>>>> Stashed changes:admin (2).html
   document.getElementById("popup-edition-commande").classList.add("show");
 }
 
@@ -907,7 +926,11 @@ function enregistrerEditionCommande(){
   fetch(APPS_SCRIPT_URL,{
     method:"POST",mode:"no-cors",
     headers:{"Content-Type":"application/json"},
+<<<<<<< Updated upstream:admin.html
     body:JSON.stringify({action:"modifierContenu",rowIndex:idEditionDemande.rowIndex,order:nouvelOrder,total:nouveauTotal})
+=======
+    body:JSON.stringify({action:"modifierContenu",rowIndex:idEditionDemande.rowIndex,order:nouvelOrder,total:nouveauTotal,orderJSON:idEditionDemande.orderJSON||""})
+>>>>>>> Stashed changes:admin (2).html
   }).catch(()=>{});
 
   let c=toutesCommandes.find(x=>x.id===idEditionDemande.commandeId);

@@ -247,6 +247,12 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 
 <!-- PAGE PRINCIPALE -->
 <div id="main-page">
+<<<<<<< Updated upstream
+=======
+<div id="edition-banner" style="display:none;background:var(--amber);color:#fff;padding:14px 20px;text-align:center;font-family:var(--font-display);font-weight:600;font-size:15px;">
+  ✏️ Tu modifies ta commande — <span id="edition-banner-sub" style="font-weight:normal;font-size:13px;display:block;margin-top:2px;"></span>
+</div>
+>>>>>>> Stashed changes
 <div class="hero"><img src="Images/Flyer4.jpg" alt="Oh! Mikaté Flyer"></div>
 <div style="background:#FFFFFF;padding:15px;text-align:center;font-size:14px;margin:15px;border-radius:10px;border:1px solid #E4D3BA;">
 ⭐ Préparation à la commande<br>📍 Retrait sur Reims
@@ -407,12 +413,33 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
         <a id="whatsapp" class="btn whatsapp disabled" target="_blank" onclick="return checkForm(event,'WhatsApp')">📲 Envoyer ma commande sur WhatsApp</a>
         <button id="sms-btn" class="btn smsbtn disabled" onclick="triggerSMS(event)">💬 Valider ma commande par SMS</button>
         <a id="phone-btn" class="btn phonebtn disabled" onclick="triggerCall(event)">📞 Valider et m'appeler au téléphone</a>
+        <button id="envoyer-demande-btn" type="button" class="btn" style="display:none;background:var(--amber);" onclick="envoyerDemandeModification()">📤 Envoyer ma demande</button>
         <div class="small">💡 Choisis tes boîtes, configure-les et remplis tes coordonnées (*) pour débloquer l'envoi.</div>
       </div>
     </div>
   </div>
 </div>
 </div><!-- end #main-page -->
+
+<!-- PAGE CONFIRMATION DEMANDE DE MODIFICATION -->
+<div id="edition-confirm-page" style="display:none;">
+  <div class="confirm-wrapper">
+    <div class="confirm-header">
+      <div class="check-icon">✅</div>
+      <h1>Demande envoyée !</h1>
+      <p>Oh! Mikaté va examiner ta demande et l'appliquer à ta commande.</p>
+    </div>
+    <div class="confirm-card">
+      <div class="confirm-card-header">📦 Ce que tu as proposé</div>
+      <div class="confirm-card-body"><div id="edition-confirm-detail" class="order-detail-box">—</div></div>
+      <div class="total-line"><span>Nouveau total</span><span id="edition-confirm-total">0,00 €</span></div>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #F2871F;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+      <div style="font-size:13px;color:#7A6A5C;line-height:1.7;">La différence éventuelle (à payer ou à rembourser) sera réglée directement au moment du retrait de ta commande.</div>
+    </div>
+    <a href="/mes-commandes" style="display:inline-block;margin-top:4px;font-size:13px;color:#E8236B;text-decoration:underline;text-align:center;width:100%;">← Retour à mes commandes</a>
+  </div>
+</div>
 
 <!-- PAGE CONFIRMATION -->
 <div id="especes-page" style="display:none;">
@@ -469,12 +496,20 @@ const potPrices={"Aucun":0,"Pot Nutella":0.50,"Pot Pâte d'arachide":0.50,"Pot P
 let depositMode=""; // "acompte" (50%) ou "total" (100%) ou "especes" (0% en ligne, tout à la commande)
 let depositCashChoice=""; // pour le mode acompte : "online" ou "cash"
 const targetPhone="0698213380";
+const APPS_SCRIPT_URL_LOOKUP="https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec";
 const depositRates={acompte:0.5,total:1.0,especes:0};
 const SEUIL_ACOMPTE_OBLIGATOIRE=10; // en dessous de ce montant, le paiement en ligne devient facultatif
 const paypalMeLink="https://www.paypal.com/paypalme/ohmikate";
 const baseHours=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
 const hoursAvance=["15h00 - 15h30","15h30 - 16h00","16h00 - 16h30","16h30 - 17h00"].concat(baseHours);
 let espècesPageAffichée=false;
+
+/* ===== MODE ÉDITION (modification / complément depuis "Mes commandes") ===== */
+const _urlParams=new URLSearchParams(window.location.search);
+const editMode=_urlParams.get('mode');       // "modification" ou "complement"
+const editPhone=_urlParams.get('phone')||"";
+const editCommandeId=_urlParams.get('commande')||"";
+let _commandeOrigine=null;
 
 /* ===== COMPTAGE ET BLOCAGES (lecture seule Google Sheets) ===== */
 const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
@@ -937,6 +972,194 @@ function calculateTotalAndExtractStructure(){
   return{totalPrice:total,summaryShort:textSummaryList.join(" / "),detailsText:structuredOrderText};
 }
 
+/* ===== STRUCTURE POUR MODIFICATION FUTURE (édition pré-remplie) ===== */
+function getStructuredSelections(){
+  let struct={"9 beignets":[],"12 beignets":[]};
+  for(let b=1;b<=boxesSelected["9 beignets"];b++){
+    let p=`box9-${b}`;
+    struct["9 beignets"].push({base:getBoxValue(p,"base"),nappage:getBoxValue(p,"nappage"),garniture:getBoxValue(p,"garniture"),pot:getBoxValue(p,"pot")});
+  }
+  for(let b=1;b<=boxesSelected["12 beignets"];b++){
+    let p=`box12-${b}`;
+    struct["12 beignets"].push({base:getBoxValue(p,"base"),nappage:getBoxValue(p,"nappage"),garniture:getBoxValue(p,"garniture"),pot:getBoxValue(p,"pot")});
+  }
+  return struct;
+}
+
+function hydrateFromStructuredSelections(struct){
+  if(!struct)return;
+  boxesSelected["9 beignets"]=(struct["9 beignets"]||[]).length;
+  boxesSelected["12 beignets"]=(struct["12 beignets"]||[]).length;
+  let qty9=document.getElementById("qty-9"),qty12=document.getElementById("qty-12");
+  if(qty9)qty9.value=boxesSelected["9 beignets"];
+  if(qty12)qty12.value=boxesSelected["12 beignets"];
+  let card9=document.querySelector('[data-name="9 beignets"]');
+  let card12=document.querySelector('[data-name="12 beignets"]');
+  if(card9)card9.classList.toggle("has-qty",boxesSelected["9 beignets"]>0);
+  if(card12)card12.classList.toggle("has-qty",boxesSelected["12 beignets"]>0);
+  generateCompositionForm();
+  (struct["9 beignets"]||[]).forEach((cfg,i)=>{
+    let p=`box9-${i+1}`;
+    setChipValue(p,"base",cfg.base||"Nature");
+    setChipValue(p,"nappage",cfg.nappage||"Aucun");
+    setChipValue(p,"garniture",cfg.garniture||"Aucun");
+    setChipValue(p,"pot",cfg.pot||"Aucun");
+    let row=document.querySelector(`[data-prefix="${p}"]`);
+    if(row)updateBoxImage(p,row.dataset.defaultimg);
+  });
+  (struct["12 beignets"]||[]).forEach((cfg,i)=>{
+    let p=`box12-${i+1}`;
+    setChipValue(p,"base",cfg.base||"Nature");
+    setChipValue(p,"nappage",cfg.nappage||"Aucun");
+    setChipValue(p,"garniture",cfg.garniture||"Aucun");
+    setChipValue(p,"pot",cfg.pot||"Aucun");
+    let row=document.querySelector(`[data-prefix="${p}"]`);
+    if(row)updateBoxImage(p,row.dataset.defaultimg);
+  });
+  refreshComposerUI();
+  updateUI();
+}
+
+function mergeStructuredSelections(base,delta){
+  return {
+    "9 beignets":[...(base["9 beignets"]||[]),...(delta["9 beignets"]||[])],
+    "12 beignets":[...(base["12 beignets"]||[]),...(delta["12 beignets"]||[])]
+  };
+}
+
+async function activerModeEdition(){
+  if(!editMode||!editPhone)return;
+
+  // On masque tout ce qui concerne le paiement en ligne : ici on ne fait que proposer une modification.
+  document.getElementById("cgv-wrap").style.display="none";
+  document.getElementById("deposit-wrap").style.display="none";
+  document.getElementById("whatsapp").style.display="none";
+  document.getElementById("sms-btn").style.display="none";
+  document.getElementById("phone-btn").style.display="none";
+  document.getElementById("envoyer-demande-btn").style.display="block";
+  let paiementGroupe=document.getElementById("opt-total")?.closest(".form-group");
+  if(paiementGroupe)paiementGroupe.style.display="none";
+  document.getElementById("seuil-note").style.display="none";
+  depositMode="total"; // valeur neutre en interne, non affichée, pour ne pas bloquer updateUI()
+
+  document.getElementById("client-phone").value=editPhone;
+  document.getElementById("client-phone").readOnly=true;
+
+  let banner=document.getElementById("edition-banner");
+  banner.style.display="block";
+  document.getElementById("edition-banner-sub").textContent=
+    editMode==="complement"
+      ? "Choisis ci-dessous uniquement ce que tu veux AJOUTER à ta commande existante."
+      : "Recompose ci-dessous ta commande telle que tu la souhaites désormais.";
+
+  try{
+    let res=await fetch(APPS_SCRIPT_URL_LOOKUP+"?action=lookup&phone="+encodeURIComponent(editPhone));
+    let data=await res.json();
+    let commandes=(data&&data.commandes)||[];
+    _commandeOrigine=commandes.find(c=>String(c.id)===String(editCommandeId));
+  }catch(e){
+    _commandeOrigine=null;
+  }
+
+  if(!_commandeOrigine){
+    showToast("⚠️ Impossible de retrouver ta commande d'origine — merci de recomposer ta commande en entier.");
+    return;
+  }
+
+  document.getElementById("client-name").value=_commandeOrigine.name||"";
+
+  if(editMode==="modification"){
+    let struct=null;
+    try{ struct=_commandeOrigine.orderJSON?JSON.parse(_commandeOrigine.orderJSON):null; }catch(e){ struct=null; }
+    if(struct){
+      hydrateFromStructuredSelections(struct);
+      showToast("✅ Ta commande d'origine a été pré-remplie, modifie ce que tu souhaites.");
+    }else{
+      showToast("⚠️ Détail exact indisponible pour cette commande — merci de recomposer ta commande en entier.");
+    }
+  }
+
+  // Pré-sélection de la date/créneau d'origine si toujours proposée
+  let dateSelect=document.getElementById("client-date");
+  let timeSelect=document.getElementById("client-time");
+  if(_commandeOrigine.dateRetrait){
+    let optionExiste=Array.from(dateSelect.options).some(o=>o.value===_commandeOrigine.dateRetrait);
+    if(optionExiste){
+      dateSelect.value=_commandeOrigine.dateRetrait;
+      handleDateChange();
+      setTimeout(()=>{
+        let timeOptionExiste=Array.from(timeSelect.options).some(o=>o.value===_commandeOrigine.creneau);
+        if(timeOptionExiste)timeSelect.value=_commandeOrigine.creneau;
+        updateUI();
+      },100);
+    }
+  }
+
+  updateUI();
+}
+
+async function envoyerDemandeModification(){
+  let name=document.getElementById("client-name").value.trim();
+  let phone=normalizePhone(document.getElementById("client-phone").value.trim());
+  let date=document.getElementById("client-date").value;
+  let time=document.getElementById("client-time").value;
+
+  if(!name||!phone||!date||!time||time==="COMPLET"){showToast("⚠️ Merci de remplir tous les champs (dont date et créneau).");return;}
+  if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0){
+    showToast(editMode==="complement"?"⚠️ Sélectionne au moins une boîte à ajouter.":"⚠️ Sélectionne au moins une boîte.");
+    return;
+  }
+
+  let currentSelections=getStructuredSelections();
+  let orderInfo=calculateTotalAndExtractStructure();
+
+  let detailFinal,totalFinal,orderJSONFinal;
+
+  if(editMode==="complement"&&_commandeOrigine){
+    let baseStruct=null;
+    try{ baseStruct=_commandeOrigine.orderJSON?JSON.parse(_commandeOrigine.orderJSON):null; }catch(e){ baseStruct=null; }
+    orderJSONFinal=baseStruct?mergeStructuredSelections(baseStruct,currentSelections):null;
+    let totalOrigine=parseFloat(String(_commandeOrigine.total).replace(",","."))||0;
+    totalFinal=totalOrigine+orderInfo.totalPrice;
+    detailFinal=(_commandeOrigine.order||"")+`\n\n➕ AJOUT DEMANDÉ PAR LE CLIENT (+${orderInfo.totalPrice.toFixed(2)}€) :\n`+orderInfo.detailsText;
+  }else{
+    orderJSONFinal=currentSelections;
+    totalFinal=orderInfo.totalPrice;
+    detailFinal=orderInfo.detailsText;
+  }
+
+  let btn=document.getElementById("envoyer-demande-btn");
+  btn.disabled=true;btn.textContent="⏳ Envoi en cours...";
+
+  try{
+    let res=await fetch(APPS_SCRIPT_URL_LOOKUP,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({
+        action:"demande",
+        type:editMode,
+        commandeId:editCommandeId,
+        phone,name,
+        dateRetrait:date,creneau:time,
+        detail:detailFinal,
+        nouveauTotal:totalFinal.toFixed(2),
+        orderJSON:orderJSONFinal?JSON.stringify(orderJSONFinal):""
+      })
+    });
+    let texte=await res.text();
+    if(!res.ok||texte.trim()!=="OK")throw new Error("Réponse serveur invalide");
+
+    document.getElementById("edition-confirm-detail").textContent=detailFinal;
+    document.getElementById("edition-confirm-total").textContent=totalFinal.toFixed(2).replace(".",",")+" €";
+    document.getElementById("main-page").style.display="none";
+    document.getElementById("edition-confirm-page").style.display="block";
+    document.body.style.paddingBottom="0";
+  }catch(e){
+    showToast("❌ Erreur d'envoi, merci de réessayer.");
+    btn.disabled=false;btn.textContent="📤 Envoyer ma demande";
+  }
+}
+
 /* ===== UI ===== */
 function updateUI(){
   let orderInfo=calculateTotalAndExtractStructure();
@@ -1164,7 +1387,7 @@ function afficherPageEspeces(canalEspeces="WhatsApp"){
   fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
     method:"POST",mode:"no-cors",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({name,phone,order:orderInfo.detailsText,total:orderInfo.totalPrice.toFixed(2),acompte:depositAmount.toFixed(2),solde:remaining.toFixed(2),payment:isEspeces?"Paiement intégral en espèces/CB à la commande":(isTotal?"Totalité réglée (Wero/PayPal)":(isAcompteCash?"Acompte à déposer en espèces":"Acompte réglé (Wero/PayPal)")),date:dateStr,dateRetrait:date,creneau:time,canal:canalEspeces})
+    body:JSON.stringify({name,phone,order:orderInfo.detailsText,total:orderInfo.totalPrice.toFixed(2),acompte:depositAmount.toFixed(2),solde:remaining.toFixed(2),payment:isEspeces?"Paiement intégral en espèces/CB à la commande":(isTotal?"Totalité réglée (Wero/PayPal)":(isAcompteCash?"Acompte à déposer en espèces":"Acompte réglé (Wero/PayPal)")),date:dateStr,dateRetrait:date,creneau:time,canal:canalEspeces,orderJSON:JSON.stringify(getStructuredSelections())})
   });
   document.getElementById("e-name").textContent=name||"—";
   document.getElementById("e-date").textContent=date||"—";
@@ -1358,7 +1581,8 @@ async function lancerPaiementStripe(){
     total:orderInfo.totalPrice.toFixed(2),
     depositAmount:depositAmount.toFixed(2),
     remaining:remaining.toFixed(2),
-    isTotal:depositMode==="total"
+    isTotal:depositMode==="total",
+    orderJSON:JSON.stringify(getStructuredSelections())
   }));
 
   let btn=document.getElementById("stripe-btn");
@@ -1390,7 +1614,7 @@ function afficherConfirmationStripe(draft){
   fetch("https://script.google.com/macros/s/AKfycbzr6gt_suPlAYt54BQuyhSwVYYF5vnLEFWew-AgNsavCbRJyESQtbhuQzBgaUDDTtGrMA/exec",{
     method:"POST",mode:"no-cors",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({name:draft.name,phone:draft.phone,order:draft.orderDetail,total:draft.total,acompte:draft.depositAmount,solde:draft.remaining,payment:draft.isTotal?"Totalité réglée (Stripe)":"Acompte réglé (Stripe)",date:dateStr,dateRetrait:draft.date,creneau:draft.time,canal:"Carte bancaire (Stripe)"})
+    body:JSON.stringify({name:draft.name,phone:draft.phone,order:draft.orderDetail,total:draft.total,acompte:draft.depositAmount,solde:draft.remaining,payment:draft.isTotal?"Totalité réglée (Stripe)":"Acompte réglé (Stripe)",date:dateStr,dateRetrait:draft.date,creneau:draft.time,canal:"Carte bancaire (Stripe)",orderJSON:draft.orderJSON||""})
   });
   document.getElementById("e-name").textContent=draft.name||"—";
   document.getElementById("e-date").textContent=draft.date||"—";
@@ -1423,7 +1647,11 @@ window.onload=function(){
   initDates();
   handleDateChange();
   chargerComptesCreneaux().then(()=>{handleDateChange();});
+<<<<<<< Updated upstream
   chargerStockIndisponible().then(()=>{generateCompositionForm();});
+=======
+  chargerStockIndisponible().then(()=>{generateCompositionForm();activerModeEdition();});
+>>>>>>> Stashed changes
 
   if(window.location.search.includes('success')){
     let raw=localStorage.getItem('ohMikateStripeDraft');
@@ -1434,7 +1662,11 @@ window.onload=function(){
   }
 
   // Pop-up promo "Offre flash 2 boîtes de 12 à 10€" — visible à chaque visite jusqu'à la fin de l'offre
+<<<<<<< Updated upstream
   if(new Date()<FIN_OFFRES_TEMPORAIRES){
+=======
+  if(new Date()<FIN_OFFRES_TEMPORAIRES && !editMode){
+>>>>>>> Stashed changes
     setTimeout(()=>{
       document.getElementById("promo-modal-backdrop").classList.add("show");
     },1500);
