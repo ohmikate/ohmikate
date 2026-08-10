@@ -1129,8 +1129,24 @@ function calculerResteAPayer(totalComposeur){
 
 function htmlResteAPayer(resteDu){
   if(Math.abs(resteDu)<0.01)return`<div style="color:#7A6A5C;font-size:13px;">Rien à régler : ta commande sera intégralement soldée.</div>`;
-  if(resteDu>0)return`<div style="color:#E8236B;font-weight:600;font-size:14px;">${resteDu.toFixed(2).replace(".",",")} € à régler au retrait</div>`;
-  return`<div style="color:#3A6B7D;font-weight:600;font-size:14px;">${Math.abs(resteDu).toFixed(2).replace(".",",")} € à te rembourser au retrait</div>`;
+  if(resteDu>0)return`<div style="color:#E8236B;font-weight:700;font-size:15px;">${resteDu.toFixed(2).replace(".",",")} € à régler au retrait</div>`;
+  return`<div style="color:#3A6B7D;font-weight:700;font-size:15px;">${Math.abs(resteDu).toFixed(2).replace(".",",")} € à te rembourser au retrait</div>`;
+}
+
+// Détaille la composition du montant à régler : ce qui restait déjà dû sur la commande initiale
+// (indépendamment de toute modification), séparé de la différence apportée par cette modification.
+function htmlDetailResteAPayer(totalOrigine,acomptePaye,nouveauTotal){
+  let soldeInitial=totalOrigine-acomptePaye;
+  let diffModif=nouveauTotal-totalOrigine;
+  let lignes=[];
+  if(Math.abs(soldeInitial)>0.01){
+    lignes.push(`<div style="font-size:12px;color:#7A6A5C;">Solde déjà dû sur ta commande initiale : <strong>${soldeInitial.toFixed(2).replace(".",",")} €</strong></div>`);
+  }
+  if(Math.abs(diffModif)>0.01){
+    let signe=diffModif>0?"+":"−";
+    lignes.push(`<div style="font-size:12px;color:#7A6A5C;">Différence liée à cette modification : <strong>${signe} ${Math.abs(diffModif).toFixed(2).replace(".",",")} €</strong></div>`);
+  }
+  return lignes.join("");
 }
 
 function mettreAJourRecapEdition(totalComposeur){
@@ -1145,6 +1161,7 @@ function mettreAJourRecapEdition(totalComposeur){
   zone.innerHTML=`
     <div style="font-size:12px;color:#7A6A5C;">Total actuel de ta commande : <strong>${totalOrigine.toFixed(2).replace(".",",")} €</strong>${acomptePaye>0?` (dont ${acomptePaye.toFixed(2).replace(".",",")} € déjà réglés en ligne)`:""}</div>
     <div style="font-size:16px;color:#2B1B12;font-weight:700;margin:4px 0;">Nouveau total : ${nouveauTotal.toFixed(2).replace(".",",")} €</div>
+    <div style="margin:6px 0;padding:8px 0;border-top:1px dashed #E8D5C4;border-bottom:1px dashed #E8D5C4;">${htmlDetailResteAPayer(totalOrigine,acomptePaye,nouveauTotal)}</div>
     ${htmlResteAPayer(resteDu)}
   `;
 }
@@ -1204,9 +1221,10 @@ async function envoyerDemandeModification(){
     document.getElementById("edition-confirm-total").textContent=totalFinal.toFixed(2).replace(".",",")+" €";
     let diffEl=document.getElementById("edition-confirm-diff");
     if(_commandeOrigine){
+      let totalOrigineConf=parseFloat(String(_commandeOrigine.total).replace(",","."))||0;
       let acomptePayeConf=parseFloat(String(_commandeOrigine.acomptePaye||"0").replace(",","."))||0;
       let resteDuConf=totalFinal-acomptePayeConf;
-      diffEl.innerHTML=htmlResteAPayer(resteDuConf);
+      diffEl.innerHTML=htmlDetailResteAPayer(totalOrigineConf,acomptePayeConf,totalFinal)+htmlResteAPayer(resteDuConf);
     }else{
       diffEl.textContent="";
     }
