@@ -366,6 +366,16 @@ function login(){
 }
 
 /* CHARGEMENT */
+// Pour les commandes créées avant l'ajout de la colonne "AcomptePaye", on déduit un montant
+// approximatif à partir du texte déjà présent dans la colonne Règlement, plutôt que de supposer 0€.
+function deduireAcomptePaye(texteReglement,total){
+  let t=String(texteReglement||"").toLowerCase();
+  let totalNum=parseFloat(String(total).replace(",","."))||0;
+  if(t.includes("totalité")||t.includes("intégral"))return totalNum;
+  if(t.includes("acompte réglé"))return totalNum*0.5;
+  return 0;
+}
+
 async function charger(){
   document.getElementById("last-refresh").textContent="⏳ Actualisation...";
   try{
@@ -454,7 +464,8 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
       // Repli sur la position (i) uniquement pour les commandes créées avant la migration.
       let uidBrut = row.c[13] ? row.c[13].v : "";
       let uid = uidBrut ? Number(uidBrut) : i;
-      let acomptePaye = row.c[14] ? row.c[14].v : "0";
+      let acomptePayeBrut = row.c[14] ? row.c[14].v : "";
+      let acomptePaye = (acomptePayeBrut!==""&&acomptePayeBrut!==null&&acomptePayeBrut!==undefined) ? acomptePayeBrut : deduireAcomptePaye(payment,total);
 
       toutesCommandes.push({id:uid,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent,acomptePaye});
     });
@@ -743,8 +754,20 @@ function calculerResteDuPourDemande(d){
 
 function htmlResteDuAdmin(calc){
   if(!calc)return"";
-  let{acomptePaye,resteDu}=calc;
-  let ligneAcompte=acomptePaye>0?`<div style="font-size:11px;color:#7A6A5C;">Déjà réglé en ligne : ${acomptePaye.toFixed(2).replace(".",",")} €</div>`:"";
+  let{totalOrigine,acomptePaye,nouveauTotal,resteDu,estAnnulation}=calc;
+  let soldeInitial=totalOrigine-acomptePaye;
+  let diffModif=nouveauTotal-totalOrigine;
+  let lignesDetail=[];
+  if(acomptePaye>0){
+    lignesDetail.push(`<div style="font-size:11px;color:#7A6A5C;">Déjà réglé en ligne : ${acomptePaye.toFixed(2).replace(".",",")} €</div>`);
+  }
+  if(Math.abs(soldeInitial)>0.01){
+    lignesDetail.push(`<div style="font-size:11px;color:#7A6A5C;">Solde qui restait dû sur la commande initiale : ${soldeInitial.toFixed(2).replace(".",",")} €</div>`);
+  }
+  if(!estAnnulation&&Math.abs(diffModif)>0.01){
+    let signe=diffModif>0?"+":"−";
+    lignesDetail.push(`<div style="font-size:11px;color:#7A6A5C;">Différence liée à cette demande : ${signe} ${Math.abs(diffModif).toFixed(2).replace(".",",")} €</div>`);
+  }
   let ligneReste;
   if(Math.abs(resteDu)<0.01){
     ligneReste=`<div style="font-size:13px;color:#7A6A5C;">Rien à régler ni à rembourser.</div>`;
@@ -753,7 +776,7 @@ function htmlResteDuAdmin(calc){
   }else{
     ligneReste=`<div style="font-size:14px;font-weight:700;color:var(--success);">${Math.abs(resteDu).toFixed(2).replace(".",",")} € à rembourser au client</div>`;
   }
-  return`<div style="margin-top:8px;padding:8px 10px;background:#FFF7ED;border-radius:8px;">${ligneAcompte}${ligneReste}</div>`;
+  return`<div style="margin-top:8px;padding:8px 10px;background:#FFF7ED;border-radius:8px;">${lignesDetail.join("")}<div style="margin-top:4px;">${ligneReste}</div></div>`;
 }
 
 function switchDemandesTab(tab){
