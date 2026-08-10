@@ -230,6 +230,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-heig
     <textarea id="edit-commande-order" class="edit-textarea"></textarea>
     <label class="edit-label">Total (€)</label>
     <input type="text" id="edit-commande-total" class="edit-input">
+    <div id="edit-recap-financier"></div>
     <div class="popup-btns" style="margin-top:14px;">
       <button class="btn-cancel" onclick="fermerEditionCommande()">Annuler</button>
       <button class="btn-ok-supp" style="background:var(--amber);" onclick="enregistrerEditionCommande()">💾 Enregistrer</button>
@@ -282,6 +283,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-heig
         <option value="confirmees">✅ Confirmées</option>
       </select>
       <button class="refresh-btn" onclick="charger()">🔄</button>
+      <button class="refresh-btn" style="background:var(--amber);" onclick="migrerIdentifiants()" title="À exécuter une seule fois après la mise à jour">🔧</button>
     </div>
 
     <div class="tout-select-wrap" id="tout-select-wrap" style="display:none;">
@@ -448,7 +450,13 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
           }
         }
       }
-      toutesCommandes.push({id:i,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent});
+      // Identifiant permanent (colonne N) — indépendant de la position dans la feuille.
+      // Repli sur la position (i) uniquement pour les commandes créées avant la migration.
+      let uidBrut = row.c[13] ? row.c[13].v : "";
+      let uid = uidBrut ? Number(uidBrut) : i;
+      let acomptePaye = row.c[14] ? row.c[14].v : "0";
+
+      toutesCommandes.push({id:uid,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent,acomptePaye});
     });
     // Détecter nouvelles commandes et alerter
     let idsConnus=JSON.parse(localStorage.getItem('ohMikateIdsConnus')||'[]');
@@ -477,6 +485,23 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
   }catch(e){
     document.getElementById("last-refresh").textContent="❌ Erreur";
     showToast("❌ Impossible de charger");
+  }
+}
+
+async function migrerIdentifiants(){
+  if(!confirm("Ceci génère un identifiant permanent pour toutes les commandes qui n'en ont pas encore (créées avant cette mise à jour). À ne faire qu'une seule fois. Continuer ?"))return;
+  showToast("⏳ Génération des identifiants en cours...");
+  try{
+    let res=await fetch(APPS_SCRIPT_URL,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({action:"migrerIds"})
+    });
+    let texte=await res.text();
+    showToast("✅ "+texte);
+    setTimeout(charger,500);
+  }catch(e){
+    showToast("❌ Erreur pendant la génération des identifiants");
   }
 }
 
@@ -703,6 +728,34 @@ function statutEffectif(d){
   return demandesTraitees[d.id] || d.statutServeur || "En attente";
 }
 
+// Calcule ce que le client doit encore régler (positif) ou ce qu'il faut lui rembourser (négatif),
+// en tenant compte de l'acompte déjà réglé en ligne sur sa commande d'origine.
+function calculerResteDuPourDemande(d){
+  let c=trouverCommandeCorrespondante(d);
+  if(!c)return null;
+  let totalOrigine=parseFloat(String(c.total).replace(",","."))||0;
+  let acomptePaye=parseFloat(String(c.acomptePaye||"0").replace(",","."))||0;
+  let estAnnulation=(d.type||"").toLowerCase().includes("annulation");
+  let nouveauTotal=estAnnulation?0:(d.nouveauTotal?parseFloat(String(d.nouveauTotal).replace(",",".")):totalOrigine);
+  let resteDu=nouveauTotal-acomptePaye;
+  return{totalOrigine,acomptePaye,nouveauTotal,resteDu,estAnnulation};
+}
+
+function htmlResteDuAdmin(calc){
+  if(!calc)return"";
+  let{acomptePaye,resteDu}=calc;
+  let ligneAcompte=acomptePaye>0?`<div style="font-size:11px;color:#7A6A5C;">Déjà réglé en ligne : ${acomptePaye.toFixed(2).replace(".",",")} €</div>`:"";
+  let ligneReste;
+  if(Math.abs(resteDu)<0.01){
+    ligneReste=`<div style="font-size:13px;color:#7A6A5C;">Rien à régler ni à rembourser.</div>`;
+  }else if(resteDu>0){
+    ligneReste=`<div style="font-size:14px;font-weight:700;color:var(--error);">${resteDu.toFixed(2).replace(".",",")} € à recevoir du client</div>`;
+  }else{
+    ligneReste=`<div style="font-size:14px;font-weight:700;color:var(--success);">${Math.abs(resteDu).toFixed(2).replace(".",",")} € à rembourser au client</div>`;
+  }
+  return`<div style="margin-top:8px;padding:8px 10px;background:#FFF7ED;border-radius:8px;">${ligneAcompte}${ligneReste}</div>`;
+}
+
 function switchDemandesTab(tab){
   demandesTabActif=tab;
   document.getElementById("dtab-attente").classList.toggle("active",tab==="attente");
@@ -751,6 +804,7 @@ function afficherDemandes(){
           </div>
         </div>
         <div class="detail-box">${(d.detail||"").replace(/</g,"&lt;")}</div>
+        ${htmlResteDuAdmin(calculerResteDuPourDemande(d))}
         <div class="actions-sec" style="margin-top:12px;">
           ${boutonsAction}
           <button class="btn-supp" onclick="refuserDemande(${d.id})">❌ Refuser</button>
@@ -791,6 +845,7 @@ function afficherDemandes(){
           </div>
         </div>
         <div class="detail-box">${(d.detail||"").replace(/</g,"&lt;")}</div>
+        ${htmlResteDuAdmin(calculerResteDuPourDemande(d))}
         <div class="actions-sec" style="margin-top:12px;">
           <button class="btn-marquer" onclick="marquerDemandeTraitee(${d.id},'attente')">↩️ Remettre en attente</button>
         </div>
@@ -894,6 +949,7 @@ function ouvrirEditionCommande(id){
   document.getElementById("edit-demande-detail").textContent=d.detail?"Le client a proposé le contenu ci-dessous — vérifie avant d'enregistrer :":"Aucune proposition structurée reçue — édite manuellement.";
   document.getElementById("edit-commande-order").value=d.detail||c.order||"";
   document.getElementById("edit-commande-total").value=d.nouveauTotal||c.total||"";
+  document.getElementById("edit-recap-financier").innerHTML=htmlResteDuAdmin(calculerResteDuPourDemande(d));
   document.getElementById("popup-edition-commande").classList.add("show");
 }
 
