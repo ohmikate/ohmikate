@@ -188,10 +188,11 @@ const ICONES_DEMANDE={"Annulation":"🗑️","Modification":"✏️","Complémen
 
 function afficherDemandesClient(demandes){
   let zone=document.getElementById("mes-demandes");
-  if(!demandes||demandes.length===0){zone.innerHTML="";return;}
-  demandes.sort((a,b)=>(b.horodatage||"").localeCompare(a.horodatage||""));
+  let enAttente=(demandes||[]).filter(d=>(d.statut||"En attente")==="En attente");
+  if(enAttente.length===0){zone.innerHTML="";return;}
+  enAttente.sort((a,b)=>(b.horodatage||"").localeCompare(a.horodatage||""));
   let html=`<h2 class="section-titre">📋 Suivi de mes demandes</h2>`;
-  html+=demandes.map(d=>{
+  html+=enAttente.map(d=>{
     let statut=libelleStatutDemande(d.statut);
     return`<div class="demande-card">
       <div class="demande-top">
