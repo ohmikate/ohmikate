@@ -343,11 +343,11 @@ const WERO_PHONE="0698213380";
 const PAYPAL_ME_LINK="https://www.paypal.com/paypalme/ohmikate";
 const DEPOSIT_RATE=0.5;
 let toutesCommandes=[];
-let confirmees=JSON.parse(localStorage.getItem('ohMikateConfirmees')||'[]');
-let supprimees=JSON.parse(localStorage.getItem('ohMikateSupprimees')||'[]');
-let pretes=JSON.parse(localStorage.getItem('ohMikatePretes')||'[]');
-let archivees=JSON.parse(localStorage.getItem('ohMikateArchivees')||'[]');
-let soldeRecu=JSON.parse(localStorage.getItem('ohMikateSoldeRecu')||'[]');
+let confirmees=[];
+let supprimees=[];
+let pretes=[];
+let archivees=[];
+let soldeRecu=[];
 let idPretePendant=null;
 let derniersGroupesHisto={};
 let idASupp=null;
@@ -466,9 +466,23 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
       let uid = uidBrut ? Number(uidBrut) : i;
       let acomptePayeBrut = row.c[14] ? row.c[14].v : "";
       let acomptePaye = (acomptePayeBrut!==""&&acomptePayeBrut!==null&&acomptePayeBrut!==undefined) ? acomptePayeBrut : deduireAcomptePaye(payment,total);
+      let modifieeNonNotifiee = row.c[15] ? String(row.c[15].v).trim()==="OUI" : false;
+      let kRaw = row.c[10] ? String(row.c[10].v).trim() : "";
+      let statutRaw = row.c[11] ? String(row.c[11].v).trim() : "";
+      let archiveRaw = row.c[16] ? String(row.c[16].v).trim() : "";
+      let soldeRaw = row.c[17] ? String(row.c[17].v).trim() : "";
 
-      toutesCommandes.push({id:uid,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent,acomptePaye});
+      toutesCommandes.push({id:uid,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent,acomptePaye,modifieeNonNotifiee,kRaw,statutRaw,archiveRaw,soldeRaw});
     });
+    // Les 5 statuts (Confirmée/Prête/Supprimée/Archivée/Solde reçu) sont désormais dérivés
+    // directement de la feuille (colonnes K, L, Q, R) — plus jamais du localStorage seul,
+    // pour que l'état soit identique quel que soit l'appareil utilisé.
+    supprimees=toutesCommandes.filter(c=>c.kRaw==="SUPPRIMÉ"||c.kRaw==="ANNULÉE").map(c=>c.id);
+    confirmees=toutesCommandes.filter(c=>c.statutRaw==="Confirmée").map(c=>c.id);
+    pretes=toutesCommandes.filter(c=>c.statutRaw==="Prête").map(c=>c.id);
+    archivees=toutesCommandes.filter(c=>c.archiveRaw==="OUI").map(c=>c.id);
+    soldeRecu=toutesCommandes.filter(c=>c.soldeRaw==="OUI").map(c=>c.id);
+
     // Détecter nouvelles commandes et alerter
     let idsConnus=JSON.parse(localStorage.getItem('ohMikateIdsConnus')||'[]');
     let nouveaux=toutesCommandes.filter(c=>!idsConnus.includes(c.id)&&!supprimees.includes(c.id));
@@ -673,9 +687,19 @@ function updateBadgeArchives(n){
   }
 }
 
+function envoyerArchiveAuSheet(id,valeur){
+  let c=toutesCommandes.find(x=>x.id===id);
+  if(!c||!c.rowIndex)return;
+  fetch(APPS_SCRIPT_URL,{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"archiver",rowIndex:c.rowIndex,valeur})
+  }).catch(()=>{});
+}
+
 function archiverCommande(id){
   if(!archivees.includes(id))archivees.push(id);
-  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
+  envoyerArchiveAuSheet(id,"OUI");
   updateStats();
   rafraichirVuesSecondaires();
   setTimeout(afficher,300);
@@ -684,7 +708,7 @@ function archiverCommande(id){
 
 function desarchiverCommande(id){
   archivees=archivees.filter(a=>a!==id);
-  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
+  envoyerArchiveAuSheet(id,"");
   updateStats();
   rafraichirVuesSecondaires();
   setTimeout(afficher,300);
@@ -997,7 +1021,7 @@ function enregistrerEditionCommande(){
   }).catch(()=>{});
 
   let c=toutesCommandes.find(x=>x.id===idEditionDemande.commandeId);
-  if(c){c.order=nouvelOrder;c.total=nouveauTotal;}
+  if(c){c.order=nouvelOrder;c.total=nouveauTotal;c.modifieeNonNotifiee=true;}
 
   let demandeId=idEditionDemande.demandeId;
   fermerEditionCommande();
@@ -1387,6 +1411,7 @@ function renderCommande(c, opts){
   else if(prt) statusBadge = `<span class="badge badge-prete">🍳 Prête</span>`;
   else if(conf) statusBadge = `<span class="badge badge-ok">✅ Validée</span>`;
   else statusBadge = `<span class="badge badge-new">🆕 Nouvelle</span>`;
+  if(c.modifieeNonNotifiee) statusBadge += ` <span class="badge" style="background:var(--amber);color:#fff;">🔄 Modifiée — à notifier</span>`;
   
   let nbAnnul = nbAnnulationsPourTel(c.phone);
   let alerteBlacklist = "";
@@ -1470,6 +1495,7 @@ function envoyerWhatsApp(id){
   let pret = pretes.includes(id);
   let txtWA = pret ? genMsgPret(c, false) : genMsg(c, false);
   window.open("https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(txtWA), "_blank");
+  marquerCommandeNotifiee(id);
 }
 
 function envoyerSMS(id){
@@ -1480,6 +1506,19 @@ function envoyerSMS(id){
   let pret = pretes.includes(id);
   let txtSMS = pret ? genMsgPret(c, true) : genMsg(c, true);
   window.location.href = 'sms:'+targetPhone+'?body='+encodeURIComponent(txtSMS);
+  marquerCommandeNotifiee(id);
+}
+
+function marquerCommandeNotifiee(id){
+  let c=toutesCommandes.find(x=>x.id===id);
+  if(!c||!c.modifieeNonNotifiee)return;
+  c.modifieeNonNotifiee=false;
+  setTimeout(afficher,300);
+  fetch(APPS_SCRIPT_URL,{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"marquerNotifiee",rowIndex:c.rowIndex})
+  }).catch(()=>{});
 }
 
 /* ===== SOLDE RESTANT (acompte 50% vs totalité réglée en ligne) =====
@@ -1490,10 +1529,9 @@ function envoyerSMS(id){
 function calculerSolde(c){
   let total=parseFloat(String(c.total).replace(",","."));
   if(isNaN(total))return 0;
-  let payLower=(c.payment||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-  if(payLower.includes("totalite"))return 0;
-  if(payLower.includes("acompte"))return Math.round(total*DEPOSIT_RATE*100)/100;
-  return 0;
+  let acomptePaye=parseFloat(String(c.acomptePaye||"0").replace(",","."))||0;
+  let solde=total-acomptePaye;
+  return solde>0.01?Math.round(solde*100)/100:0;
 }
 
 function genBlocSolde(solde,b){
@@ -1512,7 +1550,11 @@ function genMsg(c,pourSMS=false){
   let solde=calculerSolde(c);
 
   let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
-  msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
+  if(c.modifieeNonNotifiee){
+    msg+=`🔄 ${b}Suite à ta demande, voici ta commande mise à jour :${b}\n\n`;
+  }else{
+    msg+=`✅ ${b}Ta commande Oh! Mikaté est confirmée !${b}\n\n`;
+  }
   msg+=`🗓️ Date : ${dateRetrait}\n`;
   msg+=`⏰ Créneau : ${c.creneau||"—"}\n`;
   msg+=`💰 Total : ${c.total||"—"} €\n\n`;
@@ -1530,7 +1572,11 @@ function genMsgPret(c,pourSMS=false){
   let b=pourSMS?"":"*";
   let solde=calculerSolde(c);
   let msg=`Bonjour ${c.name||""} ! 😊\n\n`;
-  msg+=`📦 ${b}Ta commande Oh! Mikaté est prête, tu peux venir la récupérer dès maintenant.${b}\n\n`;
+  if(c.modifieeNonNotifiee){
+    msg+=`🔄 ${b}Suite à ta demande, ta commande mise à jour est prête, tu peux venir la récupérer dès maintenant.${b}\n\n`;
+  }else{
+    msg+=`📦 ${b}Ta commande Oh! Mikaté est prête, tu peux venir la récupérer dès maintenant.${b}\n\n`;
+  }
   if(solde>0.01){
     if(soldeRecu.includes(c.id)){
       msg+=`✅ ${b}J'ai bien reçu la totalité du règlement, merci beaucoup !${b}\n\n`;
@@ -1686,7 +1732,11 @@ function confirmerChoixSolde(recu){
   }else{
     soldeRecu=soldeRecu.filter(x=>x!==idPretePendant);
   }
-  localStorage.setItem('ohMikateSoldeRecu',JSON.stringify(soldeRecu));
+  fetch(APPS_SCRIPT_URL,{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"solde",rowIndex:toutesCommandes.find(x=>x.id===idPretePendant)?.rowIndex,valeur:recu?"OUI":""})
+  }).catch(()=>{});
   let id=idPretePendant;
   fermerPopupSolde();
   finaliserPrete(id);
