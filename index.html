@@ -463,6 +463,15 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
       <div class="confirm-card-body"><div id="e-order-detail" class="order-detail-box">—</div></div>
       <div class="total-line"><span>Total à prévoir</span><span id="e-total">0,00 €</span></div>
     </div>
+    <div id="e-stripe-notify-section" style="display:none;background:#FFF4E0;border:2px solid #F2871F;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+      <div style="font-size:22px;margin-bottom:8px;">📲</div>
+      <div style="font-family:var(--font-display);font-size:15px;color:#F2871F;margin-bottom:8px;">UNE DERNIÈRE ÉTAPE IMPORTANTE</div>
+      <div style="font-size:13px;color:#7A6A5C;line-height:1.6;margin-bottom:14px;">Ton paiement est bien passé, mais Oh! Mikaté n'est pas notifiée automatiquement ! Envoie-lui un petit message pour qu'elle voie ta commande tout de suite :</div>
+      <div class="cancel-links">
+        <a id="e-notify-whatsapp" href="#" target="_blank" class="cancel-link" style="background:#25D36622;color:#128C4E;border:1px solid #25D366;">📲 Confirmer par WhatsApp</a>
+        <a id="e-notify-sms" href="#" class="cancel-link" style="background:#3A6B7D22;color:#3A6B7D;border:1px solid #3A6B7D;">💬 Confirmer par SMS</a>
+      </div>
+    </div>
     <div style="background:#FFFFFF;border:1px solid #F2871F;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
       <div style="font-size:22px;margin-bottom:8px;">⏳</div>
       <div style="font-family:var(--font-display);font-size:16px;color:#F2871F;letter-spacing:1px;margin-bottom:8px;">CONFIRMATION SOUS 30 MINUTES</div>
@@ -1725,6 +1734,19 @@ function afficherConfirmationStripe(draft){
     let ua=navigator.userAgent.toLowerCase();
     window.location.href="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgAnnulSMS);
   });
+
+  // Paiement Stripe = pas d'envoi WhatsApp/SMS obligatoire dans le tunnel, donc on invite
+  // explicitement le client à en envoyer un pour que la commande ne passe pas inaperçue.
+  let msgNotif=`Bonjour ! Je viens de valider et payer ma commande en ligne (carte bancaire) 🧇\n\n👤 ${draft.name}\n📅 ${draft.date}\n⏰ ${draft.time}\n💰 ${draft.total} €\n\nMerci de confirmer, à bientôt !`;
+  let msgNotifSMS=msgNotif.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  document.getElementById("e-notify-whatsapp").href="https://wa.me/33"+targetPhone.substring(1)+"?text="+encodeURIComponent(msgNotif);
+  document.getElementById("e-notify-sms").addEventListener("click",function(e){
+    e.preventDefault();
+    let ua=navigator.userAgent.toLowerCase();
+    window.location.href="sms:"+targetPhone+(ua.includes("iphone")?"&body=":"?body=")+encodeURIComponent(msgNotifSMS);
+  });
+  document.getElementById("e-stripe-notify-section").style.display="block";
+
   localStorage.removeItem('ohMikateStripeDraft');
 }
 
