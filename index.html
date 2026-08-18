@@ -88,6 +88,30 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 .chip{background:var(--surface);border:1.5px solid var(--border);color:var(--ink-muted);font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:16px;cursor:pointer;font-family:var(--font-body);transition:.15s;white-space:nowrap;line-height:1.3;}
 .chip:active{transform:scale(0.96);}
 .chip.selected{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(166,38,57,0.25);}
+.chip-multi-hint{font-size:9.5px;color:var(--ink-faint);text-transform:none;font-weight:400;letter-spacing:0;margin-left:4px;}
+.chip-stock-note{font-size:9.5px;text-transform:none;font-weight:500;letter-spacing:0;opacity:0.85;}
+.chip.chip-disabled{opacity:0.5;cursor:not-allowed;text-decoration:line-through;}
+.chip.chip-toggle{white-space:normal;text-align:left;}
+.pot-steppers{display:flex;flex-direction:column;gap:6px;}
+.pot-stepper-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:4px 6px 4px 12px;transition:.15s;}
+.pot-stepper-row.pot-stepper-active{background:var(--accent-soft);border-color:var(--accent);}
+.pot-stepper-row.pot-stepper-disabled{opacity:0.5;}
+.pot-stepper-label{font-size:11.5px;font-weight:600;color:var(--ink-muted);}
+.pot-stepper-row.pot-stepper-active .pot-stepper-label{color:var(--accent-dark);}
+.qty-controls-mini{display:flex;align-items:center;gap:2px;background:transparent;margin:0;border:none;border-radius:0;overflow:visible;}
+.qty-controls-mini .qty-btn{width:26px;height:26px;font-size:14px;border-radius:50%;}
+.pot-stepper-qty{font-size:13px;font-weight:700;color:var(--ink);width:20px;text-align:center;}
+.collapse-toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:8px 12px;cursor:pointer;font-family:var(--font-body);text-align:left;transition:.15s;box-sizing:border-box;}
+.collapse-toggle:active{transform:scale(0.98);}
+.collapse-toggle.open{border-color:var(--accent);border-bottom-left-radius:0;border-bottom-right-radius:0;}
+.collapse-toggle-label{font-size:11px;font-weight:700;color:var(--ink);white-space:nowrap;flex-shrink:0;}
+.collapse-toggle-summary{flex:1;font-size:11.5px;color:var(--ink-faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;margin-right:2px;}
+.collapse-toggle.has-selection .collapse-toggle-summary{color:var(--accent-dark);font-weight:600;}
+.collapse-chevron{font-size:10px;color:var(--ink-faint);transition:transform .2s;flex-shrink:0;}
+.collapse-toggle.open .collapse-chevron{transform:rotate(180deg);}
+.collapse-panel{display:none;border:1.5px solid var(--accent);border-top:none;border-radius:0 0 12px 12px;padding:9px 10px;background:var(--surface);}
+.collapse-panel.open{display:block;}
+.collapse-panel .chip-multi-hint{display:block;margin:0 0 6px;}
 .progress-tracker{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 0 20px;flex-wrap:wrap;}
 .progress-step{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
 .progress-dot{width:22px;height:22px;border-radius:50%;background:var(--surface-alt);border:1.5px solid var(--border);color:var(--ink-faint);display:flex;align-items:center;justify-content:center;font-size:11px;}
@@ -393,6 +417,7 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
           </div>
           <a id="paypal-link" href="#" target="_blank" class="btn" style="background:#3A6B7D;margin-top:0;margin-bottom:10px;font-size:14px;padding:11px;">💳 Payer <span id="paypal-label">l'acompte</span> via PayPal</a>
           <button id="stripe-btn" type="button" class="btn" style="background:#635bff;margin-top:0;margin-bottom:10px;font-size:14px;padding:11px;" onclick="lancerPaiementStripe()">💳 Payer <span id="stripe-label">l'acompte</span> par carte bancaire</button>
+          <div style="font-size:11.5px;color:#7A6A5C;line-height:1.5;margin:-4px 0 10px;padding:8px 10px;background:#FFF4E0;border:1px solid #F2871F;border-radius:8px;">⚠️ Après le paiement CB, une dernière étape s'affichera : il faudra m'envoyer un message (WhatsApp ou SMS) pour que je voie ta commande tout de suite.</div>
           <div id="deposit-check-wrap-total" style="display:none;">
             <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:#7A6A5C;line-height:1.5;">
               <input type="checkbox" id="deposit-check" onchange="updateUI()" style="width:18px;height:18px;accent-color:#E8236B;flex-shrink:0;margin-top:2px;">
@@ -501,6 +526,57 @@ const boxPrices={"9 beignets":5.0,"12 beignets":7.0};
 const nappagePrices={"Aucun":0,"Chocolat":0.50,"Caramel":0.50,"Pistache":1.50,"Bueno":1.00};
 const garnitureprix={"Aucun":0,"Éclats M&M's":0.50,"Éclats Spéculoos":0.50,"Éclats Cacahuète":0.50,"Éclat de pistache":1.50,"Bueno":1.00};
 const potPrices={"Aucun":0,"Pot Nutella":0.50,"Pot Pâte d'arachide":0.50,"Pot Pistache":1.50,"Pot Bueno":1.00};
+// Échappe les apostrophes pour une insertion sûre dans un attribut onclick="...('...')"
+// (sans ça, des valeurs comme "Éclats M&M's" ou "Pot Pâte d'arachide" cassent le JS généré)
+function jsEsc(v){return String(v).replace(/'/g,"\\'");}
+const garnitureLabelsCourts={"Éclats M&M's":"M&M's","Éclats Spéculoos":"Spéculoos","Éclats Cacahuète":"Cacahuètes","Éclat de pistache":"Pistache","Bueno":"Bueno"};
+const potLabelsCourts={"Pot Nutella":"Nutella","Pot Pâte d'arachide":"Pâte d'arachide","Pot Pistache":"Pistache","Pot Bueno":"Bueno"};
+
+// Ouvre/ferme le panneau déroulant d'une section (garniture ou pot)
+function toggleFieldPanel(idPrefix,field){
+  let panel=document.getElementById(`${idPrefix}-${field}-panel`);
+  let toggle=document.getElementById(`${idPrefix}-${field}-toggle`);
+  if(!panel)return;
+  let ouverture=!panel.classList.contains("open");
+  panel.classList.toggle("open",ouverture);
+  if(toggle)toggle.classList.toggle("open",ouverture);
+}
+
+// Met à jour le texte résumé affiché sur le bouton replié (ex: "M&M's, Spéculoos")
+function updateFieldSummary(idPrefix,field){
+  let summaryEl=document.getElementById(`${idPrefix}-${field}-summary`);
+  let toggleEl=document.getElementById(`${idPrefix}-${field}-toggle`);
+  if(!summaryEl)return;
+  let texte="",selection=false;
+  if(field==="nappage"){
+    let arr=getBoxMultiValues(idPrefix,"nappage");
+    selection=arr.length>0;
+    texte=selection?arr.join(", "):"Aucun";
+  }else if(field==="garniture"){
+    let arr=getBoxMultiValues(idPrefix,"garniture");
+    selection=arr.length>0;
+    texte=selection?arr.map(v=>garnitureLabelsCourts[v]||v).join(", "):"Aucune";
+  }else if(field==="pot"){
+    let pots=getBoxPots(idPrefix);
+    let parts=Object.keys(pots).filter(k=>pots[k]>0).map(k=>`${pots[k]>1?pots[k]+"x ":""}${potLabelsCourts[k]||k}`);
+    selection=parts.length>0;
+    texte=selection?parts.join(", "):"Aucun";
+  }
+  summaryEl.textContent=texte;
+  if(toggleEl)toggleEl.classList.toggle("has-selection",selection);
+}
+
+// Ferme automatiquement un panneau déroulant ouvert quand on clique ailleurs sur la page
+document.addEventListener("click",function(e){
+  document.querySelectorAll(".collapse-panel.open").forEach(panel=>{
+    let section=panel.closest(".chip-section");
+    if(section&&!section.contains(e.target)){
+      panel.classList.remove("open");
+      let toggle=section.querySelector(".collapse-toggle");
+      if(toggle)toggle.classList.remove("open");
+    }
+  });
+});
 let depositMode=""; // "acompte" (50%) ou "total" (100%) ou "especes" (0% en ligne, tout à la commande)
 let depositCashChoice=""; // pour le mode acompte : "online" ou "cash"
 const targetPhone="0698213380";
@@ -524,7 +600,12 @@ const SHEET_ID="1Zp7sal7J9KpqKHLuyx_l7NmftvWhOiehhcnO7qKcFXE";
 const SHEET_URL_READONLY=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Feuille1`;
 // Lien vers le nouvel onglet pour les fermetures manuelles
 const SHEET_URL_BLOCAGES=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Fermetures`;
-// Onglet "Stock" : 3 colonnes (Nappage indispo / Garniture indispo / Pot indispo), une valeur en rupture par ligne
+// Onglet "Stock" : 6 colonnes en 3 paires (Nom | Date de retour), une paire par catégorie.
+// A=Nappage / B=Date retour Nappage / C=Garniture / D=Date retour Garniture / E=Pot / F=Date retour Pot
+// Les noms restent fixes en permanence : tu n'interviens QUE sur la colonne "Date de retour".
+//   Date vide                -> disponible (pas de rupture)
+//   Date contenant un chiffre (ex: "11/08") -> en rupture, mais affichée au client avec la date de retour
+//   Texte sans chiffre (ex: "rupture", "indéterminé") -> en rupture totale, non sélectionnable
 const SHEET_URL_STOCK=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Stock`;
 
 const MAX_COMMANDES_PAR_CRENEAU=5;
@@ -587,13 +668,15 @@ async function chargerComptesCreneaux(){
   }
 }
 
-// Parse une cellule du Sheet "Stock". Formats acceptés :
-//   "Pistache"          -> indisponible, sans date connue (reste bloqué)
-//   "Pistache - 11/08"  -> indisponible mais sélectionnable, avec date de retour affichée
-function parseCelluleStock(raw){
-  let parts=raw.split(" - ");
-  let nom=parts[0].trim();
-  let date=parts.length>1?parts.slice(1).join(" - ").trim():null;
+// Construit l'entrée de rupture pour une paire (nom, date) du Sheet "Stock".
+// Retourne null si le nom est vide OU si la date est vide (= disponible, pas de rupture).
+function parseCelluleStock(nom,dateRaw){
+  nom=(nom||"").trim();
+  dateRaw=(dateRaw||"").trim();
+  if(!nom||!dateRaw)return null;
+  // Une date contient au moins un chiffre -> rupture "molle" (affichée mais sélectionnable).
+  // Un texte sans chiffre (ex: "rupture") -> rupture "dure" (non sélectionnable).
+  let date=/\d/.test(dateRaw)?dateRaw:null;
   return {nom,date};
 }
 
@@ -606,12 +689,15 @@ async function chargerStockIndisponible(){
     let result={nappage:[],garniture:[],pot:[]};
     rows.forEach(row=>{
       if(!row.c)return;
-      let n=row.c[0]&&row.c[0].v!==null?String(row.c[0].v).trim():"";
-      let g=row.c[1]&&row.c[1].v!==null?String(row.c[1].v).trim():"";
-      let p=row.c[2]&&row.c[2].v!==null?String(row.c[2].v).trim():"";
-      if(n)result.nappage.push(parseCelluleStock(n));
-      if(g)result.garniture.push(parseCelluleStock(g));
-      if(p)result.pot.push(parseCelluleStock(p));
+      let nappageNom=row.c[0]&&row.c[0].v!==null?String(row.c[0].v):"";
+      let nappageDate=row.c[1]&&row.c[1].v!==null?String(row.c[1].v):"";
+      let garnitureNom=row.c[2]&&row.c[2].v!==null?String(row.c[2].v):"";
+      let garnitureDate=row.c[3]&&row.c[3].v!==null?String(row.c[3].v):"";
+      let potNom=row.c[4]&&row.c[4].v!==null?String(row.c[4].v):"";
+      let potDate=row.c[5]&&row.c[5].v!==null?String(row.c[5].v):"";
+      let eN=parseCelluleStock(nappageNom,nappageDate);if(eN)result.nappage.push(eN);
+      let eG=parseCelluleStock(garnitureNom,garnitureDate);if(eG)result.garniture.push(eG);
+      let eP=parseCelluleStock(potNom,potDate);if(eP)result.pot.push(eP);
     });
     stockIndisponible=result;
   }catch(e){
@@ -681,9 +767,9 @@ function performRemoveBox(type,indexToRemove){
     let idPrefix=`${prefix}-${b}`;
     states.push({
       base:getBoxValue(idPrefix,"base"),
-      nappage:getBoxValue(idPrefix,"nappage"),
-      garniture:getBoxValue(idPrefix,"garniture"),
-      pot:getBoxValue(idPrefix,"pot")
+      nappages:getBoxMultiValues(idPrefix,"nappage"),
+      garnitures:getBoxMultiValues(idPrefix,"garniture"),
+      pots:getBoxPots(idPrefix)
     });
   }
   // 2) on retire uniquement la boîte ciblée de la liste des états
@@ -706,9 +792,9 @@ function performRemoveBox(type,indexToRemove){
     let b=i+1;
     let idPrefix=`${prefix}-${b}`;
     setChipValue(idPrefix,"base",state.base);
-    setChipValue(idPrefix,"nappage",state.nappage);
-    setChipValue(idPrefix,"garniture",state.garniture);
-    setChipValue(idPrefix,"pot",state.pot);
+    setBoxMultiValues(idPrefix,"nappage",state.nappages);
+    setBoxMultiValues(idPrefix,"garniture",state.garnitures);
+    setBoxPots(idPrefix,state.pots);
     let row=document.querySelector(`[data-prefix="${idPrefix}"]`);
     let defaultImg=row?row.dataset.defaultimg:"Images/Beignet9.jpg";
     updateBoxImage(idPrefix,defaultImg);
@@ -723,10 +809,12 @@ function performRemoveBox(type,indexToRemove){
 function generateCompositionForm(){
   const container=document.getElementById("composition-zone");
   if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0){container.innerHTML="";return;}
-  let currentSelections={};
-  container.querySelectorAll(".lot-field").forEach(g=>{currentSelections[g.id]=g.tagName==="SELECT"?g.value:g.dataset.value;});
+  let currentBase={},currentMulti={},currentPots={};
+  container.querySelectorAll(".chip-group.lot-field:not(.lot-field-multi)").forEach(g=>{currentBase[g.id]=g.dataset.value;});
+  container.querySelectorAll(".lot-field-multi").forEach(g=>{try{currentMulti[g.id]=JSON.parse(g.dataset.value||"[]");}catch(e){currentMulti[g.id]=[];}});
+  container.querySelectorAll(".pot-steppers.lot-field").forEach(g=>{try{currentPots[g.id]=JSON.parse(g.dataset.value||"{}");}catch(e){currentPots[g.id]={};}});
   let html="<h3>2. Personnalise tes boîtes</h3>";
-  html+=`<div class="lots-info-box">📦 Chaque boîte peut être personnalisée avec un enrobage, un nappage, une garniture et un pot au choix.<span class="lots-info-tip">💡 Les suppléments sont facturés une seule fois par boîte, selon les tarifs indiqués.</span></div>`;
+  html+=`<div class="lots-info-box">📦 Chaque boîte peut être personnalisée avec un enrobage, et autant de nappages, garnitures et pots que tu veux.<span class="lots-info-tip">💡 Les suppléments sont facturés pour chaque élément ajouté, selon les tarifs indiqués.</span></div>`;
 
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
     let pfx9=`box9-${b}`;
@@ -741,33 +829,61 @@ function generateCompositionForm(){
     html+=`</div>`;
   }
   container.innerHTML=html;
+
   let optionRemplacee=false;
-  container.querySelectorAll(".lot-field").forEach(g=>{
-    let m=g.id.match(/^(.*)-(base|nappage|garniture|pot)$/);
+  // Restaure l'enrobage (toujours une seule valeur)
+  container.querySelectorAll(".chip-group.lot-field:not(.lot-field-multi)").forEach(g=>{
+    let val=currentBase[g.id]||g.dataset.value||"Nature";
+    let m=g.id.match(/^(.*)-base$/);
+    if(m)setChipValue(m[1],"base",val);
+  });
+  // Restaure nappages/garnitures (tableaux), en retirant celles tombées en rupture sans date
+  container.querySelectorAll(".lot-field-multi").forEach(g=>{
+    let m=g.id.match(/^(.*)-(nappage|garniture)$/);
     if(!m)return;
     let field=m[2];
-    let val=currentSelections[g.id]||(g.tagName==="SELECT"?g.value:g.dataset.value);
-    // Si la sélection précédente est bloquée sans date de retour connue, on revient sur "Aucun"
-    if(field==="nappage"||field==="garniture"||field==="pot"){
+    let arr=currentMulti[g.id]||[];
+    let filtre=arr.filter(val=>{
       let entree=(stockIndisponible[field]||[]).find(e=>e.nom===val);
-      if(entree&&!entree.date){val="Aucun";optionRemplacee=true;}
-    }
-    setChipValue(m[1],field,val);
+      if(entree&&!entree.date){optionRemplacee=true;return false;}
+      return true;
+    });
+    setBoxMultiValues(m[1],field,filtre);
+  });
+  // Restaure les quantités de pots, en retirant celles tombées en rupture sans date
+  container.querySelectorAll(".pot-steppers.lot-field").forEach(g=>{
+    let m=g.id.match(/^(.*)-pot$/);
+    if(!m)return;
+    let pots=currentPots[g.id]||{};
+    let filtre={};
+    Object.keys(pots).forEach(val=>{
+      let entree=(stockIndisponible["pot"]||[]).find(e=>e.nom===val);
+      if(entree&&!entree.date){optionRemplacee=true;return;}
+      filtre[val]=pots[val];
+    });
+    setBoxPots(m[1],filtre);
   });
   if(optionRemplacee)showToast("⚠️ Une option choisie est en rupture de stock, elle a été retirée.");
   container.querySelectorAll(".lot-row").forEach(row=>{updateBoxImage(row.dataset.prefix,row.dataset.defaultimg);});
 }
 
 function isBoxConfigured(idPrefix){
-  return getBoxValue(idPrefix,"base")!=="Nature"||getBoxValue(idPrefix,"nappage")!=="Aucun"||getBoxValue(idPrefix,"garniture")!=="Aucun"||getBoxValue(idPrefix,"pot")!=="Aucun";
+  if(getBoxValue(idPrefix,"base")!=="Nature")return true;
+  if(getBoxMultiValues(idPrefix,"nappage").length>0)return true;
+  if(getBoxMultiValues(idPrefix,"garniture").length>0)return true;
+  let pots=getBoxPots(idPrefix);
+  return Object.values(pots).some(q=>q>0);
 }
 
-/* ===== SUPPLÉMENTS PAR BOÎTE (tarif propre à l'option choisie) ===== */
+/* ===== SUPPLÉMENTS PAR BOÎTE (tarif propre à chaque option choisie, cumulables) ===== */
 function computeBoxSupplements(idPrefix){
-  let nappage=getBoxValue(idPrefix,"nappage");
-  let garniture=getBoxValue(idPrefix,"garniture");
-  let pot=getBoxValue(idPrefix,"pot");
-  let total=(nappagePrices[nappage]||0)+(garnitureprix[garniture]||0)+(potPrices[pot]||0);
+  let nappages=getBoxMultiValues(idPrefix,"nappage");
+  let garnitures=getBoxMultiValues(idPrefix,"garniture");
+  let pots=getBoxPots(idPrefix);
+  let total=0;
+  nappages.forEach(n=>{total+=nappagePrices[n]||0;});
+  garnitures.forEach(g=>{total+=garnitureprix[g]||0;});
+  Object.keys(pots).forEach(p=>{total+=(potPrices[p]||0)*(pots[p]||0);});
   return{total};
 }
 
@@ -824,7 +940,7 @@ function updateProgressTracker(){
 }
 
 function chipBtn(idPrefix,field,value,label){
-  return `<button type="button" class="chip" data-val="${value}" onclick="selectChip('${idPrefix}','${field}','${value}')">${label}</button>`;
+  return `<button type="button" class="chip" data-val="${value}" onclick="selectChip('${idPrefix}','${field}','${jsEsc(value)}')">${label}</button>`;
 }
 
 /* Construit une balise <option>.
@@ -842,6 +958,36 @@ function optionHtml(field,value,label){
   return `<option value="${value}" disabled style="color:#B0A79A;">${label} — Réapprovisionnement en cours ⏳</option>`;
 }
 
+function chipToggleBtn(idPrefix,field,value,label){
+  let entree=(stockIndisponible[field]||[]).find(e=>e.nom===value);
+  if(entree){
+    if(entree.date){
+      return `<button type="button" class="chip chip-toggle" data-val="${value}" onclick="toggleMultiChip('${idPrefix}','${field}','${jsEsc(value)}')">${label} <span class="chip-stock-note">— dispo le ${entree.date} ⏳</span></button>`;
+    }
+    return `<button type="button" class="chip chip-toggle chip-disabled" data-val="${value}" disabled>${label} <span class="chip-stock-note">— rupture ⏳</span></button>`;
+  }
+  return `<button type="button" class="chip chip-toggle" data-val="${value}" onclick="toggleMultiChip('${idPrefix}','${field}','${jsEsc(value)}')">${label}</button>`;
+}
+
+function potStepperRow(idPrefix,value,label){
+  let entree=(stockIndisponible["pot"]||[]).find(e=>e.nom===value);
+  if(entree&&!entree.date){
+    return `<div class="pot-stepper-row pot-stepper-disabled" data-val="${value}">
+      <span class="pot-stepper-label">${label} <span class="chip-stock-note">— rupture ⏳</span></span>
+      <div class="qty-controls qty-controls-mini"><span class="pot-stepper-qty">0</span></div>
+    </div>`;
+  }
+  let noteDispo=entree&&entree.date?` <span class="chip-stock-note">— dispo le ${entree.date} ⏳</span>`:"";
+  return `<div class="pot-stepper-row" data-val="${value}">
+    <span class="pot-stepper-label">${label}${noteDispo}</span>
+    <div class="qty-controls qty-controls-mini">
+      <button type="button" class="qty-btn minus" onclick="changePotQty('${idPrefix}','${jsEsc(value)}',-1)">-</button>
+      <span class="pot-stepper-qty" id="${idPrefix}-pot-qty-${value.replace(/[^a-zA-Z0-9]/g,'')}">0</span>
+      <button type="button" class="qty-btn plus" onclick="changePotQty('${idPrefix}','${jsEsc(value)}',1)">+</button>
+    </div>
+  </div>`;
+}
+
 function generateBoxRowHtml(idPrefix,defaultImg){
   return `<div class="lot-row lot-active" data-prefix="${idPrefix}" data-defaultimg="${defaultImg}">
     <img id="${idPrefix}-img" src="${defaultImg}" class="lot-preview-img" alt="Aperçu boîte">
@@ -855,41 +1001,114 @@ function generateBoxRowHtml(idPrefix,defaultImg){
           ${chipBtn(idPrefix,'base','Noix de coco','🥥 Coco')}
         </div>
       </div>
-      <div class="lot-selects-row">
-        <div class="chip-section">
-          <div class="chip-label chip-label-orange">🍫 Nappage</div>
-          <select class="select-custom lot-field" id="${idPrefix}-nappage" data-value="Aucun" onchange="selectChip('${idPrefix}','nappage',this.value)">
-            ${optionHtml('nappage','Aucun','Aucun')}
-            ${optionHtml('nappage','Chocolat','🍫 Chocolat (+0,50€)')}
-            ${optionHtml('nappage','Caramel','🍮 Caramel (+0,50€)')}
-            ${optionHtml('nappage','Pistache','🍏 Pistache (+1,50€)')}
-            ${optionHtml('nappage','Bueno','🌰 Bueno (+1,00€)')}
-          </select>
+      <div class="chip-section">
+        <button type="button" class="collapse-toggle" id="${idPrefix}-nappage-toggle" onclick="toggleFieldPanel('${idPrefix}','nappage')">
+          <span class="collapse-toggle-label">🍫 Nappage(s)</span>
+          <span class="collapse-toggle-summary" id="${idPrefix}-nappage-summary">Aucun</span>
+          <span class="collapse-chevron">▾</span>
+        </button>
+        <div class="collapse-panel" id="${idPrefix}-nappage-panel">
+          <span class="chip-multi-hint">— tu peux en cocher plusieurs</span>
+          <div class="chip-group lot-field lot-field-multi" id="${idPrefix}-nappage" data-value="[]">
+            ${chipToggleBtn(idPrefix,'nappage','Chocolat','🍫 Chocolat (+0,50€)')}
+            ${chipToggleBtn(idPrefix,'nappage','Caramel','🍮 Caramel (+0,50€)')}
+            ${chipToggleBtn(idPrefix,'nappage','Pistache','🍏 Pistache (+1,50€)')}
+            ${chipToggleBtn(idPrefix,'nappage','Bueno','🌰 Bueno (+1,00€)')}
+          </div>
         </div>
-        <div class="chip-section">
-          <div class="chip-label chip-label-green">🥜 Garniture</div>
-          <select class="select-custom lot-field" id="${idPrefix}-garniture" data-value="Aucun" onchange="selectChip('${idPrefix}','garniture',this.value)">
-            ${optionHtml('garniture','Aucun','Aucun')}
-            ${optionHtml('garniture',"Éclats M&M's","🍬 M&M's (+0,50€)")}
-            ${optionHtml('garniture','Éclats Spéculoos','🍪 Spéculoos (+0,50€)')}
-            ${optionHtml('garniture','Éclats Cacahuète','🥜 Cacahuètes (+0,50€)')}
-            ${optionHtml('garniture','Éclat de pistache','🍏 Éclat de pistache (+1,50€)')}
-            ${optionHtml('garniture','Bueno','🌰 Bueno (+1,00€)')}
-          </select>
+      </div>
+      <div class="chip-section">
+        <button type="button" class="collapse-toggle" id="${idPrefix}-garniture-toggle" onclick="toggleFieldPanel('${idPrefix}','garniture')">
+          <span class="collapse-toggle-label">🥜 Garniture(s)</span>
+          <span class="collapse-toggle-summary" id="${idPrefix}-garniture-summary">Aucune</span>
+          <span class="collapse-chevron">▾</span>
+        </button>
+        <div class="collapse-panel" id="${idPrefix}-garniture-panel">
+          <span class="chip-multi-hint">— tu peux en cocher plusieurs</span>
+          <div class="chip-group lot-field lot-field-multi" id="${idPrefix}-garniture" data-value="[]">
+            ${chipToggleBtn(idPrefix,'garniture',"Éclats M&M's","🍬 M&M's (+0,50€)")}
+            ${chipToggleBtn(idPrefix,'garniture','Éclats Spéculoos','🍪 Spéculoos (+0,50€)')}
+            ${chipToggleBtn(idPrefix,'garniture','Éclats Cacahuète','🥜 Cacahuètes (+0,50€)')}
+            ${chipToggleBtn(idPrefix,'garniture','Éclat de pistache','🍏 Éclat de pistache (+1,50€)')}
+            ${chipToggleBtn(idPrefix,'garniture','Bueno','🌰 Bueno (+1,00€)')}
+          </div>
         </div>
-        <div class="chip-section">
-          <div class="chip-label chip-label-pink">🍯 Pot</div>
-          <select class="select-custom lot-field" id="${idPrefix}-pot" data-value="Aucun" onchange="selectChip('${idPrefix}','pot',this.value)">
-            ${optionHtml('pot','Aucun','Aucun')}
-            ${optionHtml('pot','Pot Nutella','🍫 Nutella (+0,50€)')}
-            ${optionHtml('pot',"Pot Pâte d'arachide","🥜 Pâte d'arachide (+0,50€)")}
-            ${optionHtml('pot','Pot Pistache','🍏 Pistache (+1,50€)')}
-            ${optionHtml('pot','Pot Bueno','🌰 Bueno (+1,00€)')}
-          </select>
+      </div>
+      <div class="chip-section">
+        <button type="button" class="collapse-toggle" id="${idPrefix}-pot-toggle" onclick="toggleFieldPanel('${idPrefix}','pot')">
+          <span class="collapse-toggle-label">🍯 Pot(s)</span>
+          <span class="collapse-toggle-summary" id="${idPrefix}-pot-summary">Aucun</span>
+          <span class="collapse-chevron">▾</span>
+        </button>
+        <div class="collapse-panel" id="${idPrefix}-pot-panel">
+          <span class="chip-multi-hint">— choisis une quantité par saveur</span>
+          <div class="pot-steppers lot-field" id="${idPrefix}-pot" data-value="{}">
+            ${potStepperRow(idPrefix,'Pot Nutella','🍫 Nutella (+0,50€/pot)')}
+            ${potStepperRow(idPrefix,"Pot Pâte d'arachide","🥜 Pâte d'arachide (+0,50€/pot)")}
+            ${potStepperRow(idPrefix,'Pot Pistache','🍏 Pistache (+1,50€/pot)')}
+            ${potStepperRow(idPrefix,'Pot Bueno','🌰 Bueno (+1,00€/pot)')}
+          </div>
         </div>
       </div>
     </div>
   </div>`;
+}
+
+function getBoxMultiValues(idPrefix,field){
+  let el=document.getElementById(`${idPrefix}-${field}`);
+  if(!el)return[];
+  try{return JSON.parse(el.dataset.value||"[]");}catch(e){return[];}
+}
+
+function setBoxMultiValues(idPrefix,field,arr){
+  let el=document.getElementById(`${idPrefix}-${field}`);
+  if(!el)return;
+  el.dataset.value=JSON.stringify(arr);
+  el.querySelectorAll(".chip-toggle").forEach(c=>c.classList.toggle("selected",arr.includes(c.dataset.val)));
+  updateFieldSummary(idPrefix,field);
+}
+
+function toggleMultiChip(idPrefix,field,value){
+  let arr=getBoxMultiValues(idPrefix,field);
+  if(arr.includes(value))arr=arr.filter(v=>v!==value);
+  else arr.push(value);
+  setBoxMultiValues(idPrefix,field,arr);
+  let row=document.querySelector(`[data-prefix="${idPrefix}"]`);
+  let defaultImg=row?.dataset.defaultimg||"Images/Beignet9.jpg";
+  updateBoxImage(idPrefix,defaultImg);
+  updateUI();
+}
+
+function getBoxPots(idPrefix){
+  let el=document.getElementById(`${idPrefix}-pot`);
+  if(!el)return{};
+  try{return JSON.parse(el.dataset.value||"{}");}catch(e){return{};}
+}
+
+function setBoxPots(idPrefix,obj){
+  let el=document.getElementById(`${idPrefix}-pot`);
+  if(!el)return;
+  // Ne garde que les quantités positives dans la donnée stockée
+  let clean={};
+  Object.keys(obj).forEach(k=>{if(obj[k]>0)clean[k]=obj[k];});
+  el.dataset.value=JSON.stringify(clean);
+  el.querySelectorAll(".pot-stepper-row").forEach(row=>{
+    let val=row.dataset.val;
+    let qty=clean[val]||0;
+    let qtyEl=row.querySelector(".pot-stepper-qty");
+    if(qtyEl)qtyEl.textContent=qty;
+    row.classList.toggle("pot-stepper-active",qty>0);
+  });
+  updateFieldSummary(idPrefix,"pot");
+}
+
+function changePotQty(idPrefix,potName,delta){
+  let pots=getBoxPots(idPrefix);
+  let nouvelleQte=(pots[potName]||0)+delta;
+  if(nouvelleQte<0)nouvelleQte=0;
+  pots[potName]=nouvelleQte;
+  setBoxPots(idPrefix,pots);
+  updateUI();
 }
 
 function getBoxValue(idPrefix,field){
@@ -916,20 +1135,15 @@ function selectChip(idPrefix,field,value){
 }
 
 function updateBoxImage(idPrefix,defaultImg){
-  const nappage=getBoxValue(idPrefix,"nappage");
-  const garniture=getBoxValue(idPrefix,"garniture");
+  const nappages=getBoxMultiValues(idPrefix,"nappage");
+  const garnitures=getBoxMultiValues(idPrefix,"garniture");
   const imgEl=document.getElementById(`${idPrefix}-img`);
   if(!imgEl)return;
-  if(nappage!=="Aucun"){
-    if(nappage==="Chocolat")imgEl.src="Images/Chocolat.jpg";
-    else if(nappage==="Caramel")imgEl.src="Images/Caramel.jpg";
-    else imgEl.src=defaultImg;
-  }
-  else if(garniture!=="Aucun"){
-    if(garniture==="Éclats Spéculoos")imgEl.src="Images/Speculoos.jpg";
-    else if(garniture==="Éclats Cacahuète")imgEl.src="Images/Cacahuetes.jpg";
-    else imgEl.src=defaultImg;
-  }else{imgEl.src=defaultImg;}
+  if(nappages.includes("Chocolat"))imgEl.src="Images/Chocolat.jpg";
+  else if(nappages.includes("Caramel"))imgEl.src="Images/Caramel.jpg";
+  else if(garnitures.includes("Éclats Spéculoos"))imgEl.src="Images/Speculoos.jpg";
+  else if(garnitures.includes("Éclats Cacahuète"))imgEl.src="Images/Cacahuetes.jpg";
+  else imgEl.src=defaultImg;
 }
 
 /* ===== CALCUL TOTAL ===== */
@@ -955,41 +1169,53 @@ function calculateTotalAndExtractStructure(){
     let idPrefix=`box9-${b}`;
     let{total:supTotal}=computeBoxSupplements(idPrefix);
     total+=supTotal;
-    let nappage=getBoxValue(idPrefix,"nappage");
-    let garniture=getBoxValue(idPrefix,"garniture");
-    let pot=getBoxValue(idPrefix,"pot");
+    let nappages=getBoxMultiValues(idPrefix,"nappage");
+    let garnitures=getBoxMultiValues(idPrefix,"garniture");
+    let pots=getBoxPots(idPrefix);
     structuredOrderText+=`\n📦 BOÎTE DE 9 BEIGNETS n°${b} : ${getBoxValue(idPrefix,"base")}`;
-    if(nappage!=="Aucun")structuredOrderText+=` + ${nappage}`;
-    if(garniture!=="Aucun")structuredOrderText+=` + ${garniture}`;
-    if(pot!=="Aucun")structuredOrderText+=` + ${pot}`;
+    if(nappages.length>0)structuredOrderText+=` | Nappage(s) : ${nappages.join(" + ")}`;
+    if(garnitures.length>0)structuredOrderText+=` | Garniture(s) : ${garnitures.join(" + ")}`;
+    Object.keys(pots).forEach(p=>{if(pots[p]>0)structuredOrderText+=` + ${pots[p]>1?pots[p]+"x ":""}${p}`;});
     structuredOrderText+=`\n`;
   }
   for(let b=1;b<=boxesSelected["12 beignets"];b++){
     let idPrefix=`box12-${b}`;
     let{total:supTotal}=computeBoxSupplements(idPrefix);
     total+=supTotal;
-    let nappage=getBoxValue(idPrefix,"nappage");
-    let garniture=getBoxValue(idPrefix,"garniture");
-    let pot=getBoxValue(idPrefix,"pot");
+    let nappages=getBoxMultiValues(idPrefix,"nappage");
+    let garnitures=getBoxMultiValues(idPrefix,"garniture");
+    let pots=getBoxPots(idPrefix);
     structuredOrderText+=`\n📦 BOÎTE DE 12 BEIGNETS n°${b} : ${getBoxValue(idPrefix,"base")}`;
-    if(nappage!=="Aucun")structuredOrderText+=` + ${nappage}`;
-    if(garniture!=="Aucun")structuredOrderText+=` + ${garniture}`;
-    if(pot!=="Aucun")structuredOrderText+=` + ${pot}`;
+    if(nappages.length>0)structuredOrderText+=` | Nappage(s) : ${nappages.join(" + ")}`;
+    if(garnitures.length>0)structuredOrderText+=` | Garniture(s) : ${garnitures.join(" + ")}`;
+    Object.keys(pots).forEach(p=>{if(pots[p]>0)structuredOrderText+=` + ${pots[p]>1?pots[p]+"x ":""}${p}`;});
     structuredOrderText+=`\n`;
   }
   return{totalPrice:total,summaryShort:textSummaryList.join(" / "),detailsText:structuredOrderText};
 }
 
 /* ===== STRUCTURE POUR MODIFICATION FUTURE (édition pré-remplie) ===== */
+// Convertit une config de boîte quel que soit son format (ancien : nappage/garniture/pot en
+// valeur unique, ou nouveau : nappages/garnitures/pots en liste/quantités) vers le format actuel.
+function normaliserConfigBox(cfg){
+  cfg=cfg||{};
+  let nappages=Array.isArray(cfg.nappages)?cfg.nappages:(cfg.nappage&&cfg.nappage!=="Aucun"?[cfg.nappage]:[]);
+  let garnitures=Array.isArray(cfg.garnitures)?cfg.garnitures:(cfg.garniture&&cfg.garniture!=="Aucun"?[cfg.garniture]:[]);
+  let pots={};
+  if(cfg.pots&&typeof cfg.pots==="object")pots=cfg.pots;
+  else if(cfg.pot&&cfg.pot!=="Aucun")pots={[cfg.pot]:1};
+  return{base:cfg.base||"Nature",nappages,garnitures,pots};
+}
+
 function getStructuredSelections(){
   let struct={"9 beignets":[],"12 beignets":[]};
   for(let b=1;b<=boxesSelected["9 beignets"];b++){
     let p=`box9-${b}`;
-    struct["9 beignets"].push({base:getBoxValue(p,"base"),nappage:getBoxValue(p,"nappage"),garniture:getBoxValue(p,"garniture"),pot:getBoxValue(p,"pot")});
+    struct["9 beignets"].push({base:getBoxValue(p,"base"),nappages:getBoxMultiValues(p,"nappage"),garnitures:getBoxMultiValues(p,"garniture"),pots:getBoxPots(p)});
   }
   for(let b=1;b<=boxesSelected["12 beignets"];b++){
     let p=`box12-${b}`;
-    struct["12 beignets"].push({base:getBoxValue(p,"base"),nappage:getBoxValue(p,"nappage"),garniture:getBoxValue(p,"garniture"),pot:getBoxValue(p,"pot")});
+    struct["12 beignets"].push({base:getBoxValue(p,"base"),nappages:getBoxMultiValues(p,"nappage"),garnitures:getBoxMultiValues(p,"garniture"),pots:getBoxPots(p)});
   }
   return struct;
 }
@@ -1006,21 +1232,23 @@ function hydrateFromStructuredSelections(struct){
   if(card9)card9.classList.toggle("has-qty",boxesSelected["9 beignets"]>0);
   if(card12)card12.classList.toggle("has-qty",boxesSelected["12 beignets"]>0);
   generateCompositionForm();
-  (struct["9 beignets"]||[]).forEach((cfg,i)=>{
+  (struct["9 beignets"]||[]).forEach((cfgBrut,i)=>{
     let p=`box9-${i+1}`;
-    setChipValue(p,"base",cfg.base||"Nature");
-    setChipValue(p,"nappage",cfg.nappage||"Aucun");
-    setChipValue(p,"garniture",cfg.garniture||"Aucun");
-    setChipValue(p,"pot",cfg.pot||"Aucun");
+    let cfg=normaliserConfigBox(cfgBrut);
+    setChipValue(p,"base",cfg.base);
+    setBoxMultiValues(p,"nappage",cfg.nappages);
+    setBoxMultiValues(p,"garniture",cfg.garnitures);
+    setBoxPots(p,cfg.pots);
     let row=document.querySelector(`[data-prefix="${p}"]`);
     if(row)updateBoxImage(p,row.dataset.defaultimg);
   });
-  (struct["12 beignets"]||[]).forEach((cfg,i)=>{
+  (struct["12 beignets"]||[]).forEach((cfgBrut,i)=>{
     let p=`box12-${i+1}`;
-    setChipValue(p,"base",cfg.base||"Nature");
-    setChipValue(p,"nappage",cfg.nappage||"Aucun");
-    setChipValue(p,"garniture",cfg.garniture||"Aucun");
-    setChipValue(p,"pot",cfg.pot||"Aucun");
+    let cfg=normaliserConfigBox(cfgBrut);
+    setChipValue(p,"base",cfg.base);
+    setBoxMultiValues(p,"nappage",cfg.nappages);
+    setBoxMultiValues(p,"garniture",cfg.garnitures);
+    setBoxPots(p,cfg.pots);
     let row=document.querySelector(`[data-prefix="${p}"]`);
     if(row)updateBoxImage(p,row.dataset.defaultimg);
   });
