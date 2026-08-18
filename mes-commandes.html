@@ -285,7 +285,7 @@ async function envoyerDemande(typeDemande){
 
     fermerPopups();
     afficherMsg("✅ Ta demande a bien été transmise à Oh! Mikaté !");
-    chercherCommandes();
+    setTimeout(chercherCommandes,2500);
 
   } catch(e) {
     console.error("Erreur lors de l'envoi:", e);
