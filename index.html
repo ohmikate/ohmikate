@@ -668,11 +668,20 @@ async function chargerComptesCreneaux(){
   }
 }
 
+// Reformate une date brute renvoyée par Google Sheets (ex: "Date(2026,7,19)") en "19/08/2026".
+// Si ce n'est pas une date Sheets (texte libre déjà saisi), retourne la valeur telle quelle.
+function formaterDateSheet(raw){
+  let m=raw.match(/^Date\((\d+),(\d+),(\d+)/);
+  if(!m)return raw;
+  let annee=m[1],mois=String(Number(m[2])+1).padStart(2,"0"),jour=String(m[3]).padStart(2,"0");
+  return `${jour}/${mois}/${annee}`;
+}
+
 // Construit l'entrée de rupture pour une paire (nom, date) du Sheet "Stock".
 // Retourne null si le nom est vide OU si la date est vide (= disponible, pas de rupture).
 function parseCelluleStock(nom,dateRaw){
   nom=(nom||"").trim();
-  dateRaw=(dateRaw||"").trim();
+  dateRaw=formaterDateSheet((dateRaw||"").trim());
   if(!nom||!dateRaw)return null;
   // Une date contient au moins un chiffre -> rupture "molle" (affichée mais sélectionnable).
   // Un texte sans chiffre (ex: "rupture") -> rupture "dure" (non sélectionnable).
