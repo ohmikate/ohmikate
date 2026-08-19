@@ -1452,7 +1452,24 @@ function renderCommande(c, opts){
       <div class="recap-boites">${infoBoitesHtml}</div>
       <div class="detail-box">${c.order || ''}</div>
       <div style="font-size:11px; color:var(--ink-muted); margin-top:8px;">💳 Règlement : <b>${c.payment || 'Non spécifié'}</b> • Recu le ${c.datePropre || ''} à ${c.heure || ''}</div>
-      ${calculerSolde(c)>0.01?(soldeRecu.includes(c.id)?`<div style="font-size:12px; color:var(--success); font-weight:bold; margin-top:6px; background:var(--success-soft); border:1px solid var(--success); border-radius:8px; padding:6px 10px;">✅ Solde de ${calculerSolde(c).toFixed(2).replace('.',',')} € marqué comme reçu</div>`:`<div style="font-size:12px; color:var(--amber); font-weight:bold; margin-top:6px; background:var(--amber-soft); border:1px solid var(--amber); border-radius:8px; padding:6px 10px;">💰 Solde restant : ${calculerSolde(c).toFixed(2).replace('.',',')} € — un choix te sera demandé au clic sur "Prête"</div>`):``}
+      ${(()=>{
+        let solde=calculerSolde(c);
+        if(solde<=0.01)return "";
+        if(soldeRecu.includes(c.id)){
+          return `<div style="font-size:12px; color:var(--success); font-weight:bold; margin-top:6px; background:var(--success-soft); border:1px solid var(--success); border-radius:8px; padding:6px 10px;">✅ Solde de ${solde.toFixed(2).replace('.',',')} € marqué comme reçu</div>`;
+        }
+        // Acompte "à déposer en espèces" : rien n'a encore été reçu, donc on détaille
+        // ce qui est attendu en espèces (avant/à la commande) et ce qui restera dû au retrait,
+        // au lieu d'un seul total qui masque cette distinction.
+        let estAcompteEspeces=(c.payment||"").toLowerCase().includes("déposer en espèces");
+        if(estAcompteEspeces){
+          let totalNum=parseFloat(String(c.total).replace(",","."))||0;
+          let acompteAttendu=Math.round(totalNum*0.5*100)/100;
+          let soldeFinal=Math.round((totalNum-acompteAttendu)*100)/100;
+          return `<div style="font-size:12px; color:var(--amber); font-weight:bold; margin-top:6px; background:var(--amber-soft); border:1px solid var(--amber); border-radius:8px; padding:6px 10px;">💰 Acompte à récupérer en espèces : ${acompteAttendu.toFixed(2).replace('.',',')} € • Solde au retrait : ${soldeFinal.toFixed(2).replace('.',',')} € (total dû : ${totalNum.toFixed(2).replace('.',',')} €) — un choix te sera demandé au clic sur "Prête"</div>`;
+        }
+        return `<div style="font-size:12px; color:var(--amber); font-weight:bold; margin-top:6px; background:var(--amber-soft); border:1px solid var(--amber); border-radius:8px; padding:6px 10px;">💰 Solde restant : ${solde.toFixed(2).replace('.',',')} € — un choix te sera demandé au clic sur "Prête"</div>`;
+      })()}
     </div>
     
     <div class="actions-sec" style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">`;
