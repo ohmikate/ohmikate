@@ -1226,6 +1226,11 @@ function getStructuredSelections(){
     let p=`box12-${b}`;
     struct["12 beignets"].push({base:getBoxValue(p,"base"),nappages:getBoxMultiValues(p,"nappage"),garnitures:getBoxMultiValues(p,"garniture"),pots:getBoxPots(p)});
   }
+  // La précision/instruction du client est incluse ici pour être conservée dans orderJSON
+  // et pouvoir être re-proposée automatiquement si le client modifie sa commande plus tard.
+  let noteEl=document.getElementById("client-notes");
+  let note=noteEl?noteEl.value.trim():"";
+  if(note)struct.notes=note;
   return struct;
 }
 
@@ -1335,6 +1340,10 @@ async function activerModeEdition(){
     try{ struct=_commandeOrigine.orderJSON?JSON.parse(_commandeOrigine.orderJSON):null; }catch(e){ struct=null; }
     if(struct){
       hydrateFromStructuredSelections(struct);
+      if(struct.notes){
+        let notesEl=document.getElementById("client-notes");
+        if(notesEl)notesEl.value=struct.notes;
+      }
       showToast("✅ Ta commande d'origine a été pré-remplie, modifie ce que tu souhaites.");
     }else{
       showToast("⚠️ Détail exact indisponible pour cette commande — merci de recomposer ta commande en entier.");
@@ -1417,6 +1426,7 @@ async function envoyerDemandeModification(){
   let phone=normalizePhone(document.getElementById("client-phone").value.trim());
   let date=document.getElementById("client-date").value;
   let time=document.getElementById("client-time").value;
+  let noteField=document.getElementById("client-notes")?.value.trim()||"";
 
   if(!name||!phone||!date||!time||time==="COMPLET"){showToast("⚠️ Merci de remplir tous les champs (dont date et créneau).");return;}
   if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0){
@@ -1425,6 +1435,7 @@ async function envoyerDemandeModification(){
   }
 
   let currentSelections=getStructuredSelections();
+  if(noteField)currentSelections.notes=noteField;
   let orderInfo=calculateTotalAndExtractStructure();
 
   let detailFinal,totalFinal,orderJSONFinal;
@@ -1433,6 +1444,7 @@ async function envoyerDemandeModification(){
     let baseStruct=null;
     try{ baseStruct=_commandeOrigine.orderJSON?JSON.parse(_commandeOrigine.orderJSON):null; }catch(e){ baseStruct=null; }
     orderJSONFinal=baseStruct?mergeStructuredSelections(baseStruct,currentSelections):null;
+    if(orderJSONFinal&&noteField)orderJSONFinal.notes=noteField;
     let totalOrigine=parseFloat(String(_commandeOrigine.total).replace(",","."))||0;
     totalFinal=totalOrigine+orderInfo.totalPrice;
     detailFinal=(_commandeOrigine.order||"")+`\n\n➕ AJOUT DEMANDÉ PAR LE CLIENT (+${orderInfo.totalPrice.toFixed(2)}€) :\n`+orderInfo.detailsText;
@@ -1441,6 +1453,7 @@ async function envoyerDemandeModification(){
     totalFinal=orderInfo.totalPrice;
     detailFinal=orderInfo.detailsText;
   }
+  if(noteField)detailFinal+=`\n\nPRECISION CLIENT (${editMode==="complement"?"complément":"modification"}) :\n"${noteField}"`;
 
   let btn=document.getElementById("envoyer-demande-btn");
   btn.disabled=true;btn.textContent="⏳ Envoi en cours...";
