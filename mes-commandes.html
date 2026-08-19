@@ -247,12 +247,27 @@ function afficherResultats(){
           <button class="action-btn annuler" onclick="ouvrirPopup('annuler','${c.id}')">🗑️ Annuler</button>
           <button class="action-btn modifier" onclick="ouvrirEdition('modification','${c.id}')">✏️ Modifier</button>
         </div>`;
+      let soldeNum=parseFloat(String(c.solde).replace(",","."));
+      let acompteNum=parseFloat(String(c.acompte).replace(",","."));
+      let totalNum=parseFloat(String(c.total).replace(",","."));
+      let estAcompteEspeces=(c.payment||"").toLowerCase().includes("déposer en espèces");
+      let ligneSolde;
+      if(estAcompteEspeces&&!isNaN(totalNum)){
+        let acompteAttendu=Math.round(totalNum*0.5*100)/100;
+        let soldeFinal=Math.round((totalNum-acompteAttendu)*100)/100;
+        ligneSolde=`<div class="commande-meta">💵 Acompte à apporter en espèces : ${acompteAttendu.toFixed(2)} € • Solde au retrait : ${soldeFinal.toFixed(2)} € <span style="opacity:0.75;">(total dû : ${totalNum.toFixed(2)} €)</span></div>`;
+      }else if(!isNaN(soldeNum)&&soldeNum>0){
+        ligneSolde=`<div class="commande-meta">💳 Réglé : ${!isNaN(acompteNum)?acompteNum.toFixed(2):"—"} € • Reste à payer sur place : <strong>${soldeNum.toFixed(2)} €</strong></div>`;
+      }else{
+        ligneSolde=`<div class="commande-meta">💳 ${c.payment||"—"} — commande réglée intégralement</div>`;
+      }
       return`<div class="commande-card">
         <div class="commande-top">
           <div class="commande-date">📅 ${c.dateRetrait||"—"}</div>
           <span class="commande-statut ${statut.cls}">${statut.txt}</span>
         </div>
-        <div class="commande-meta">⏰ ${c.creneau||"—"} • 💰 ${c.total||"—"} € • 💳 ${c.payment||"—"}</div>
+        <div class="commande-meta">⏰ ${c.creneau||"—"} • 💰 Total : ${c.total||"—"} €</div>
+        ${ligneSolde}
         <div class="commande-detail">${c.order||""}</div>
         ${actions}
       </div>`;
