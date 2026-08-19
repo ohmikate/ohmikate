@@ -51,6 +51,10 @@ h1{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--ac
 .statut-nouvelle{background:var(--accent-soft);color:var(--accent-dark);}
 .statut-confirmee{background:var(--success-soft);color:var(--success);}
 .statut-prete{background:#E4EEF1;color:var(--blue);}
+.statut-annulee{background:#F0EAE2;color:var(--ink-faint);}
+.commandes-onglets{display:flex;gap:8px;margin-bottom:14px;}
+.onglet-btn{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;font-size:13px;font-weight:600;color:var(--ink-muted);cursor:pointer;font-family:var(--font-body);text-align:center;}
+.onglet-btn.actif{background:var(--accent);border-color:var(--accent);color:#fff;}
 .commande-detail{font-size:13px;color:var(--ink-muted);line-height:1.7;white-space:pre-wrap;background:var(--surface-alt);border-radius:8px;padding:10px;margin-bottom:10px;}
 .commande-meta{font-size:12px;color:var(--ink-faint);margin-bottom:12px;}
 .commande-actions{display:flex;gap:8px;flex-wrap:wrap;}
@@ -102,12 +106,12 @@ h2.section-titre{font-family:var(--font-display);font-weight:600;font-size:18px;
 
 <!-- Popup annulation -->
 <div class="popup" id="popup-annuler">
-  <div class="popup-box">
+  <div class="popup-box" id="popup-annuler-box">
     <h3>🗑️ Annuler la commande</h3>
     <p>Cette demande sera transmise à Oh! Mikaté, qui te confirmera l'annulation. Consulte les CGV pour les conditions de remboursement de l'acompte.</p>
     <div class="popup-btns">
       <button class="popup-cancel" onclick="fermerPopups()">Retour</button>
-      <button class="popup-confirm" style="background:var(--error);" onclick="envoyerDemande('annulation')">Confirmer l'annulation</button>
+      <button class="popup-confirm" id="popup-annuler-confirm-btn" style="background:var(--error);" onclick="envoyerDemande('annulation')">Confirmer l'annulation</button>
     </div>
   </div>
 </div>
@@ -165,6 +169,7 @@ async function chercherCommandes(){
     let res=await fetch(APPS_SCRIPT_URL+"?action=lookup&phone="+encodeURIComponent(phone));
     let data=await res.json();
     commandesTrouvees=(data&&data.commandes)||[];
+    ongletCommandesActif="encours";
     afficherDemandesClient((data&&data.demandes)||[]);
     if(commandesTrouvees.length===0){
       afficherMsg("Aucune commande trouvée pour ce numéro. Vérifie qu'il s'agit bien du numéro utilisé lors de la commande.");
@@ -206,36 +211,71 @@ function afficherDemandesClient(demandes){
 }
 
 function libelleStatut(s){
-  if(s==="annulee")return{cls:"statut-nouvelle",txt:"🗑️ Annulée"};
+  if(s==="annulee")return{cls:"statut-annulee",txt:"🗑️ Annulée"};
   if(s==="prete")return{cls:"statut-prete",txt:"🍳 Prête"};
   if(s==="confirmee")return{cls:"statut-confirmee",txt:"✅ Confirmée"};
   return{cls:"statut-nouvelle",txt:"🆕 En attente de confirmation"};
 }
 
+let ongletCommandesActif="encours";
+
+function changerOngletCommandes(onglet){
+  ongletCommandesActif=onglet;
+  afficherResultats();
+}
+
 function afficherResultats(){
   let zone=document.getElementById("resultats");
-  zone.innerHTML=commandesTrouvees.map(c=>{
-    let statut=libelleStatut(c.statut);
-    let actions=(c.statut==="annulee"||c.statut==="prete")?"":`<div class="commande-actions">
-        <button class="action-btn annuler" onclick="ouvrirPopup('annuler','${c.id}')">🗑️ Annuler</button>
-        <button class="action-btn modifier" onclick="ouvrirEdition('modification','${c.id}')">✏️ Modifier</button>
-        <button class="action-btn completer" onclick="ouvrirEdition('complement','${c.id}')">➕ Compléter</button>
-      </div>`;
-    return`<div class="commande-card">
-      <div class="commande-top">
-        <div class="commande-date">📅 ${c.dateRetrait||"—"}</div>
-        <span class="commande-statut ${statut.cls}">${statut.txt}</span>
-      </div>
-      <div class="commande-meta">⏰ ${c.creneau||"—"} • 💰 ${c.total||"—"} € • 💳 ${c.payment||"—"}</div>
-      <div class="commande-detail">${c.order||""}</div>
-      ${actions}
+  let enCours=commandesTrouvees.filter(c=>c.statut!=="annulee"&&c.statut!=="prete");
+  let historique=commandesTrouvees.filter(c=>c.statut==="annulee"||c.statut==="prete");
+
+  let html="";
+  if(historique.length>0){
+    html+=`<div class="commandes-onglets">
+      <button class="onglet-btn${ongletCommandesActif==="encours"?" actif":""}" onclick="changerOngletCommandes('encours')">🕓 En cours (${enCours.length})</button>
+      <button class="onglet-btn${ongletCommandesActif==="historique"?" actif":""}" onclick="changerOngletCommandes('historique')">📜 Historique (${historique.length})</button>
     </div>`;
-  }).join("");
+  }
+
+  let liste=(historique.length>0&&ongletCommandesActif==="historique")?historique:enCours;
+  if(liste.length===0){
+    html+=`<div class="msg">${ongletCommandesActif==="historique"?"Aucune commande dans l'historique.":"Aucune commande en cours."}</div>`;
+  }else{
+    html+=liste.map(c=>{
+      let statut=libelleStatut(c.statut);
+      let actions=(c.statut==="annulee"||c.statut==="prete")?"":`<div class="commande-actions" id="actions-${c.id}">
+          <button class="action-btn annuler" onclick="ouvrirPopup('annuler','${c.id}')">🗑️ Annuler</button>
+          <button class="action-btn modifier" onclick="ouvrirEdition('modification','${c.id}')">✏️ Modifier</button>
+        </div>`;
+      return`<div class="commande-card">
+        <div class="commande-top">
+          <div class="commande-date">📅 ${c.dateRetrait||"—"}</div>
+          <span class="commande-statut ${statut.cls}">${statut.txt}</span>
+        </div>
+        <div class="commande-meta">⏰ ${c.creneau||"—"} • 💰 ${c.total||"—"} € • 💳 ${c.payment||"—"}</div>
+        <div class="commande-detail">${c.order||""}</div>
+        ${actions}
+      </div>`;
+    }).join("");
+  }
+
+  zone.innerHTML=html;
   zone.style.display="block";
 }
 
+const POPUP_ANNULER_HTML_INITIAL=`<h3>🗑️ Annuler la commande</h3>
+    <p>Cette demande sera transmise à Oh! Mikaté, qui te confirmera l'annulation. Consulte les CGV pour les conditions de remboursement de l'acompte.</p>
+    <div class="popup-btns">
+      <button class="popup-cancel" onclick="fermerPopups()">Retour</button>
+      <button class="popup-confirm" id="popup-annuler-confirm-btn" style="background:var(--error);" onclick="envoyerDemande('annulation')">Confirmer l'annulation</button>
+    </div>`;
+
 function ouvrirPopup(type,commandeId){
   demandeEnCours={commandeId,type};
+  if(type==="annuler"){
+    let box=document.getElementById("popup-annuler-box");
+    if(box)box.innerHTML=POPUP_ANNULER_HTML_INITIAL;
+  }
   document.getElementById("popup-"+type).classList.add("show");
 }
 
@@ -257,6 +297,15 @@ async function envoyerDemande(typeDemande){
     return;
   }
 
+  // Empêche les envois multiples : on désactive le bouton dès le premier clic.
+  let btnConfirm=document.getElementById("popup-annuler-confirm-btn");
+  let boxPopup=document.getElementById("popup-annuler-box");
+  if(btnConfirm){
+    if(btnConfirm.disabled)return; // déjà en cours d'envoi, on ignore les clics suivants
+    btnConfirm.disabled=true;
+    btnConfirm.textContent="⏳ Envoi en cours...";
+  }
+
   let phone = normalizePhone(document.getElementById("phone-input").value.trim());
   let payload = {
     action: "demande",
@@ -268,8 +317,6 @@ async function envoyerDemande(typeDemande){
     creneau: c.creneau || "",
     detail: ""
   };
-
-  afficherMsg("⏳ Envoi de votre demande en cours...");
 
   try {
     let res = await fetch(APPS_SCRIPT_URL, {
@@ -283,13 +330,29 @@ async function envoyerDemande(typeDemande){
       throw new Error("Réponse serveur invalide");
     }
 
-    fermerPopups();
+    // Confirmation affichée directement dans le popup, là où le client regarde déjà,
+    // avant de le fermer automatiquement quelques instants après.
+    if(boxPopup){
+      boxPopup.innerHTML=`<h3>✅ Demande envoyée</h3><p>Ta demande d'annulation a bien été transmise à Oh! Mikaté. Tu recevras une confirmation de sa part.</p>`;
+    }
+    // Empêche de rouvrir le popup et de renvoyer une demande pour cette commande
+    // pendant que la liste n'a pas encore été rafraîchie.
+    let actionsEl=document.getElementById("actions-"+c.id);
+    if(actionsEl)actionsEl.style.display="none";
+
     afficherMsg("✅ Ta demande a bien été transmise à Oh! Mikaté !");
-    setTimeout(chercherCommandes,2500);
+    setTimeout(function(){
+      fermerPopups();
+      chercherCommandes();
+    },1800);
 
   } catch(e) {
     console.error("Erreur lors de l'envoi:", e);
     afficherMsg("❌ Une erreur s'est produite lors de l'envoi. Réessaie, ou contacte Oh! Mikaté directement si le problème persiste.",true);
+    if(btnConfirm){
+      btnConfirm.disabled=false;
+      btnConfirm.textContent="Confirmer l'annulation";
+    }
   }
 }
 
