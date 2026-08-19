@@ -265,14 +265,20 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 </div>
 
 <style>
+.stripe-notify-wow{background:linear-gradient(135deg,#FFB238,#F2871F);border-radius:18px;padding:22px 18px;margin-bottom:22px;text-align:center;box-shadow:0 8px 28px rgba(242,135,31,0.45);animation:popIn 0.55s cubic-bezier(0.175,0.885,0.32,1.275),wowPulse 1.8s ease-in-out 0.55s 3;}
+@keyframes wowPulse{0%,100%{box-shadow:0 8px 28px rgba(242,135,31,0.45);}50%{box-shadow:0 8px 40px rgba(242,135,31,0.75);}}
+.stripe-notify-wow .stripe-notify-icon{font-size:38px;margin-bottom:6px;}
+.stripe-notify-wow .stripe-notify-title{font-family:var(--font-display);font-size:19px;color:#fff;letter-spacing:0.5px;margin-bottom:8px;text-shadow:0 1px 3px rgba(0,0,0,0.15);}
+.stripe-notify-wow .stripe-notify-text{font-size:14px;color:#fff;line-height:1.6;margin-bottom:16px;opacity:0.97;}
+.stripe-notify-wow .cancel-links a{font-size:15px;padding:13px 16px;font-weight:700;box-shadow:0 3px 10px rgba(0,0,0,0.12);}
 @keyframes offreBlink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.55;transform:scale(1.06);}}
 .offre-blink{animation:offreBlink 1.1s ease-in-out infinite;}
 </style>
 
 <!-- PAGE PRINCIPALE -->
 <div id="main-page">
-<div id="edition-banner" style="display:none;background:var(--amber);color:#fff;padding:14px 20px;text-align:center;font-family:var(--font-display);font-weight:600;font-size:15px;">
-  ✏️ Tu modifies ta commande — <span id="edition-banner-sub" style="font-weight:normal;font-size:13px;display:block;margin-top:2px;"></span>
+<div id="edition-banner" style="display:none;background:var(--amber);color:#fff;padding:14px 20px;text-align:center;font-family:var(--font-display);font-weight:600;font-size:15px;transition:background .3s;">
+  <span id="edition-banner-title">✏️ Tu modifies ta commande</span> — <span id="edition-banner-sub" style="font-weight:normal;font-size:13px;display:block;margin-top:2px;"></span>
 </div>
 <div class="hero"><img src="Images/Flyer4.jpg" alt="Oh! Mikaté Flyer"></div>
 <div style="background:#FFFFFF;padding:15px;text-align:center;font-size:14px;margin:15px;border-radius:10px;border:1px solid #E4D3BA;">
@@ -473,6 +479,15 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
       <h1>Commande envoyée !</h1>
       <p>Votre commande a bien été transmise. Conservez ce récapitulatif.</p>
     </div>
+    <div id="e-stripe-notify-section" class="stripe-notify-wow" style="display:none;">
+      <div class="stripe-notify-icon">📲</div>
+      <div class="stripe-notify-title">UNE DERNIÈRE ÉTAPE IMPORTANTE !</div>
+      <div class="stripe-notify-text">Ton paiement est bien passé, mais Oh! Mikaté n'est pas notifiée automatiquement !<br>Envoie-lui un petit message pour qu'elle voie ta commande tout de suite 👇</div>
+      <div class="cancel-links">
+        <a id="e-notify-whatsapp" href="#" target="_blank" class="cancel-link" style="background:#fff;color:#128C4E;border:none;">📲 Confirmer par WhatsApp</a>
+        <a id="e-notify-sms" href="#" class="cancel-link" style="background:#fff;color:#3A6B7D;border:none;">💬 Confirmer par SMS</a>
+      </div>
+    </div>
     <div class="confirm-card">
       <div class="confirm-card-header">🧾 Votre récapitulatif</div>
       <div class="confirm-card-body">
@@ -487,15 +502,6 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
       <div class="confirm-card-header">📦 Détail commande</div>
       <div class="confirm-card-body"><div id="e-order-detail" class="order-detail-box">—</div></div>
       <div class="total-line"><span>Total à prévoir</span><span id="e-total">0,00 €</span></div>
-    </div>
-    <div id="e-stripe-notify-section" style="display:none;background:#FFF4E0;border:2px solid #F2871F;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
-      <div style="font-size:22px;margin-bottom:8px;">📲</div>
-      <div style="font-family:var(--font-display);font-size:15px;color:#F2871F;margin-bottom:8px;">UNE DERNIÈRE ÉTAPE IMPORTANTE</div>
-      <div style="font-size:13px;color:#7A6A5C;line-height:1.6;margin-bottom:14px;">Ton paiement est bien passé, mais Oh! Mikaté n'est pas notifiée automatiquement ! Envoie-lui un petit message pour qu'elle voie ta commande tout de suite :</div>
-      <div class="cancel-links">
-        <a id="e-notify-whatsapp" href="#" target="_blank" class="cancel-link" style="background:#25D36622;color:#128C4E;border:1px solid #25D366;">📲 Confirmer par WhatsApp</a>
-        <a id="e-notify-sms" href="#" class="cancel-link" style="background:#3A6B7D22;color:#3A6B7D;border:1px solid #3A6B7D;">💬 Confirmer par SMS</a>
-      </div>
     </div>
     <div style="background:#FFFFFF;border:1px solid #F2871F;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
       <div style="font-size:22px;margin-bottom:8px;">⏳</div>
@@ -1323,12 +1329,16 @@ async function activerModeEdition(){
 
   let banner=document.getElementById("edition-banner");
   banner.style.display="block";
+  document.getElementById("edition-banner-title").textContent="✏️ Tu modifies ta commande";
   document.getElementById("edition-banner-sub").textContent=
     editMode==="complement"
       ? "Choisis ci-dessous uniquement ce que tu veux AJOUTER à ta commande existante."
       : "Recompose ci-dessous ta commande telle que tu la souhaites désormais.";
 
   if(!_commandeOrigine){
+    banner.style.background="var(--error)";
+    document.getElementById("edition-banner-title").textContent="⚠️ Commande d'origine introuvable";
+    document.getElementById("edition-banner-sub").textContent="Merci de recomposer ta commande en entier ci-dessous.";
     showToast("⚠️ Impossible de retrouver ta commande d'origine — merci de recomposer ta commande en entier.");
     return;
   }
@@ -1344,8 +1354,16 @@ async function activerModeEdition(){
         let notesEl=document.getElementById("client-notes");
         if(notesEl)notesEl.value=struct.notes;
       }
+      // Confirmation intégrée à la bannière PERSISTANTE (visible tant que le client édite),
+      // plutôt qu'un simple toast fugace facilement manqué par un client rapide.
+      banner.style.background="var(--success)";
+      document.getElementById("edition-banner-title").textContent="✅ Ta commande a été pré-remplie";
+      document.getElementById("edition-banner-sub").textContent="Modifie ci-dessous uniquement ce que tu souhaites changer.";
       showToast("✅ Ta commande d'origine a été pré-remplie, modifie ce que tu souhaites.");
     }else{
+      banner.style.background="var(--error)";
+      document.getElementById("edition-banner-title").textContent="⚠️ Détail indisponible";
+      document.getElementById("edition-banner-sub").textContent="Merci de recomposer ta commande en entier ci-dessous.";
       showToast("⚠️ Détail exact indisponible pour cette commande — merci de recomposer ta commande en entier.");
     }
   }
@@ -2010,6 +2028,12 @@ window.onload=function(){
   initDates();
   handleDateChange();
   if(editMode&&editPhone){
+    // Bannière affichée IMMÉDIATEMENT (avant même le chargement réseau) pour que le client
+    // la voie dès l'arrivée sur la page, plutôt que d'attendre la fin des requêtes.
+    let banner=document.getElementById("edition-banner");
+    banner.style.display="block";
+    document.getElementById("edition-banner-title").textContent="⏳ Chargement de ta commande...";
+    document.getElementById("edition-banner-sub").textContent="Un instant, on récupère le détail de ta commande d'origine.";
     chargerCommandeOrigineEdition().then(()=>{
       Promise.all([chargerComptesCreneaux(),chargerStockIndisponible()]).then(()=>{
         exclureCommandeOrigineDuComptage();
