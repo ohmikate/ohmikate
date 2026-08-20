@@ -348,6 +348,7 @@ let supprimees=[];
 let pretes=[];
 let archivees=[];
 let soldeRecu=[];
+let acompteEspecesRecu=[];
 let idPretePendant=null;
 let derniersGroupesHisto={};
 let idASupp=null;
@@ -471,8 +472,9 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
       let statutRaw = row.c[11] ? String(row.c[11].v).trim() : "";
       let archiveRaw = row.c[16] ? String(row.c[16].v).trim() : "";
       let soldeRaw = row.c[17] ? String(row.c[17].v).trim() : "";
+      let acompteEspecesRaw = row.c[18] ? String(row.c[18].v).trim() : "";
 
-      toutesCommandes.push({id:uid,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent,acomptePaye,modifieeNonNotifiee,kRaw,statutRaw,archiveRaw,soldeRaw});
+      toutesCommandes.push({id:uid,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent,acomptePaye,modifieeNonNotifiee,kRaw,statutRaw,archiveRaw,soldeRaw,acompteEspecesRaw});
     });
     // Les 5 statuts (Confirmée/Prête/Supprimée/Archivée/Solde reçu) sont désormais dérivés
     // directement de la feuille (colonnes K, L, Q, R) — plus jamais du localStorage seul,
@@ -482,6 +484,7 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
     pretes=toutesCommandes.filter(c=>c.statutRaw==="Prête").map(c=>c.id);
     archivees=toutesCommandes.filter(c=>c.archiveRaw==="OUI").map(c=>c.id);
     soldeRecu=toutesCommandes.filter(c=>c.soldeRaw==="OUI").map(c=>c.id);
+    acompteEspecesRecu=toutesCommandes.filter(c=>c.acompteEspecesRaw==="OUI").map(c=>c.id);
 
     // Détecter nouvelles commandes et alerter
     let idsConnus=JSON.parse(localStorage.getItem('ohMikateIdsConnus')||'[]');
@@ -1454,25 +1457,44 @@ function renderCommande(c, opts){
       <div style="font-size:11px; color:var(--ink-muted); margin-top:8px;">💳 Règlement : <b>${c.payment || 'Non spécifié'}</b> • Recu le ${c.datePropre || ''} à ${c.heure || ''}</div>
       ${(()=>{
         let solde=calculerSolde(c);
-        if(solde<=0.01)return "";
+        let estAcompteEspeces=(c.payment||"").toLowerCase().includes("déposer en espèces");
+        let acompteRecuIci=acompteEspecesRecu.includes(c.id);
+        if(solde<=0.01){
+          if(estAcompteEspeces&&acompteRecuIci){
+            return `<div style="font-size:12px; color:var(--success); font-weight:bold; margin-top:6px; background:var(--success-soft); border:1px solid var(--success); border-radius:8px; padding:6px 10px;">✅ Acompte espèces reçu — commande intégralement réglée</div>`;
+          }
+          return "";
+        }
         if(soldeRecu.includes(c.id)){
           return `<div style="font-size:12px; color:var(--success); font-weight:bold; margin-top:6px; background:var(--success-soft); border:1px solid var(--success); border-radius:8px; padding:6px 10px;">✅ Solde de ${solde.toFixed(2).replace('.',',')} € marqué comme reçu</div>`;
         }
-        // Acompte "à déposer en espèces" : rien n'a encore été reçu, donc on détaille
-        // ce qui est attendu en espèces (avant/à la commande) et ce qui restera dû au retrait,
+        if(estAcompteEspeces&&acompteRecuIci){
+          return `<div style="font-size:12px; color:var(--amber); font-weight:bold; margin-top:6px; background:var(--amber-soft); border:1px solid var(--amber); border-radius:8px; padding:6px 10px;">✅ Acompte espèces déjà reçu — 💰 Solde restant au retrait : ${solde.toFixed(2).replace('.',',')} €</div>`;
+        }
+        // Acompte "à déposer en espèces" pas encore marqué reçu : on détaille ce qui est
+        // attendu en espèces (avant/à la commande) et ce qui restera dû au retrait,
         // au lieu d'un seul total qui masque cette distinction.
-        let estAcompteEspeces=(c.payment||"").toLowerCase().includes("déposer en espèces");
         if(estAcompteEspeces){
           let totalNum=parseFloat(String(c.total).replace(",","."))||0;
           let acompteAttendu=Math.round(totalNum*0.5*100)/100;
           let soldeFinal=Math.round((totalNum-acompteAttendu)*100)/100;
-          return `<div style="font-size:12px; color:var(--amber); font-weight:bold; margin-top:6px; background:var(--amber-soft); border:1px solid var(--amber); border-radius:8px; padding:6px 10px;">💰 Acompte à récupérer en espèces : ${acompteAttendu.toFixed(2).replace('.',',')} € • Solde au retrait : ${soldeFinal.toFixed(2).replace('.',',')} € (total dû : ${totalNum.toFixed(2).replace('.',',')} €) — un choix te sera demandé au clic sur "Prête"</div>`;
+          return `<div style="font-size:12px; color:var(--amber); font-weight:bold; margin-top:6px; background:var(--amber-soft); border:1px solid var(--amber); border-radius:8px; padding:6px 10px;">💰 Acompte à récupérer en espèces : ${acompteAttendu.toFixed(2).replace('.',',')} € • Solde au retrait : ${soldeFinal.toFixed(2).replace('.',',')} € (total dû : ${totalNum.toFixed(2).replace('.',',')} €)</div>`;
         }
         return `<div style="font-size:12px; color:var(--amber); font-weight:bold; margin-top:6px; background:var(--amber-soft); border:1px solid var(--amber); border-radius:8px; padding:6px 10px;">💰 Solde restant : ${solde.toFixed(2).replace('.',',')} € — un choix te sera demandé au clic sur "Prête"</div>`;
       })()}
     </div>
     
     <div class="actions-sec" style="margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;">`;
+
+  // Bouton dédié pour marquer/démarquer l'acompte espèces comme reçu — indépendant
+  // du statut Prête, car ce dépôt peut avoir lieu bien avant le retrait.
+  if((c.payment||"").toLowerCase().includes("déposer en espèces")){
+    if(acompteEspecesRecu.includes(c.id)){
+      html += `<button class="btn-marquer" style="border-color:var(--ink-faint);color:var(--ink-faint);" onclick="toggleAcompteEspecesRecu(${c.id},false)">↩️ Acompte pas encore reçu</button>`;
+    }else{
+      html += `<button class="btn-marquer" style="border-color:var(--success);color:var(--success);" onclick="toggleAcompteEspecesRecu(${c.id},true)">✅ Acompte reçu</button>`;
+    }
+  }
   
   if(opts.archive){
     html += `<button class="btn-marquer" style="border-color:var(--success);color:var(--success);" onclick="desarchiverCommande(${c.id})">♻️ Désarchiver</button>`;
@@ -1547,6 +1569,9 @@ function calculerSolde(c){
   let total=parseFloat(String(c.total).replace(",","."));
   if(isNaN(total))return 0;
   let acomptePaye=parseFloat(String(c.acomptePaye||"0").replace(",","."))||0;
+  // Si l'acompte en espèces a été marqué comme récupéré, on le compte comme réglé
+  // (au moins 50% du total), au même titre qu'un acompte payé en ligne.
+  if(acompteEspecesRecu.includes(c.id))acomptePaye=Math.max(acomptePaye,total*0.5);
   let solde=total-acomptePaye;
   return solde>0.01?Math.round(solde*100)/100:0;
 }
@@ -1558,6 +1583,18 @@ function genBlocSolde(solde,b){
   bloc+=`📲 Via Wero : envoie ${soldeStr}€ au ${WERO_PHONE} (Oh! Mikaté)\n`;
   bloc+=`💳 Ou via PayPal : ${lienPaypal}\n\n`;
   return bloc;
+}
+
+// Pour un acompte "à déposer en espèces" : rien n'a été réglé en ligne, tout se règle
+// sur place (espèces ou CB) — on ne doit donc PAS pousser Wero/PayPal ici, contrairement
+// à un acompte réglé en ligne où seul le solde final est demandé par ce biais.
+function genBlocSoldeEspeces(total,b){
+  let totalStr=total.toFixed(2).replace(".",",");
+  return `💰 ${b}Total à régler sur place (espèces ou CB) : ${totalStr} €${b}\n\n`;
+}
+
+function estAcompteEspeces(c){
+  return (c.payment||"").toLowerCase().includes("déposer en espèces");
 }
 
 function genMsg(c,pourSMS=false){
@@ -1576,7 +1613,14 @@ function genMsg(c,pourSMS=false){
   msg+=`⏰ Créneau : ${c.creneau||"—"}\n`;
   msg+=`💰 Total : ${c.total||"—"} €\n\n`;
   msg+=`📦 ${b}Ta commande :${b}\n${c.order||""}\n\n`;
-  if(solde>0.01)msg+=genBlocSolde(solde,b);
+  if(estAcompteEspeces(c)&&!acompteEspecesRecu.includes(c.id)){
+    // Acompte espèces pas encore récupéré : tout reste dû sur place.
+    let totalNum=parseFloat(String(c.total).replace(",","."))||0;
+    if(totalNum>0.01)msg+=genBlocSoldeEspeces(totalNum,b);
+  }else if(estAcompteEspeces(c)){
+    // Acompte espèces déjà récupéré : seul le solde restant est dû, toujours sur place.
+    if(solde>0.01)msg+=genBlocSoldeEspeces(solde,b);
+  }else if(solde>0.01)msg+=genBlocSolde(solde,b);
   msg+=`📍 ${b}Adresse de retrait :${b}\n36 rue du Chanoine Lallement, Reims\n\n`;
   msg+=`🔔 Une fois arrivé(e) en bas de l'immeuble, merci de m'appeler ou de m'envoyer un message — tu auras ta commande en mains propres ! 🍩\n\n`;
   msg+=`🔗 ${b}Besoin de modifier ou d'annuler ?${b}\nohmikate.netlify.app/mes-commandes\n\n`;
@@ -1597,6 +1641,11 @@ function genMsgPret(c,pourSMS=false){
   if(solde>0.01){
     if(soldeRecu.includes(c.id)){
       msg+=`✅ ${b}J'ai bien reçu la totalité du règlement, merci beaucoup !${b}\n\n`;
+    }else if(estAcompteEspeces(c)){
+      // Que l'acompte espèces ait déjà été récupéré ou non, `solde` reflète ici le bon montant
+      // (calculerSolde le réduit automatiquement si l'acompte a été marqué comme reçu).
+      msg+=genBlocSoldeEspeces(solde,b);
+      msg+=`🙏 Merci de ne pas oublier le règlement en venant récupérer ta commande !\n\n`;
     }else{
       msg+=genBlocSolde(solde,b);
       msg+=`🙏 Merci de ne pas oublier le solde en venant récupérer ta commande !\n\n`;
@@ -1762,6 +1811,21 @@ function confirmerChoixSolde(recu){
 function fermerPopupSolde(){
   idPretePendant=null;
   document.getElementById("popup-solde").classList.remove("show");
+}
+
+// Marque/démarque l'acompte espèces comme récupéré (colonne S), indépendamment du solde final.
+function toggleAcompteEspecesRecu(id,recu){
+  if(recu){
+    if(!acompteEspecesRecu.includes(id))acompteEspecesRecu.push(id);
+  }else{
+    acompteEspecesRecu=acompteEspecesRecu.filter(x=>x!==id);
+  }
+  fetch(APPS_SCRIPT_URL,{
+    method:"POST",mode:"no-cors",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"acompteEspeces",rowIndex:toutesCommandes.find(x=>x.id===id)?.rowIndex,valeur:recu?"OUI":""})
+  }).catch(()=>{});
+  afficher();
 }
 
 function annulerPrete(id){
