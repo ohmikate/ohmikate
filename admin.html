@@ -349,6 +349,7 @@ let pretes=[];
 let archivees=[];
 let soldeRecu=[];
 let acompteEspecesRecu=[];
+let acompteEspecesMontants={}; // id -> montant exact reçu en espèces (figé, indépendant du total actuel)
 let idPretePendant=null;
 let derniersGroupesHisto={};
 let idASupp=null;
@@ -484,7 +485,15 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
     pretes=toutesCommandes.filter(c=>c.statutRaw==="Prête").map(c=>c.id);
     archivees=toutesCommandes.filter(c=>c.archiveRaw==="OUI").map(c=>c.id);
     soldeRecu=toutesCommandes.filter(c=>c.soldeRaw==="OUI").map(c=>c.id);
-    acompteEspecesRecu=toutesCommandes.filter(c=>c.acompteEspecesRaw==="OUI").map(c=>c.id);
+    acompteEspecesRecu=toutesCommandes.filter(c=>c.acompteEspecesRaw!=="").map(c=>c.id);
+    acompteEspecesMontants={};
+    toutesCommandes.forEach(c=>{
+      if(c.acompteEspecesRaw===""||c.acompteEspecesRaw===undefined)return;
+      let m=parseFloat(String(c.acompteEspecesRaw).replace(",","."));
+      // Repli sur 50% du total UNIQUEMENT pour d'anciennes entrées qui contiendraient
+      // encore juste "OUI" (avant l'ajout du montant figé) — sinon on utilise le montant stocké.
+      acompteEspecesMontants[c.id]=!isNaN(m)?m:(parseFloat(String(c.total).replace(",","."))||0)*0.5;
+    });
 
     // Détecter nouvelles commandes et alerter
     let idsConnus=JSON.parse(localStorage.getItem('ohMikateIdsConnus')||'[]');
@@ -1057,11 +1066,13 @@ function afficherHistorique(){
 /* ===== VUE HISTORIQUE PAR JOUR ===== */
 function afficherHistoJours(){
   let container=document.getElementById("histo-container");
-  // Uniquement les commandes confirmées
-  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&confirmees.includes(c.id));
+  // Toutes les commandes traitées (Confirmée OU Prête, archivées ou non) — pas seulement
+  // celles encore au statut "Confirmée", sinon une commande disparaît de l'historique
+  // dès qu'elle passe à "Prête", ce qui est le cheminement normal de toute commande.
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&(confirmees.includes(c.id)||pretes.includes(c.id)));
 
   if(visible.length===0){
-    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📊</div><p>Aucune commande confirmée.</p></div>`;
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">📊</div><p>Aucune commande confirmée ou prête.</p></div>`;
     return;
   }
 
@@ -1137,10 +1148,13 @@ function afficherHistoJours(){
 function afficherHistoClients(){
   let container=document.getElementById("histo-container");
   let recherche=(document.getElementById("histo-search")?.value||"").toLowerCase().trim();
-  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&confirmees.includes(c.id));
+  // Même correction : inclure les commandes Prête, pas seulement Confirmée, sinon un client
+  // dont toutes les commandes sont passées à "Prête" n'apparaît plus jamais ici — ce qui
+  // cassait justement le suivi de fidélité (3 commandes → boîte offerte).
+  let visible=toutesCommandes.filter(c=>!supprimees.includes(c.id)&&(confirmees.includes(c.id)||pretes.includes(c.id)));
 
   if(visible.length===0){
-    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">👤</div><p>Aucune commande confirmée.</p></div>`;
+    container.innerHTML=`<div class="empty-state"><div style="font-size:40px;margin-bottom:12px;">👤</div><p>Aucune commande confirmée ou prête.</p></div>`;
     return;
   }
 
@@ -1571,7 +1585,7 @@ function calculerSolde(c){
   let acomptePaye=parseFloat(String(c.acomptePaye||"0").replace(",","."))||0;
   // Si l'acompte en espèces a été marqué comme récupéré, on le compte comme réglé
   // (au moins 50% du total), au même titre qu'un acompte payé en ligne.
-  if(acompteEspecesRecu.includes(c.id))acomptePaye=Math.max(acomptePaye,total*0.5);
+  if(acompteEspecesRecu.includes(c.id))acomptePaye=Math.max(acomptePaye,acompteEspecesMontants[c.id]||0);
   let solde=total-acomptePaye;
   return solde>0.01?Math.round(solde*100)/100:0;
 }
@@ -1814,16 +1828,25 @@ function fermerPopupSolde(){
 }
 
 // Marque/démarque l'acompte espèces comme récupéré (colonne S), indépendamment du solde final.
+// On fige le montant exact reçu AU MOMENT DU CLIC (50% du total à cet instant précis) :
+// s'il y a une modification de commande ensuite, le total change mais ce montant, lui, ne bouge plus.
 function toggleAcompteEspecesRecu(id,recu){
+  let commande=toutesCommandes.find(x=>x.id===id);
+  let valeurEnvoyee="";
   if(recu){
+    let totalActuel=parseFloat(String(commande?.total).replace(",","."))||0;
+    let montantFige=Math.round(totalActuel*0.5*100)/100;
     if(!acompteEspecesRecu.includes(id))acompteEspecesRecu.push(id);
+    acompteEspecesMontants[id]=montantFige;
+    valeurEnvoyee=String(montantFige);
   }else{
     acompteEspecesRecu=acompteEspecesRecu.filter(x=>x!==id);
+    delete acompteEspecesMontants[id];
   }
   fetch(APPS_SCRIPT_URL,{
     method:"POST",mode:"no-cors",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({action:"acompteEspeces",rowIndex:toutesCommandes.find(x=>x.id===id)?.rowIndex,valeur:recu?"OUI":""})
+    body:JSON.stringify({action:"acompteEspeces",rowIndex:commande?.rowIndex,valeur:valeurEnvoyee})
   }).catch(()=>{});
   afficher();
 }
