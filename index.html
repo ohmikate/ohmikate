@@ -1391,10 +1391,22 @@ async function activerModeEdition(){
 
 // Calcule le nouveau total et le vrai montant restant à régler (ou à rembourser) au retrait,
 // en tenant compte de l'acompte déjà réglé en ligne sur la commande d'origine.
+// Si le champ "acompte" n'est pas exploitable (commande ancienne, ou pas encore renseigné),
+// on le déduit du texte du mode de paiement, comme le fait déjà l'admin.
+function deduireAcomptePayeDepuisTexte(texteReglement,total){
+  let t=String(texteReglement||"").toLowerCase();
+  let totalNum=parseFloat(String(total).replace(",","."))||0;
+  if(t.includes("totalité")||t.includes("intégral"))return totalNum;
+  if(t.includes("acompte réglé"))return totalNum*0.5;
+  return 0;
+}
 function calculerResteAPayer(totalComposeur){
   if(!_commandeOrigine)return{totalOrigine:0,acomptePaye:0,nouveauTotal:totalComposeur,resteDu:totalComposeur};
   let totalOrigine=parseFloat(String(_commandeOrigine.total).replace(",","."))||0;
-  let acomptePaye=parseFloat(String(_commandeOrigine.acomptePaye||"0").replace(",","."))||0;
+  let acomptePayeBrut=_commandeOrigine.acompte;
+  let acomptePaye=(acomptePayeBrut!==undefined&&acomptePayeBrut!==null&&String(acomptePayeBrut).trim()!=="")
+    ?(parseFloat(String(acomptePayeBrut).replace(",","."))||0)
+    :deduireAcomptePayeDepuisTexte(_commandeOrigine.payment,totalOrigine);
   let nouveauTotal=editMode==="complement"?(totalOrigine+totalComposeur):totalComposeur;
   let resteDu=nouveauTotal-acomptePaye;
   return{totalOrigine,acomptePaye,nouveauTotal,resteDu};
@@ -1499,7 +1511,10 @@ async function envoyerDemandeModification(){
     let diffEl=document.getElementById("edition-confirm-diff");
     if(_commandeOrigine){
       let totalOrigineConf=parseFloat(String(_commandeOrigine.total).replace(",","."))||0;
-      let acomptePayeConf=parseFloat(String(_commandeOrigine.acomptePaye||"0").replace(",","."))||0;
+      let acomptePayeBrutConf=_commandeOrigine.acompte;
+      let acomptePayeConf=(acomptePayeBrutConf!==undefined&&acomptePayeBrutConf!==null&&String(acomptePayeBrutConf).trim()!=="")
+        ?(parseFloat(String(acomptePayeBrutConf).replace(",","."))||0)
+        :deduireAcomptePayeDepuisTexte(_commandeOrigine.payment,totalOrigineConf);
       let resteDuConf=totalFinal-acomptePayeConf;
       diffEl.innerHTML=htmlDetailResteAPayer(totalOrigineConf,acomptePayeConf,totalFinal)+htmlResteAPayer(resteDuConf);
     }else{
