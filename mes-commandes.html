@@ -52,6 +52,7 @@ h1{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--ac
 .statut-confirmee{background:var(--success-soft);color:var(--success);}
 .statut-prete{background:#E4EEF1;color:var(--blue);}
 .statut-annulee{background:#F0EAE2;color:var(--ink-faint);}
+.statut-modifiee{background:#EAE0F5;color:#6B3FA0;margin-left:6px;}
 .commandes-onglets{display:flex;gap:8px;margin-bottom:14px;}
 .onglet-btn{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;font-size:13px;font-weight:600;color:var(--ink-muted);cursor:pointer;font-family:var(--font-body);text-align:center;}
 .onglet-btn.actif{background:var(--accent);border-color:var(--accent);color:#fff;}
@@ -266,7 +267,7 @@ function afficherResultats(){
       return`<div class="commande-card">
         <div class="commande-top">
           <div class="commande-date">📅 ${c.dateRetrait||"—"}</div>
-          <span class="commande-statut ${statut.cls}">${statut.txt}</span>
+          <span class="commande-statut ${statut.cls}">${statut.txt}</span>${c.modifiee?`<span class="commande-statut statut-modifiee">✏️ Modifiée à ta demande</span>`:""}
         </div>
         <div class="commande-meta">⏰ ${c.creneau||"—"} • 💰 Total : ${c.total||"—"} €</div>
         ${ligneSolde}
@@ -287,11 +288,39 @@ const POPUP_ANNULER_HTML_INITIAL=`<h3>🗑️ Annuler la commande</h3>
       <button class="popup-confirm" id="popup-annuler-confirm-btn" style="background:var(--error);" onclick="envoyerDemande('annulation')">Confirmer l'annulation</button>
     </div>`;
 
+// Convertit une date au format "dd/MM/yyyy" (tel que renvoyé par le serveur) en objet Date.
+function parseDateFR(str){
+  if(!str)return null;
+  let m=String(str).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(!m)return null;
+  return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));
+}
+
+// Vrai si la commande est retirée aujourd'hui ET qu'il est 14h ou plus passé.
+function estApres14hLeJourJ(dateRetrait){
+  let dJ=parseDateFR(dateRetrait);
+  if(!dJ)return false;
+  let maintenant=new Date();
+  let memeJour=dJ.getFullYear()===maintenant.getFullYear()&&dJ.getMonth()===maintenant.getMonth()&&dJ.getDate()===maintenant.getDate();
+  return memeJour&&maintenant.getHours()>=14;
+}
+
 function ouvrirPopup(type,commandeId){
   demandeEnCours={commandeId,type};
   if(type==="annuler"){
     let box=document.getElementById("popup-annuler-box");
-    if(box)box.innerHTML=POPUP_ANNULER_HTML_INITIAL;
+    if(box){
+      let c=commandesTrouvees.find(x=>String(x.id)===String(commandeId));
+      let apres14h=c&&estApres14hLeJourJ(c.dateRetrait);
+      box.innerHTML=apres14h
+        ?`<h3>⚠️ Annuler la commande</h3>
+          <p style="background:var(--error-soft);border:1.5px solid var(--error);border-radius:10px;padding:10px 12px;color:var(--error);font-weight:600;">Il est passé 14h le jour du retrait : conformément aux CGV, l'acompte n'est <u>plus remboursable</u> à partir de cette heure. Ta demande sera tout de même transmise à Oh! Mikaté.</p>
+          <div class="popup-btns">
+            <button class="popup-cancel" onclick="fermerPopups()">Retour</button>
+            <button class="popup-confirm" id="popup-annuler-confirm-btn" style="background:var(--error);" onclick="envoyerDemande('annulation')">Confirmer l'annulation</button>
+          </div>`
+        :POPUP_ANNULER_HTML_INITIAL;
+    }
   }
   document.getElementById("popup-"+type).classList.add("show");
 }
@@ -324,6 +353,7 @@ async function envoyerDemande(typeDemande){
   }
 
   let phone = normalizePhone(document.getElementById("phone-input").value.trim());
+  let apres14hAnnulation=typeDemande==="annulation"&&estApres14hLeJourJ(c.dateRetrait);
   let payload = {
     action: "demande",
     type: typeDemande,
@@ -332,7 +362,7 @@ async function envoyerDemande(typeDemande){
     name: c.name || "",
     dateRetrait: c.dateRetrait || "",
     creneau: c.creneau || "",
-    detail: ""
+    detail: apres14hAnnulation ? "⚠️ Annulation après 14h le jour J — acompte normalement non remboursable" : ""
   };
 
   try {
