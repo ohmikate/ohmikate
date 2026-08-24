@@ -620,6 +620,41 @@ let orderCounts={};
 let manuelsBlocages={}; // Stockera les fermetures définies par vos soins
 let stockIndisponible={nappage:[],garniture:[],pot:[]}; // Options en rupture, lues depuis l'onglet "Stock"
 
+// Génère le même libellé de date que celui utilisé dans le menu déroulant (ex: "Dimanche 23 août"),
+// pour qu'une plage de dates saisie dans "Fermetures" corresponde exactement aux dates proposées au client.
+function genererLabelDate(d){
+  let label=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  return label.charAt(0).toUpperCase()+label.slice(1);
+}
+
+// Convertit "23/08/2026" en objet Date.
+function parseDateJJMMAAAA(str){
+  let m=String(str).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(!m)return null;
+  return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));
+}
+
+// Détecte une plage "23/08/2026 au 05/09/2026" et renvoie la liste des libellés de chaque jour
+// inclus (bornes comprises). Renvoie null si le texte n'est pas une plage reconnue —
+// dans ce cas, le texte est traité comme une date simple (comportement existant, inchangé).
+function developperPlageDates(dateText){
+  let m=String(dateText).trim().match(/^(.+?)\s+au\s+(.+)$/i);
+  if(!m)return null;
+  let debut=parseDateJJMMAAAA(m[1]);
+  let fin=parseDateJJMMAAAA(m[2]);
+  if(!debut||!fin||fin<debut)return null;
+  let labels=[];
+  let curseur=new Date(debut);
+  // Sécurité : jamais plus de 60 jours d'un coup, pour éviter une boucle infinie sur une saisie erronée.
+  let garde=0;
+  while(curseur<=fin&&garde<60){
+    labels.push(genererLabelDate(curseur));
+    curseur.setDate(curseur.getDate()+1);
+    garde++;
+  }
+  return labels;
+}
+
 async function chargerComptesCreneaux(){
   try{
     // 1. Chargement des comptes de commandes existants
@@ -659,14 +694,18 @@ async function chargerComptesCreneaux(){
       let motifText = row.c[2] && row.c[2].v!==null ? String(row.c[2].v).trim() : "";
       if(!dateText || !creneauText) return;
 
-      if(!blocages[dateText]) blocages[dateText]={all:null,slots:{}};
+      // Une ligne peut désormais couvrir plusieurs jours d'un coup ("23/08/2026 au 05/09/2026").
+      let joursConcernes = developperPlageDates(dateText) || [dateText];
 
-      if(creneauText.toUpperCase() === "TOUT"){
-        blocages[dateText].all = motifText || "Plein";
-      } else if(motifText){
-        // Un créneau précis n'est bloqué que si un motif est réellement renseigné
-        blocages[dateText].slots[creneauText] = motifText;
-      }
+      joursConcernes.forEach(jourLabel=>{
+        if(!blocages[jourLabel]) blocages[jourLabel]={all:null,slots:{}};
+        if(creneauText.toUpperCase() === "TOUT"){
+          blocages[jourLabel].all = motifText || "Plein";
+        } else if(motifText){
+          // Un créneau précis n'est bloqué que si un motif est réellement renseigné
+          blocages[jourLabel].slots[creneauText] = motifText;
+        }
+      });
     });
     manuelsBlocages=blocages;
   }catch(e){
