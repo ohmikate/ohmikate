@@ -53,6 +53,12 @@ h1{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--ac
 .statut-prete{background:#E4EEF1;color:var(--blue);}
 .statut-annulee{background:#F0EAE2;color:var(--ink-faint);}
 .statut-modifiee{background:#EAE0F5;color:#6B3FA0;margin-left:6px;}
+.histo-check-wrap{display:flex;align-items:flex-start;gap:10px;}
+.histo-check{width:19px;height:19px;flex-shrink:0;margin-top:3px;accent-color:var(--accent);cursor:pointer;}
+.histo-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:12.5px;color:var(--ink-muted);}
+.histo-toolbar button{background:none;border:none;color:var(--accent);font-weight:600;font-size:12.5px;cursor:pointer;padding:0;font-family:var(--font-body);}
+.btn-supprimer-histo{width:100%;margin-top:4px;background:var(--error-soft);border:1.5px solid var(--error);color:var(--error);font-weight:600;font-size:13px;padding:11px;border-radius:10px;cursor:pointer;font-family:var(--font-body);}
+.btn-supprimer-histo:disabled{opacity:0.4;cursor:not-allowed;}
 .commandes-onglets{display:flex;gap:8px;margin-bottom:14px;}
 .onglet-btn{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;font-size:13px;font-weight:600;color:var(--ink-muted);cursor:pointer;font-family:var(--font-body);text-align:center;}
 .onglet-btn.actif{background:var(--accent);border-color:var(--accent);color:#fff;}
@@ -170,6 +176,7 @@ async function chercherCommandes(){
     let res=await fetch(APPS_SCRIPT_URL+"?action=lookup&phone="+encodeURIComponent(phone));
     let data=await res.json();
     commandesTrouvees=(data&&data.commandes)||[];
+    chargerCommandesMasquees(phone);
     ongletCommandesActif="encours";
     afficherDemandesClient((data&&data.demandes)||[]);
     if(commandesTrouvees.length===0){
@@ -219,16 +226,55 @@ function libelleStatut(s){
 }
 
 let ongletCommandesActif="encours";
+let commandesMasquees=[]; // IDs masqués localement pour ce numéro (ne touche jamais au serveur)
+let selectionHistorique=[]; // IDs cochés en attente de suppression
+
+function chargerCommandesMasquees(phone){
+  try{
+    commandesMasquees=JSON.parse(localStorage.getItem("ohMikateHistoriqueMasque_"+phone)||"[]");
+  }catch(e){
+    commandesMasquees=[];
+  }
+}
+
+function sauvegarderCommandesMasquees(phone){
+  localStorage.setItem("ohMikateHistoriqueMasque_"+phone,JSON.stringify(commandesMasquees));
+}
+
+function toggleSelectionHistorique(id,checked){
+  id=String(id);
+  if(checked){
+    if(!selectionHistorique.includes(id))selectionHistorique.push(id);
+  }else{
+    selectionHistorique=selectionHistorique.filter(x=>x!==id);
+  }
+  let btn=document.getElementById("btn-supprimer-histo");
+  if(btn){
+    btn.disabled=selectionHistorique.length===0;
+    btn.textContent=selectionHistorique.length>0?`🗑️ Supprimer de mon historique (${selectionHistorique.length})`:"🗑️ Supprimer de mon historique";
+  }
+}
+
+function supprimerSelectionHistorique(){
+  if(selectionHistorique.length===0)return;
+  if(!confirm(`Retirer ${selectionHistorique.length} commande(s) de ton historique ? Ça ne les efface que de ton affichage — Oh! Mikaté garde ses propres données.`))return;
+  let phone=normalizePhone(document.getElementById("phone-input").value.trim());
+  commandesMasquees=[...new Set([...commandesMasquees,...selectionHistorique])];
+  sauvegarderCommandesMasquees(phone);
+  selectionHistorique=[];
+  afficherResultats();
+}
 
 function changerOngletCommandes(onglet){
   ongletCommandesActif=onglet;
+  selectionHistorique=[];
   afficherResultats();
 }
 
 function afficherResultats(){
   let zone=document.getElementById("resultats");
   let enCours=commandesTrouvees.filter(c=>c.statut!=="annulee"&&c.statut!=="prete");
-  let historique=commandesTrouvees.filter(c=>c.statut==="annulee"||c.statut==="prete");
+  let historique=commandesTrouvees.filter(c=>(c.statut==="annulee"||c.statut==="prete")&&!commandesMasquees.includes(String(c.id)));
 
   let html="";
   if(historique.length>0){
@@ -239,6 +285,10 @@ function afficherResultats(){
   }
 
   let liste=(historique.length>0&&ongletCommandesActif==="historique")?historique:enCours;
+  let modeHistorique=(historique.length>0&&ongletCommandesActif==="historique");
+  if(modeHistorique){
+    html+=`<div class="histo-toolbar"><span>Coche les commandes à retirer de ton historique</span></div>`;
+  }
   if(liste.length===0){
     html+=`<div class="msg">${ongletCommandesActif==="historique"?"Aucune commande dans l'historique.":"Aucune commande en cours."}</div>`;
   }else{
@@ -264,7 +314,7 @@ function afficherResultats(){
       }else{
         ligneSolde=`<div class="commande-meta">💳 ${c.payment||"—"} — commande réglée intégralement</div>`;
       }
-      return`<div class="commande-card">
+      let carte=`<div class="commande-card">
         <div class="commande-top">
           <div class="commande-date">📅 ${c.dateRetrait||"—"}</div>
           <span class="commande-statut ${statut.cls}">${statut.txt}</span>${c.modifiee?`<span class="commande-statut statut-modifiee">✏️ Modifiée à ta demande</span>`:""}
@@ -274,7 +324,14 @@ function afficherResultats(){
         <div class="commande-detail">${c.order||""}</div>
         ${actions}
       </div>`;
+      if(modeHistorique){
+        return`<div class="histo-check-wrap"><input type="checkbox" class="histo-check" onchange="toggleSelectionHistorique('${c.id}',this.checked)">${carte}</div>`;
+      }
+      return carte;
     }).join("");
+    if(modeHistorique){
+      html+=`<button class="btn-supprimer-histo" id="btn-supprimer-histo" disabled onclick="supprimerSelectionHistorique()">🗑️ Supprimer de mon historique</button>`;
+    }
   }
 
   zone.innerHTML=html;
