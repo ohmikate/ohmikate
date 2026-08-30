@@ -352,6 +352,10 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
     <div class="box-title">🧾 Récapitulatif de ta commande</div>
     <div id="recap-full">Aucune sélection</div>
     <div class="recap-full-total"><span>Total :</span><span><span id="recap-full-total-value">0.00</span> €</span></div>
+    <div style="background:#F3EBDD;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-top:12px;">
+      <input type="checkbox" id="client-pics" style="width:19px;height:19px;flex-shrink:0;accent-color:var(--accent);cursor:pointer;" onchange="updateUI()">
+      <label for="client-pics" style="margin:0;font-weight:500;cursor:pointer;font-size:13px;">🥢 J'ai besoin de pics en bambou pour manger mes beignets</label>
+    </div>
   </div>
 </div><!-- end compose-col-left -->
 <div class="compose-col compose-col-right">
@@ -1276,6 +1280,9 @@ function getStructuredSelections(){
   let noteEl=document.getElementById("client-notes");
   let note=noteEl?noteEl.value.trim():"";
   if(note)struct.notes=note;
+  // Idem pour le choix des pics en bambou (anti-gaspillage : décoché par défaut).
+  let picsEl=document.getElementById("client-pics");
+  struct.pics=picsEl?picsEl.checked:false;
   return struct;
 }
 
@@ -1318,7 +1325,9 @@ function hydrateFromStructuredSelections(struct){
 function mergeStructuredSelections(base,delta){
   return {
     "9 beignets":[...(base["9 beignets"]||[]),...(delta["9 beignets"]||[])],
-    "12 beignets":[...(base["12 beignets"]||[]),...(delta["12 beignets"]||[])]
+    "12 beignets":[...(base["12 beignets"]||[]),...(delta["12 beignets"]||[])],
+    notes: delta.notes||base.notes,
+    pics: typeof delta.pics!=="undefined"?delta.pics:!!base.pics
   };
 }
 
@@ -1393,6 +1402,8 @@ async function activerModeEdition(){
         let notesEl=document.getElementById("client-notes");
         if(notesEl)notesEl.value=struct.notes;
       }
+      let picsEl=document.getElementById("client-pics");
+      if(picsEl)picsEl.checked=!!struct.pics;
       // Confirmation intégrée à la bannière PERSISTANTE (visible tant que le client édite),
       // plutôt qu'un simple toast fugace facilement manqué par un client rapide.
       banner.style.background="var(--success)";
@@ -1504,6 +1515,7 @@ async function envoyerDemandeModification(){
   }
 
   let currentSelections=getStructuredSelections();
+  let picsField=document.getElementById("client-pics")?.checked;
   if(noteField)currentSelections.notes=noteField;
   let orderInfo=calculateTotalAndExtractStructure();
 
@@ -1523,6 +1535,7 @@ async function envoyerDemandeModification(){
     detailFinal=orderInfo.detailsText;
   }
   if(noteField)detailFinal+=`\n\nPRECISION CLIENT (${editMode==="complement"?"complément":"modification"}) :\n"${noteField}"`;
+  detailFinal+=`\n🥢 Pics en bambou : ${picsField?"OUI":"Non nécessaire"}`;
 
   let btn=document.getElementById("envoyer-demande-btn");
   btn.disabled=true;btn.textContent="⏳ Envoi en cours...";
@@ -1741,6 +1754,7 @@ function getOrderText(cleanForSms=false,canal="WhatsApp"){
   let date=document.getElementById("client-date").value;
   let time=document.getElementById("client-time").value;
   let noteField=document.getElementById("client-notes").value.trim();
+  let picsField=document.getElementById("client-pics")?.checked;
   let orderInfo=calculateTotalAndExtractStructure();
   let payText;
   let rate=depositRates.hasOwnProperty(depositMode)?depositRates[depositMode]:0.5;
@@ -1762,6 +1776,7 @@ function getOrderText(cleanForSms=false,canal="WhatsApp"){
   text+=`📅 Reçue le ${nowStr} via ${canal}\n`;
   text+=orderInfo.detailsText;
   text+=`\n${b}TOTAL : ${orderInfo.totalPrice.toFixed(2)} EUR${b}`;
+  text+=`\n🥢 Pics en bambou : ${picsField?"OUI":"Non nécessaire"}`;
   if(noteField)text+=`\n\nPRECISION CLIENT :\n"${noteField}"`;
   text+=`\n\n--- INFOS RETRAIT ---\nNom : ${name}\nTelephone : ${phoneNorm}\nDate souhaitee : ${date}\nTranche souhaitee : ${time}\nReglement : ${payText}`;
   return cleanForSms?text.normalize("NFD").replace(/[\u0300-\u036f]/g,""):text;
