@@ -221,6 +221,18 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-heig
   </div>
 </div>
 
+<div class="popup" id="popup-remboursement">
+  <div class="popup-box">
+    <h3>💸 Acompte de cette commande</h3>
+    <p id="popup-remboursement-texte">Cette annulation a été demandée après 14h le jour du retrait : conformément aux CGV, l'acompte n'est normalement plus remboursable. Que souhaites-tu faire ?</p>
+    <div class="popup-btns" style="flex-direction:column;gap:8px;">
+      <button class="btn-ok-supp" style="background:var(--success);" onclick="confirmerChoixRemboursement(true)">✅ Rembourser l'acompte quand même</button>
+      <button class="btn-ok-supp" style="background:var(--error);" onclick="confirmerChoixRemboursement(false)">❌ Ne pas rembourser l'acompte</button>
+      <button class="btn-cancel" onclick="fermerPopupRemboursement()">Annuler l'annulation</button>
+    </div>
+  </div>
+</div>
+
 <div class="popup" id="popup-edition-commande">
   <div class="popup-box popup-box-edit">
     <h3>✏️ Modifier la commande</h3>
@@ -474,8 +486,9 @@ let canal=row.c[8]?String(row.c[8].v):""; // Lit la colonne I (Canal)
       let archiveRaw = row.c[16] ? String(row.c[16].v).trim() : "";
       let soldeRaw = row.c[17] ? String(row.c[17].v).trim() : "";
       let acompteEspecesRaw = row.c[18] ? String(row.c[18].v).trim() : "";
+      let dejaModifiee = row.c[19] ? String(row.c[19].v).trim()==="OUI" : false; // Colonne T — marqueur permanent, jamais effacé
 
-      toutesCommandes.push({id:uid,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent,acomptePaye,modifieeNonNotifiee,kRaw,statutRaw,archiveRaw,soldeRaw,acompteEspecesRaw});
+      toutesCommandes.push({id:uid,rowIndex:i+2,dateRecu,datePropre,heure,canal,name,phone,order,total,payment,dateRetrait,creneau,urgent,acomptePaye,modifieeNonNotifiee,kRaw,statutRaw,archiveRaw,soldeRaw,acompteEspecesRaw,dejaModifiee});
     });
     // Les 5 statuts (Confirmée/Prête/Supprimée/Archivée/Solde reçu) sont désormais dérivés
     // directement de la feuille (colonnes K, L, Q, R) — plus jamais du localStorage seul,
@@ -752,7 +765,7 @@ async function chargerDemandes(){
       return{
         id:i,
         rowIndex:i+2,
-        horodatage:c[0]?String(c[0].v):"",
+        horodatage:c[0]?formaterHorodatage(String(c[0].v)):"",
         phone:c[1]?String(c[1].v):"",
         name:c[2]?c[2].v:"",
         dateRetrait:c[3]?String(c[3].v):"",
@@ -782,6 +795,9 @@ function calculerResteDuPourDemande(d){
   if(!c)return null;
   let totalOrigine=parseFloat(String(c.total).replace(",","."))||0;
   let acomptePaye=parseFloat(String(c.acomptePaye||"0").replace(",","."))||0;
+  // Même prise en compte de l'acompte espèces marqué reçu que pour calculerSolde(),
+  // sinon ce récapitulatif contredit le badge principal de la fiche commande.
+  if(acompteEspecesRecu.includes(c.id))acomptePaye=Math.max(acomptePaye,acompteEspecesMontants[c.id]||0);
   let estAnnulation=(d.type||"").toLowerCase().includes("annulation");
   let nouveauTotal=estAnnulation?0:(d.nouveauTotal?parseFloat(String(d.nouveauTotal).replace(",",".")):totalOrigine);
   let resteDu=nouveauTotal-acomptePaye;
@@ -924,14 +940,16 @@ function updateBadgeDemandes(n){
 }
 
 function trouverCommandeCorrespondante(d){
+  // d.commandeRowIndex contient en réalité l'identifiant PERMANENT envoyé par le client
+  // (colonne N), pas un numéro de ligne — on compare donc contre c.id, pas c.rowIndex.
   if(d.commandeRowIndex){
-    let parRow=toutesCommandes.find(c=>String(c.rowIndex)===String(d.commandeRowIndex));
-    if(parRow)return parRow;
+    let parId=toutesCommandes.find(c=>String(c.id)===String(d.commandeRowIndex));
+    if(parId)return parId;
   }
   let phoneN=normalizePhone(d.phone);
   let dDate=parseDate(d.dateRetrait);
   let dCreneau=(d.creneau||"").trim().toLowerCase();
-  return toutesCommandes.find(c=>{
+  let candidats=toutesCommandes.filter(c=>{
     if(normalizePhone(c.phone)!==phoneN)return false;
     let cCreneau=(c.creneau||"").trim().toLowerCase();
     if(cCreneau!==dCreneau)return false;
@@ -942,34 +960,72 @@ function trouverCommandeCorrespondante(d){
     // Repli si l'une des deux dates n'a pas pu être analysée : comparaison texte brut
     return String(c.dateRetrait).trim()===String(d.dateRetrait).trim();
   });
+  // Si plusieurs commandes correspondent (doublons téléphone+date+créneau), on ne devine
+  // PAS laquelle traiter au hasard — mieux vaut prévenir et laisser choisir manuellement.
+  if(candidats.length>1){
+    return {ambigu:true,candidats:candidats};
+  }
+  return candidats[0];
 }
+
+let idDemandePendanteRemboursement=null;
 
 function validerDemande(id){
   let d=toutesDemandes.find(x=>x.id===id);
   if(!d)return;
 
   if((d.type||"").toLowerCase().includes("annulation")){
-    let c=trouverCommandeCorrespondante(d);
-    if(c){
-      supprimees.push(c.id);
-      localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
-      confirmees=confirmees.filter(cid=>cid!==c.id);
-      localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
-      pretes=pretes.filter(pid=>pid!==c.id);
-      localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
-      archivees=archivees.filter(aid=>aid!==c.id);
-      localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
-      envoyerSuppressionAuSheet(c.id,"annulee");
-      updateStats();
-      rafraichirVuesSecondaires();
-      setTimeout(afficher,300);
-      showToast("🗑️ Commande annulée suite à la demande du client");
-    }else{
-      showToast("⚠️ Commande correspondante introuvable — vérifie manuellement");
-    }
+    // Demande le choix du remboursement de l'acompte avant de finaliser l'annulation —
+    // le texte s'adapte selon que le client a annulé après 14h le jour J ou non.
+    idDemandePendanteRemboursement=id;
+    let apres14h=(d.detail||"").toLowerCase().includes("après 14h");
+    document.getElementById("popup-remboursement-texte").textContent=apres14h
+      ?"Cette annulation a été demandée après 14h le jour du retrait : conformément aux CGV, l'acompte n'est normalement plus remboursable. Que souhaites-tu faire ?"
+      :"Souhaites-tu rembourser l'acompte de cette commande annulée ?";
+    document.getElementById("popup-remboursement").classList.add("show");
+    return;
   }
 
   marquerDemandeTraitee(id,"traitee");
+}
+
+function fermerPopupRemboursement(){
+  idDemandePendanteRemboursement=null;
+  document.getElementById("popup-remboursement").classList.remove("show");
+}
+
+function confirmerChoixRemboursement(rembourse){
+  let id=idDemandePendanteRemboursement;
+  fermerPopupRemboursement();
+  if(id===null)return;
+  let d=toutesDemandes.find(x=>x.id===id);
+  if(!d)return;
+
+  let c=trouverCommandeCorrespondante(d);
+  if(!c){
+    showToast("⚠️ Commande correspondante introuvable — la demande reste en attente, vérifie manuellement");
+    return; // On ne marque PAS "Traitée" : la demande resterait sinon en attente sans être annulée pour de vrai.
+  }
+  if(c.ambigu){
+    showToast(`⚠️ ${c.candidats.length} commandes correspondent (même tél/date/créneau) — annule-la manuellement pour éviter de te tromper`);
+    return; // On ne marque PAS "Traitée" non plus : mieux vaut une intervention manuelle qu'une mauvaise commande annulée.
+  }
+
+  supprimees.push(c.id);
+  localStorage.setItem('ohMikateSupprimees',JSON.stringify(supprimees));
+  confirmees=confirmees.filter(cid=>cid!==c.id);
+  localStorage.setItem('ohMikateConfirmees',JSON.stringify(confirmees));
+  pretes=pretes.filter(pid=>pid!==c.id);
+  localStorage.setItem('ohMikatePretes',JSON.stringify(pretes));
+  archivees=archivees.filter(aid=>aid!==c.id);
+  localStorage.setItem('ohMikateArchivees',JSON.stringify(archivees));
+  envoyerSuppressionAuSheet(c.id,"annulee");
+  updateStats();
+  rafraichirVuesSecondaires();
+  setTimeout(afficher,300);
+  showToast(rembourse?"🗑️ Commande annulée — acompte remboursé":"🗑️ Commande annulée — acompte non remboursé");
+
+  marquerDemandeTraitee(id,"traitee",rembourse?"💚 Acompte remboursé":"🚫 Acompte NON remboursé");
 }
 
 function refuserDemande(id){
@@ -980,15 +1036,17 @@ function refuserDemande(id){
 
 const LIBELLES_STATUT_DEMANDE={traitee:"Traitée", refusee:"Refusée", attente:"En attente"};
 
-function marquerDemandeTraitee(id,statutServeur){
+function marquerDemandeTraitee(id,statutServeur,decisionRemboursement){
   demandesTraitees[id]=LIBELLES_STATUT_DEMANDE[statutServeur]||statutServeur;
   localStorage.setItem('ohMikateDemandesTraitees',JSON.stringify(demandesTraitees));
   let d=toutesDemandes.find(x=>x.id===id);
   if(d&&d.rowIndex&&statutServeur){
+    let body={action:"traiterDemande",rowIndex:d.rowIndex,statut:statutServeur};
+    if(decisionRemboursement)body.decisionRemboursement=decisionRemboursement;
     fetch(APPS_SCRIPT_URL,{
       method:"POST",mode:"no-cors",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({action:"traiterDemande",rowIndex:d.rowIndex,statut:statutServeur})
+      body:JSON.stringify(body)
     }).catch(()=>{});
   }
   afficherDemandes();
@@ -1033,7 +1091,7 @@ function enregistrerEditionCommande(){
   }).catch(()=>{});
 
   let c=toutesCommandes.find(x=>x.id===idEditionDemande.commandeId);
-  if(c){c.order=nouvelOrder;c.total=nouveauTotal;c.modifieeNonNotifiee=true;}
+  if(c){c.order=nouvelOrder;c.total=nouveauTotal;c.modifieeNonNotifiee=true;c.dejaModifiee=true;}
 
   let demandeId=idEditionDemande.demandeId;
   fermerEditionCommande();
@@ -1253,6 +1311,17 @@ function copierRecapJour(txt){
   });
 }
 
+// Reformate un horodatage brut de Google Sheets (ex: "Date(2026,7,29,16,2,0)") en "29/08/2026 16:02".
+// Si ce n'est pas ce format (texte déjà lisible), retourne la valeur telle quelle.
+function formaterHorodatage(raw){
+  let m=String(raw||"").match(/^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+))?/);
+  if(!m)return raw;
+  let annee=m[1],mois=String(Number(m[2])+1).padStart(2,"0"),jour=String(m[3]).padStart(2,"0");
+  let heure=m[4]!==undefined?String(m[4]).padStart(2,"0"):null;
+  let minute=m[5]!==undefined?String(m[5]).padStart(2,"0"):null;
+  return `${jour}/${mois}/${annee}`+(heure!==null?` ${heure}:${minute}`:"");
+}
+
 function parseDate(str){
   if(!str)return null;
   // Format DD/MM/YYYY HH:MM via Canal
@@ -1429,6 +1498,7 @@ function renderCommande(c, opts){
   else if(conf) statusBadge = `<span class="badge badge-ok">✅ Validée</span>`;
   else statusBadge = `<span class="badge badge-new">🆕 Nouvelle</span>`;
   if(c.modifieeNonNotifiee) statusBadge += ` <span class="badge" style="background:var(--amber);color:#fff;">🔄 Modifiée — à notifier</span>`;
+  else if(c.dejaModifiee) statusBadge += ` <span class="badge" style="background:#EAE0F5;color:#6B3FA0;">✏️ Modifiée à la demande du client</span>`;
   
   let nbAnnul = nbAnnulationsPourTel(c.phone);
   let alerteBlacklist = "";
