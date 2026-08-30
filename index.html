@@ -1249,6 +1249,13 @@ function calculateTotalAndExtractStructure(){
     Object.keys(pots).forEach(p=>{if(pots[p]>0)structuredOrderText+=` + ${pots[p]>1?pots[p]+"x ":""}${p}`;});
     structuredOrderText+=`\n`;
   }
+  // Choix des pics en bambou (anti-gaspillage) : mention ajoutée une seule fois,
+  // à la fin, pour rester visible en permanence sur la fiche admin (pas juste
+  // dans le message WhatsApp/SMS initial).
+  let picsCheckEl=document.getElementById("client-pics");
+  if(picsCheckEl){
+    structuredOrderText+=`\n🥢 Pics en bambou : ${picsCheckEl.checked?"OUI":"Non nécessaire"}`;
+  }
   return{totalPrice:total,summaryShort:textSummaryList.join(" / "),detailsText:structuredOrderText};
 }
 
@@ -1515,7 +1522,6 @@ async function envoyerDemandeModification(){
   }
 
   let currentSelections=getStructuredSelections();
-  let picsField=document.getElementById("client-pics")?.checked;
   if(noteField)currentSelections.notes=noteField;
   let orderInfo=calculateTotalAndExtractStructure();
 
@@ -1535,7 +1541,6 @@ async function envoyerDemandeModification(){
     detailFinal=orderInfo.detailsText;
   }
   if(noteField)detailFinal+=`\n\nPRECISION CLIENT (${editMode==="complement"?"complément":"modification"}) :\n"${noteField}"`;
-  detailFinal+=`\n🥢 Pics en bambou : ${picsField?"OUI":"Non nécessaire"}`;
 
   let btn=document.getElementById("envoyer-demande-btn");
   btn.disabled=true;btn.textContent="⏳ Envoi en cours...";
@@ -1754,7 +1759,6 @@ function getOrderText(cleanForSms=false,canal="WhatsApp"){
   let date=document.getElementById("client-date").value;
   let time=document.getElementById("client-time").value;
   let noteField=document.getElementById("client-notes").value.trim();
-  let picsField=document.getElementById("client-pics")?.checked;
   let orderInfo=calculateTotalAndExtractStructure();
   let payText;
   let rate=depositRates.hasOwnProperty(depositMode)?depositRates[depositMode]:0.5;
@@ -1776,7 +1780,6 @@ function getOrderText(cleanForSms=false,canal="WhatsApp"){
   text+=`📅 Reçue le ${nowStr} via ${canal}\n`;
   text+=orderInfo.detailsText;
   text+=`\n${b}TOTAL : ${orderInfo.totalPrice.toFixed(2)} EUR${b}`;
-  text+=`\n🥢 Pics en bambou : ${picsField?"OUI":"Non nécessaire"}`;
   if(noteField)text+=`\n\nPRECISION CLIENT :\n"${noteField}"`;
   text+=`\n\n--- INFOS RETRAIT ---\nNom : ${name}\nTelephone : ${phoneNorm}\nDate souhaitee : ${date}\nTranche souhaitee : ${time}\nReglement : ${payText}`;
   return cleanForSms?text.normalize("NFD").replace(/[\u0300-\u036f]/g,""):text;
