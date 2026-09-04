@@ -533,14 +533,14 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
 /* ===== VARIABLES GLOBALES ===== */
 let boxesSelected={"9 beignets":0,"12 beignets":0};
 const boxPrices={"9 beignets":5.0,"12 beignets":7.0};
-const nappagePrices={"Aucun":0,"Chocolat":0.50,"Caramel":0.50,"Pistache":1.50,"Bueno":1.00};
-const garnitureprix={"Aucun":0,"Éclats M&M's":0.50,"Éclats Spéculoos":0.50,"Éclats Cacahuète":0.50,"Éclat de pistache":1.50,"Bueno":1.00};
-const potPrices={"Aucun":0,"Pot Nutella":0.50,"Pot Pâte d'arachide":0.50,"Pot Pistache":1.50,"Pot Bueno":1.00};
+const nappagePrices={"Aucun":0,"Chocolat":0.50,"Caramel":0.50,"Pistache":1.50,"Bueno":1.00,"Spéculoos":1.00};
+const garnitureprix={"Aucun":0,"Éclats M&M's":0.50,"Éclats Spéculoos":0.50,"Éclats Cacahuète":0.50,"Éclat de pistache":1.50,"Bueno":1.00,"Oréo":0.50};
+const potPrices={"Aucun":0,"Pot Nutella":0.50,"Pot Pâte d'arachide":0.50,"Pot Pistache":1.50,"Pot Bueno":1.00,"Pot Spéculoos":1.00};
 // Échappe les apostrophes pour une insertion sûre dans un attribut onclick="...('...')"
 // (sans ça, des valeurs comme "Éclats M&M's" ou "Pot Pâte d'arachide" cassent le JS généré)
 function jsEsc(v){return String(v).replace(/'/g,"\\'");}
-const garnitureLabelsCourts={"Éclats M&M's":"M&M's","Éclats Spéculoos":"Spéculoos","Éclats Cacahuète":"Cacahuètes","Éclat de pistache":"Pistache","Bueno":"Bueno"};
-const potLabelsCourts={"Pot Nutella":"Nutella","Pot Pâte d'arachide":"Pâte d'arachide","Pot Pistache":"Pistache","Pot Bueno":"Bueno"};
+const garnitureLabelsCourts={"Éclats M&M's":"M&M's","Éclats Spéculoos":"Spéculoos","Éclats Cacahuète":"Cacahuètes","Éclat de pistache":"Pistache","Bueno":"Bueno","Oréo":"Oréo"};
+const potLabelsCourts={"Pot Nutella":"Nutella","Pot Pâte d'arachide":"Pâte d'arachide","Pot Pistache":"Pistache","Pot Bueno":"Bueno","Pot Spéculoos":"Spéculoos"};
 
 // Ouvre/ferme le panneau déroulant d'une section (garniture ou pot)
 function toggleFieldPanel(idPrefix,field){
@@ -594,8 +594,8 @@ const APPS_SCRIPT_URL_LOOKUP="https://script.google.com/macros/s/AKfycbzr6gt_suP
 const depositRates={acompte:0.5,total:1.0,especes:0};
 const SEUIL_ACOMPTE_OBLIGATOIRE=10; // en dessous de ce montant, le paiement en ligne devient facultatif
 const paypalMeLink="https://www.paypal.com/paypalme/ohmikate";
-const baseHours=["17h00 - 17h30","17h30 - 18h00","18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
-const hoursAvance=["15h00 - 15h30","15h30 - 16h00","16h00 - 16h30","16h30 - 17h00"].concat(baseHours);
+const baseHours=["18h00 - 18h30","18h30 - 19h00","19h00 - 19h30","19h30 - 20h00"];
+const hoursAvance=baseHours;
 let espècesPageAffichée=false;
 
 /* ===== MODE ÉDITION (modification / complément depuis "Mes commandes") ===== */
@@ -1072,6 +1072,7 @@ function generateBoxRowHtml(idPrefix,defaultImg){
             ${chipToggleBtn(idPrefix,'nappage','Caramel','🍮 Caramel (+0,50€)')}
             ${chipToggleBtn(idPrefix,'nappage','Pistache','🍏 Pistache (+1,50€)')}
             ${chipToggleBtn(idPrefix,'nappage','Bueno','🌰 Bueno (+1,00€)')}
+            ${chipToggleBtn(idPrefix,'nappage','Spéculoos','🍪 Spéculoos (+1,00€)')}
           </div>
         </div>
       </div>
@@ -1089,6 +1090,7 @@ function generateBoxRowHtml(idPrefix,defaultImg){
             ${chipToggleBtn(idPrefix,'garniture','Éclats Cacahuète','🥜 Cacahuètes (+0,50€)')}
             ${chipToggleBtn(idPrefix,'garniture','Éclat de pistache','🍏 Éclat de pistache (+1,50€)')}
             ${chipToggleBtn(idPrefix,'garniture','Bueno','🌰 Bueno (+1,00€)')}
+            ${chipToggleBtn(idPrefix,'garniture','Oréo','🍪 Oréo (+0,50€)')}
           </div>
         </div>
       </div>
@@ -1105,6 +1107,7 @@ function generateBoxRowHtml(idPrefix,defaultImg){
             ${potStepperRow(idPrefix,"Pot Pâte d'arachide","🥜 Pâte d'arachide (+0,50€/pot)")}
             ${potStepperRow(idPrefix,'Pot Pistache','🍏 Pistache (+1,50€/pot)')}
             ${potStepperRow(idPrefix,'Pot Bueno','🌰 Bueno (+1,00€/pot)')}
+            ${potStepperRow(idPrefix,'Pot Spéculoos','🍪 Spéculoos (+1,00€/pot)')}
           </div>
         </div>
       </div>
@@ -1909,7 +1912,7 @@ function handleDateChange(){
 
   let comptesDuJour=orderCounts[normaliserDateEnCle(selectedDate)||selectedDate]||{};
   
-  // Jour J : créneaux à partir de 17h00 — jours suivants (jusqu'à la veille) : à partir de 15h00
+  // Retrait à partir de 18h00 jusqu'à 20h00, quel que soit le jour (rentrée 2026).
   let creneauxDuJour = (selectedDate===todayLabel) ? baseHours : hoursAvance;
 
   creneauxDuJour.forEach(t=>{
