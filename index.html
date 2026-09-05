@@ -1072,7 +1072,7 @@ function potStepperRow(idPrefix,value,label){
   </div>`;
 }
 
-function generateBoxRowHtml(idPrefix,defaultImg){
+function generateBoxRowHtml(idPrefix,defaultImg,maxPots){
   return `<div class="lot-row lot-active" data-prefix="${idPrefix}" data-defaultimg="${defaultImg}">
     <img id="${idPrefix}-img" src="${defaultImg}" class="lot-preview-img" alt="Aperçu boîte">
     <div class="lot-content">
@@ -1127,8 +1127,8 @@ function generateBoxRowHtml(idPrefix,defaultImg){
           <span class="collapse-chevron">▾</span>
         </button>
         <div class="collapse-panel" id="${idPrefix}-pot-panel">
-          <span class="chip-multi-hint">— choisis une quantité par saveur</span>
-          <div class="pot-steppers lot-field" id="${idPrefix}-pot" data-value="{}">
+          <span class="chip-multi-hint">${maxPots?`— choisis jusqu'à ${maxPots} pots au total pour cette boîte`:"— choisis une quantité par saveur"}</span>
+          <div class="pot-steppers lot-field" id="${idPrefix}-pot" data-value="{}" data-maxpots="${maxPots||""}">
             ${potStepperRow(idPrefix,'Pot Nutella','🍫 Nutella (+0,50€/pot)')}
             ${potStepperRow(idPrefix,"Pot Pâte d'arachide","🥜 Pâte d'arachide (+0,50€/pot)")}
             ${potStepperRow(idPrefix,'Pot Pistache','🍏 Pistache (+1,50€/pot)')}
@@ -1178,6 +1178,22 @@ function setBoxPots(idPrefix,obj){
   // Ne garde que les quantités positives dans la donnée stockée
   let clean={};
   Object.keys(obj).forEach(k=>{if(obj[k]>0)clean[k]=obj[k];});
+  // Sécurité : si cette boîte a un plafond de pots (ex. boîte offerte), on ne dépasse jamais
+  // ce total, même lors d'une restauration de configuration mémorisée.
+  let maxPots=parseInt(el.dataset.maxpots||"0",10);
+  if(maxPots>0){
+    let total=Object.values(clean).reduce((a,b)=>a+b,0);
+    if(total>maxPots){
+      let restant=maxPots;
+      let capped={};
+      Object.keys(clean).forEach(k=>{
+        let q=Math.min(clean[k],restant);
+        if(q>0)capped[k]=q;
+        restant-=q;
+      });
+      clean=capped;
+    }
+  }
   el.dataset.value=JSON.stringify(clean);
   el.querySelectorAll(".pot-stepper-row").forEach(row=>{
     let val=row.dataset.val;
@@ -1193,6 +1209,15 @@ function changePotQty(idPrefix,potName,delta){
   let pots=getBoxPots(idPrefix);
   let nouvelleQte=(pots[potName]||0)+delta;
   if(nouvelleQte<0)nouvelleQte=0;
+  let potEl=document.getElementById(`${idPrefix}-pot`);
+  let maxPots=potEl?parseInt(potEl.dataset.maxpots||"0",10):0;
+  if(maxPots>0&&delta>0){
+    let totalActuel=Object.values(pots).reduce((a,b)=>a+b,0);
+    if(totalActuel>=maxPots){
+      showToast(`🎁 La boîte offerte est limitée à ${maxPots} pots au total.`);
+      return;
+    }
+  }
   pots[potName]=nouvelleQte;
   setBoxPots(idPrefix,pots);
   updateUI();
@@ -1261,8 +1286,8 @@ function syncBoiteGratuite(){
   if(eligible&&!existant){
     let html=`<div class="box-composer" id="composer-boxfree9" data-baseprice="0" style="border-color:var(--gold);background:linear-gradient(180deg,var(--gold-soft) 0%,var(--surface) 55%);">
       <div class="box-title"><span>🎁 Boîte de 9 Beignets OFFERTE <span class="box-subtotal" id="subtotal-boxfree9"></span></span></div>
-      <div style="font-size:11.5px;color:var(--amber-dark);font-weight:600;margin:-4px 0 10px;">Offre du dimanche 6 septembre — personnalise-la comme tu veux, toppings inclus, 0€ !</div>
-      ${generateBoxRowHtml("boxfree9","Images/Beignet9.jpg")}
+      <div style="font-size:11.5px;color:var(--amber-dark);font-weight:600;margin:-4px 0 10px;">Offre du dimanche 6 septembre — personnalise-la comme tu veux, toppings inclus, 0€ ! <span style="display:block;font-weight:500;color:var(--ink-muted);margin-top:2px;">🍯 Pots limités à 3 au total sur cette boîte offerte.</span></div>
+      ${generateBoxRowHtml("boxfree9","Images/Beignet9.jpg",3)}
     </div>`;
     container.insertAdjacentHTML("beforeend",html);
     setChipValue("boxfree9","base",freeBoxConfig.base);
