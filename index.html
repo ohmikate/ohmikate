@@ -264,6 +264,22 @@ h3{font-family:var(--font-display);font-weight:600;border-left:3px solid var(--a
   </div>
 </div>
 
+<div id="promo-boite-gratuite-backdrop" class="confirm-modal-backdrop">
+  <div class="confirm-modal" style="max-width:360px;padding:0;overflow:hidden;">
+    <div style="background:linear-gradient(135deg,#D9A441,#B87A1E);padding:22px 18px;text-align:center;">
+      <div class="offre-blink" style="font-size:34px;line-height:1.1;">🎁🧇</div>
+      <div style="font-family:var(--font-display);font-weight:700;color:#fff;font-size:21px;letter-spacing:0.2px;margin-top:6px;">OFFRE DU DIMANCHE</div>
+      <div style="color:#fff;font-size:15px;font-weight:600;margin-top:6px;">1 boîte de 9 beignets OFFERTE</div>
+      <div style="color:#fff;font-size:13px;opacity:0.9;margin-top:2px;">dès 2 boîtes achetées, toppings inclus 🎉</div>
+      <div style="color:#fff;font-size:12px;margin-top:10px;background:rgba(0,0,0,0.15);display:inline-block;padding:5px 12px;border-radius:20px;">📅 Retrait dimanche 6 septembre uniquement</div>
+      <div style="color:#fff;font-size:12px;margin-top:10px;line-height:1.4;">⚠️ Ta boîte offerte apparaît dès 2 boîtes commandées pour que tu puisses la personnaliser — mais elle ne sera conservée que si ton retrait est fixé au <strong>dimanche 6 septembre</strong>.</div>
+    </div>
+    <div style="padding:16px;">
+      <button type="button" style="width:100%;background:var(--accent);color:#fff;border:none;font-family:var(--font-body);font-weight:600;font-size:14px;padding:13px;border-radius:10px;cursor:pointer;" onclick="document.getElementById('promo-boite-gratuite-backdrop').classList.remove('show')">🎉 J'en profite !</button>
+    </div>
+  </div>
+</div>
+
 <style>
 .stripe-notify-wow{background:linear-gradient(135deg,#FFB238,#F2871F);border-radius:18px;padding:22px 18px;margin-bottom:22px;text-align:center;box-shadow:0 8px 28px rgba(242,135,31,0.45);animation:popIn 0.55s cubic-bezier(0.175,0.885,0.32,1.275),wowPulse 1.8s ease-in-out 0.55s 3;}
 @keyframes wowPulse{0%,100%{box-shadow:0 8px 28px rgba(242,135,31,0.45);}50%{box-shadow:0 8px 40px rgba(242,135,31,0.75);}}
@@ -866,6 +882,11 @@ function performRemoveBox(type,indexToRemove){
 /* ===== COMPOSITION ===== */
 function generateCompositionForm(){
   const container=document.getElementById("composition-zone");
+  // La boîte offerte va être détruite/reconstruite avec les boîtes payantes : on mémorise sa
+  // personnalisation actuelle pour pouvoir la restaurer ensuite (voir syncBoiteGratuite()).
+  if(document.getElementById("composer-boxfree9")){
+    freeBoxConfig={base:getBoxValue("boxfree9","base"),nappages:getBoxMultiValues("boxfree9","nappage"),garnitures:getBoxMultiValues("boxfree9","garniture"),pots:getBoxPots("boxfree9")};
+  }
   if(boxesSelected["9 beignets"]===0&&boxesSelected["12 beignets"]===0){container.innerHTML="";return;}
   let currentBase={},currentMulti={},currentPots={};
   container.querySelectorAll(".chip-group.lot-field:not(.lot-field-multi)").forEach(g=>{currentBase[g.id]=g.dataset.value;});
@@ -948,9 +969,14 @@ function computeBoxSupplements(idPrefix){
 function refreshComposerUI(){
   document.querySelectorAll(".box-composer").forEach(box=>{
     let pfx=box.id.replace("composer-","");
-    let base=parseFloat(box.dataset.baseprice)||0;
-    let{total:supTotal}=computeBoxSupplements(pfx);
-    let total=base+supTotal;
+    let estOfferte=(pfx==="boxfree9");
+    // La boîte offerte reste à 0€ même si le client choisit des toppings normalement payants.
+    let total=0;
+    if(!estOfferte){
+      let base=parseFloat(box.dataset.baseprice)||0;
+      let{total:supTotal}=computeBoxSupplements(pfx);
+      total=base+supTotal;
+    }
     let row=box.querySelector(".lot-row");
     if(row){
       let idPrefix=row.dataset.prefix;
@@ -960,7 +986,7 @@ function refreshComposerUI(){
       if(badge)badge.textContent=configured?"✅":"";
     }
     let subEl=document.getElementById(`subtotal-${pfx}`);
-    if(subEl)subEl.textContent=`— ${total.toFixed(2)}€`;
+    if(subEl)subEl.textContent=estOfferte?`— OFFERTE 🎁`:`— ${total.toFixed(2)}€`;
   });
 }
 
@@ -1207,6 +1233,49 @@ function updateBoxImage(idPrefix,defaultImg){
   else imgEl.src=defaultImg;
 }
 
+/* ===== OFFRE BOÎTE DE 9 OFFERTE (dimanche 6 septembre 2026) ===== */
+// Éligibilité basée UNIQUEMENT sur les boîtes payantes (9/12 + suppléments), jamais sur la
+// boîte offerte elle-même, pour éviter toute boucle ou double comptage.
+// Éligibilité basée UNIQUEMENT sur le nombre de boîtes payantes (9/12), jamais sur la boîte
+// offerte elle-même, pour éviter toute boucle ou double comptage.
+// Tant qu'aucune date n'est encore choisie, la boîte offerte est proposée dès 2 boîtes
+// atteintes (pour que le client la personnalise tout de suite) ; elle sera retirée avec un
+// message d'explication si le client choisit ensuite une date différente du 6 septembre.
+function boiteGratuiteEligible(){
+  if(editMode)return false;
+  if(new Date()>=FIN_OFFRE_BOITE_GRATUITE)return false;
+  let dateSelect=document.getElementById("client-date");
+  let dateChoisie=dateSelect?dateSelect.value:"";
+  if(dateChoisie&&dateChoisie!==DATE_OFFRE_BOITE_GRATUITE)return false;
+  let nbBoitesPayantes=boxesSelected["9 beignets"]+boxesSelected["12 beignets"];
+  return nbBoitesPayantes>=SEUIL_BOITES_GRATUITE;
+}
+
+// Ajoute/retire la boîte offerte dans le composeur selon l'éligibilité, sans jamais toucher
+// aux boîtes payantes déjà affichées. Restaure la personnalisation mémorisée à chaque ajout.
+function syncBoiteGratuite(){
+  const container=document.getElementById("composition-zone");
+  if(!container)return;
+  let eligible=boiteGratuiteEligible();
+  let existant=document.getElementById("composer-boxfree9");
+  if(eligible&&!existant){
+    let html=`<div class="box-composer" id="composer-boxfree9" data-baseprice="0" style="border-color:var(--gold);background:linear-gradient(180deg,var(--gold-soft) 0%,var(--surface) 55%);">
+      <div class="box-title"><span>🎁 Boîte de 9 Beignets OFFERTE <span class="box-subtotal" id="subtotal-boxfree9"></span></span></div>
+      <div style="font-size:11.5px;color:var(--amber-dark);font-weight:600;margin:-4px 0 10px;">Offre du dimanche 6 septembre — personnalise-la comme tu veux, toppings inclus, 0€ !</div>
+      ${generateBoxRowHtml("boxfree9","Images/Beignet9.jpg")}
+    </div>`;
+    container.insertAdjacentHTML("beforeend",html);
+    setChipValue("boxfree9","base",freeBoxConfig.base);
+    setBoxMultiValues("boxfree9","nappage",freeBoxConfig.nappages);
+    setBoxMultiValues("boxfree9","garniture",freeBoxConfig.garnitures);
+    setBoxPots("boxfree9",freeBoxConfig.pots);
+    updateBoxImage("boxfree9","Images/Beignet9.jpg");
+  }else if(!eligible&&existant){
+    freeBoxConfig={base:getBoxValue("boxfree9","base"),nappages:getBoxMultiValues("boxfree9","nappage"),garnitures:getBoxMultiValues("boxfree9","garniture"),pots:getBoxPots("boxfree9")};
+    existant.remove();
+  }
+}
+
 /* ===== CALCUL TOTAL ===== */
 function calculateTotalAndExtractStructure(){
   let total=0;let textSummaryList=[];let structuredOrderText="";
@@ -1251,6 +1320,20 @@ function calculateTotalAndExtractStructure(){
     if(garnitures.length>0)structuredOrderText+=` | Garniture(s) : ${garnitures.join(" + ")}`;
     Object.keys(pots).forEach(p=>{if(pots[p]>0)structuredOrderText+=` + ${pots[p]>1?pots[p]+"x ":""}${p}`;});
     structuredOrderText+=`\n`;
+  }
+  // Boîte offerte (promo retrait du dimanche 6 septembre 2026) : jamais ajoutée à "total",
+  // uniquement mentionnée dans le récapitulatif pour que le client et l'atelier la voient.
+  if(document.getElementById("composer-boxfree9")){
+    let pFree="boxfree9";
+    let nappagesFree=getBoxMultiValues(pFree,"nappage");
+    let garnituresFree=getBoxMultiValues(pFree,"garniture");
+    let potsFree=getBoxPots(pFree);
+    textSummaryList.push(`🎁 1x Boîte de 9 OFFERTE`);
+    structuredOrderText+=`\n🎁 BOÎTE DE 9 BEIGNETS OFFERTE (promo retrait du 06/09) : ${getBoxValue(pFree,"base")}`;
+    if(nappagesFree.length>0)structuredOrderText+=` | Nappage(s) : ${nappagesFree.join(" + ")}`;
+    if(garnituresFree.length>0)structuredOrderText+=` | Garniture(s) : ${garnituresFree.join(" + ")}`;
+    Object.keys(potsFree).forEach(p=>{if(potsFree[p]>0)structuredOrderText+=` + ${potsFree[p]>1?potsFree[p]+"x ":""}${p}`;});
+    structuredOrderText+=` — 0,00€\n`;
   }
   // Choix des pics en bambou (anti-gaspillage) : mention ajoutée une seule fois,
   // à la fin, pour rester visible en permanence sur la fiche admin (pas juste
@@ -1591,6 +1674,7 @@ async function envoyerDemandeModification(){
 
 /* ===== UI ===== */
 function updateUI(){
+  syncBoiteGratuite();
   let orderInfo=calculateTotalAndExtractStructure();
   let total=orderInfo.totalPrice;
   refreshComposerUI();
@@ -1873,6 +1957,17 @@ function nouvelleCommande(){
 // Fin des offres/assouplissements temporaires — tout reprend automatiquement le mardi 11/08/2026
 const FIN_OFFRES_TEMPORAIRES=new Date(2026,7,11);
 
+// ===== OFFRE "BOÎTE DE 9 OFFERTE" — retrait dimanche 6 septembre 2026 uniquement =====
+// Dès 2 boîtes payantes (9 et/ou 12, dans n'importe quelle combinaison) pour un retrait ce
+// jour précis, une boîte de 9 supplémentaire est ajoutée automatiquement, entièrement
+// personnalisable (nappage/garniture/pot au choix) et facturée 0€ tout compris.
+// Plafond : 1 seule boîte offerte par commande, quel que soit le nombre de boîtes payantes.
+// L'offre (et le pop-up qui l'annonce) disparaît automatiquement une fois le 06/09/2026 passé.
+const DATE_OFFRE_BOITE_GRATUITE=genererLabelDate(new Date(2026,8,6));
+const SEUIL_BOITES_GRATUITE=2;
+const FIN_OFFRE_BOITE_GRATUITE=new Date(2026,8,7);
+let freeBoxConfig={base:"Nature",nappages:[],garnitures:[],pots:{}};
+
 function initDates(){
   const dateSelect=document.getElementById("client-date");
   dateSelect.innerHTML='<option value="">-- Sélectionne une date --</option>';
@@ -1899,6 +1994,11 @@ function handleDateChange(){
   
   let selectedDate=dateSelect.value;
   if(!selectedDate) return;
+
+  // Avertit le client si sa boîte offerte va disparaître car la date choisie n'est pas le 6 septembre.
+  if(selectedDate!==DATE_OFFRE_BOITE_GRATUITE&&document.getElementById("composer-boxfree9")){
+    showToast("🎁 La boîte de 9 offerte n'est disponible que pour un retrait le dimanche 6 septembre.");
+  }
 
   let now=new Date();
   let todayLabel=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
@@ -1956,6 +2056,9 @@ document.getElementById("limite-modal-backdrop").addEventListener("click",functi
   if(e.target===this)this.classList.remove("show");
 });
 document.getElementById("promo-modal-backdrop").addEventListener("click",function(e){
+  if(e.target===this)this.classList.remove("show");
+});
+document.getElementById("promo-boite-gratuite-backdrop").addEventListener("click",function(e){
   if(e.target===this)this.classList.remove("show");
 });
 
@@ -2134,6 +2237,14 @@ window.onload=function(){
   if(new Date()<FIN_OFFRES_TEMPORAIRES && !editMode){
     setTimeout(()=>{
       document.getElementById("promo-modal-backdrop").classList.add("show");
+    },1500);
+  }
+
+  // Pop-up promo "Boîte de 9 offerte" — retrait dimanche 6 septembre 2026 uniquement.
+  // Disparaît automatiquement une fois cette date passée (tout revient alors à la normale).
+  if(new Date()<FIN_OFFRE_BOITE_GRATUITE && !editMode){
+    setTimeout(()=>{
+      document.getElementById("promo-boite-gratuite-backdrop").classList.add("show");
     },1500);
   }
 };
