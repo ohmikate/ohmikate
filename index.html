@@ -1993,14 +1993,25 @@ const SEUIL_BOITES_GRATUITE=2;
 const FIN_OFFRE_BOITE_GRATUITE=new Date(2026,8,7);
 let freeBoxConfig={base:"Nature",nappages:[],garnitures:[],pots:{}};
 
+// Heure limite pour commander un retrait le jour même. Normalement 15h00 — avec une
+// exception ponctuelle le 06/09/2026 (16h30), qui s'applique uniquement à cette date
+// précise et disparaît automatiquement les autres jours, sans rien à changer.
+function limiteCommandeJourJDepassee(now){
+  let estJourException=now.getFullYear()===2026&&now.getMonth()===8&&now.getDate()===6;
+  if(estJourException){
+    return now.getHours()>16||(now.getHours()===16&&now.getMinutes()>=30);
+  }
+  return now.getHours()>=15;
+}
+
 function initDates(){
   const dateSelect=document.getElementById("client-date");
   dateSelect.innerHTML='<option value="">-- Sélectionne une date --</option>';
   let now=new Date();
   let startDate=new Date(2026,6,1);
   if(now>startDate)startDate=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  // Si 15h passées, on commence dès demain (le jour même n'est plus proposé)
-  if(now.getHours()>=15 && now>=FIN_OFFRES_TEMPORAIRES){
+  // Si l'heure limite du jour est passée, on commence dès demain (le jour même n'est plus proposé)
+  if(limiteCommandeJourJDepassee(now) && now>=FIN_OFFRES_TEMPORAIRES){
     startDate.setDate(startDate.getDate()+1);
   }
   for(let i=0;i<14;i++){
@@ -2029,8 +2040,8 @@ function handleDateChange(){
   let todayLabel=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
   todayLabel=todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1);
 
-  // Blocage automatique jour J après 15h (suspendu jusqu'au 10/08/2026 inclus)
-  let estApresLimiteJourJ=(selectedDate===todayLabel && now.getHours()>=15 && now>=FIN_OFFRES_TEMPORAIRES);
+  // Blocage automatique jour J après l'heure limite (suspendu jusqu'au 10/08/2026 inclus)
+  let estApresLimiteJourJ=(selectedDate===todayLabel && limiteCommandeJourJDepassee(now) && now>=FIN_OFFRES_TEMPORAIRES);
 
   // Récupération des blocages configurés à distance sur Sheets pour ce jour sélectionné
   let blocageManuelJour = manuelsBlocages[selectedDate];
