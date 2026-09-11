@@ -195,6 +195,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-heig
 .btn-ok-supp{background:var(--error);color:#fff;}
 .btn-cancel{background:var(--surface-alt);color:var(--ink-muted);}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div id="toast"></div>
@@ -764,8 +765,14 @@ async function chargerDemandes(){
     let rows=(json.table&&json.table.rows)||[];
     toutesDemandes=rows.map((row,i)=>{
       let c=row.c||[];
+      // Identifiant PERMANENT de la demande (colonne L) — pour les anciennes demandes créées
+      // avant cette colonne, on retombe sur l'horodatage+téléphone comme identifiant stable
+      // (bien plus fiable qu'une simple position de ligne, qui change à chaque nouvelle demande
+      // et pouvait faire passer une demande neuve pour "déjà traitée" par erreur).
+      let idPermanentBrut=c[11]?String(c[11].v):"";
+      let idStable=idPermanentBrut||`legacy-${c[0]?c[0].v:""}-${c[1]?c[1].v:""}-${i}`;
       return{
-        id:i,
+        id:idStable,
         rowIndex:i+2,
         horodatage:c[0]?formaterHorodatage(String(c[0].v)):"",
         phone:c[1]?String(c[1].v):"",
@@ -860,9 +867,9 @@ function afficherDemandes(){
       let typeSimple=(d.type||"").replace(/[^\wÀ-ÿ ]/g,"").trim(); // enlève l'emoji pour comparer
       let estAnnulation=typeSimple.toLowerCase().includes("annulation");
       let boutonsAction=estAnnulation
-        ? `<button class="btn-prete" style="background:var(--success);" onclick="validerDemande(${d.id})">✅ Valider l'annulation</button>`
-        : `<button class="btn-prete" onclick="ouvrirEditionCommande(${d.id})">✏️ Éditer la commande</button>
-           <button class="btn-marquer" onclick="marquerDemandeTraitee(${d.id},'traitee')">✅ Marquer traitée</button>`;
+        ? `<button class="btn-prete" style="background:var(--success);" onclick="validerDemande('${d.id}')">✅ Valider l'annulation</button>`
+        : `<button class="btn-prete" onclick="ouvrirEditionCommande('${d.id}')">✏️ Éditer la commande</button>
+           <button class="btn-marquer" onclick="marquerDemandeTraitee('${d.id}','traitee')">✅ Marquer traitée</button>`;
       return`<div class="commande-card" style="border-color:${couleur};">
         <div class="commande-header">
           <div>
@@ -884,7 +891,7 @@ function afficherDemandes(){
         ${htmlResteDuAdmin(calculerResteDuPourDemande(d))}
         <div class="actions-sec" style="margin-top:12px;">
           ${boutonsAction}
-          <button class="btn-supp" onclick="refuserDemande(${d.id})">❌ Refuser</button>
+          <button class="btn-supp" onclick="refuserDemande('${d.id}')">❌ Refuser</button>
         </div>
       </div>`;
     }).join("");
@@ -924,7 +931,7 @@ function afficherDemandes(){
         <div class="detail-box">${(d.detail||"").replace(/</g,"&lt;")}</div>
         ${htmlResteDuAdmin(calculerResteDuPourDemande(d))}
         <div class="actions-sec" style="margin-top:12px;">
-          <button class="btn-marquer" onclick="marquerDemandeTraitee(${d.id},'attente')">↩️ Remettre en attente</button>
+          <button class="btn-marquer" onclick="marquerDemandeTraitee('${d.id}','attente')">↩️ Remettre en attente</button>
         </div>
       </div>`;
     }).join("");
@@ -1601,9 +1608,9 @@ function renderCommande(c, opts){
     html += `<button class="btn-sms" style="flex:1; min-width:100px; padding:8px; font-size:12px; margin:0;" onclick="envoyerSMS(${c.id})">💬 SMS</button>`;
   }
   
-  // Bouton d'impression sécurisé
+  // Bouton facture PDF téléchargeable
   let cSafe = JSON.stringify(c).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  html += `<button class="btn-marquer" style="border-color:var(--purple); color:var(--purple);" onclick="imprimerFacture(${cSafe})">🖨️ Imprimer</button>`;
+  html += `<button class="btn-marquer" style="border-color:var(--purple); color:var(--purple);" onclick="genererFacturePDF(${cSafe})">🧾 Facture</button>`;
   
   html += `<button class="btn-supp" onclick="demanderSupp(${c.id})">🗑️ Suppr.</button>
     </div>
@@ -2132,7 +2139,7 @@ function genererImpressionComptable(titre, joursData){
     <body>
       <div class="header">
         <h2>${titre}</h2>
-        <p><b>Oh! Mikaté</b> — SIRET : 98418057200019</p>
+        <p><b>Oh! Mikaté</b> — SIRET : 102 955 168 00012</p>
         <p>Édité le ${new Date().toLocaleDateString("fr-FR")}</p>
       </div>
       ${sectionsHtml}
@@ -2184,62 +2191,130 @@ function imprimerRecapComplet(){
   genererImpressionComptable("Récapitulatif comptable — Période complète", joursData);
 }
 
-function imprimerFacture(c) {
-  let tableRows = "";
-  // Extraction basique pour le tableau d'impression
-  if (c.order) {
-    let lines = c.order.split("\n");
-    lines.forEach(l => {
-      if(l.trim() && !l.includes("Total payé")) {
-        tableRows += `<tr><td style="padding:8px; border-bottom:1px solid #ddd;">${l}</td></tr>`;
-      }
+// Génère un numéro de facture lisible et unique, sans avoir besoin d'un compteur partagé
+// entre appareils : date d'émission + les 4 derniers chiffres de l'identifiant permanent
+// de la commande (qui ne se répète jamais).
+function genererNumeroFacture(c){
+  let jj=new Date();
+  let datePart=jj.getFullYear()+String(jj.getMonth()+1).padStart(2,"0")+String(jj.getDate()).padStart(2,"0");
+  let suffixe=String(c.id).slice(-4);
+  return `FAC-${datePart}-${suffixe}`;
+}
+
+function genererFacturePDF(c){
+  const{jsPDF}=window.jspdf;
+  const doc=new jsPDF();
+  const rose=[232,35,107], orange=[242,135,31], brun=[36,26,18], gris=[122,106,92];
+  let y=20;
+
+  // En-tête
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(24);
+  doc.setTextColor(...rose);
+  doc.text("Oh! Mikaté",20,y);
+  doc.setFontSize(11);
+  doc.setTextColor(...gris);
+  doc.setFont("helvetica","normal");
+  doc.text("Beignets by Soni",20,y+7);
+
+  doc.setFontSize(18);
+  doc.setTextColor(...brun);
+  doc.setFont("helvetica","bold");
+  doc.text("FACTURE",190,y,{align:"right"});
+  doc.setFontSize(10);
+  doc.setFont("helvetica","normal");
+  doc.setTextColor(...gris);
+  let numeroFacture=genererNumeroFacture(c);
+  doc.text(`N° ${numeroFacture}`,190,y+7,{align:"right"});
+  doc.text(`Émise le ${new Date().toLocaleDateString("fr-FR")}`,190,y+13,{align:"right"});
+
+  y+=25;
+  doc.setDrawColor(...orange);
+  doc.setLineWidth(0.5);
+  doc.line(20,y,190,y);
+  y+=10;
+
+  // Vendeur
+  doc.setFontSize(10);
+  doc.setTextColor(...brun);
+  doc.setFont("helvetica","bold");
+  doc.text("Vendeur",20,y);
+  doc.setFont("helvetica","normal");
+  doc.setTextColor(...gris);
+  y+=6;
+  ["Soni Ursule NGUFULU — Oh! Mikaté","Reims","SIRET : 102 955 168 00012","Auto-entrepreneur — Dispensé d'immatriculation au RCS et au RM","TVA non applicable, art. 293 B du CGI"].forEach(ligne=>{
+    doc.text(ligne,20,y);
+    y+=5;
+  });
+
+  // Client
+  let yClient=y-25;
+  doc.setFont("helvetica","bold");
+  doc.setTextColor(...brun);
+  doc.text("Client",120,yClient);
+  doc.setFont("helvetica","normal");
+  doc.setTextColor(...gris);
+  yClient+=6;
+  doc.text(c.name||"Client",120,yClient);
+  yClient+=5;
+  doc.text(c.phone||"—",120,yClient);
+
+  y+=8;
+  doc.setFont("helvetica","normal");
+  doc.setTextColor(...brun);
+  doc.text(`Date de la prestation : ${formatDateRetrait(c.dateRetrait)} — Créneau ${c.creneau||"—"}`,20,y);
+  y+=10;
+
+  // Détail de la commande
+  doc.setDrawColor(...orange);
+  doc.line(20,y,190,y);
+  y+=7;
+  doc.setFont("helvetica","bold");
+  doc.text("Désignation",20,y);
+  doc.text("Prix",190,y,{align:"right"});
+  y+=4;
+  doc.setDrawColor(200,200,200);
+  doc.line(20,y,190,y);
+  y+=6;
+
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(9.5);
+  let lignesCommande=(c.order||"").split("\n").filter(l=>l.trim());
+  lignesCommande.forEach(ligne=>{
+    let texteWrap=doc.splitTextToSize(ligne.replace(/^[^\wÀ-ÿ]+/,"").trim(),160);
+    texteWrap.forEach(l=>{
+      if(y>265){doc.addPage();y=20;}
+      doc.text(l,20,y);
+      y+=5;
     });
-  }
+  });
 
-  let prixBrut = parseFloat(String(c.total).replace(",", "."));
-  let prixAffiche = isNaN(prixBrut) ? "0,00 €" : prixBrut.toFixed(2).replace(".", ",") + " €";
-  let dateAffichee = formatDateRetrait(c.dateRetrait);
+  y+=6;
+  doc.setDrawColor(...brun);
+  doc.setLineWidth(0.6);
+  doc.line(120,y,190,y);
+  y+=8;
 
-  let fenetre = window.open("", "_blank", "width=800,height=600");
-  fenetre.document.write(`
-    <html>
-    <head>
-      <title>Facture - ${c.name || 'Client'}</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .details { margin-bottom: 20px; font-size: 14px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 20px; }
-        .footer { margin-top: 50px; text-align: center; font-size: 11px; color: #777; border-top: 1px solid #ddd; padding-top: 10px; }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <h2>FACTURE / REÇU</h2>
-        <p><b>Oh! Mikaté</b></p>
-      </div>
-      <div class="details">
-        <p><b>Client :</b> ${c.name || 'Inconnu'}</p>
-        <p><b>Téléphone :</b> ${c.phone || 'N/A'}</p>
-        <p><b>Date de retrait :</b> ${dateAffichee} • Créneau : ${c.creneau || 'N/A'}</p>
-        <p><b>Règlement :</b> ${c.payment || 'Non spécifié'}</p>
-      </div>
-      <h3 style="border-bottom: 2px solid #333; padding-bottom: 5px;">Détail de la commande</h3>
-      <table>
-        ${tableRows || `<tr><td style="padding:8px;">${c.order || 'Aucun détail'}</td></tr>`}
-      </table>
-      <div class="total">Total : ${prixAffiche}</div>
-      <div class="footer">
-        <p>Merci pour votre confiance ! À bientôt chez Oh! Mikaté.</p>
-        <p>SIRET : 98418057200019</p>
-      </div>
-    </body>
-    </html>
-  `);
-  fenetre.document.close();
-  fenetre.print();
-}  
+  let prixBrut=parseFloat(String(c.total).replace(",","."));
+  let prixAffiche=isNaN(prixBrut)?"0,00 €":prixBrut.toFixed(2).replace(".",",")+" €";
+  doc.setFont("helvetica","bold");
+  doc.setFontSize(13);
+  doc.setTextColor(...rose);
+  doc.text(`TOTAL TTC : ${prixAffiche}`,190,y,{align:"right"});
+  y+=10;
+
+  doc.setFont("helvetica","normal");
+  doc.setFontSize(9.5);
+  doc.setTextColor(...gris);
+  doc.text(`Règlement : ${c.payment||"Non spécifié"}`,20,y);
+
+  // Pied de page
+  doc.setFontSize(8);
+  doc.setTextColor(...gris);
+  doc.text("Merci pour votre confiance ! À bientôt chez Oh! Mikaté 🧇",105,285,{align:"center"});
+
+  doc.save(`${numeroFacture}.pdf`);
+}
 </script>
 </body>
 </html>
